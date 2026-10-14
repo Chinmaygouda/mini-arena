@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
   CROUCH_SPEED,
-  GRAVITY,
   JUMP_VELOCITY,
   SIM_TICK_DELTA,
   SPRINT_SPEED,

@@ -25,6 +25,71 @@
         top: 0;
         left: 0;
       }
+      /* Center Crosshair */
+      #crosshair {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        background: #38bdf8;
+        border-radius: 50%;
+        box-shadow: 0 0 6px #38bdf8;
+        pointer-events: none;
+        z-index: 50;
+      }
+      /* Click to Play Overlay */
+      #lock-prompt {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(13, 15, 18, 0.6);
+        backdrop-filter: blur(4px);
+        color: #f8fafc;
+        z-index: 90;
+        cursor: pointer;
+      }
+      .lock-card {
+        background: rgba(30, 41, 59, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        padding: 24px 32px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+      }
+      .lock-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #38bdf8;
+        margin-bottom: 8px;
+      }
+      .lock-subtitle {
+        font-size: 14px;
+        color: #94a3b8;
+        margin-bottom: 16px;
+      }
+      .controls-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 16px;
+        font-size: 12px;
+        text-align: left;
+        color: #cbd5e1;
+      }
+      .controls-grid code {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #38bdf8;
+      }
+      /* HUD Diagnostics Overlay */
       #hud-overlay {
         position: absolute;
         top: 16px;
@@ -35,13 +100,14 @@
         padding: 12px 16px;
         border-radius: 8px;
         color: #e2e8f0;
-        font-size: 13px;
+        font-size: 12px;
         pointer-events: none;
         z-index: 100;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        min-width: 220px;
       }
       .hud-title {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         letter-spacing: 0.05em;
         text-transform: uppercase;
@@ -50,8 +116,8 @@
       }
       .hud-row {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 8px;
         margin-top: 4px;
       }
       .badge {
@@ -73,31 +139,51 @@
         color: #fbbf24;
         border: 1px solid rgba(245, 158, 11, 0.4);
       }
-      .hud-tip {
-        margin-top: 8px;
-        font-size: 11px;
-        color: #94a3b8;
-      }
-      .hud-tip code {
-        color: #e2e8f0;
-        background: rgba(255, 255, 255, 0.08);
-        padding: 1px 4px;
-        border-radius: 3px;
+      .hud-data {
+        font-family: monospace;
+        color: #f1f5f9;
       }
     </style>
   </head>
   <body>
     <div id="canvas-container"></div>
-    <div id="hud-overlay">
-      <div class="hud-title">Mini Arena — Phase 0</div>
-      <div class="hud-row">
-        <span>Active Backend:</span>
-        <span id="renderer-badge" class="badge">Initializing...</span>
-      </div>
-      <div class="hud-tip">
-        Tip: test fallback with <code>?forceWebGL</code>
+    <div id="crosshair"></div>
+
+    <div id="lock-prompt">
+      <div class="lock-card">
+        <div class="lock-title">Mini Arena — Phase 1</div>
+        <div class="lock-subtitle">Click anywhere to capture mouse (Pointer Lock)</div>
+        <div class="controls-grid">
+          <div><code>WASD</code> Move</div>
+          <div><code>Mouse</code> Look</div>
+          <div><code>Space</code> Jump</div>
+          <div><code>Shift</code> Sprint</div>
+          <div><code>C / Ctrl</code> Crouch</div>
+          <div><code>Esc</code> Release Mouse</div>
+        </div>
       </div>
     </div>
+
+    <div id="hud-overlay">
+      <div class="hud-title">Mini Arena — Diagnostics</div>
+      <div class="hud-row">
+        <span>Backend:</span>
+        <span id="renderer-badge" class="badge">Initializing...</span>
+      </div>
+      <div class="hud-row">
+        <span>Position:</span>
+        <span id="hud-pos" class="hud-data">0, 0, 0</span>
+      </div>
+      <div class="hud-row">
+        <span>Speed:</span>
+        <span id="hud-speed" class="hud-data">0.0 m/s</span>
+      </div>
+      <div class="hud-row">
+        <span>State:</span>
+        <span id="hud-state" class="hud-data">Grounded</span>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

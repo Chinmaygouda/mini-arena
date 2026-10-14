@@ -1,10 +1,25 @@
 import * as THREE from 'three';
 import { WebGPURenderer } from 'three/webgpu';
 import Stats from 'stats-gl';
+import {
+  createDefaultPlayerState,
+  PLAYER_EYE_HEIGHT_CROUCH,
+  PLAYER_EYE_HEIGHT_STAND,
+  PlayerSimState,
+  SIM_TICK_DELTA,
+  stepPlayer,
+} from '@mini-arena/shared';
+import { initPhysics, PhysicsEngine } from './physics';
+import { InputManager } from './input';
+import { buildGreyboxArena } from './arena';
 
 declare global {
   interface Window {
     __renderer?: 'webgpu' | 'webgl2';
+    __playerState?: PlayerSimState;
+    __inputManager?: InputManager;
+    __physics?: PhysicsEngine;
+    __fps?: number;
   }
 }
 
@@ -13,8 +28,11 @@ async function initApp(): Promise<void> {
   if (!container) throw new Error('Canvas container not found');
 
   const badge = document.getElementById('renderer-badge');
+  const hudPos = document.getElementById('hud-pos');
+  const hudSpeed = document.getElementById('hud-speed');
+  const hudState = document.getElementById('hud-state');
 
-  // Parse forceWebGL query parameter: accepts ?forceWebGL, ?forceWebGL=true, ?forceWebGL=1
+  // Parse forceWebGL query parameter
   const url = new URL(window.location.href);
   const forceWebGL =
     url.searchParams.has('forceWebGL') &&
@@ -31,7 +49,7 @@ async function initApp(): Promise<void> {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   container.appendChild(renderer.domElement);
 
-  // Initialize renderer asynchronously (mandatory for WebGPU)
+  // Mandatory asynchronous initialization for WebGPU
   await renderer.init();
 
   // Inspect actual active backend
@@ -39,11 +57,8 @@ async function initApp(): Promise<void> {
     'isWebGPUBackend' in renderer.backend &&
     (renderer.backend as { isWebGPUBackend?: boolean }).isWebGPUBackend === true;
   const backendName: 'webgpu' | 'webgl2' = isWebGPU ? 'webgpu' : 'webgl2';
-
-  // Expose on window for Playwright E2E and automated testing
   window.__renderer = backendName;
 
-  // Update HUD badge
   if (badge) {
     badge.textContent = isWebGPU ? 'WebGPU' : 'WebGL2 (Fallback)';
     badge.className = `badge ${isWebGPU ? 'badge-webgpu' : 'badge-webgl2'}`;
@@ -57,63 +72,112 @@ async function initApp(): Promise<void> {
   await stats.init(renderer);
   document.body.appendChild(stats.dom);
 
-  // Scene setup
+  // Initialize Rapier 3D physics
+  const physics = await initPhysics();
+  window.__physics = physics;
+
+  // Scene & Camera setup
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0d0f12);
+  scene.fog = new THREE.FogExp2(0x0d0f12, 0.015);
 
   const camera = new THREE.PerspectiveCamera(
-    65,
+    75,
     window.innerWidth / window.innerHeight,
-    0.1,
-    1000,
+    0.05,
+    500,
   );
-  camera.position.set(0, 3, 6);
-  camera.lookAt(0, 1, 0);
+  camera.rotation.order = 'YXZ';
 
   // Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
-  dirLight.position.set(5, 10, 7);
-  scene.add(dirLight);
+  const sunLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+  sunLight.position.set(15, 25, 10);
+  scene.add(sunLight);
 
-  const fillLight = new THREE.DirectionalLight(0xf43f5e, 0.6);
-  fillLight.position.set(-5, 6, -5);
-  scene.add(fillLight);
+  const bounceLight = new THREE.DirectionalLight(0xf43f5e, 0.4);
+  bounceLight.position.set(-15, 10, -10);
+  scene.add(bounceLight);
 
-  // Floor grid
-  const gridHelper = new THREE.GridHelper(30, 30, 0x38bdf8, 0x1e293b);
-  gridHelper.position.y = 0;
-  scene.add(gridHelper);
+  // Build the greybox arena with geometry + Rapier colliders
+  buildGreyboxArena(scene, physics.world);
 
-  // Rotating central test cube
-  const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
-  const material = new THREE.MeshStandardMaterial({
-    color: 0x0284c7,
-    roughness: 0.3,
-    metalness: 0.8,
-  });
-  const cube = new THREE.Mesh(geometry, material);
-  cube.position.set(0, 1.2, 0);
-  scene.add(cube);
+  // Input manager
+  const inputManager = new InputManager(container);
+  window.__inputManager = inputManager;
 
-  // Window resize handler
+  // Start player facing arena
+  let currentState: PlayerSimState = createDefaultPlayerState(0, 0, 12);
+  let previousState: PlayerSimState = { ...currentState };
+  window.__playerState = currentState;
+
+  let currentEyeHeight = PLAYER_EYE_HEIGHT_STAND;
+  let tickCount = 0;
+  let accumulator = 0;
+  let lastTime = performance.now();
+
+  // Resize handler
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  // Render loop
-  let lastTime = performance.now();
+  // Fixed-timestep simulation loop with render interpolation
   renderer.setAnimationLoop(() => {
     const now = performance.now();
-    const delta = Math.min((now - lastTime) / 1000, 0.1);
+    const frameDelta = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
 
-    cube.rotation.x += delta * 0.5;
-    cube.rotation.y += delta * 0.8;
+    accumulator += frameDelta;
+
+    // Fixed 60 Hz physics ticks
+    while (accumulator >= SIM_TICK_DELTA) {
+      previousState = { ...currentState };
+      tickCount++;
+      const input = inputManager.sampleInput(tickCount);
+
+      currentState = stepPlayer(currentState, input, SIM_TICK_DELTA, physics.collisionWorld);
+      accumulator -= SIM_TICK_DELTA;
+    }
+
+    window.__playerState = currentState;
+
+    // Interpolation factor between previous state and current state [0, 1]
+    const alpha = accumulator / SIM_TICK_DELTA;
+
+    const renderX = previousState.x + (currentState.x - previousState.x) * alpha;
+    const renderY = previousState.y + (currentState.y - previousState.y) * alpha;
+    const renderZ = previousState.z + (currentState.z - previousState.z) * alpha;
+
+    // Smooth eye height transition for crouching
+    const targetEyeHeight = currentState.isCrouching
+      ? PLAYER_EYE_HEIGHT_CROUCH
+      : PLAYER_EYE_HEIGHT_STAND;
+    currentEyeHeight += (targetEyeHeight - currentEyeHeight) * Math.min(1.0, frameDelta * 14);
+
+    // Apply position & orientation to camera
+    camera.position.set(renderX, renderY + currentEyeHeight, renderZ);
+    camera.rotation.set(inputManager.pitch, inputManager.yaw, 0, 'YXZ');
+
+    // Update HUD overlay
+    if (hudPos) {
+      hudPos.textContent = `${currentState.x.toFixed(1)}, ${currentState.y.toFixed(1)}, ${currentState.z.toFixed(1)}`;
+    }
+    if (hudSpeed) {
+      const hSpeed = Math.hypot(currentState.vx, currentState.vz);
+      hudSpeed.textContent = `${hSpeed.toFixed(1)} m/s`;
+    }
+    if (hudState) {
+      const parts: string[] = [];
+      if (currentState.isGrounded) parts.push('Grounded');
+      else parts.push('Air');
+      if (currentState.isCrouching) parts.push('Crouch');
+      if (currentState.isSprinting) parts.push('Sprint');
+      hudState.textContent = parts.join(' | ');
+    }
 
     stats.update();
     renderer.render(scene, camera);
@@ -121,7 +185,7 @@ async function initApp(): Promise<void> {
 }
 
 initApp().catch((err) => {
-  console.error('Failed to initialize Mini Arena client:', err);
+  console.error('Failed to initialize Mini Arena controller:', err);
   const badge = document.getElementById('renderer-badge');
   if (badge) {
     badge.textContent = 'Error: ' + (err as Error).message;

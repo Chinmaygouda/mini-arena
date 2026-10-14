@@ -103,8 +103,8 @@ export function stepPlayer(
   }
   const maxHDelta = accelRate * dt;
 
-  let vx = approach(state.vx, targetVx, maxHDelta);
-  let vz = approach(state.vz, targetVz, maxHDelta);
+  const vx = approach(state.vx, targetVx, maxHDelta);
+  const vz = approach(state.vz, targetVz, maxHDelta);
 
   // 5. Vertical simulation (jump & gravity)
   let vy = state.vy;
