@@ -1,0 +1,6 @@
+{
+  "name": "@mini-arena/tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Asset optimization, map baking, and pipeline scripts"
+}

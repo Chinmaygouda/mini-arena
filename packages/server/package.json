@@ -1,0 +1,16 @@
+{
+  "name": "@mini-arena/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mini-arena/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "5.8.2"
+  }
+}
