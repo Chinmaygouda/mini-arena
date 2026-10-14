@@ -60,12 +60,29 @@ export class InputManager {
       });
     }
 
+    const resetHeldInputs = () => {
+      this.keys = {};
+      this.isFiring = false;
+      this.isAds = false;
+      this.reloadRequested = false;
+      this.inspectRequested = false;
+    };
+
     document.addEventListener('pointerlockchange', () => {
       this.isLocked =
         document.pointerLockElement === this.element ||
         document.pointerLockElement === document.body;
+      if (!this.isLocked) {
+        resetHeldInputs();
+      }
       if (overlay) {
         overlay.style.display = this.isLocked ? 'none' : 'flex';
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        resetHeldInputs();
       }
     });
 
