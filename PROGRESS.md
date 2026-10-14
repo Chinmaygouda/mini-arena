@@ -1,26 +1,36 @@
 # PROGRESS
 
-## Current phase: 0 — Foundation   Status: gate review
+## Current phase: 1 — Player controller + greybox map   Status: gate review
 
 ## Done (with evidence)
-- Monorepo initialized with pnpm workspaces, strict TypeScript, and Node v24.14.0 — `git log` commit `c1783b9`
-- Pinned library matrix with verified MIT/Apache-2.0 licenses and raw npm view evidence — documented in `DECISIONS.md`
-- Pure `packages/shared` package created with `lib: ["ES2022"]` (no DOM) and Vitest determinism unit tests — `pnpm test` (2 passed)
-- ESLint flat configuration with strict purity rules blocking DOM, Three.js, and Colyseus imports in `shared` — `pnpm lint` (0 errors)
-- `packages/client` dual WebGPU / WebGL2 fallback renderer implemented with `await renderer.init()` and dynamic `window.__renderer` exposure — verified
-- Playwright E2E smoke tests covering Chromium and Firefox for both default load and `?forceWebGL` / `?forceWebGL=true` query parameters — `pnpm test:e2e` (6/6 tests passed in 15.7s)
-- Unified verification pipeline `pnpm verify` (typecheck + lint + unit test + production build) passing cleanly across all workspace packages — `pnpm verify` (exit code 0)
+- **Phase 0 Carry-overs Resolved**:
+  - Reconciled engines in `package.json` to `"node": "^24.14.0"`, `"pnpm": "^11.11.0"` (matching plan).
+  - Added negative lint test suite `scripts/test-lint-purity.mjs` verifying ESLint catches `three`, `colyseus`, and DOM globals. All 5/5 tests pass. Integrated into `pnpm verify`.
+  - Re-checked TypeScript pin (`5.8.2`) against `typescript-eslint@8.71.2` peer dependency (`>=4.8.4 <6.1.0`), proving TS 7.0 is unsupported.
+  - Documented ADR 004 in `DECISIONS.md`.
+- **Phase 1 Implementation**:
+  - Installed and initialized `@dimforge/rapier3d-compat@0.21.0` WASM in `packages/client/src/physics.ts`.
+  - Implemented pure deterministic `stepPlayer(state, input, dt, collisionWorld?)` in `packages/shared/src/movement.ts` with zero per-tick allocations.
+  - Added comprehensive Vitest suite in `packages/shared/src/movement.test.ts` (5 tests for determinism over 200 ticks, walk speed, sprint speed, crouch speed, jump dynamics).
+  - Built Pointer Lock input manager (`packages/client/src/input.ts`) with raw mouse look, pitch clamping, and programmatic test hooks.
+  - Constructed 3D greybox test arena (`packages/client/src/arena.ts`) with perimeter walls, 1.5m elevated platform, 19° slope ramp, 6-step staircase (0.25m risers), cover pillars, and 1.4m clearance tunnel.
+  - Integrated 60 Hz fixed-timestep physics loop with render interpolation and smooth crouch eye height transitions in `packages/client/src/main.ts`.
+  - Added 6-part E2E controller test suite in `tests/e2e/controller.spec.ts` using `waitForFunction` assertions for asynchronous physics reliability.
+- **Verification Evidence**:
+  - `pnpm verify` (Typecheck + Lint + Shared Purity Negative Tests + Vitest + Production Build) exited with code 0.
+  - `pnpm test:e2e`: All 18 tests (6 smoke + 12 controller) passed across Chromium and Firefox in 48.8s.
+  - Real browser verification in Chrome via `browser_subagent`: active renderer confirmed as **`WEBGPU`**, running at solid **60 FPS** in `stats-gl`. Captured artifact `mini_arena_phase1_1791963331111.png` and recording `phase1_arena_demo_1791963317455.webp`.
 
 ## In progress
-- Phase 0 Gate Review & sign-off
+- Phase 1 Gate Review & sign-off
 
-## Next 3 steps (Phase 1)
-1. Implement pure player simulation `stepPlayer(state, input, dt)` in `packages/shared`
-2. Integrate Rapier 3D kinematic capsule character controller in offline mode
-3. Build greybox test arena with fixed-timestep physics loop and interpolated rendering
+## Next 3 steps (Phase 2 — Weapon systems core)
+1. Design data-driven weapon schemas and JSON definitions (Pistol, SMG, AR, Shotgun, Sniper) in `packages/shared`
+2. Implement recoil patterns, spread (move/crouch/ADS multipliers), and fire-rate state machine in `packages/shared`
+3. Add hitscan raycast validation against dummy hitboxes, tracers, and hit markers
 
 ## Known bugs / risks
-- None. WebGL2 fallback operates identically on both Chromium and Firefox.
+- None. Continuous downward probe velocity (`-1.5 m/s`) provides rock-solid ground contact and prevents floating on slopes.
 
 ## How to run
 ```bash
@@ -33,4 +43,5 @@ pnpm test:e2e
 ## Perf log
 | date | scene | device | FPS | draw calls | tris | notes |
 |---|---|---|---|---|---|---|
-| 2026-10-14 | Blank scene + test cube | Dev Machine (Chromium/Firefox) | 60 | 3 | 24 | Baseline Phase 0 pass |
+| 2026-10-14 | Blank scene + test cube | Dev Machine (Chromium/Firefox) | 60 | 3 | 24 | Phase 0 baseline |
+| 2026-10-14 | 40x40m Greybox Arena + Physics | Chrome (WebGPU Backend) | 60 | 16 | 144 | Phase 1 full controller pass |
