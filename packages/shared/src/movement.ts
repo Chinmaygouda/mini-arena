@@ -119,6 +119,9 @@ export function stepPlayer(
     if (vy < -35.0) {
       vy = -35.0;
     }
+  } else {
+    // When grounded, maintain continuous downward probe velocity to keep character snapped to ground/slopes
+    vy = -1.5;
   }
 
   // 6. Integrate position / evaluate collisions

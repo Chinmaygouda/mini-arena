@@ -21,6 +21,7 @@ export interface PhysicsEngine {
 let isInitialized = false;
 
 class RapierCollisionWorld implements ICollisionWorld {
+  private world: RAPIER.World;
   private controller: RAPIER.KinematicCharacterController;
   private playerBody: RAPIER.RigidBody;
   private standingCollider: RAPIER.Collider;
@@ -28,11 +29,13 @@ class RapierCollisionWorld implements ICollisionWorld {
   private scratchDelta = { x: 0, y: 0, z: 0 };
 
   constructor(
+    world: RAPIER.World,
     controller: RAPIER.KinematicCharacterController,
     playerBody: RAPIER.RigidBody,
     standingCollider: RAPIER.Collider,
     crouchingCollider: RAPIER.Collider,
   ) {
+    this.world = world;
     this.controller = controller;
     this.playerBody = playerBody;
     this.standingCollider = standingCollider;
@@ -44,13 +47,28 @@ class RapierCollisionWorld implements ICollisionWorld {
     desiredDelta: Vec3,
     isCrouching: boolean,
   ): { delta: Vec3; grounded: boolean } {
-    // 1. Move player body to current physics state position
-    this.playerBody.setTranslation(currentPos, true);
+    // 1. Position capsule at character center (feet are at currentPos.y)
+    // Standing: total height 1.8m -> center is at currentPos.y + 0.9m
+    // Crouching: total height 1.2m -> center is at currentPos.y + 0.6m
+    const centerOffsetY = isCrouching ? 0.6 : 0.9;
+    this.playerBody.setTranslation(
+      {
+        x: currentPos.x,
+        y: currentPos.y + centerOffsetY,
+        z: currentPos.z,
+      },
+      true,
+    );
 
-    // 2. Select appropriate collider based on stance
+    // 2. Select appropriate collider
+    this.standingCollider.setEnabled(!isCrouching);
+    this.crouchingCollider.setEnabled(isCrouching);
     const activeCollider = isCrouching ? this.crouchingCollider : this.standingCollider;
 
-    // 3. Compute collision and slide using Rapier controller
+    // 3. Step world so broadphase BVH is synchronized with the new body position
+    this.world.step();
+
+    // 4. Compute movement using Rapier kinematic controller
     this.scratchDelta.x = desiredDelta.x;
     this.scratchDelta.y = desiredDelta.y;
     this.scratchDelta.z = desiredDelta.z;
@@ -89,25 +107,22 @@ export async function initPhysics(): Promise<PhysicsEngine> {
   controller.enableSnapToGround(0.3); // Snap to ground distance
 
   // Player rigid body (kinematic position-based)
-  const playerBodyDesc = RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(0, 2.0, 0);
+  const playerBodyDesc = RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(0, 0.9, 0);
   const playerBody = world.createRigidBody(playerBodyDesc);
 
-  // Standing capsule collider (total height = 1.8m, half-height = (1.8 - 2*0.4)/2 = 0.5m)
+  // Standing capsule collider: half-height = 0.5, radius = 0.4 -> total height 1.8m
   const standHalfHeight = Math.max(0.01, (PLAYER_HEIGHT_STAND - 2 * PLAYER_RADIUS) / 2);
   const standingColliderDesc = RAPIER.ColliderDesc.capsule(standHalfHeight, PLAYER_RADIUS);
   const standingCollider = world.createCollider(standingColliderDesc, playerBody);
 
-  // Crouching capsule collider (total height = 1.2m, half-height = (1.2 - 2*0.4)/2 = 0.2m)
+  // Crouching capsule collider: half-height = 0.2, radius = 0.4 -> total height 1.2m
   const crouchHalfHeight = Math.max(0.01, (PLAYER_HEIGHT_CROUCH - 2 * PLAYER_RADIUS) / 2);
   const crouchingColliderDesc = RAPIER.ColliderDesc.capsule(crouchHalfHeight, PLAYER_RADIUS);
-  // Center crouching capsule so feet stay at ground level
-  const crouchOffsetY = -(standHalfHeight - crouchHalfHeight);
-  crouchingColliderDesc.setTranslation(0, crouchOffsetY, 0);
-  // Set crouching collider as disabled by default until selected
   const crouchingCollider = world.createCollider(crouchingColliderDesc, playerBody);
   crouchingCollider.setEnabled(false);
 
   const collisionWorld = new RapierCollisionWorld(
+    world,
     controller,
     playerBody,
     standingCollider,
