@@ -16,6 +16,8 @@ export interface WeaponInventorySlot {
   ammoReserve: number;
 }
 
+export const AUTO_SWITCH_DELAY = 0.35; // Delay in seconds before auto-switching empty weapon
+
 export interface WeaponState {
   currentSlot: number;
   slots: WeaponInventorySlot[];
@@ -23,6 +25,13 @@ export interface WeaponState {
   stateTimer: number; // Remaining time in current state (reload / swap)
   pendingWeaponId: WeaponId | null;
   isAds: boolean;
+  isSprinting: boolean;
+  autoReload: boolean; // Setting to enable/disable auto-reload
+  autoSwitch: boolean; // Setting to enable/disable auto-switch
+  lastUsedSlot: number; // Slot previously equipped with ammo
+  shotCooldownTimer: number; // Shot interval cooldown remaining before auto-reload can trigger
+  autoSwitchTimer: number; // Countdown before auto-switch occurs
+  isOutOfAmmo: boolean; // Flagged true when all weapons in inventory are empty
 }
 
 export function createDefaultWeaponState(): WeaponState {
@@ -39,6 +48,13 @@ export function createDefaultWeaponState(): WeaponState {
     stateTimer: 0,
     pendingWeaponId: null,
     isAds: false,
+    isSprinting: false,
+    autoReload: true,
+    autoSwitch: true,
+    lastUsedSlot: 0,
+    shotCooldownTimer: 0,
+    autoSwitchTimer: 0,
+    isOutOfAmmo: false,
   };
 }
 
@@ -90,6 +106,54 @@ export function triggerReload(state: WeaponState): boolean {
 }
 
 /**
+ * Notifies the state machine that a shot was fired, starting the shot cooldown before auto-reload.
+ */
+export function recordShotFired(state: WeaponState, cooldownSeconds?: number): void {
+  const def = getCurrentWeaponDef(state);
+  state.shotCooldownTimer = cooldownSeconds ?? (60 / def.rpm);
+}
+
+/**
+ * Updates sprinting state and cancels active reload if sprinting.
+ */
+export function setSprinting(state: WeaponState, isSprinting: boolean): void {
+  state.isSprinting = isSprinting;
+  if (isSprinting) {
+    cancelReloadOnSprint(state);
+  }
+}
+
+/**
+ * Finds the next weapon in inventory with available ammo.
+ * Prioritizes last-used slot first, then checks in slot order (0..4).
+ * Returns -1 if all weapons are completely empty.
+ */
+export function findNextWeaponWithAmmo(state: WeaponState): number {
+  // 1. Prioritize last-used slot if different from current and has ammo
+  if (
+    state.lastUsedSlot >= 0 &&
+    state.lastUsedSlot < state.slots.length &&
+    state.lastUsedSlot !== state.currentSlot
+  ) {
+    const lastSlot = state.slots[state.lastUsedSlot];
+    if (lastSlot && (lastSlot.ammoInMag > 0 || lastSlot.ammoReserve > 0)) {
+      return state.lastUsedSlot;
+    }
+  }
+
+  // 2. Check next slots in cyclical slot order (0..4)
+  for (let i = 1; i < state.slots.length; i++) {
+    const nextIndex = (state.currentSlot + i) % state.slots.length;
+    const slot = state.slots[nextIndex];
+    if (slot && (slot.ammoInMag > 0 || slot.ammoReserve > 0)) {
+      return nextIndex;
+    }
+  }
+
+  return -1;
+}
+
+/**
  * For shell-by-shell weapons (shotgun), pressing fire interrupts reload if ammo > 0.
  */
 export function cancelReloadOnFire(state: WeaponState): boolean {
@@ -106,7 +170,7 @@ export function cancelReloadOnFire(state: WeaponState): boolean {
 
 /**
  * Triggers weapon swap to a new weapon id.
- * Cancels active reload immediately.
+ * Cancels active reload and pending auto-switch countdown immediately.
  */
 export function triggerSwap(state: WeaponState, targetWeaponId: WeaponId): boolean {
   const current = getCurrentSlot(state);
@@ -120,6 +184,9 @@ export function triggerSwap(state: WeaponState, targetWeaponId: WeaponId): boole
   }
 
   const currentDef = getWeaponDef(current.weaponId);
+
+  // Manual or automatic swap cancels pending auto-switch countdown
+  state.autoSwitchTimer = 0;
 
   state.actionState = 'swapping_out';
   state.stateTimer = currentDef.swapTime / 2;
@@ -143,6 +210,7 @@ export function triggerSwapBySlot(state: WeaponState, slotIndex: number): boolea
  * Cancels reload if player initiates a sprint.
  */
 export function cancelReloadOnSprint(state: WeaponState): boolean {
+  state.isSprinting = true;
   if (
     state.actionState === 'reloading_tactical' ||
     state.actionState === 'reloading_empty' ||
@@ -158,10 +226,14 @@ export function cancelReloadOnSprint(state: WeaponState): boolean {
 /**
  * Steps the reload / swap state machine by dt.
  * Guarantees NO stuck states: stateTimer always decrements and transitions to idle on completion.
+ * Handles auto-reload and auto-switch transitions deterministically.
  */
 export function stepWeaponStateMachine(state: WeaponState, dt: number): void {
   if (state.stateTimer > 0) {
-    state.stateTimer -= dt;
+    state.stateTimer = Math.max(0, state.stateTimer - dt);
+  }
+  if (state.shotCooldownTimer > 0) {
+    state.shotCooldownTimer = Math.max(0, state.shotCooldownTimer - dt);
   }
 
   if (state.stateTimer <= 0) {
@@ -207,6 +279,7 @@ export function stepWeaponStateMachine(state: WeaponState, dt: number): void {
         if (state.pendingWeaponId) {
           const targetIndex = state.slots.findIndex((s) => s.weaponId === state.pendingWeaponId);
           if (targetIndex !== -1) {
+            state.lastUsedSlot = state.currentSlot;
             state.currentSlot = targetIndex;
           }
           const newDef = getWeaponDef(state.pendingWeaponId);
@@ -237,6 +310,53 @@ export function stepWeaponStateMachine(state: WeaponState, dt: number): void {
         state.actionState = 'idle';
         state.stateTimer = 0;
         break;
+    }
+  }
+
+  // --- Auto-Reload and Auto-Switch logic when idle ---
+  if (state.actionState === 'idle') {
+    const currentSlot = getCurrentSlot(state);
+    const anyWeaponHasAmmo = state.slots.some((s) => s.ammoInMag > 0 || s.ammoReserve > 0);
+
+    if (!anyWeaponHasAmmo) {
+      state.isOutOfAmmo = true;
+      state.autoSwitchTimer = 0;
+      return;
+    }
+
+    state.isOutOfAmmo = false;
+
+    // (1) AUTO-RELOAD: mag == 0 and reserve > 0, after shot cooldown, not sprinting
+    if (
+      state.autoReload &&
+      !state.isSprinting &&
+      currentSlot.ammoInMag === 0 &&
+      currentSlot.ammoReserve > 0 &&
+      state.shotCooldownTimer <= 0
+    ) {
+      triggerReload(state);
+      return;
+    }
+
+    // (2) AUTO-SWITCH: mag == 0 and reserve == 0, switch to next weapon with ammo after delay
+    if (
+      state.autoSwitch &&
+      currentSlot.ammoInMag === 0 &&
+      currentSlot.ammoReserve === 0
+    ) {
+      if (state.autoSwitchTimer <= 0) {
+        state.autoSwitchTimer = AUTO_SWITCH_DELAY;
+      }
+      state.autoSwitchTimer = Math.max(0, state.autoSwitchTimer - dt);
+      if (state.autoSwitchTimer <= 0) {
+        state.autoSwitchTimer = 0;
+        const targetSlot = findNextWeaponWithAmmo(state);
+        if (targetSlot !== -1 && targetSlot !== state.currentSlot) {
+          triggerSwapBySlot(state, targetSlot);
+        }
+      }
+    } else {
+      state.autoSwitchTimer = 0;
     }
   }
 }

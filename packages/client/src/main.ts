@@ -3,7 +3,6 @@ import { WebGPURenderer } from 'three/webgpu';
 import Stats from 'stats-gl';
 import {
   calculateDamage,
-  cancelReloadOnSprint,
   computeEffectiveSpread,
   createDefaultPlayerState,
   createDefaultWeaponState,
@@ -16,7 +15,9 @@ import {
   PLAYER_EYE_HEIGHT_CROUCH,
   PLAYER_EYE_HEIGHT_STAND,
   PlayerSimState,
+  recordShotFired,
   sampleSpreadOffsets,
+  setSprinting,
   SIM_TICK_DELTA,
   stepFireTiming,
   stepPlayer,
@@ -57,12 +58,13 @@ async function initApp(): Promise<void> {
   const hudSpeed = document.getElementById('hud-speed');
   const hudState = document.getElementById('hud-state');
 
-  // Parse forceWebGL query parameter
+  // Parse forceWebGL and debug query parameters
   const url = new URL(window.location.href);
   const forceWebGL =
     url.searchParams.has('forceWebGL') &&
     url.searchParams.get('forceWebGL') !== 'false' &&
     url.searchParams.get('forceWebGL') !== '0';
+  const isDebug = import.meta.env.DEV || url.searchParams.has('debug');
 
   // Three.js WebGPURenderer with automatic WebGL2 fallback
   const renderer = new WebGPURenderer({
@@ -82,7 +84,9 @@ async function initApp(): Promise<void> {
     'isWebGPUBackend' in renderer.backend &&
     (renderer.backend as { isWebGPUBackend?: boolean }).isWebGPUBackend === true;
   const backendName: 'webgpu' | 'webgl2' = isWebGPU ? 'webgpu' : 'webgl2';
-  window.__renderer = backendName;
+  if (isDebug) {
+    window.__renderer = backendName;
+  }
 
   if (badge) {
     badge.textContent = isWebGPU ? 'WebGPU' : 'WebGL2 (Fallback)';
@@ -99,7 +103,9 @@ async function initApp(): Promise<void> {
 
   // Initialize Rapier 3D physics
   const physics = await initPhysics();
-  window.__physics = physics;
+  if (isDebug) {
+    window.__physics = physics;
+  }
 
   // Scene & Camera setup
   const scene = new THREE.Scene();
@@ -131,23 +137,31 @@ async function initApp(): Promise<void> {
 
   // Target dummies in the arena
   const dummies = new TargetDummyManager(scene);
-  window.__dummies = dummies;
+  if (isDebug) {
+    window.__dummies = dummies;
+  }
 
   // Viewmodel (box placeholder with muzzle/tracers)
   const viewmodel = new WeaponViewmodel(camera, scene);
-  window.__viewmodel = viewmodel;
+  if (isDebug) {
+    window.__viewmodel = viewmodel;
+  }
 
   // Weapon state & fire timing
   const weaponState = createDefaultWeaponState();
   const fireTiming = createFireTimingState();
   const rng = createSeededRng(1337);
-  window.__weaponState = weaponState;
-  window.__fireTiming = fireTiming;
+  if (isDebug) {
+    window.__weaponState = weaponState;
+    window.__fireTiming = fireTiming;
+  }
   viewmodel.updateWeaponVisual(getCurrentWeaponDef(weaponState));
 
   // Input manager
   const inputManager = new InputManager(container);
-  window.__inputManager = inputManager;
+  if (isDebug) {
+    window.__inputManager = inputManager;
+  }
 
   // HUD elements for weapons
   const hudWeaponName = document.getElementById('hud-weapon-name');
@@ -158,7 +172,9 @@ async function initApp(): Promise<void> {
   // Start player facing arena
   let currentState: PlayerSimState = createDefaultPlayerState(0, 0, 12);
   let previousState: PlayerSimState = { ...currentState };
-  window.__playerState = currentState;
+  if (isDebug) {
+    window.__playerState = currentState;
+  }
 
   let currentEyeHeight = PLAYER_EYE_HEIGHT_STAND;
   let tickCount = 0;
@@ -185,25 +201,28 @@ async function initApp(): Promise<void> {
       currentState = stepPlayer(currentState, input, SIM_TICK_DELTA, physics.collisionWorld);
 
       // --- Weapon State Machine & Actions ---
+      const previousSlotIndex = weaponState.currentSlot;
+
       // 1. Weapon swap request
       if (input.weaponSlot !== undefined) {
-        if (triggerSwapBySlot(weaponState, input.weaponSlot)) {
-          viewmodel.updateWeaponVisual(getCurrentWeaponDef(weaponState));
-        }
+        triggerSwapBySlot(weaponState, input.weaponSlot);
       }
 
-      // 2. Sprint cancel reload
-      if (currentState.isSprinting) {
-        cancelReloadOnSprint(weaponState);
-      }
+      // 2. Sprint state & reload cancel
+      setSprinting(weaponState, currentState.isSprinting);
 
       // 3. Reload request
       if (input.reload) {
         triggerReload(weaponState);
       }
 
-      // 4. Advance weapon timers
+      // 4. Advance weapon timers (handles auto-reload and auto-switch)
       stepWeaponStateMachine(weaponState, SIM_TICK_DELTA);
+
+      // If slot changed from manual swap or auto-switch, update viewmodel visual
+      if (weaponState.currentSlot !== previousSlotIndex) {
+        viewmodel.updateWeaponVisual(getCurrentWeaponDef(weaponState));
+      }
 
       // 5. Fire timing & shooting
       const currentDef = getCurrentWeaponDef(weaponState);
@@ -216,6 +235,7 @@ async function initApp(): Promise<void> {
       if (input.fire && canShoot) {
         if (tryConsumeShot(fireTiming, currentDef)) {
           activeSlot.ammoInMag--;
+          recordShotFired(weaponState);
 
           // Recoil kick on viewmodel
           const kickPitch = currentDef.recoil.pattern[0]?.pitch ?? 0.035;
@@ -278,7 +298,9 @@ async function initApp(): Promise<void> {
       }
     }
 
-    window.__playerState = currentState;
+    if (isDebug) {
+      window.__playerState = currentState;
+    }
 
     const renderX = previousState.x + (currentState.x - previousState.x) * alpha;
     const renderY = previousState.y + (currentState.y - previousState.y) * alpha;

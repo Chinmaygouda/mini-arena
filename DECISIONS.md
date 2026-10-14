@@ -245,4 +245,25 @@ Per PLAN.md §5 (Phase 3) and AGENTS.md Rule I & H, we must evaluate asset optio
 
 *Note: Per AGENTS.md Rule I, no Phase 3 code will be written until the user selects their preferred asset route.*
 
+---
+
+## ADR 009: Mathematical AABB Occlusion vs Production Rapier Physics Occlusion
+
+**Date**: 2026-10-14  
+**Status**: Accepted
+
+### Context
+Phase 2 carry-over review asked whether hitscan shots are blocked by walls, and whether wall occlusion is wired into the live game.
+
+### Decision & Architecture Clarification
+1. **Mathematical AABB Occlusion (`packages/shared/src/weapons/hitscan.ts`)**:
+   - `rayIntersectsAABB(origin, dir, box, maxDistance)` and `testRayWithOcclusion(...)` are pure mathematical implementations using the standard slab method.
+   - They have zero dependencies on Three.js, DOM, or WASM physics libraries.
+   - **Current Status**: They are currently **unit-tested only** (`weapons.test.ts`), validating that intervening boxes occlude hitscan rays before hitting humanoid targets.
+   - They are **NOT wired into client gameplay**: the client offline practice dummies currently query `testRayHitbox` directly because the live arena contains complex non-axis-aligned geometry (55° steep ramps, 20° shallow ramps, 8-riser stairs, tunnel lintels).
+2. **Production World Occlusion Strategy (Phase 6)**:
+   - Real world occlusion cannot use axis-aligned bounding boxes (AABBs) because competitive arena maps contain angled geometry, stair treads, and compound colliders.
+   - In Phase 6 (Authoritative Multiplayer), authoritative world occlusion will be executed via Rapier 3D raycasting (`world.castRayAndGetNormal`) on both the client (for predicted bullet impact sparks/decals) and the server (for authoritative line-of-sight and hit confirmation).
+
+
 

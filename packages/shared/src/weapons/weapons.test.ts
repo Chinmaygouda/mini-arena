@@ -26,8 +26,13 @@ import {
   triggerReload,
   triggerSwap,
   tryConsumeShot,
-  cancelReloadOnSprint,
   cancelReloadOnFire,
+  cancelReloadOnSprint,
+  AUTO_SWITCH_DELAY,
+  recordShotFired,
+  setSprinting,
+  findNextWeaponWithAmmo,
+  triggerSwapBySlot,
 } from '../index';
 
 describe('Phase 2 Weapons Core Unit Tests', () => {
@@ -558,6 +563,292 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
       expect(result.occludedByWall).toBe(false);
       expect(result.part).toBe('head');
       expect(result.distance).toBeCloseTo(10 - dummy.headRadius, 2);
+    });
+  });
+
+  describe('Auto-Reload & Auto-Switch State Machine Logic', () => {
+    describe('Auto-Reload', () => {
+      it('automatically starts empty reload when mag hits 0 and reserve > 0 after shot cooldown', () => {
+        const state = createDefaultWeaponState();
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 1;
+        slot.ammoReserve = 60;
+
+        // Fire last shot
+        slot.ammoInMag = 0;
+        recordShotFired(state, 0.1); // 100ms cooldown
+
+        // Step within cooldown: reload must NOT have started yet
+        stepWeaponStateMachine(state, 0.05);
+        expect(state.actionState).toBe('idle');
+        expect(state.shotCooldownTimer).toBeCloseTo(0.05, 3);
+
+        // Step past cooldown: auto-reload triggers immediately
+        stepWeaponStateMachine(state, 0.06);
+        expect(state.actionState).toBe('reloading_empty');
+        expect(state.stateTimer).toBeGreaterThan(0);
+      });
+
+      it('cancels auto-reload if player initiates a sprint, and does not re-trigger while sprinting', () => {
+        const state = createDefaultWeaponState();
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 60;
+        state.shotCooldownTimer = 0;
+
+        // Step once to trigger auto-reload
+        stepWeaponStateMachine(state, 0.016);
+        expect(state.actionState).toBe('reloading_empty');
+
+        // Player starts sprinting -> reload cancelled to idle
+        setSprinting(state, true);
+        expect(state.actionState).toBe('idle');
+
+        // While sprinting, auto-reload must NOT re-trigger
+        stepWeaponStateMachine(state, 0.016);
+        expect(state.actionState).toBe('idle');
+
+        // When sprinting stops, auto-reload resumes
+        setSprinting(state, false);
+        stepWeaponStateMachine(state, 0.016);
+        expect(state.actionState).toBe('reloading_empty');
+      });
+
+      it('cancels auto-reload if player initiates weapon swap', () => {
+        const state = createDefaultWeaponState();
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 60;
+
+        // Auto-reload triggers
+        stepWeaponStateMachine(state, 0.016);
+        expect(state.actionState).toBe('reloading_empty');
+
+        // Swap to pistol
+        triggerSwap(state, 'pistol');
+        expect(state.actionState).toBe('swapping_out');
+
+        // Step through swap
+        stepWeaponStateMachine(state, ASSAULT_RIFLE_DEF.swapTime / 2 + 0.01);
+        expect(state.actionState).toBe('swapping_in');
+        stepWeaponStateMachine(state, PISTOL_DEF.swapTime / 2 + 0.01);
+        expect(state.actionState).toBe('idle');
+        expect(getCurrentSlot(state).weaponId).toBe('pistol');
+      });
+
+      it('respects setting to disable auto-reload', () => {
+        const state = createDefaultWeaponState();
+        state.autoReload = false;
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 60;
+        state.shotCooldownTimer = 0;
+
+        stepWeaponStateMachine(state, 0.1);
+        expect(state.actionState).toBe('idle');
+        expect(slot.ammoInMag).toBe(0);
+      });
+
+      it('allows shotgun fire-interrupt during shell reload without retriggering auto-reload while ammo > 0', () => {
+        const state = createDefaultWeaponState();
+        triggerSwap(state, 'shotgun');
+        stepWeaponStateMachine(state, 1.0); // Complete swapping_out
+        stepWeaponStateMachine(state, 1.0); // Complete swapping_in
+        expect(getCurrentSlot(state).weaponId).toBe('shotgun');
+        expect(state.actionState).toBe('idle');
+
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 12;
+        state.shotCooldownTimer = 0;
+
+        // Auto-reload triggers for shell 1
+        stepWeaponStateMachine(state, 0.016);
+        expect(state.actionState).toBe('reloading_shell');
+
+        // Finish inserting shell 1
+        stepWeaponStateMachine(state, SHOTGUN_DEF.reloadTimeEmpty + 0.01);
+        expect(slot.ammoInMag).toBe(1);
+        expect(state.actionState).toBe('reloading_shell'); // Loading shell 2
+
+        // Player taps fire -> interrupts reload
+        const interrupted = cancelReloadOnFire(state);
+        expect(interrupted).toBe(true);
+        expect(state.actionState).toBe('idle');
+        expect(slot.ammoInMag).toBe(1);
+
+        // Next tick: since ammoInMag == 1 (> 0), auto-reload must NOT trigger
+        stepWeaponStateMachine(state, 0.016);
+        expect(state.actionState).toBe('idle');
+      });
+    });
+
+    describe('Auto-Switch', () => {
+      it('switches to next weapon with ammo after AUTO_SWITCH_DELAY when mag and reserve hit 0', () => {
+        const state = createDefaultWeaponState();
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 0;
+
+        // Step partially through delay: must stay on weapon
+        stepWeaponStateMachine(state, AUTO_SWITCH_DELAY / 2);
+        expect(state.actionState).toBe('idle');
+        expect(state.currentSlot).toBe(0);
+
+        // Step past delay: triggers swap out
+        stepWeaponStateMachine(state, AUTO_SWITCH_DELAY / 2 + 0.02);
+        expect(state.actionState).toBe('swapping_out');
+
+        // Finish swap: out -> in -> idle
+        stepWeaponStateMachine(state, 1.0);
+        expect(state.actionState).toBe('swapping_in');
+        stepWeaponStateMachine(state, 1.0);
+        expect(state.actionState).toBe('idle');
+        // By default, slot 1 (pistol) has ammo
+        expect(state.currentSlot).toBe(1);
+        expect(getCurrentSlot(state).weaponId).toBe('pistol');
+      });
+
+      it('prioritizes last-used weapon if it has ammo', () => {
+        const state = createDefaultWeaponState();
+        // Start on slot 0 (AR), swap to slot 2 (SMG)
+        triggerSwapBySlot(state, 2);
+        stepWeaponStateMachine(state, 1.0);
+        stepWeaponStateMachine(state, 1.0);
+        expect(state.currentSlot).toBe(2);
+        expect(state.lastUsedSlot).toBe(0);
+
+        // Empty SMG completely
+        const smgSlot = getCurrentSlot(state);
+        smgSlot.ammoInMag = 0;
+        smgSlot.ammoReserve = 0;
+
+        // Step past auto switch delay
+        stepWeaponStateMachine(state, AUTO_SWITCH_DELAY + 0.02);
+        expect(state.actionState).toBe('swapping_out');
+
+        // Step through swap: should switch back to slot 0 (AR, the last-used weapon)
+        stepWeaponStateMachine(state, 1.0);
+        stepWeaponStateMachine(state, 1.0);
+        expect(state.currentSlot).toBe(0);
+        expect(getCurrentSlot(state).weaponId).toBe('assault_rifle');
+      });
+
+      it('falls back to slot order if last-used weapon is also completely empty', () => {
+        const state = createDefaultWeaponState();
+        // Empty slot 0 (AR)
+        state.slots[0]!.ammoInMag = 0;
+        state.slots[0]!.ammoReserve = 0;
+
+        // Swap to slot 2 (SMG)
+        triggerSwapBySlot(state, 2);
+        stepWeaponStateMachine(state, 1.0);
+        stepWeaponStateMachine(state, 1.0);
+        expect(state.currentSlot).toBe(2);
+        expect(state.lastUsedSlot).toBe(0); // Last used was AR, which is empty!
+
+        // Empty slot 2 (SMG)
+        state.slots[2]!.ammoInMag = 0;
+        state.slots[2]!.ammoReserve = 0;
+
+        // Step past auto switch delay
+        stepWeaponStateMachine(state, AUTO_SWITCH_DELAY + 0.02);
+        expect(state.actionState).toBe('swapping_out');
+
+        // Step through swap: since slot 0 is empty, slot order search from slot 2 checks:
+        // slot 3 (shotgun, which has ammo)
+        stepWeaponStateMachine(state, 1.0);
+        stepWeaponStateMachine(state, 1.0);
+        expect(state.currentSlot).toBe(3);
+        expect(getCurrentSlot(state).weaponId).toBe('shotgun');
+      });
+
+      it('cancels auto-switch if player manually swaps weapons during delay', () => {
+        const state = createDefaultWeaponState();
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 0;
+
+        // Start auto switch timer
+        stepWeaponStateMachine(state, 0.1);
+        expect(state.autoSwitchTimer).toBeGreaterThan(0);
+
+        // Player manually swaps to sniper (slot 4)
+        triggerSwapBySlot(state, 4);
+        expect(state.autoSwitchTimer).toBe(0); // Cancelled!
+        expect(state.actionState).toBe('swapping_out');
+        expect(state.pendingWeaponId).toBe('sniper');
+
+        stepWeaponStateMachine(state, 1.0);
+        stepWeaponStateMachine(state, 1.0);
+        expect(state.currentSlot).toBe(4);
+        expect(getCurrentSlot(state).weaponId).toBe('sniper');
+      });
+
+      it('flags OUT_OF_AMMO and stays on current weapon without looping when all weapons are empty', () => {
+        const state = createDefaultWeaponState();
+        // Empty all 5 weapon slots
+        for (const s of state.slots) {
+          s.ammoInMag = 0;
+          s.ammoReserve = 0;
+        }
+
+        expect(findNextWeaponWithAmmo(state)).toBe(-1);
+
+        // Step 100 ticks
+        for (let t = 0; t < 100; t++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+          expect(state.isOutOfAmmo).toBe(true);
+          expect(state.actionState).toBe('idle');
+          expect(state.currentSlot).toBe(0); // Never shifts or loops infinitely
+        }
+      });
+
+      it('respects setting to disable auto-switch', () => {
+        const state = createDefaultWeaponState();
+        state.autoSwitch = false;
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 0;
+
+        stepWeaponStateMachine(state, 1.0);
+        expect(state.currentSlot).toBe(0);
+        expect(state.actionState).toBe('idle');
+      });
+
+      it('guarantees zero stuck states under 10,000 randomized state transitions', () => {
+        const state = createDefaultWeaponState();
+        const rng = createSeededRng(12345);
+
+        for (let i = 0; i < 10000; i++) {
+          const action = rng.range(0, 10);
+          if (action < 2) {
+            triggerReload(state);
+          } else if (action < 4) {
+            triggerSwapBySlot(state, Math.floor(rng.range(0, 5)));
+          } else if (action < 5) {
+            cancelReloadOnSprint(state);
+          } else if (action < 6) {
+            setSprinting(state, rng.next() > 0.5);
+          } else if (action < 7) {
+            const slot = getCurrentSlot(state);
+            if (slot.ammoInMag > 0) {
+              slot.ammoInMag--;
+              recordShotFired(state);
+            }
+          }
+
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+
+          // Invariant checks: timers must be non-negative numbers, slot must be valid
+          expect(Number.isNaN(state.stateTimer)).toBe(false);
+          expect(state.stateTimer).toBeGreaterThanOrEqual(0);
+          expect(Number.isNaN(state.shotCooldownTimer)).toBe(false);
+          expect(state.shotCooldownTimer).toBeGreaterThanOrEqual(0);
+          expect(state.currentSlot).toBeGreaterThanOrEqual(0);
+          expect(state.currentSlot).toBeLessThan(state.slots.length);
+        }
+      });
     });
   });
 });

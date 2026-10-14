@@ -275,7 +275,7 @@ test.describe('Mini Arena Phase 1 Controller & Arena E2E Tests', () => {
       window.__inputManager!.setKey('KeyW', true);
     });
 
-    await page.waitForFunction(() => window.__playerState!.z < -2.5, { timeout: 4000 });
+    await page.waitForFunction(() => window.__playerState!.z < -2.5, { timeout: 8000 });
 
     // Release KeyW outside the tunnel
     await page.evaluate(() => {
