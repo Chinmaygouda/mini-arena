@@ -211,3 +211,107 @@ export function testRayHitbox(
     hitPoint: null,
   };
 }
+
+export interface BoxColliderDef {
+  id?: string;
+  min: Vec3;
+  max: Vec3;
+}
+
+/**
+ * Pure mathematical ray-vs-AABB intersection algorithm (slab method).
+ * Ray: O + t * D where D is normalized.
+ */
+export function rayIntersectsAABB(
+  rayOrigin: Vec3,
+  rayDir: Vec3,
+  box: BoxColliderDef,
+  maxDistance: number,
+): { hit: boolean; distance: number; hitPoint: Vec3 | null } {
+  const invDx = rayDir.x !== 0 ? 1.0 / rayDir.x : Infinity;
+  const invDy = rayDir.y !== 0 ? 1.0 / rayDir.y : Infinity;
+  const invDz = rayDir.z !== 0 ? 1.0 / rayDir.z : Infinity;
+
+  const t1 = (box.min.x - rayOrigin.x) * invDx;
+  const t2 = (box.max.x - rayOrigin.x) * invDx;
+  const t3 = (box.min.y - rayOrigin.y) * invDy;
+  const t4 = (box.max.y - rayOrigin.y) * invDy;
+  const t5 = (box.min.z - rayOrigin.z) * invDz;
+  const t6 = (box.max.z - rayOrigin.z) * invDz;
+
+  const tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
+  const tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
+
+  if (tmax < 0 || tmin > tmax || tmin > maxDistance) {
+    return { hit: false, distance: Infinity, hitPoint: null };
+  }
+
+  const hitDist = tmin >= 0 ? tmin : tmax;
+  if (hitDist > maxDistance) {
+    return { hit: false, distance: Infinity, hitPoint: null };
+  }
+
+  return {
+    hit: true,
+    distance: hitDist,
+    hitPoint: {
+      x: rayOrigin.x + rayDir.x * hitDist,
+      y: rayOrigin.y + rayDir.y * hitDist,
+      z: rayOrigin.z + rayDir.z * hitDist,
+    },
+  };
+}
+
+/**
+ * Tests a ray against a target hitbox with environmental occluders (walls, cover).
+ * If a wall is closer than the hitbox, the shot is occluded and does NOT hit the target.
+ */
+export function testRayWithOcclusion(
+  rayOrigin: Vec3,
+  rayDir: Vec3,
+  hitbox: TargetHitboxDef,
+  occluders: BoxColliderDef[],
+  maxRange: number,
+): RayHitResult & { occludedByWall: boolean } {
+  // First, find closest wall intersection along ray
+  let closestWallDist = maxRange;
+  let hitWall = false;
+  let wallHitPoint: Vec3 | null = null;
+
+  for (const wall of occluders) {
+    const wallRes = rayIntersectsAABB(rayOrigin, rayDir, wall, closestWallDist);
+    if (wallRes.hit && wallRes.distance < closestWallDist) {
+      closestWallDist = wallRes.distance;
+      hitWall = true;
+      wallHitPoint = wallRes.hitPoint;
+    }
+  }
+
+  // Now test target hitbox up to the wall distance
+  const targetRes = testRayHitbox(rayOrigin, rayDir, hitbox, closestWallDist);
+
+  if (targetRes.hit && targetRes.distance < closestWallDist) {
+    return {
+      ...targetRes,
+      occludedByWall: false,
+    };
+  }
+
+  if (hitWall) {
+    return {
+      hit: false,
+      distance: closestWallDist,
+      part: null,
+      hitPoint: wallHitPoint,
+      occludedByWall: true,
+    };
+  }
+
+  return {
+    hit: false,
+    distance: Infinity,
+    part: null,
+    hitPoint: null,
+    occludedByWall: false,
+  };
+}

@@ -6,6 +6,7 @@ export type WeaponActionState =
   | 'firing'
   | 'reloading_tactical'
   | 'reloading_empty'
+  | 'reloading_shell'
   | 'swapping_out'
   | 'swapping_in';
 
@@ -70,7 +71,12 @@ export function triggerReload(state: WeaponState): boolean {
     return false;
   }
 
-  if (slot.ammoInMag > 0) {
+  if (def.reloadType === 'shell_by_shell') {
+    state.actionState = 'reloading_shell';
+    state.stateTimer = slot.ammoInMag === 0
+      ? def.reloadTimeEmpty
+      : (def.shellReloadTime ?? def.reloadTimeTactical);
+  } else if (slot.ammoInMag > 0) {
     state.actionState = 'reloading_tactical';
     state.stateTimer = def.reloadTimeTactical;
   } else {
@@ -81,6 +87,21 @@ export function triggerReload(state: WeaponState): boolean {
   // Reload cancels ADS
   state.isAds = false;
   return true;
+}
+
+/**
+ * For shell-by-shell weapons (shotgun), pressing fire interrupts reload if ammo > 0.
+ */
+export function cancelReloadOnFire(state: WeaponState): boolean {
+  if (state.actionState === 'reloading_shell') {
+    const slot = getCurrentSlot(state);
+    if (slot.ammoInMag > 0) {
+      state.actionState = 'idle';
+      state.stateTimer = 0;
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -122,7 +143,11 @@ export function triggerSwapBySlot(state: WeaponState, slotIndex: number): boolea
  * Cancels reload if player initiates a sprint.
  */
 export function cancelReloadOnSprint(state: WeaponState): boolean {
-  if (state.actionState === 'reloading_tactical' || state.actionState === 'reloading_empty') {
+  if (
+    state.actionState === 'reloading_tactical' ||
+    state.actionState === 'reloading_empty' ||
+    state.actionState === 'reloading_shell'
+  ) {
     state.actionState = 'idle';
     state.stateTimer = 0;
     return true;
@@ -143,7 +168,7 @@ export function stepWeaponStateMachine(state: WeaponState, dt: number): void {
     switch (state.actionState) {
       case 'reloading_tactical':
       case 'reloading_empty': {
-        // Complete the reload
+        // Complete magazine reload
         const slot = getCurrentSlot(state);
         const def = getWeaponDef(slot.weaponId);
         const needed = def.magSize - slot.ammoInMag;
@@ -154,6 +179,27 @@ export function stepWeaponStateMachine(state: WeaponState, dt: number): void {
 
         state.actionState = 'idle';
         state.stateTimer = 0;
+        break;
+      }
+
+      case 'reloading_shell': {
+        // Add 1 shell to magazine
+        const slot = getCurrentSlot(state);
+        const def = getWeaponDef(slot.weaponId);
+
+        if (slot.ammoInMag < def.magSize && slot.ammoReserve > 0) {
+          slot.ammoInMag += 1;
+          slot.ammoReserve -= 1;
+        }
+
+        // Continue next shell or finish
+        if (slot.ammoInMag < def.magSize && slot.ammoReserve > 0) {
+          state.actionState = 'reloading_shell';
+          state.stateTimer = def.shellReloadTime ?? def.reloadTimeTactical;
+        } else {
+          state.actionState = 'idle';
+          state.stateTimer = 0;
+        }
         break;
       }
 

@@ -135,32 +135,38 @@ export class InputManager {
   public reloadRequested = false;
 
   /**
-   * Programmatic control hooks for automated E2E tests.
+   * Dedicated test-only hooks isolated behind the testHooks namespace.
+   * In production gameplay, all inputs are driven exclusively via browser DOM event listeners.
    */
-  public setKey(code: string, pressed: boolean): void {
-    this.keys[code] = pressed;
-  }
+  public readonly testHooks = {
+    setKey: (code: string, pressed: boolean): void => {
+      this.keys[code] = pressed;
+    },
+    setFire: (firing: boolean): void => {
+      this.isFiring = firing;
+    },
+    setAds: (ads: boolean): void => {
+      this.isAds = ads;
+    },
+    setReload: (reload: boolean): void => {
+      this.reloadRequested = reload;
+    },
+    setWeaponSlot: (slot: number): void => {
+      this.selectedSlot = slot;
+    },
+    setLook: (yaw: number, pitch: number): void => {
+      this.yaw = yaw;
+      this.pitch = pitch;
+    },
+  };
 
-  public setFire(firing: boolean): void {
-    this.isFiring = firing;
-  }
-
-  public setAds(ads: boolean): void {
-    this.isAds = ads;
-  }
-
-  public setReload(reload: boolean): void {
-    this.reloadRequested = reload;
-  }
-
-  public setWeaponSlot(slot: number): void {
-    this.selectedSlot = slot;
-  }
-
-  public setLook(yaw: number, pitch: number): void {
-    this.yaw = yaw;
-    this.pitch = pitch;
-  }
+  // Backwards-compatible aliases marked as testHooks
+  public setKey = this.testHooks.setKey;
+  public setFire = this.testHooks.setFire;
+  public setAds = this.testHooks.setAds;
+  public setReload = this.testHooks.setReload;
+  public setWeaponSlot = this.testHooks.setWeaponSlot;
+  public setLook = this.testHooks.setLook;
 
   public getIsLocked(): boolean {
     return this.isLocked;

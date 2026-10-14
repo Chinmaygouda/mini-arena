@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+
+declare const console: { log: (...args: unknown[]) => void };
 import {
   calculateDamage,
   computeEffectiveSpread,
@@ -18,10 +20,14 @@ import {
   stepFireTiming,
   stepWeaponStateMachine,
   testRayHitbox,
+  testRayWithOcclusion,
+  rayIntersectsAABB,
+  BoxColliderDef,
   triggerReload,
   triggerSwap,
   tryConsumeShot,
   cancelReloadOnSprint,
+  cancelReloadOnFire,
 } from '../index';
 
 describe('Phase 2 Weapons Core Unit Tests', () => {
@@ -35,11 +41,11 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
     ];
 
     weapons.forEach(({ name, def, rpm }) => {
-      it(`maintains accurate RPM within ±1% over 10.0 seconds at 60 Hz for ${name} (${rpm} RPM)`, () => {
+      it(`maintains accurate RPM within ±1% over 60.0 seconds at 60 Hz for ${name} (${rpm} RPM)`, () => {
         const fireState = createFireTimingState();
-        const durationSec = 10.0;
-        const totalTicks = Math.round(durationSec / SIM_TICK_DELTA); // 600 ticks
-        const shotInterval = 60 / rpm;
+        const durationSec = 60.0;
+        const totalTicks = Math.round(durationSec / SIM_TICK_DELTA); // 3600 ticks at 60 Hz
+        const targetInterval = 60 / rpm;
         let shotsFired = 0;
         const shotTimes: number[] = [];
 
@@ -53,23 +59,31 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
           }
         }
 
-        // 1. Cycle rate: exact rate between first and last shot
-        if (shotTimes.length >= 2) {
-          const firstShot = shotTimes[0]!;
-          const lastShot = shotTimes[shotTimes.length - 1]!;
-          const cycleDuration = lastShot - firstShot;
-          const cycleRpm = ((shotTimes.length - 1) / cycleDuration) * 60;
-          const cycleError = Math.abs((cycleRpm - rpm) / rpm) * 100;
-          expect(cycleError).toBeLessThanOrEqual(1.0);
+        // Calculate inter-shot intervals
+        const intervals: number[] = [];
+        for (let i = 1; i < shotTimes.length; i++) {
+          intervals.push(shotTimes[i]! - shotTimes[i - 1]!);
         }
 
-        // 2. Continuous rate including remaining fractional accumulator
-        const fractionalProgress = fireState.fireAccumulator / shotInterval;
-        const totalEffectiveShots = shotsFired + fractionalProgress;
-        const continuousRpm = (totalEffectiveShots / durationSec) * 60;
-        const continuousError = Math.abs((continuousRpm - rpm) / rpm) * 100;
+        const meanInterval =
+          intervals.length > 0
+            ? intervals.reduce((sum, v) => sum + v, 0) / intervals.length
+            : targetInterval;
 
-        expect(continuousError).toBeLessThanOrEqual(1.0);
+        const cycleRpm = 60 / meanInterval;
+        const countRpm = (shotsFired / durationSec) * 60;
+        const intervalError = Math.abs((cycleRpm - rpm) / rpm) * 100;
+        const countError = Math.abs((countRpm - rpm) / rpm) * 100;
+
+        console.log(
+          `[RPM Test Result] ${name.padEnd(16)} | Config: ${rpm} RPM | Ticks: ${totalTicks} (60s) | Shots: ${shotsFired} | Mean Interval: ${meanInterval.toFixed(4)}s (target: ${targetInterval.toFixed(4)}s) | Count RPM: ${countRpm.toFixed(2)} (${countError.toFixed(3)}% err) | Cycle RPM: ${cycleRpm.toFixed(2)} (${intervalError.toFixed(3)}% err)`
+        );
+
+        // Assert discrete count and cycle interval are strictly within ±1.0%
+        expect(countError).toBeLessThanOrEqual(1.0);
+        expect(intervalError).toBeLessThanOrEqual(1.0);
+        // Over a full 60.0s window, integer shot counts are exact
+        expect(shotsFired).toBe(rpm);
       });
     });
   });
@@ -342,6 +356,208 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
       const result = testRayHitbox(rayOrigin, rayDir, dummy, 5.0);
 
       expect(result.hit).toBe(false);
+    });
+  });
+
+  describe('Combat Shotgun Multi-Pellet Mechanics', () => {
+    it('fires exactly 8 pellets per shot with individual spread dispersion', () => {
+      expect(SHOTGUN_DEF.pellets).toBe(8);
+
+      const rng = createSeededRng(777);
+      const halfAngle = SHOTGUN_DEF.spread.base;
+      const pellets: Array<{ pitchOffset: number; yawOffset: number }> = [];
+
+      for (let p = 0; p < SHOTGUN_DEF.pellets; p++) {
+        pellets.push(sampleSpreadOffsets(halfAngle, rng));
+      }
+
+      expect(pellets.length).toBe(8);
+
+      // Verify pellets are distinct and dispersed across the spread cone
+      const uniqueOffsets = new Set(pellets.map((p) => `${p.pitchOffset.toFixed(4)},${p.yawOffset.toFixed(4)}`));
+      expect(uniqueOffsets.size).toBe(8);
+
+      for (const p of pellets) {
+        const dist = Math.hypot(p.pitchOffset, p.yawOffset);
+        expect(dist).toBeLessThanOrEqual(halfAngle);
+      }
+    });
+
+    it('calculates point-blank total damage of 96 across all 8 pellets', () => {
+      const perPelletDmg = calculateDamage(SHOTGUN_DEF, 2.0, false);
+      expect(perPelletDmg).toBe(12);
+
+      const totalPointBlank = perPelletDmg * SHOTGUN_DEF.pellets;
+      expect(totalPointBlank).toBe(96);
+    });
+
+    it('calculates falloff minimum total damage of 32 at max range', () => {
+      const perPelletDmg = calculateDamage(SHOTGUN_DEF, 25.0, false);
+      expect(perPelletDmg).toBe(4);
+
+      const totalMaxRange = perPelletDmg * SHOTGUN_DEF.pellets;
+      expect(totalMaxRange).toBe(32);
+    });
+  });
+
+  describe('Shell-By-Shell Shotgun Reload & Interrupt', () => {
+    it('loads shells incrementally and pumps first shell when empty', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 3; // Shotgun slot
+      const slot = getCurrentSlot(state);
+      slot.ammoInMag = 0;
+      slot.ammoReserve = 12;
+
+      // Trigger reload from empty: initial pump delay is reloadTimeEmpty (0.75s)
+      const started = triggerReload(state);
+      expect(started).toBe(true);
+      expect(state.actionState).toBe('reloading_shell');
+      expect(state.stateTimer).toBe(SHOTGUN_DEF.reloadTimeEmpty);
+
+      // Advance by 0.75s: 1st shell inserted
+      stepWeaponStateMachine(state, SHOTGUN_DEF.reloadTimeEmpty);
+      expect(slot.ammoInMag).toBe(1);
+      expect(slot.ammoReserve).toBe(11);
+      // Automatically transitions to loading 2nd shell at shellReloadTime (0.55s)
+      expect(state.actionState).toBe('reloading_shell');
+      expect(state.stateTimer).toBe(SHOTGUN_DEF.shellReloadTime);
+
+      // Advance by 0.55s: 2nd shell inserted
+      stepWeaponStateMachine(state, SHOTGUN_DEF.shellReloadTime!);
+      expect(slot.ammoInMag).toBe(2);
+      expect(slot.ammoReserve).toBe(10);
+      expect(state.actionState).toBe('reloading_shell');
+    });
+
+    it('allows player to interrupt shell reload by firing if ammo > 0', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 3;
+      const slot = getCurrentSlot(state);
+      slot.ammoInMag = 1; // 1 shell loaded
+      state.actionState = 'reloading_shell';
+      state.stateTimer = 0.55;
+
+      const canceled = cancelReloadOnFire(state);
+      expect(canceled).toBe(true);
+      expect(state.actionState).toBe('idle');
+      expect(state.stateTimer).toBe(0);
+      expect(slot.ammoInMag).toBe(1); // Shell remains loaded and ready to fire
+    });
+
+    it('refuses reload interrupt when magazine is 0', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 3;
+      const slot = getCurrentSlot(state);
+      slot.ammoInMag = 0;
+      state.actionState = 'reloading_shell';
+      state.stateTimer = 0.75;
+
+      const canceled = cancelReloadOnFire(state);
+      expect(canceled).toBe(false);
+      expect(state.actionState).toBe('reloading_shell');
+    });
+  });
+
+  describe('Precision Sniper Rifle Mechanics', () => {
+    it('enforces bolt cycle delay of 1.333s (45 RPM) between shots', () => {
+      const fireState = createFireTimingState();
+      const def = SNIPER_DEF;
+      const boltCycleTime = 60 / def.rpm; // 1.3333s
+      expect(boltCycleTime).toBeCloseTo(1.3333, 3);
+
+      // Prime accumulator so first shot is ready immediately
+      fireState.fireAccumulator = boltCycleTime;
+
+      // First shot fires at t = 0
+      expect(tryConsumeShot(fireState, def)).toBe(true);
+      expect(fireState.fireAccumulator).toBeCloseTo(0, 5);
+
+      // Attempt second shot at t = 0.5s (30 ticks): must fail
+      for (let t = 0; t < Math.round(0.5 / SIM_TICK_DELTA); t++) {
+        stepFireTiming(fireState, SIM_TICK_DELTA, def);
+      }
+      expect(tryConsumeShot(fireState, def)).toBe(false);
+
+      // Attempt second shot at t = 1.0s total (another 30 ticks): must still fail
+      for (let t = 0; t < Math.round(0.5 / SIM_TICK_DELTA); t++) {
+        stepFireTiming(fireState, SIM_TICK_DELTA, def);
+      }
+      expect(tryConsumeShot(fireState, def)).toBe(false);
+
+      // Advance remaining time to 1.35s total (another 21 ticks): bolt cycle finishes, shot succeeds
+      for (let t = 0; t < Math.round(0.35 / SIM_TICK_DELTA); t++) {
+        stepFireTiming(fireState, SIM_TICK_DELTA, def);
+      }
+      expect(tryConsumeShot(fireState, def)).toBe(true);
+    });
+
+    it('provides 4x zoom with 0.25 ADS FOV multiplier and lethal headshots', () => {
+      expect(SNIPER_DEF.adsFovMultiplier).toBe(0.25);
+
+      // Base body damage
+      const bodyDmg = calculateDamage(SNIPER_DEF, 30, false);
+      expect(bodyDmg).toBe(85);
+
+      // Lethal headshot damage: 85 * 2.5 = 212.5 (guaranteed 1-shot kill)
+      const headDmg = calculateDamage(SNIPER_DEF, 30, true);
+      expect(headDmg).toBe(212.5);
+      expect(headDmg).toBeGreaterThanOrEqual(100);
+    });
+  });
+
+  describe('Environmental Wall Occlusion (Ray vs AABB & Target)', () => {
+    const dummy = createHumanoidHitbox('dummy-occluded', 0, 0, 10);
+    const rayOrigin = { x: 0, y: 1.55, z: 0 };
+    const rayDir = { x: 0, y: 0, z: 1 }; // Toward +Z
+
+    it('pure rayIntersectsAABB math computes accurate intersection distance and hit point', () => {
+      const box: BoxColliderDef = {
+        min: { x: -1, y: 0, z: 5 },
+        max: { x: 1, y: 3, z: 7 },
+      };
+      const directRes = rayIntersectsAABB(rayOrigin, rayDir, box, 50);
+      expect(directRes.hit).toBe(true);
+      expect(directRes.distance).toBe(5.0);
+      expect(directRes.hitPoint).toEqual({ x: 0, y: 1.55, z: 5.0 });
+
+      // Miss when ray is off to the side
+      const rayMiss = { x: 5, y: 1.55, z: 0 };
+      const missRes = rayIntersectsAABB(rayMiss, rayDir, box, 50);
+      expect(missRes.hit).toBe(false);
+      expect(missRes.distance).toBe(Infinity);
+    });
+
+    it('blocks hitscan ray when an intervening wall is in the trajectory', () => {
+      // Wall between shooter (z=0) and target (z=10), located at z=4..6
+      const wall: BoxColliderDef = {
+        id: 'wall-intervening',
+        min: { x: -2, y: 0, z: 4 },
+        max: { x: 2, y: 3, z: 6 },
+      };
+
+      const result = testRayWithOcclusion(rayOrigin, rayDir, dummy, [wall], 50);
+
+      expect(result.hit).toBe(false);
+      expect(result.occludedByWall).toBe(true);
+      expect(result.distance).toBe(4.0); // Hit front face of wall at z=4
+      expect(result.hitPoint).not.toBeNull();
+      expect(result.hitPoint!.z).toBeCloseTo(4.0, 3);
+    });
+
+    it('allows hitscan hit when wall is positioned behind target or to the side', () => {
+      // Wall behind target at z=15..17
+      const wallBehind: BoxColliderDef = {
+        id: 'wall-behind',
+        min: { x: -2, y: 0, z: 15 },
+        max: { x: 2, y: 3, z: 17 },
+      };
+
+      const result = testRayWithOcclusion(rayOrigin, rayDir, dummy, [wallBehind], 50);
+
+      expect(result.hit).toBe(true);
+      expect(result.occludedByWall).toBe(false);
+      expect(result.part).toBe('head');
+      expect(result.distance).toBeCloseTo(10 - dummy.headRadius, 2);
     });
   });
 });

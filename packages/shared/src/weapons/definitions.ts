@@ -40,6 +40,7 @@ export const PISTOL_DEF: WeaponDef = {
     adsMultiplier: 0.5,
     sprintMultiplier: 3.0,
   },
+  reloadType: 'magazine',
   reloadTimeTactical: 1.6,
   reloadTimeEmpty: 2.1,
   swapTime: 0.3,
@@ -74,6 +75,7 @@ export const SMG_DEF: WeaponDef = {
     adsMultiplier: 0.45,
     sprintMultiplier: 3.5,
   },
+  reloadType: 'magazine',
   reloadTimeTactical: 1.8,
   reloadTimeEmpty: 2.3,
   swapTime: 0.35,
@@ -108,6 +110,7 @@ export const ASSAULT_RIFLE_DEF: WeaponDef = {
     adsMultiplier: 0.3,
     sprintMultiplier: 4.0,
   },
+  reloadType: 'magazine',
   reloadTimeTactical: 2.2,
   reloadTimeEmpty: 2.8,
   swapTime: 0.45,
@@ -142,8 +145,10 @@ export const SHOTGUN_DEF: WeaponDef = {
     adsMultiplier: 0.75,
     sprintMultiplier: 2.5,
   },
-  reloadTimeTactical: 2.4,
-  reloadTimeEmpty: 3.0,
+  reloadType: 'shell_by_shell',
+  shellReloadTime: 0.55, // 550ms per shell insertion
+  reloadTimeTactical: 0.55,
+  reloadTimeEmpty: 0.75, // Extra 200ms to pump first shell into chamber
   swapTime: 0.5,
   adsFovMultiplier: 0.85,
   recoil: {
@@ -176,6 +181,7 @@ export const SNIPER_DEF: WeaponDef = {
     adsMultiplier: 0.05, // Pinpoint precision when ADS
     sprintMultiplier: 12.0,
   },
+  reloadType: 'magazine',
   reloadTimeTactical: 2.8,
   reloadTimeEmpty: 3.5,
   swapTime: 0.6,

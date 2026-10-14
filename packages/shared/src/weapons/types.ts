@@ -36,6 +36,8 @@ export interface WeaponDef {
   spread: WeaponSpreadDef;
   reloadTimeTactical: number; // Duration in seconds when reloading with round in chamber (mag > 0)
   reloadTimeEmpty: number; // Duration in seconds when reloading empty mag (mag == 0)
+  reloadType: 'magazine' | 'shell_by_shell'; // Standard magazine swap vs sequential shell insertion
+  shellReloadTime?: number; // Time in seconds to insert each individual shell (for shotgun)
   swapTime: number; // Duration in seconds to equip/swap
   adsFovMultiplier: number; // Camera FOV multiplier when ADS (e.g. 0.8 for ironsights, 0.25 for sniper)
   recoil: {

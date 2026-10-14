@@ -219,8 +219,30 @@ In fixed-timestep loops, if a browser tab is suspended or suffers large frame de
 2. Clamps `frameDelta` to `MAX_FRAME_DELTA = 0.25s` (250 ms).
 3. Clamps `ticksToRun` to `MAX_TICKS_PER_FRAME = 8` ticks per render frame.
 4. Added microsecond epsilon tolerance (`1e-6s`) to floor divisions to prevent floating-point rounding jitter across fractional framerates.
-5. Unit tested in `packages/shared/src/timestep.test.ts`:
-   - Tab switch (10s delay) runs at most 8 ticks, never spirals.
-   - Simulated 30 Hz, 60 Hz, and 144 Hz display loops produce identical discrete player states after 1.0 second (60 ticks), with smooth interpolation factors $\alpha \in [0, 1]$.
+---
+
+## ADR 008: Phase 3 First-Person Arms, Weapon Models & Animation Pipeline Options
+
+**Date**: 2026-10-14  
+**Status**: Proposed (Awaiting User Choice)
+
+### Context & Goals
+Phase 3 requires realistic first-person arms, 5 distinct realistic weapon models (Assault Rifle, Tactical Pistol, Rapid SMG, Combat Shotgun, Precision Sniper), realistic reload animations (tactical, empty, and shell-by-shell for shotgun), and procedural motion (sway, bob, recoil springs, ADS alignment).
+Per PLAN.md §5 (Phase 3) and AGENTS.md Rule I & H, we must evaluate asset options (author in Blender, CC0/CC-BY packs, purchase, procedural fallback) across license, visual quality, rig compatibility, effort, and cost before writing Phase 3 code.
+
+### Candidate Evaluations
+
+| Option | License | Visual Quality & Realism | Rig Compatibility | Dev Effort | Financial Cost |
+|---|---|---|---|---|---|
+| **1. Author in Blender** | 100% Custom / Proprietary | Custom tailored, but high risk of amateur/stiff animation without motion capture | 100% custom bone hierarchy; full control | **Very High** (40–80 hours across 5 weapons × 10 clips = 50 animation clips) | $0 |
+| **2. Permissive CC0 / CC-BY Packs** | CC0 or CC-BY 4.0 (attribution required) | Mixed. Weapons look good, but cohesive FP arms + full reload animations across 5 weapons are fragmented across disparate authors | **Poor**. Disjointed rigs; different bone counts, axis conventions, and missing mag/bolt bones require extensive retargeting | **High** (20–30 hours retargeting, baking, reconciling rigs) | $0 |
+| **3. Commercial FPS Asset Pack (Fab / CGTrader)** | Commercial Game License (royalty-free in compiled game) | **AAA / Photorealistic**. High-detail PBR weapon models, textured tactical FP arms (gloves/sleeves), hand-keyed fluid reloads | **Excellent**. Unified arm rig shared across all weapons; standard bone hierarchy (`root`, `arm_l`, `hand_l`, `weapon_bone`, `mag_bone`, `bolt_bone`, `shell_bone`) | **Low to Moderate** (4–8 hours to optimize to glTF via `gltf-transform` meshopt + KTX2) | ~$30 – $80 (one-time purchase) |
+| **4. Procedural Rig Layer + CC0 Static Weapons** | CC0 / Permissive | Realistic static weapon models; realistic recoil/sway springs; but reload animations are limited to procedural bone translation/rotation | **Clean & Simple**. Minimal bone rig (weapon body, magazine, slide, pump); driven by math | **Low to Moderate** (8–12 hours) | $0 |
+
+### Recommendation
+- **Primary Recommendation: Option 3 (Commercial Unified Pack)** if the user approves a ~$30–$60 asset purchase budget. This is the only path that reliably delivers true realism, professional finger dexterity, and authentic reload motion across all 5 weapons within budget.
+- **Secondary / Zero-Cost Recommendation: Option 4 (Procedural Rig Layer + High-Quality CC0 Models)** if the project has a strict $0 budget. We load realistic PBR gun models and drive tactical reloads, recoil, sway, inspect, and shell insertions via frame-rate independent procedural springs and bone kinematics.
+
+*Note: Per AGENTS.md Rule I, no Phase 3 code will be written until the user selects their preferred asset route.*
 
 
