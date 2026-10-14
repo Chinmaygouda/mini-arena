@@ -26,6 +26,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ['scripts/**/*.{js,mjs}', '*.{js,mjs,ts}'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
+  {
     // Pure simulation rules for packages/shared
     files: ['packages/shared/**/*.ts'],
     rules: {

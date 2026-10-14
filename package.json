@@ -4,8 +4,8 @@
   "type": "module",
   "packageManager": "pnpm@11.11.0",
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "node": "^24.14.0",
+    "pnpm": "^11.11.0"
   },
   "scripts": {
     "dev": "pnpm --filter @mini-arena/client dev",
@@ -16,8 +16,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
+    "test:purity": "node scripts/test-lint-purity.mjs",
     "test:e2e": "playwright test",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+    "verify": "pnpm typecheck && pnpm lint && pnpm test:purity && pnpm test && pnpm build"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",

@@ -126,4 +126,36 @@ Three.js r171+ provides `three/webgpu` `WebGPURenderer` which asynchronously ini
 ### Decision
 1. `packages/shared/tsconfig.json` specifies `"lib": ["ES2022"]` (omitting `"DOM"`).
 2. ESLint rule `no-restricted-imports` explicitly blocks any browser globals, `three`, or `colyseus` in `packages/shared/**`.
-3. Shared package contains pure TS unit tests run via Vitest.
+3. Added automated negative test `scripts/test-lint-purity.mjs` verifying that violations of Three.js, Colyseus, or DOM globals are caught by ESLint.
+4. Integrated `pnpm test:purity` into `pnpm verify`.
+
+---
+
+## ADR 004: Phase 0 Carry-Over Reconciliations & Audit Responses
+
+**Date**: 2026-10-14  
+**Status**: Accepted
+
+### 1. Plan Deviations Reconciled
+- **Node & pnpm Engines**: Updated root `package.json` to strictly match the plan (`"node": "^24.14.0"`, `"pnpm": "^11.11.0"`). `.nvmrc` is pinned to `v24.14.0`.
+- **`exactOptionalPropertyTypes`**: Intentionally omitted. Following user review guidance, `exactOptionalPropertyTypes` causes extensive compatibility friction with third-party types without meaningful safety benefit. Retained `strict: true`, `noUncheckedIndexedAccess: true`, and `noImplicitOverride: true`.
+- **Skeletal `packages/server`**: Created early with minimal types to ensure `pnpm -r typecheck` and `pnpm -r build` run cleanly across the workspace without special exclusions.
+
+### 2. TypeScript Pin Re-Verification & Peer Dependency Proof
+- `typescript` dist-tags on npm indicate `latest: 7.0.2`.
+- However, `npm view typescript-eslint@8.71.2 peerDependencies` declares:
+  ```json
+  {
+    "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+    "typescript": ">=4.8.4 <6.1.0"
+  }
+  ```
+- Because `typescript-eslint` strictly caps TypeScript support at `<6.1.0`, upgrading to TypeScript 7.0 breaks ESLint tooling.
+- Therefore, TypeScript `5.8.2` is retained and pinned as the latest compatible release within the `<6.1.0` constraint.
+
+### 3. E2E Test Behavior & Renderer Audit
+- In headless Playwright, both Chromium and Firefox ran under the **WebGL2 (Fallback)** backend because headless shells without hardware GPU access report no WebGPU adapter.
+- `smoke.spec.ts` was edited after the first run for two reasons:
+  1. CSS `.badge` has `text-transform: uppercase`, rendering DOM text as `"WEBGL2 (FALLBACK)"`. The regex `/WebGPU|WebGL2/` failed on case sensitivity; updated to `/webgpu|webgl2/i`.
+  2. Three.js r186 logged `THREE.Clock: This module has been deprecated`. Replaced with `performance.now()` delta timing to eliminate runtime warnings.
+
