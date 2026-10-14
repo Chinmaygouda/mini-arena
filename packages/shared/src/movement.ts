@@ -57,7 +57,15 @@ export function stepPlayer(
   const yaw = input.yaw;
 
   // 2. Determine stance and speed
-  const isCrouching = input.crouch;
+  // If player is currently crouching and tries to uncrouch, check ceiling clearance
+  let isCrouching = input.crouch;
+  if (!isCrouching && state.isCrouching && collisionWorld?.canStandUp) {
+    const currentPos = { x: state.x, y: state.y, z: state.z };
+    if (!collisionWorld.canStandUp(currentPos)) {
+      isCrouching = true;
+    }
+  }
+
   const canSprint = !isCrouching && input.sprint && input.moveForward > 0;
   const isSprinting = canSprint;
 

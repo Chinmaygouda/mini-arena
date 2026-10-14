@@ -3,11 +3,13 @@ import { WebGPURenderer } from 'three/webgpu';
 import Stats from 'stats-gl';
 import {
   createDefaultPlayerState,
+  createTimestepState,
   PLAYER_EYE_HEIGHT_CROUCH,
   PLAYER_EYE_HEIGHT_STAND,
   PlayerSimState,
   SIM_TICK_DELTA,
   stepPlayer,
+  updateAccumulator,
 } from '@mini-arena/shared';
 import { initPhysics, PhysicsEngine } from './physics';
 import { InputManager } from './input';
@@ -115,8 +117,7 @@ async function initApp(): Promise<void> {
 
   let currentEyeHeight = PLAYER_EYE_HEIGHT_STAND;
   let tickCount = 0;
-  let accumulator = 0;
-  let lastTime = performance.now();
+  const timestep = createTimestepState(performance.now());
 
   // Resize handler
   window.addEventListener('resize', () => {
@@ -128,25 +129,18 @@ async function initApp(): Promise<void> {
   // Fixed-timestep simulation loop with render interpolation
   renderer.setAnimationLoop(() => {
     const now = performance.now();
-    const frameDelta = Math.min((now - lastTime) / 1000, 0.1);
-    lastTime = now;
+    const { frameDelta, ticksToRun, alpha } = updateAccumulator(timestep, now);
 
-    accumulator += frameDelta;
-
-    // Fixed 60 Hz physics ticks
-    while (accumulator >= SIM_TICK_DELTA) {
+    // Run capped fixed-timestep ticks (guarantees no spiral of death)
+    for (let t = 0; t < ticksToRun; t++) {
       previousState = { ...currentState };
       tickCount++;
       const input = inputManager.sampleInput(tickCount);
 
       currentState = stepPlayer(currentState, input, SIM_TICK_DELTA, physics.collisionWorld);
-      accumulator -= SIM_TICK_DELTA;
     }
 
     window.__playerState = currentState;
-
-    // Interpolation factor between previous state and current state [0, 1]
-    const alpha = accumulator / SIM_TICK_DELTA;
 
     const renderX = previousState.x + (currentState.x - previousState.x) * alpha;
     const renderY = previousState.y + (currentState.y - previousState.y) * alpha;

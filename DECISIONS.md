@@ -159,3 +159,68 @@ Three.js r171+ provides `three/webgpu` `WebGPURenderer` which asynchronously ini
   1. CSS `.badge` has `text-transform: uppercase`, rendering DOM text as `"WEBGL2 (FALLBACK)"`. The regex `/WebGPU|WebGL2/` failed on case sensitivity; updated to `/webgpu|webgl2/i`.
   2. Three.js r186 logged `THREE.Clock: This module has been deprecated`. Replaced with `performance.now()` delta timing to eliminate runtime warnings.
 
+---
+
+## ADR 005: Phase 1 Arena Geometry Reconciliations (Ramps, Risers, Slopes & Tunnel Clearance)
+
+**Date**: 2026-10-14  
+**Status**: Accepted
+
+### 1. Context & Plan Comparison
+`PLAN.md` §3 and the Phase 1 plan specified:
+- Walkable slopes to test slope climbing.
+- Staircase with ~0.2m risers to test autostep.
+- Low-clearance tunnel (height 1.4m) requiring crouching to pass through.
+- Slope blocking on inclines exceeding the controller's 45° climb limit.
+
+### 2. Built Arena Implementation & Reconciliation
+1. **Ramps & Slopes**:
+   - **Walkable Shallow Ramp (North +Z)**: 20° slope ($0.3491\text{ rad}$), run 4.12m, height 1.5m, hypotenuse 4.385m. Fully walkable without jumping or sliding.
+   - **Walkable Medium Ramp (South -Z)**: 35° slope ($0.6109\text{ rad}$), run 2.14m, height 1.5m, hypotenuse 2.615m. Fully walkable, validating slope ascension up to 35°.
+   - **Steep Blocker Slope (West side of platform, Z = 2.0)**: 55° slope ($0.9599\text{ rad}$), run 1.05m, height 1.5m, hypotenuse 1.831m. Because 55° strictly exceeds the Rapier kinematic character controller's 45° climb limit (`setMaxSlopeClimbAngle(45 * Math.PI / 180)`), player movement is blocked and slides down.
+2. **Staircase Risers**:
+   - Built with 8 steps ascending to 1.5m elevated platform.
+   - Riser height: $1.5 / 8 = 0.1875\text{m}$ (0.19m), with 0.4m tread depth.
+   - Strictly matches the plan's ~0.2m riser target. Rapier `autostep(maxHeight = 0.35m, minWidth = 0.2m)` seamlessly autosteps every step without air state or stutter.
+3. **Low-Clearance Tunnel**:
+   - Span: $X = -10$, spanning $Z = -2.0$ to $+2.0$. Width 4.6m, depth 4.0m, ceiling clearance 1.4m (lintel from $Y = 1.4\text{m}$ to $2.4\text{m}$).
+   - Standing capsule (height 1.8m) cannot fit under 1.4m ceiling and is physically blocked at entrance ($Z > 2.0$).
+   - Crouching capsule (height 1.2m) passes smoothly under the 1.4m clearance.
+   - Low-ceiling uncrouch blocking: Added `canStandUp(currentPos)` to `ICollisionWorld` using Rapier `world.intersectionWithShape(...)`. If a player attempts to uncrouch under the 1.4m ceiling, the query detects vertical obstruction and forces `isCrouching = true` until the player walks clear of the obstacle.
+
+---
+
+## ADR 006: TypeScript Pin Resolution to 6.0.3
+
+**Date**: 2026-10-14  
+**Status**: Accepted
+
+### Context
+User review observed that `typescript@5.8.2` was not the highest compatible version within the peer dependency range declared by `typescript-eslint@8.71.2` (`>=4.8.4 <6.1.0`).
+
+### Decision & Evidence
+1. Polled npm registry for all published TypeScript releases under `<6.1.0`.
+2. Found that `typescript@6.0.3` is the latest stable release published under the `<6.1.0` upper bound (Apache-2.0 license).
+3. Pinned `typescript: "6.0.3"` across the monorepo root and all workspace packages (`packages/client`, `packages/server`).
+4. Ran `pnpm verify`: all packages typecheck cleanly (`tsc --noEmit`), lint cleanly, pass all Vitest tests, and build production artifacts with zero errors.
+
+---
+
+## ADR 007: Accumulator Spiral-of-Death Protection & Frame-Rate Independence
+
+**Date**: 2026-10-14  
+**Status**: Accepted
+
+### Context
+In fixed-timestep loops, if a browser tab is suspended or suffers large frame delta spikes (e.g. 10s tab switch), an unbounded delta accumulator causes a "spiral of death" where the browser attempts hundreds of simulation ticks in a single frame, locking the main thread.
+
+### Decision
+1. Implemented pure `updateAccumulator(state, currentTimeMs, maxFrameDelta = 0.25, maxTicks = 8)` in `packages/shared/src/timestep.ts`.
+2. Clamps `frameDelta` to `MAX_FRAME_DELTA = 0.25s` (250 ms).
+3. Clamps `ticksToRun` to `MAX_TICKS_PER_FRAME = 8` ticks per render frame.
+4. Added microsecond epsilon tolerance (`1e-6s`) to floor divisions to prevent floating-point rounding jitter across fractional framerates.
+5. Unit tested in `packages/shared/src/timestep.test.ts`:
+   - Tab switch (10s delay) runs at most 8 ticks, never spirals.
+   - Simulated 30 Hz, 60 Hz, and 144 Hz display loops produce identical discrete player states after 1.0 second (60 ticks), with smooth interpolation factors $\alpha \in [0, 1]$.
+
+

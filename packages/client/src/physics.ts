@@ -83,6 +83,29 @@ class RapierCollisionWorld implements ICollisionWorld {
       grounded,
     };
   }
+
+  public canStandUp(currentPos: Vec3): boolean {
+    // Check if standing capsule (total height 1.8m, center at y + 0.9m)
+    // penetrates any world colliders (ceiling / overhang)
+    const centerPos = {
+      x: currentPos.x,
+      y: currentPos.y + 0.9,
+      z: currentPos.z,
+    };
+    const rot = { x: 0, y: 0, z: 0, w: 1 };
+
+    const hitCollider = this.world.intersectionWithShape(
+      centerPos,
+      rot,
+      this.standingCollider.shape,
+      undefined,
+      undefined,
+      undefined,
+      this.playerBody,
+    );
+
+    return hitCollider === null;
+  }
 }
 
 /**

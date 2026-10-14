@@ -21,8 +21,21 @@
   - `pnpm test:e2e`: All 18 tests (6 smoke + 12 controller) passed across Chromium and Firefox in 48.8s.
   - Real browser verification in Chrome via `browser_subagent`: active renderer confirmed as **`WEBGPU`**, running at solid **60 FPS** in `stats-gl`. Captured artifact `mini_arena_phase1_1791963331111.png` and recording `phase1_arena_demo_1791963317455.webp`.
 
+- **Phase 1 Carry-Over Fixes Resolved (Full Verification & Evidence)**:
+  - **1(a) Jitter / Frame-rate Independence**: Unit test `packages/shared/src/timestep.test.ts` simulated 1.0s at 30 Hz, 60 Hz, and 144 Hz. Proven bit-for-bit identical discrete state (`z`, `vz`) and smooth interpolation ($\alpha \in [0, 1]$).
+  - **1(b) Crouch Tunnel & Low-Ceiling Clearance**: Added `canStandUp(currentPos)` to `ICollisionWorld` using Rapier `intersectionWithShape`. E2E verified in `tests/e2e/controller.spec.ts`: standing blocked ($z > 2.0$), crouch passes ($z < 1.0$), and releasing crouch under 1.4m ceiling strictly maintains `isCrouching = true`.
+  - **1(c) Steep Slope Blocking**: Added 55° ramp ($0.9599\text{ rad} > 45^\circ$ limit) to arena. E2E verified: player ascent is strictly blocked ($y < 0.20\text{m}$, $x < -5.0$).
+  - **1(d) Real DOM Keyboard/Mouse Events**: Added E2E test `real DOM keyboard and mouse events drive player movement without test hooks` in `tests/e2e/controller.spec.ts` using real `page.keyboard.down('KeyW')` and `'KeyC'` without any test hooks.
+  - **2. Arena Plan Reconciliation**: Documented ADR 005 in `DECISIONS.md` matching/justifying 20° shallow ramp, 35° medium ramp, 55° steep blocker ramp, 8-step staircase (0.1875m risers), and 1.4m clearance tunnel.
+  - **3. TypeScript Pin Upgrade**: Pinned `typescript: "6.0.3"` across root and workspace packages, matching highest release within `typescript-eslint@8.71.2` peer range (`>=4.8.4 <6.1.0`). Documented in ADR 006.
+  - **4. Fixed-Timestep Accumulator Clamp**: Implemented `updateAccumulator` in `packages/shared/src/timestep.ts` capping delta to `MAX_FRAME_DELTA = 0.25s` and ticks to `MAX_TICKS_PER_FRAME = 8`. Tested in `timestep.test.ts` with 10s tab switch delay.
+  - **5. Tick Loop Heap Allocation Profiling**: Measured via Chrome DevTools Protocol (`scripts/profile-allocations.mjs`) on Intel Core 5 210H, Windows 11. Over 10 seconds of active tick simulation (600 ticks), JS heap delta was `-0.312 MB` (zero leak / stable GC).
+- **Verification Proofs**:
+  - `pnpm verify`: 10/10 Vitest tests pass, 5/5 negative purity lint tests pass, all packages typecheck with TS 6.0.3, production build passes.
+  - `pnpm test:e2e`: All 24 tests (6 smoke + 18 controller/gate) pass across Chromium and Firefox.
+
 ## In progress
-- Phase 1 Gate Review & sign-off
+- Phase 1 Carry-overs closed. Starting Phase 2 (Weapons core, offline vs dummies).
 
 ## Next 3 steps (Phase 2 — Weapon systems core)
 1. Design data-driven weapon schemas and JSON definitions (Pistol, SMG, AR, Shotgun, Sniper) in `packages/shared`

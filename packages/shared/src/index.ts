@@ -7,6 +7,7 @@
 export * from './constants';
 export * from './types';
 export * from './movement';
+export * from './timestep';
 
 /**
  * Pure deterministic clamping helper.

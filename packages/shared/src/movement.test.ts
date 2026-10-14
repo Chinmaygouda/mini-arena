@@ -126,4 +126,35 @@ describe('stepPlayer Deterministic Simulation', () => {
     expect(state.isGrounded).toBe(true);
     expect(state.vy).toBeLessThanOrEqual(0);
   });
+
+  it('blocks standing up when canStandUp returns false under a low ceiling', () => {
+    let state = createDefaultPlayerState(0, 0, 0);
+    state.isCrouching = true;
+
+    let hasClearance = false;
+    const mockCollisionWorld = {
+      computeMovement: (
+        _currentPos: { x: number; y: number; z: number },
+        desiredDelta: { x: number; y: number; z: number },
+      ) => ({
+        delta: desiredDelta,
+        grounded: true,
+      }),
+      canStandUp: () => hasClearance,
+    };
+
+    // Player attempts to uncrouch (crouch = false) while under a low ceiling
+    const uncrouchInput = createInput({ crouch: false });
+    state = stepPlayer(state, uncrouchInput, SIM_TICK_DELTA, mockCollisionWorld);
+
+    // Assert player remains crouched
+    expect(state.isCrouching).toBe(true);
+
+    // Player moves out from under low ceiling (clearance becomes true)
+    hasClearance = true;
+    state = stepPlayer(state, uncrouchInput, SIM_TICK_DELTA, mockCollisionWorld);
+
+    // Assert player successfully stands up
+    expect(state.isCrouching).toBe(false);
+  });
 });

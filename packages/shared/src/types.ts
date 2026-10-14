@@ -47,4 +47,9 @@ export interface ICollisionWorld {
     delta: Vec3;
     grounded: boolean;
   };
+
+  /**
+   * Checks whether the player has clearance to stand up from crouch.
+   */
+  canStandUp?(currentPos: Vec3): boolean;
 }
