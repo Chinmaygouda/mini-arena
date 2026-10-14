@@ -8,6 +8,8 @@ export * from './constants';
 export * from './types';
 export * from './movement';
 export * from './timestep';
+export * from './rng';
+export * from './weapons';
 
 /**
  * Pure deterministic clamping helper.
