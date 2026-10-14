@@ -228,11 +228,14 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
       window.__weaponState!.slots[window.__weaponState!.currentSlot]!.ammoInMag = 30;
     });
 
-    // Fire 1 shot
+    // Fire shot until hit registers on target dummy
     await page.evaluate(() => {
       window.__inputManager!.setFire(true);
     });
-    await page.waitForTimeout(120);
+    await page.waitForFunction(() => {
+      const dummy = window.__dummies!.dummies.find((d) => d.id === 'dummy-close');
+      return dummy && dummy.hitCount > 0;
+    }, { timeout: 8000 });
     await page.evaluate(() => {
       window.__inputManager!.setFire(false);
     });

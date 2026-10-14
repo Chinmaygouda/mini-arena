@@ -22,6 +22,7 @@ export interface PlayerInput {
   fire?: boolean;
   reload?: boolean;
   ads?: boolean;
+  inspect?: boolean;
   weaponSlot?: number; // 0..4
 }
 

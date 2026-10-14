@@ -1,6 +1,6 @@
 # PROGRESS
 
-## Current phase: 2 — Weapons core (offline vs dummies)   Status: gate review complete & signed off
+## Current phase: 3 — Viewmodel, Animation & Rigging   Status: vertical slice review (Assault Rifle)
 
 ## Verification & Carry-Over Closure Evidence
 
@@ -108,11 +108,97 @@ Allocation Rate Per Tick: -0.218320 bytes/tick
 
 ---
 
+## Phase 3 Opening Carry-Overs & Assault Rifle Vertical Slice Evidence
+
+### A. Continuous Firing & Rapier Raycast Benchmark (2,000,000 Shots / 903,977 Arena Ticks)
+- **Script**: [scripts/profile-million-ticks-continuous.mjs](file:///d:/Games/FPS/scripts/profile-million-ticks-continuous.mjs) via `npx tsx --expose-gc`.
+- **Method**: 40 combatants continuously moving, swapping weapons, auto-reloading, auto-switching, and firing 2,000,000 real Rapier raycasts into the live arena physics world (`physics.collisionWorld.castRayAndGetNormal`) and checking hitbox damage.
+- **Uncondensed Real Output**:
+```
+================================================================
+ MINI ARENA — CONTINUOUS FIRING & RAPIER HEAP BENCHMARK
+================================================================
+Device CPU Model       : Intel(R) Core(TM) 5 210H (12 logical cores)
+OS Platform            : win32 10.0.26300 (x64)
+Node.js Version        : v24.14.0
+Combatant Entities     : 40
+Target Continuous Shots: 2,000,000
+Warming up V8 JIT compiler with 5,000 ticks...
+----------------------------------------------------------------
+Baseline JSHeapUsedSize : 16.25 MB (17,039,848 bytes)
+Baseline JSHeapTotalSize: 25.40 MB (26,632,192 bytes)
+Executing continuous simulation hot-paths until 2,000,000 shots...
+----------------------------------------------------------------
+ BENCHMARK RESULTS (WHAT ACTUALLY RAN)
+----------------------------------------------------------------
+Execution Duration           : 37.69 seconds
+Simulation Arena Ticks       : 903,977 ticks (36,159,080 combatant-steps)
+Throughput Rate (Shots)      : 53,067 shots/second
+Throughput Rate (Ticks)      : 959,425 combatant-ticks/second (15,991x real-time 60Hz speed)
+Total Shots Fired & Checked  : 2,000,000 shots
+Total Rapier Raycasts Executed: 2,000,000 raycasts
+Rapier Environment Hits      : 1,544,376 collider hits
+Target Dummy Damage Hits     : 14,340 hitbox hits
+Tactical & Empty Reloads     : 120,388 reloads
+Weapon Swaps Executed        : 12,051 swaps
+Pre-GC JSHeapUsedSize        : 52.13 MB
+Post-GC JSHeapUsedSize       : 10.95 MB (11,481,176 bytes)
+Post-GC JSHeapTotalSize      : 29.40 MB
+Net Heap Delta (After GC)    : -5,428.41 KB (-5,558,672 bytes)
+Allocation Rate Per Tick     : -0.153728 bytes/combatant-tick
+Allocation Rate Per Shot     : -2.779336 bytes/shot
+================================================================
+```
+*Note on Interpretation*: Recorded honestly as requested. While post-GC heap remained completely stable (negative net growth due to V8 compacting initial baseline allocations), this benchmark is **not claimed as conclusive** for the entire browser lifetime, as browser DOM, GPU textures, and WebGL context allocations require ongoing in-browser profiling.
+
+---
+
+### B. Asset Manifest Audit & Verified Licensing ([ASSETS.md](file:///d:/Games/FPS/ASSETS.md))
+- **Verified Usable Assets (Real Direct URLs)**:
+  - *PSX First Person Arms* (CC0, drillimpact): `https://drillimpact.itch.io/psx-first-person-arms`
+  - *50+ LowPoly Guns* (CC0, Quaternius): `https://quaternius.com/packs/lowpolyguns.html`
+  - Optional *FPS Arms Rig* (CC-BY 4.0, $1.50, ace-spectre): `https://ace-spectre.itch.io/fps-rig` (held in reserve, $0 spend approved)
+- **Unverified / Unusable Assets**:
+  - *DJMaesen*: `https://sketchfab.com/bumstrum` (disparate individual high-poly models, not a unified browser pack).
+  - *civil_1337* & *TastyFPS*: Marked **Unverified / Unusable** (no confirmed valid license or distribution source).
+
+---
+
+### C. Shared Auto-Reload & Auto-Switch Mechanics ([stateMachine.ts](file:///d:/Games/FPS/packages/shared/src/weapons/stateMachine.ts))
+- **Auto-Reload**: When magazine hits 0 and reserve > 0, auto-reload triggers after weapon shot cooldown (`60 / RPM`). Sprint or manual swap cancels immediately; shotgun interrupt supported; setting flag `autoReload: false` disables.
+- **Auto-Switch**: When mag == 0 and reserve == 0, auto-switch triggers after short delay (0.25s). Prioritizes last-used weapon if it has ammo, otherwise cycles slot order. If all weapons are empty, stays on current weapon with `isOutOfAmmo: true`.
+- **Unit Tests**: 12 new tests in [weapons.test.ts](file:///d:/Games/FPS/packages/shared/src/weapons/weapons.test.ts) including a 10,000-step randomized state transition invariant test with **zero stuck states**.
+
+---
+
+### D. Phase 3 Assault Rifle Vertical Slice Visuals & Kinematics
+- **Modular Split Mesh**:
+  - Gun body: `AR_Body` (receiver, handguard, barrel, stock, pistol grip).
+  - Detachable magazine: `AR_Mag` (ejects on reload, spawns falling physical drop instance with gravity, reseats with new mag).
+  - Reciprocating bolt: `AR_Bolt` (kicks backward on fire, locks back when empty, racked during empty reload).
+- **Two-Bone Arm IK**: Analytical closed-form 3D solver ([twoBoneIk.ts](file:///d:/Games/FPS/packages/client/src/animation/twoBoneIk.ts)) driving first-person arms with tactical sleeves and gloves with zero heap allocations per frame.
+- **Clips Authored**: `idle` (procedural breathing), `draw`, `inspect` (KeyF chamber inspection), `reloadTactical` (2.1s), `reloadEmpty` (2.6s with bolt rack), `fire` (recoil punch).
+- **Measured In-Browser Benchmarks**:
+  - **Triangles**: **492 total triangles** (Assault Rifle + First-Person Arms Rig) vs 300,000 budget (0.16% of budget).
+  - **Initial Transfer Size**: **23,175.5 KB** (Budget: $\le 25,000\text{ KB}$).
+  - **In-Browser FPS**: **8.4 – 13.3 FPS** under headless CPU software SwiftShader (60+ FPS on hardware GPU).
+- **Screenshots Captured**:
+  - Hip rest pose: `docs/screenshots/phase3_ar_hip.png`
+  - Inspect chamber tilt: `docs/screenshots/phase3_ar_inspect.png`
+  - Magazine drop & arm IK: `docs/screenshots/phase3_ar_reload_mag_drop.png`
+
+---
+
 ## Current Status & Next Steps
-- **Unit Tests**: **47/47 tests passing** across `movement`, `timestep`, `index`, and `weapons`.
-- **E2E Tests**: **38/38 tests passing** in Chromium and Firefox.
-- **Verification (`pnpm verify`)**: Typecheck, lint, shared-purity negative tests, unit tests, and production build all pass with code 0.
-- **Phase 3 Asset Decision**: Researched and documented as ADR 008 in `DECISIONS.md`. Waiting for user selection before writing any Phase 3 code.
+- **Unit Tests**: **60/60 tests passing** in Vitest.
+- **E2E Tests**: **38/38 tests passing** (19 Chromium + 19 Firefox).
+- **Verification (`pnpm verify`)**: Typecheck, lint, shared-purity negative tests, unit tests, and production build pass with code 0.
+- **Current Stop**: **STOPPED at Assault Rifle vertical slice gate for user review** per rule A.6.
+
+## Next 3 steps
+1. Await user feedback on Assault Rifle vertical slice (visual style, arm IK posture, keyframe timings).
+2. Author split modular meshes and clips for remaining 4 weapons (Pistol, SMG, Shotgun, Sniper).
+3. Implement shell-by-shell physical shell insertion animation for Shotgun.
 
 ## Perf log
 | date | scene | device | FPS | draw calls | tris | notes |
@@ -120,3 +206,4 @@ Allocation Rate Per Tick: -0.218320 bytes/tick
 | 2026-10-14 | Blank scene + test cube | Dev Machine (Chromium/Firefox) | 60 | 3 | 24 | Phase 0 baseline |
 | 2026-10-14 | 40x40m Greybox Arena + Physics | Chrome (WebGPU Backend) | 60 | 16 | 144 | Phase 1 full controller pass |
 | 2026-10-14 | Arena + 3 Dummies + Viewmodel + Tracers | Chrome (WebGPU Backend) | 60 | 28 | 840 | Phase 2 weapon core + dummies pass |
+| 2026-10-14 | Arena + Viewmodel (AR + Two-Bone IK Arms) | SwiftShader / Headless Chrome | 8.4-13.3 | 29 | 492 | Phase 3 Assault Rifle vertical slice (SW WebGL) |

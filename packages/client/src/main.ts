@@ -119,6 +119,7 @@ async function initApp(): Promise<void> {
     500,
   );
   camera.rotation.order = 'YXZ';
+  scene.add(camera);
 
   // Lighting
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -211,7 +212,10 @@ async function initApp(): Promise<void> {
       // 2. Sprint state & reload cancel
       setSprinting(weaponState, currentState.isSprinting);
 
-      // 3. Reload request
+      // 3. Inspect or Reload request
+      if (input.inspect && weaponState.actionState === 'idle') {
+        viewmodel.playClip('inspect');
+      }
       if (input.reload) {
         triggerReload(weaponState);
       }
@@ -325,7 +329,7 @@ async function initApp(): Promise<void> {
     }
 
     // Update viewmodel animations, recoil spring & tracers
-    viewmodel.update(frameDelta, inputManager.isAds);
+    viewmodel.update(frameDelta, inputManager.isAds, weaponState.actionState);
 
     // Update target dummies (hit flash timer)
     dummies.update(frameDelta);

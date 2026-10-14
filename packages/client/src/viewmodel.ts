@@ -1,5 +1,9 @@
 import * as THREE from 'three';
-import { HitboxPart, Vec3, WeaponDef } from '@mini-arena/shared';
+import { HitboxPart, Vec3, WeaponActionState, WeaponDef } from '@mini-arena/shared';
+import { FirstPersonArmsRig } from './animation/armsRig';
+import { createAssaultRifleVisualDef } from './animation/assaultRifleDef';
+import { WeaponVisualDef } from './animation/types';
+import { WeaponAnimator } from './animation/weaponAnimator';
 
 export interface Tracer {
   mesh: THREE.Line;
@@ -9,12 +13,17 @@ export interface Tracer {
 
 export class WeaponViewmodel {
   public group: THREE.Group;
-  public gunMesh: THREE.Mesh;
+  public gunMesh: THREE.Mesh; // Placeholder fallback for other weapons
+  public armsRig: FirstPersonArmsRig;
+  public animator: WeaponAnimator;
+  public currentVisualDef: WeaponVisualDef;
+
   private camera: THREE.Camera;
+  private scene: THREE.Scene;
 
   // Viewmodel position offsets
-  private hipPos = new THREE.Vector3(0.18, -0.2, -0.38);
-  private adsPos = new THREE.Vector3(0.0, -0.14, -0.3);
+  private hipPos = new THREE.Vector3(0.13, -0.16, -0.32);
+  private adsPos = new THREE.Vector3(0.0, -0.085, -0.22); // Perfectly centers optical holographic reticle
   private currentPos = new THREE.Vector3().copy(this.hipPos);
 
   // Procedural recoil kick spring
@@ -23,16 +32,32 @@ export class WeaponViewmodel {
 
   // Tracers
   private tracers: Tracer[] = [];
-  private scene: THREE.Scene;
+
+  // Triangle count for performance budgeting
+  public totalTriangles = 0;
 
   constructor(camera: THREE.Camera, scene: THREE.Scene) {
     this.camera = camera;
     this.scene = scene;
 
     this.group = new THREE.Group();
+    this.group.name = 'Viewmodel_Root';
     this.camera.add(this.group);
 
-    // Placeholder box viewmodel (Phase 2 placeholder; full rig is Phase 3)
+    // 1. First-Person Rigged Arms
+    this.armsRig = new FirstPersonArmsRig();
+    this.group.add(this.armsRig.group);
+    this.totalTriangles += this.armsRig.totalTriangles;
+
+    // 2. Assault Rifle Vertical Slice Visual Def & Animator
+    this.currentVisualDef = createAssaultRifleVisualDef();
+    this.animator = new WeaponAnimator(this.currentVisualDef, this.armsRig);
+    this.group.add(this.animator.weaponGroup);
+
+    // Count AR triangles
+    this.countTriangles(this.animator.weaponGroup);
+
+    // 3. Placeholder box viewmodel for weapons not yet in Phase 3 vertical slice
     const gunGeom = new THREE.BoxGeometry(0.07, 0.1, 0.45);
     const gunMat = new THREE.MeshStandardMaterial({
       color: 0x1f2937,
@@ -40,67 +65,102 @@ export class WeaponViewmodel {
       metalness: 0.8,
     });
     this.gunMesh = new THREE.Mesh(gunGeom, gunMat);
-    // Align receiver forward along -Z
     this.gunMesh.position.set(0, 0, -0.15);
     this.group.add(this.gunMesh);
+    this.gunMesh.visible = false; // AR is active by default
+  }
 
-    // Front sight post
-    const sightGeom = new THREE.BoxGeometry(0.015, 0.03, 0.02);
-    const sightMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-    const sightMesh = new THREE.Mesh(sightGeom, sightMat);
-    sightMesh.position.set(0, 0.065, -0.32);
-    this.group.add(sightMesh);
+  private countTriangles(obj: THREE.Object3D): void {
+    obj.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        if (mesh.geometry.index) {
+          this.totalTriangles += mesh.geometry.index.count / 3;
+        } else if (mesh.geometry.attributes.position) {
+          this.totalTriangles += mesh.geometry.attributes.position.count / 3;
+        }
+      }
+    });
   }
 
   public updateWeaponVisual(weapon: WeaponDef): void {
-    // Scale or tint placeholder box to represent weapon category
-    switch (weapon.id) {
-      case 'pistol':
-        this.gunMesh.scale.set(0.8, 0.9, 0.6);
-        (this.gunMesh.material as THREE.MeshStandardMaterial).color.setHex(0x334155);
-        break;
-      case 'smg':
-        this.gunMesh.scale.set(0.9, 1.0, 0.8);
-        (this.gunMesh.material as THREE.MeshStandardMaterial).color.setHex(0x0f766e);
-        break;
-      case 'shotgun':
-        this.gunMesh.scale.set(1.3, 1.2, 1.1);
-        (this.gunMesh.material as THREE.MeshStandardMaterial).color.setHex(0xb45309);
-        break;
-      case 'sniper':
-        this.gunMesh.scale.set(0.8, 1.1, 1.6);
-        (this.gunMesh.material as THREE.MeshStandardMaterial).color.setHex(0x1e1b4b);
-        break;
-      case 'assault_rifle':
-      default:
-        this.gunMesh.scale.set(1.0, 1.0, 1.0);
-        (this.gunMesh.material as THREE.MeshStandardMaterial).color.setHex(0x1e293b);
-        break;
+    if (weapon.id === 'assault_rifle') {
+      this.gunMesh.visible = false;
+      this.animator.weaponGroup.visible = true;
+      this.armsRig.group.visible = true;
+    } else {
+      // Fallback for non-vertical slice weapons until Phase 3 asset review
+      this.gunMesh.visible = true;
+      this.animator.weaponGroup.visible = false;
+      this.armsRig.group.visible = false;
+
+      switch (weapon.id) {
+        case 'pistol':
+          this.gunMesh.scale.set(0.8, 0.9, 0.6);
+          (this.gunMesh.material as THREE.MeshStandardMaterial).color.setHex(0x334155);
+          break;
+        case 'smg':
+          this.gunMesh.scale.set(0.9, 1.0, 0.8);
+          (this.gunMesh.material as THREE.MeshStandardMaterial).color.setHex(0x0f766e);
+          break;
+        case 'shotgun':
+          this.gunMesh.scale.set(1.3, 1.2, 1.1);
+          (this.gunMesh.material as THREE.MeshStandardMaterial).color.setHex(0xb45309);
+          break;
+        case 'sniper':
+          this.gunMesh.scale.set(0.8, 1.1, 1.6);
+          (this.gunMesh.material as THREE.MeshStandardMaterial).color.setHex(0x1e1b4b);
+          break;
+      }
     }
+  }
+
+  public playClip(
+    clipName: 'idle' | 'draw' | 'inspect' | 'reloadTactical' | 'reloadEmpty' | 'fire',
+    forceRestart = false,
+  ): void {
+    this.animator.playClip(clipName, forceRestart);
   }
 
   public applyRecoilKick(pitchKick: number): void {
     // Kick viewmodel back and tilt nose up
-    this.recoilOffsetZ += 0.05;
-    this.recoilPitch += pitchKick * 0.8;
+    this.recoilOffsetZ += 0.04;
+    this.recoilPitch += pitchKick * 0.7;
+
+    // Trigger weapon animator fire recoil clip
+    this.animator.playClip('fire', true);
   }
 
-  public update(dt: number, isAds: boolean): void {
-    // 1. Lerp between hip and ADS position
+  public update(dt: number, isAds: boolean, actionState?: WeaponActionState): void {
+    // 1. Sync animator with shared weapon action state
+    if (actionState) {
+      if (actionState === 'reloading_tactical') {
+        this.animator.playClip('reloadTactical');
+      } else if (actionState === 'reloading_empty') {
+        this.animator.playClip('reloadEmpty');
+      } else if (actionState === 'swapping_in') {
+        this.animator.playClip('draw');
+      }
+    }
+
+    // 2. Step the weapon animator, arms IK, and dropping magazine physics
+    this.animator.update(dt, this.scene);
+
+    // 3. Lerp between hip and ADS position
     const targetPos = isAds ? this.adsPos : this.hipPos;
     const lerpSpeed = isAds ? 16.0 : 12.0;
     this.currentPos.lerp(targetPos, Math.min(1.0, dt * lerpSpeed));
 
-    // 2. Recover recoil springs smoothly
-    this.recoilOffsetZ = Math.max(0, this.recoilOffsetZ - dt * 0.4);
-    this.recoilPitch = Math.max(0, this.recoilPitch - dt * 2.5);
+    // 4. Recover procedural recoil springs smoothly
+    this.recoilOffsetZ = Math.max(0, this.recoilOffsetZ - dt * 0.35);
+    this.recoilPitch = Math.max(0, this.recoilPitch - dt * 2.2);
 
-    // Apply to viewmodel group
+    // Apply combined positioning to viewmodel group
     this.group.position.copy(this.currentPos);
     this.group.position.z += this.recoilOffsetZ;
     this.group.rotation.x = this.recoilPitch;
 
-    // 3. Update bullet tracers
+    // 5. Update bullet tracers
     for (let i = this.tracers.length - 1; i >= 0; i--) {
       const tracer = this.tracers[i]!;
       tracer.lifetime += dt;
@@ -134,8 +194,8 @@ export class WeaponViewmodel {
   }
 
   public getMuzzleWorldPosition(): Vec3 {
-    const muzzle = new THREE.Vector3(0, 0, -0.4);
-    this.group.localToWorld(muzzle);
+    const muzzle = this.currentVisualDef.muzzleOffset.clone();
+    this.animator.weaponGroup.localToWorld(muzzle);
     return { x: muzzle.x, y: muzzle.y, z: muzzle.z };
   }
 }

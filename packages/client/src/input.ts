@@ -114,6 +114,7 @@ export class InputManager {
       if (e.code === 'Digit4') this.selectedSlot = 3;
       if (e.code === 'Digit5') this.selectedSlot = 4;
       if (e.code === 'KeyR') this.reloadRequested = true;
+      if (e.code === 'KeyF') this.inspectRequested = true;
     });
 
     window.addEventListener('keyup', (e) => {
@@ -126,6 +127,7 @@ export class InputManager {
       this.isFiring = false;
       this.isAds = false;
       this.reloadRequested = false;
+      this.inspectRequested = false;
     });
   }
 
@@ -133,6 +135,7 @@ export class InputManager {
   public isAds = false;
   public selectedSlot: number | undefined = undefined;
   public reloadRequested = false;
+  public inspectRequested = false;
 
   /**
    * Dedicated test-only hooks isolated behind the testHooks namespace.
@@ -192,6 +195,8 @@ export class InputManager {
     const ads = this.isAds || Boolean(this.keys['Mouse2']);
     const reload = this.reloadRequested || Boolean(this.keys['KeyR']);
     this.reloadRequested = false;
+    const inspect = this.inspectRequested || Boolean(this.keys['KeyF']);
+    this.inspectRequested = false;
     const slot = this.selectedSlot;
     // Clear slot trigger once sampled
     this.selectedSlot = undefined;
@@ -211,6 +216,7 @@ export class InputManager {
       fire,
       ads,
       reload,
+      inspect,
       weaponSlot: slot,
     };
   }

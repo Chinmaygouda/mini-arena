@@ -265,5 +265,24 @@ Phase 2 carry-over review asked whether hitscan shots are blocked by walls, and 
    - Real world occlusion cannot use axis-aligned bounding boxes (AABBs) because competitive arena maps contain angled geometry, stair treads, and compound colliders.
    - In Phase 6 (Authoritative Multiplayer), authoritative world occlusion will be executed via Rapier 3D raycasting (`world.castRayAndGetNormal`) on both the client (for predicted bullet impact sparks/decals) and the server (for authoritative line-of-sight and hit confirmation).
 
+---
 
+## ADR 010: Phase 3 Asset-Swappable Animation Architecture ($0 Target, Two-Bone IK, Split Gun Meshes)
 
+**Date**: 2026-10-14  
+**Status**: Accepted (Option 4 selected by User)
+
+### Context
+Phase 3 requires an asset-swappable animation system linking weapon definitions to 3D visuals, keyframed clips (idle, draw, inspect, reload tactical/empty, fire), animation events, and first-person arm kinematics under a strict $0 budget (stylized-realistic, no photoreal claims).
+
+### Options Considered
+- **Option 1**: Custom Blender authoring (high time investment, difficult vertical slice turnaround).
+- **Option 2 / 3**: Paid asset packs (rejected: project budget is $0; optional $1.50 CC-BY pack held in reserve).
+- **Option 4**: Procedural + Data-Driven Keyframe Layer with Two-Bone Arm IK and modular split gun meshes (CC0, $0 budget).
+
+### Decision
+1. **Option 4 Selected**: Target is stylized-realistic at $0 budget.
+2. **Asset Architecture**: Visual definition maps `weaponId` to mesh components (`body`, `mag`, `bolt`), socket offsets (`muzzle`, `ejectionPort`, `magRest`, `boltRest`), clip curves, and timed animation events (`mag_detach`, `mag_drop`, `mag_insert`, `bolt_pull`, `bolt_release`).
+3. **Kinematics & Rigs**: Analytical 3D Two-Bone IK solver drives first-person arms (shoulder -> elbow -> wrist/hand) to follow weapon grip and reload keyframe targets with zero heap allocations per frame.
+4. **Mesh Separation**: Gun meshes are structured with distinct body, magazine, and bolt nodes to allow physical magazine detaching/dropping and bolt reciprocation.
+5. **Vertical Slice**: One weapon (Assault Rifle) implemented first, measured (tris, size, FPS), and reviewed before expanding to remaining weapons.
