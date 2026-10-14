@@ -3,3 +3,4 @@ export * from './definitions';
 export * from './fire';
 export * from './stateMachine';
 export * from './hitscan';
+export * from './pellets';

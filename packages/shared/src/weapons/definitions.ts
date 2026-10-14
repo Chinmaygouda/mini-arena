@@ -41,6 +41,16 @@ export const PISTOL_DEF: WeaponDef = {
     sprintMultiplier: 3.0,
   },
   reloadType: 'magazine',
+  reloadSpec: {
+    type: 'magazine',
+    magazine: {
+      tacticalReloadTicks: 96,
+      tacticalCommitTick: 54,
+      emptyReloadTicks: 126,
+      emptyCommitTick: 66,
+    },
+  },
+  swapTicks: 18,
   reloadTimeTactical: 1.6,
   reloadTimeEmpty: 2.1,
   swapTime: 0.3,
@@ -76,6 +86,16 @@ export const SMG_DEF: WeaponDef = {
     sprintMultiplier: 3.5,
   },
   reloadType: 'magazine',
+  reloadSpec: {
+    type: 'magazine',
+    magazine: {
+      tacticalReloadTicks: 108,
+      tacticalCommitTick: 60,
+      emptyReloadTicks: 138,
+      emptyCommitTick: 72,
+    },
+  },
+  swapTicks: 21,
   reloadTimeTactical: 1.8,
   reloadTimeEmpty: 2.3,
   swapTime: 0.35,
@@ -111,9 +131,19 @@ export const ASSAULT_RIFLE_DEF: WeaponDef = {
     sprintMultiplier: 4.0,
   },
   reloadType: 'magazine',
-  reloadTimeTactical: 2.2,
-  reloadTimeEmpty: 2.8,
-  swapTime: 0.45,
+  reloadSpec: {
+    type: 'magazine',
+    magazine: {
+      tacticalReloadTicks: 126,
+      tacticalCommitTick: 72,
+      emptyReloadTicks: 156,
+      emptyCommitTick: 78,
+    },
+  },
+  swapTicks: 24,
+  reloadTimeTactical: 2.1,
+  reloadTimeEmpty: 2.6,
+  swapTime: 0.4,
   adsFovMultiplier: 0.75,
   recoil: {
     pattern: generateRecoilPattern(30, 0.03, 0.012),
@@ -146,10 +176,21 @@ export const SHOTGUN_DEF: WeaponDef = {
     sprintMultiplier: 2.5,
   },
   reloadType: 'shell_by_shell',
-  shellReloadTime: 0.55, // 550ms per shell insertion
-  reloadTimeTactical: 0.55,
-  reloadTimeEmpty: 0.75, // Extra 200ms to pump first shell into chamber
-  swapTime: 0.5,
+  reloadSpec: {
+    type: 'shell_by_shell',
+    shell: {
+      startTicks: 24, // 0.40s
+      insertTicks: 32, // ~0.533s
+      commitTick: 20, // 0.333s shell commits into mag tube
+      endTicks: 24, // 0.40s
+      pumpCloseTick: 12, // interruptible from 12 ticks
+    },
+  },
+  swapTicks: 24,
+  shellReloadTime: 32 / 60,
+  reloadTimeTactical: 24 / 60,
+  reloadTimeEmpty: 32 / 60,
+  swapTime: 0.4,
   adsFovMultiplier: 0.85,
   recoil: {
     pattern: generateRecoilPattern(6, 0.08, 0.02),
@@ -182,9 +223,20 @@ export const SNIPER_DEF: WeaponDef = {
     sprintMultiplier: 12.0,
   },
   reloadType: 'magazine',
+  reloadSpec: {
+    type: 'magazine',
+    magazine: {
+      tacticalReloadTicks: 168,
+      tacticalCommitTick: 96,
+      emptyReloadTicks: 210,
+      emptyCommitTick: 114,
+    },
+  },
+  boltCycleTicks: 80, // 80 ticks = 1.333s at 60 Hz (45 RPM)
+  swapTicks: 30,
   reloadTimeTactical: 2.8,
   reloadTimeEmpty: 3.5,
-  swapTime: 0.6,
+  swapTime: 0.5,
   adsFovMultiplier: 0.25, // 4x high zoom scope
   recoil: {
     pattern: generateRecoilPattern(5, 0.12, 0.01),

@@ -28,6 +28,11 @@ import {
   updateAccumulator,
   Vec3,
   WeaponState,
+  isWeaponReadyToFire,
+  bufferFireInput,
+  generateSeededPelletOffsets,
+  hashPlayerShot,
+  PelletOffset,
 } from '@mini-arena/shared';
 import { initPhysics, PhysicsEngine } from './physics';
 import { InputManager } from './input';
@@ -180,6 +185,7 @@ async function initApp(): Promise<void> {
   let currentEyeHeight = PLAYER_EYE_HEIGHT_STAND;
   let tickCount = 0;
   const timestep = createTimestepState(performance.now());
+  const pelletBuffer: PelletOffset[] = Array.from({ length: 8 }, () => ({ pitch: 0, yaw: 0 }));
 
   // Resize handler
   window.addEventListener('resize', () => {
@@ -220,25 +226,33 @@ async function initApp(): Promise<void> {
         triggerReload(weaponState);
       }
 
-      // 4. Advance weapon timers (handles auto-reload and auto-switch)
-      stepWeaponStateMachine(weaponState, SIM_TICK_DELTA);
+      // 4. Advance weapon timers (handles auto-reload, auto-switch, commit ticks, bolt cycles)
+      stepWeaponStateMachine(weaponState, SIM_TICK_DELTA, tickCount);
 
       // If slot changed from manual swap or auto-switch, update viewmodel visual
       if (weaponState.currentSlot !== previousSlotIndex) {
         viewmodel.updateWeaponVisual(getCurrentWeaponDef(weaponState));
       }
 
-      // 5. Fire timing & shooting
+      // 5. Fire timing, input buffering & shooting
       const currentDef = getCurrentWeaponDef(weaponState);
       const activeSlot = getCurrentSlot(weaponState);
-      const canShoot = weaponState.actionState === 'idle' && activeSlot.ammoInMag > 0;
+      const canShoot = isWeaponReadyToFire(weaponState);
+
+      // Buffer fire input if clicked while weapon is busy (e.g. bolt cycling or finishing swap)
+      if (input.fire && !canShoot) {
+        bufferFireInput(weaponState, 6);
+      }
+
+      const wantsToFire = Boolean(input.fire || weaponState.bufferedFireTicks > 0);
 
       // Step fractional fire accumulator
       stepFireTiming(fireTiming, SIM_TICK_DELTA, currentDef);
 
-      if (input.fire && canShoot) {
+      if (wantsToFire && canShoot) {
         if (tryConsumeShot(fireTiming, currentDef)) {
           activeSlot.ammoInMag--;
+          weaponState.bufferedFireTicks = 0; // Consume buffered fire request
           recordShotFired(weaponState);
 
           // Recoil kick on viewmodel
@@ -253,11 +267,54 @@ async function initApp(): Promise<void> {
             isADS: Boolean(input.ads),
             isSprinting: currentState.isSprinting,
           });
+          const spreadRad = (spreadDeg * Math.PI) / 180;
 
           const muzzlePos = viewmodel.getMuzzleWorldPosition();
 
-          // Fire each pellet (1 for rifles/pistols/sniper, 8 for shotgun)
-          for (let p = 0; p < currentDef.pellets; p++) {
+          // Shotgun: deterministic seeded pellet dispersion
+          if (currentDef.pellets > 1) {
+            const seed = hashPlayerShot('local_player', tickCount);
+            generateSeededPelletOffsets(spreadRad, seed, pelletBuffer);
+
+            for (let p = 0; p < currentDef.pellets; p++) {
+              const pelletOffset = pelletBuffer[p]!;
+              const netYaw = input.yaw + pelletOffset.yaw;
+              const netPitch = input.pitch + pelletOffset.pitch;
+
+              const cp = Math.cos(netPitch);
+              const sp = Math.sin(netPitch);
+              const cy = Math.cos(netYaw);
+              const sy = Math.sin(netYaw);
+
+              const rayDir: Vec3 = {
+                x: -sy * cp,
+                y: sp,
+                z: -cy * cp,
+              };
+
+              const rayOrigin: Vec3 = {
+                x: camera.position.x,
+                y: camera.position.y,
+                z: camera.position.z,
+              };
+
+              const hit = dummies.testRay(rayOrigin, rayDir, currentDef.range);
+              let hitPoint: Vec3;
+              if (hit.hit && hit.hitPoint) {
+                hitPoint = hit.hitPoint;
+                const dmg = calculateDamage(currentDef, hit.distance, hit.part === 'head');
+                triggerHitMarker(hit.part, dmg);
+              } else {
+                hitPoint = {
+                  x: rayOrigin.x + rayDir.x * 50,
+                  y: rayOrigin.y + rayDir.y * 50,
+                  z: rayOrigin.z + rayDir.z * 50,
+                };
+              }
+              viewmodel.spawnTracer(muzzlePos, hitPoint);
+            }
+          } else {
+            // Single bullet weapons (pistol, rifles, sniper)
             const spreadOffset = sampleSpreadOffsets(spreadDeg, rng);
             const netYaw = input.yaw + spreadOffset.yawOffset;
             const netPitch = input.pitch + spreadOffset.pitchOffset;
@@ -279,9 +336,7 @@ async function initApp(): Promise<void> {
               z: camera.position.z,
             };
 
-            // Hitscan query against all active target dummies
             const hit = dummies.testRay(rayOrigin, rayDir, currentDef.range);
-
             let hitPoint: Vec3;
             if (hit.hit && hit.hitPoint) {
               hitPoint = hit.hitPoint;
@@ -294,8 +349,6 @@ async function initApp(): Promise<void> {
                 z: rayOrigin.z + rayDir.z * 50,
               };
             }
-
-            // Spawn visual tracer from gun muzzle to impact
             viewmodel.spawnTracer(muzzlePos, hitPoint);
           }
         }
@@ -365,7 +418,12 @@ async function initApp(): Promise<void> {
     if (hudWeaponAction) {
       const isReloading =
         weaponState.actionState === 'reloading_tactical' ||
-        weaponState.actionState === 'reloading_empty';
+        weaponState.actionState === 'reloading_empty' ||
+        weaponState.actionState === 'reloading_shell' ||
+        weaponState.actionState === 'reloading_shell_start' ||
+        weaponState.actionState === 'reloading_shell_insert' ||
+        weaponState.actionState === 'reloading_shell_end';
+      const isCycling = weaponState.actionState === 'cycling_bolt';
       const isSwapping =
         weaponState.actionState === 'swapping_out' ||
         weaponState.actionState === 'swapping_in';
@@ -373,6 +431,9 @@ async function initApp(): Promise<void> {
       if (isReloading) {
         hudWeaponAction.textContent = 'RELOADING...';
         hudWeaponAction.style.color = '#f59e0b';
+      } else if (isCycling) {
+        hudWeaponAction.textContent = 'CYCLING BOLT...';
+        hudWeaponAction.style.color = '#c084fc';
       } else if (isSwapping) {
         hudWeaponAction.textContent = 'SWAPPING...';
         hudWeaponAction.style.color = '#38bdf8';
@@ -380,7 +441,8 @@ async function initApp(): Promise<void> {
         hudWeaponAction.textContent = 'EMPTY (PRESS R)';
         hudWeaponAction.style.color = '#ef4444';
       } else {
-        hudWeaponAction.textContent = '';
+        hudWeaponAction.textContent = 'READY';
+        hudWeaponAction.style.color = '#22c55e';
       }
     }
 

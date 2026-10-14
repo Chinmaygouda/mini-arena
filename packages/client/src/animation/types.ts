@@ -54,6 +54,13 @@ export interface WeaponVisualDef {
   magDropVelocity: THREE.Vector3;
   boltRestPos: THREE.Vector3;
   boltTravelVector: THREE.Vector3;
+  sockets?: {
+    gripR?: THREE.Vector3;
+    gripL?: THREE.Vector3;
+    muzzle?: THREE.Vector3;
+    ejectPort?: THREE.Vector3;
+    magWell?: THREE.Vector3;
+  };
   clips: {
     idle: KeyframeClip;
     draw: KeyframeClip;
@@ -61,5 +68,9 @@ export interface WeaponVisualDef {
     reloadTactical: KeyframeClip;
     reloadEmpty: KeyframeClip;
     fire: KeyframeClip;
+    reloadShellStart?: KeyframeClip;
+    reloadShellInsert?: KeyframeClip;
+    reloadShellEnd?: KeyframeClip;
+    boltCycle?: KeyframeClip;
   };
 }

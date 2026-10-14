@@ -58,7 +58,13 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
 
     await page.evaluate(() => {
       window.__inputManager!.setFire(false);
+      if (window.__weaponState) {
+        window.__weaponState.bufferedFireTicks = 0;
+      }
     });
+
+    // Allow frame to render settled state
+    await page.waitForTimeout(100);
 
     // Verify ammo decreased
     const magAfter = await page.evaluate(() => {

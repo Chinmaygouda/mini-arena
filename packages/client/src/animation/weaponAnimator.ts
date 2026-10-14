@@ -55,8 +55,34 @@ export class WeaponAnimator {
     this.magMatCache = this.visualDef.magMesh.material as THREE.Material;
   }
 
+  public setVisualDef(newDef: WeaponVisualDef): void {
+    this.weaponGroup.remove(this.visualDef.bodyMesh);
+    this.weaponGroup.remove(this.visualDef.magMesh);
+    this.weaponGroup.remove(this.visualDef.boltMesh);
+
+    this.visualDef = newDef;
+    this.weaponGroup.add(this.visualDef.bodyMesh);
+    this.weaponGroup.add(this.visualDef.magMesh);
+    this.weaponGroup.add(this.visualDef.boltMesh);
+
+    this.magGeomCache = this.visualDef.magMesh.geometry;
+    this.magMatCache = this.visualDef.magMesh.material as THREE.Material;
+
+    this.playClip('draw', true);
+  }
+
   public playClip(
-    clipName: 'idle' | 'draw' | 'inspect' | 'reloadTactical' | 'reloadEmpty' | 'fire',
+    clipName:
+      | 'idle'
+      | 'draw'
+      | 'inspect'
+      | 'reloadTactical'
+      | 'reloadEmpty'
+      | 'fire'
+      | 'reloadShellStart'
+      | 'reloadShellInsert'
+      | 'reloadShellEnd'
+      | 'boltCycle',
     forceRestart = false,
   ): void {
     const nextClip = this.visualDef.clips[clipName];

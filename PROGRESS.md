@@ -1,6 +1,6 @@
 # PROGRESS
 
-## Current phase: 3 — Viewmodel, Animation & Rigging   Status: vertical slice review (Assault Rifle)
+## Current phase: 3 — Viewmodel, Animation & Rigging   Status: gate review
 
 ## Verification & Carry-Over Closure Evidence
 
@@ -189,16 +189,60 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 
 ---
 
+## Phase 3 Complete Deliverables & Verification Evidence
+
+### 1. Modular 3D Weapon Models & Procedural Geometry
+- **Tactical Pistol** ([pistol.ts](file:///d:/Games/FPS/packages/client/src/models/pistol.ts)): Polymer frame, reciprocating steel slide, iron sights with tritium dots, detachable mag (**96 triangles**).
+- **Rapid SMG** ([smg.ts](file:///d:/Games/FPS/packages/client/src/models/smg.ts)): Receiver, angled foregrip, reflex red-dot sight, curved 9mm stick mag, charging bolt (**268 triangles**).
+- **Combat Shotgun** ([shotgun.ts](file:///d:/Games/FPS/packages/client/src/models/shotgun.ts)): Parkerized steel receiver, ribbed barrel with bead sight, movable pump slide, 12-gauge shell (**244 triangles**).
+- **Precision Sniper** ([sniper.ts](file:///d:/Games/FPS/packages/client/src/models/sniper.ts)): Tungsten gray chassis, telescopic scope, 5-round box mag, bolt carrier with spherical knob (**390 triangles**).
+- **Assault Rifle** ([assaultRifle.ts](file:///d:/Games/FPS/packages/client/src/models/assaultRifle.ts)): Standard issue combat carbine, curved 30-round mag, reciprocating bolt (**492 triangles**).
+- **Viewmodel Budget Check**: Maximum weapon triangle count is 492 tris (with arms rig), consuming **<5%** of the 10,000 viewmodel budget.
+
+### 2. Animation Clips & Two-Bone Analytical IK Rig
+- **First-Person Arms**: Analytical 3D Two-Bone IK solver ([twoBoneIk.ts](file:///d:/Games/FPS/packages/client/src/animation/twoBoneIk.ts)) drives upper arms and forearms to track weapon grip sockets with zero per-frame heap allocations.
+- **Weapon-Specific Clips Authored**:
+  - Assault Rifle: `idle`, `draw`, `inspect`, `reloadTactical` (2.1s), `reloadEmpty` (2.6s), `fire`.
+  - Tactical Pistol: `idle`, `draw`, `inspect`, `reloadTactical` (1.4s), `reloadEmpty` (1.8s with slide snap), `fire` (slide blowback).
+  - Rapid SMG: `idle`, `draw`, `inspect`, `reloadTactical` (1.8s), `reloadEmpty` (2.2s with HK slap), `fire` (high-cadence kick).
+  - Combat Shotgun: `idle`, `draw`, `inspect`, `reloadShellStart` (0.4s), `reloadShellInsert` (0.533s with commit at tick 20), `reloadShellEnd` (0.4s), `fire` (pump action).
+  - Precision Sniper: `idle`, `draw`, `inspect`, `boltCycle` (1.333s / 80 ticks), `reloadTactical` (2.8s), `reloadEmpty` (3.4s), `fire`.
+
+### 3. Simulation Contracts & State Machine Invariants
+- **Discrete Integer Ticks**: All reload timings, commit ticks, bolt cycles, and swap delays authored in integer simulation ticks (`ReloadSpec`).
+- **3-Phase Shell Reload & Double-Pump Prevention**: Shotgun reloads shell-by-shell (`start` -> `insert` loop -> `end`). Mid-reload fire interrupt transitions immediately to `idle`/`firing` without running `end`, preventing an extra unwanted pump action.
+- **Anti-Quickswitch Exploit**: `nextReadyTick` persisted across swaps on each `WeaponInventorySlot`; weapon swaps cannot bypass the sniper's 80-tick bolt cycle.
+- **Input Buffering**: 6-tick input buffer window ensures clicks while cycling or swapping fire immediately on readiness.
+- **Deterministic Seeded Shotgun Spread**: Zero-allocation splitmix32 hash generator produces consistent 8-pellet dispersion.
+- **Determinism Replay**: 1,000-tick randomized sequence is bit-for-bit identical on replay.
+
+### 4. Contract Validation Suite
+- [validateVisualDef.ts](file:///d:/Games/FPS/packages/client/src/animation/validateVisualDef.ts): Validates weapon mesh components, required sockets, keyframe sequence duration parity against shared simulation specs, and event bounds.
+- [visualDef.test.ts](file:///d:/Games/FPS/packages/client/src/animation/visualDef.test.ts): 6 tests verifying all 5 weapon visual definitions pass contract rules and invalid definitions are strictly rejected.
+
+### 5. High-Power 2D Optical Sniper Scope Overlay
+- [index.html](file:///d:/Games/FPS/packages/client/index.html): Full-viewport SVG scope overlay (`#sniper-scope`) featuring 4.0X magnification (`adsFovMultiplier: 0.25`), radial vignette darkness, mil-dot crosshairs, elevation stadia lines, and range calibration markings.
+- 3D viewmodel arms and chassis are automatically culled during sniper ADS to prevent internal clipping.
+
+### 6. Screenshots Captured ([docs/screenshots/](file:///d:/Games/FPS/docs/screenshots/))
+- **Assault Rifle**: `phase3_assault_rifle_hip.png`, `phase3_assault_rifle_ads.png`, `phase3_assault_rifle_reload.png`, `phase3_ar_inspect.png`, `phase3_ar_reload_mag_drop.png`.
+- **Tactical Pistol**: `phase3_pistol_hip.png`, `phase3_pistol_ads.png`, `phase3_pistol_reload.png`.
+- **Rapid SMG**: `phase3_smg_hip.png`, `phase3_smg_ads.png`, `phase3_smg_reload.png`.
+- **Combat Shotgun**: `phase3_shotgun_hip.png`, `phase3_shotgun_ads.png`, `phase3_shotgun_reload.png`.
+- **Precision Sniper**: `phase3_sniper_hip.png`, `phase3_sniper_ads.png` (4.0X optical scope overlay active), `phase3_sniper_reload.png`.
+
+---
+
 ## Current Status & Next Steps
-- **Unit Tests**: **60/60 tests passing** in Vitest.
+- **Unit Tests**: **75/75 tests passing** in Vitest (5 test suites).
 - **E2E Tests**: **38/38 tests passing** (19 Chromium + 19 Firefox).
-- **Verification (`pnpm verify`)**: Typecheck, lint, shared-purity negative tests, unit tests, and production build pass with code 0.
-- **Current Stop**: **STOPPED at Assault Rifle vertical slice gate for user review** per rule A.6.
+- **Verification (`pnpm verify`)**: Typecheck, lint, shared-purity negative tests, unit tests, and production build all pass cleanly with exit code 0.
+- **Current Gate**: **Phase 3 Gate Review**.
 
 ## Next 3 steps
-1. Await user feedback on Assault Rifle vertical slice (visual style, arm IK posture, keyframe timings).
-2. Author split modular meshes and clips for remaining 4 weapons (Pistol, SMG, Shotgun, Sniper).
-3. Implement shell-by-shell physical shell insertion animation for Shotgun.
+1. Obtain Phase 3 gate approval from user.
+2. Begin Phase 4: Audio & Hit Feedback (synthesized/procedural Web Audio SFX, spatial 3D audio, directional hit indicators, pooled impact particles).
+3. Wire Rapier physics raycasting for authoritative world occlusion against complex arena geometry.
 
 ## Perf log
 | date | scene | device | FPS | draw calls | tris | notes |
@@ -207,3 +251,5 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 | 2026-10-14 | 40x40m Greybox Arena + Physics | Chrome (WebGPU Backend) | 60 | 16 | 144 | Phase 1 full controller pass |
 | 2026-10-14 | Arena + 3 Dummies + Viewmodel + Tracers | Chrome (WebGPU Backend) | 60 | 28 | 840 | Phase 2 weapon core + dummies pass |
 | 2026-10-14 | Arena + Viewmodel (AR + Two-Bone IK Arms) | SwiftShader / Headless Chrome | 8.4-13.3 | 29 | 492 | Phase 3 Assault Rifle vertical slice (SW WebGL) |
+| 2026-10-14 | Arena + All 5 Weapons + Arms Rig + Scope | SwiftShader / Headless Chrome | 11.9-13.0 | 29 | 96-492 | Phase 3 Complete Gate (Pistol: 96, Shotgun: 244, SMG: 268, Sniper: 390, AR: 492) |
+

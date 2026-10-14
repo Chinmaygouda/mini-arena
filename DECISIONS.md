@@ -286,3 +286,32 @@ Phase 3 requires an asset-swappable animation system linking weapon definitions 
 3. **Kinematics & Rigs**: Analytical 3D Two-Bone IK solver drives first-person arms (shoulder -> elbow -> wrist/hand) to follow weapon grip and reload keyframe targets with zero heap allocations per frame.
 4. **Mesh Separation**: Gun meshes are structured with distinct body, magazine, and bolt nodes to allow physical magazine detaching/dropping and bolt reciprocation.
 5. **Vertical Slice**: One weapon (Assault Rifle) implemented first, measured (tris, size, FPS), and reviewed before expanding to remaining weapons.
+
+---
+
+## ADR 011: Phase 3 Modular Weapons, Two-Bone IK Rigging, Contract Validation & Scope Overlay
+
+**Date**: 2026-10-14  
+**Status**: Accepted
+
+### Context
+Phase 3 requires viewmodels, rigging, and animation definitions across all 5 weapons (Assault Rifle, Tactical Pistol, Rapid SMG, Combat Shotgun, Precision Sniper) under a strict $0 budget, supporting discrete integer-tick simulation synchronization, weapon visual hot-swapping, shell-by-shell reloading with double-pump prevention, bolt cycling with anti-quickswitch persistence, and 2D optical scope overlay.
+
+### Architectural Decisions
+1. **Modular 3D Procedural Mesh Hierarchies**:
+   - Each weapon model (`pistol.ts`, `smg.ts`, `assaultRifle.ts`, `shotgun.ts`, `sniper.ts`) exports modular components (`body`, `mag`, `bolt`, `pump`, `shell`) and standardized sockets (`gripR`, `gripL`, `muzzle`, `ejectionPort`, `magWell`).
+   - Triangle budgets strictly respected: Pistol (96 tris), Shotgun (244 tris), SMG (268 tris), Sniper (390 tris), Assault Rifle (492 tris) — well beneath the 10,000-triangle viewmodel hard budget.
+2. **Analytical Two-Bone Arm IK Solver**:
+   - Closed-form trigonometric solver (`twoBoneIk.ts`) resolves upper arm, forearm, and wrist transforms for left and right arms to track weapon grips and dynamic reload targets.
+   - Zero per-frame memory allocations: reuses pre-allocated scratch vectors and quaternions.
+3. **`WeaponVisualDef` Contract Interface & Automated Validator**:
+   - `validateWeaponVisualDef(def)` enforces schema integrity across mesh nodes, socket definitions, clip keyframes, duration matching against simulation specs, and event boundaries.
+   - Verified via automated unit tests in `visualDef.test.ts`.
+4. **Simulation-Animation Synchronization**:
+   - Server/shared simulation owns authoritative integer ticks: shotgun 3-phase shell reload (start/insert/end with commit at tick 20), sniper 80-tick bolt cycle, mid-reload commit ticks (tick 72 for AR), and anti-quickswitch `nextReadyTick` tracking across slot changes.
+   - Fire interrupts during shotgun reload immediately transition to idle without double-pumping.
+   - Input buffering (6 ticks) ensures responsive fire triggers when actions complete.
+5. **High-Power Optical 2D Sniper Scope Overlay**:
+   - Full-viewport SVG overlay (`#sniper-scope`) with 4.0X magnification (`adsFovMultiplier: 0.25`), radial vignette shading, mil-dots, elevation stadia, and range markings.
+   - 3D viewmodel arms and chassis are cleanly culled during sniper ADS to prevent internal clipping.
+

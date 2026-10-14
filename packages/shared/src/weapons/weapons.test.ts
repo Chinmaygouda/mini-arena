@@ -33,6 +33,12 @@ import {
   setSprinting,
   findNextWeaponWithAmmo,
   triggerSwapBySlot,
+  WEAPON_REGISTRY,
+  isWeaponReadyToFire,
+  bufferFireInput,
+  hashPlayerShot,
+  generateSeededPelletOffsets,
+  PelletOffset,
 } from '../index';
 
 describe('Phase 2 Weapons Core Unit Tests', () => {
@@ -406,32 +412,47 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
   });
 
   describe('Shell-By-Shell Shotgun Reload & Interrupt', () => {
-    it('loads shells incrementally and pumps first shell when empty', () => {
+    it('loads shells incrementally and pumps first shell when empty (3-phase reload)', () => {
       const state = createDefaultWeaponState();
-      state.currentSlot = 3; // Shotgun slot
+      state.currentSlot = 3; // Shotgun
       const slot = getCurrentSlot(state);
       slot.ammoInMag = 0;
       slot.ammoReserve = 12;
 
-      // Trigger reload from empty: initial pump delay is reloadTimeEmpty (0.75s)
+      // Trigger reload from empty: phase 1 is reloading_shell_start (24 ticks = 0.40s)
       const started = triggerReload(state);
       expect(started).toBe(true);
-      expect(state.actionState).toBe('reloading_shell');
-      expect(state.stateTimer).toBe(SHOTGUN_DEF.reloadTimeEmpty);
+      expect(state.actionState).toBe('reloading_shell_start');
+      expect(state.stateTicksRemaining).toBe(SHOTGUN_DEF.reloadSpec.shell!.startTicks);
 
-      // Advance by 0.75s: 1st shell inserted
-      stepWeaponStateMachine(state, SHOTGUN_DEF.reloadTimeEmpty);
+      // Advance start phase (24 ticks) -> transitions to reloading_shell_insert (32 ticks)
+      for (let t = 0; t < 24; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
+      expect(state.actionState).toBe('reloading_shell_insert');
+      expect(slot.ammoInMag).toBe(0); // Not committed yet
+
+      // Advance 20 ticks into insert phase -> commitTick occurs
+      for (let t = 0; t < 20; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
       expect(slot.ammoInMag).toBe(1);
       expect(slot.ammoReserve).toBe(11);
-      // Automatically transitions to loading 2nd shell at shellReloadTime (0.55s)
-      expect(state.actionState).toBe('reloading_shell');
-      expect(state.stateTimer).toBe(SHOTGUN_DEF.shellReloadTime);
+      expect(state.actionState).toBe('reloading_shell_insert');
 
-      // Advance by 0.55s: 2nd shell inserted
-      stepWeaponStateMachine(state, SHOTGUN_DEF.shellReloadTime!);
+      // Finish remainder of 1st shell insert (12 more ticks) -> loops to 2nd shell insert
+      for (let t = 0; t < 12; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
+      expect(state.actionState).toBe('reloading_shell_insert');
+      expect(slot.ammoInMag).toBe(1);
+
+      // Step 20 ticks of 2nd shell insert -> commits 2nd shell
+      for (let t = 0; t < 20; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
       expect(slot.ammoInMag).toBe(2);
       expect(slot.ammoReserve).toBe(10);
-      expect(state.actionState).toBe('reloading_shell');
     });
 
     it('allows player to interrupt shell reload by firing if ammo > 0', () => {
@@ -662,14 +683,16 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
         slot.ammoReserve = 12;
         state.shotCooldownTimer = 0;
 
-        // Auto-reload triggers for shell 1
+        // Auto-reload triggers for shell 1 (starts with reloading_shell_start)
         stepWeaponStateMachine(state, 0.016);
-        expect(state.actionState).toBe('reloading_shell');
+        expect(state.actionState).toBe('reloading_shell_start');
 
-        // Finish inserting shell 1
-        stepWeaponStateMachine(state, SHOTGUN_DEF.reloadTimeEmpty + 0.01);
+        // Step through start (24 ticks) and 1st shell insert (32 ticks) -> shell 1 committed
+        for (let t = 0; t < 56; t++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
         expect(slot.ammoInMag).toBe(1);
-        expect(state.actionState).toBe('reloading_shell'); // Loading shell 2
+        expect(state.actionState).toBe('reloading_shell_insert'); // Loading shell 2
 
         // Player taps fire -> interrupts reload
         const interrupted = cancelReloadOnFire(state);
@@ -847,6 +870,277 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
           expect(state.shotCooldownTimer).toBeGreaterThanOrEqual(0);
           expect(state.currentSlot).toBeGreaterThanOrEqual(0);
           expect(state.currentSlot).toBeLessThan(state.slots.length);
+        }
+      });
+    });
+  });
+
+  describe('Phase 3 Step 0 Simulation Contracts & Invariants', () => {
+    it('verifies integer-tick reload specs and timings for all 5 weapons', () => {
+      for (const weaponId of Object.keys(WEAPON_REGISTRY) as Array<keyof typeof WEAPON_REGISTRY>) {
+        const def = WEAPON_REGISTRY[weaponId];
+        expect(Number.isInteger(def.swapTicks)).toBe(true);
+        expect(def.swapTicks).toBeGreaterThan(0);
+
+        if (def.reloadType === 'magazine') {
+          const mag = def.reloadSpec.magazine!;
+          expect(mag).toBeDefined();
+          expect(Number.isInteger(mag.tacticalReloadTicks)).toBe(true);
+          expect(Number.isInteger(mag.tacticalCommitTick)).toBe(true);
+          expect(Number.isInteger(mag.emptyReloadTicks)).toBe(true);
+          expect(Number.isInteger(mag.emptyCommitTick)).toBe(true);
+          expect(mag.tacticalCommitTick).toBeLessThan(mag.tacticalReloadTicks);
+          expect(mag.emptyCommitTick).toBeLessThan(mag.emptyReloadTicks);
+        } else {
+          const shell = def.reloadSpec.shell!;
+          expect(shell).toBeDefined();
+          expect(Number.isInteger(shell.startTicks)).toBe(true);
+          expect(Number.isInteger(shell.insertTicks)).toBe(true);
+          expect(Number.isInteger(shell.commitTick)).toBe(true);
+          expect(Number.isInteger(shell.endTicks)).toBe(true);
+          expect(Number.isInteger(shell.pumpCloseTick)).toBe(true);
+          expect(shell.commitTick).toBeLessThan(shell.insertTicks);
+          expect(shell.pumpCloseTick).toBeLessThan(shell.endTicks);
+        }
+
+        if (weaponId === 'sniper') {
+          expect(def.boltCycleTicks).toBe(80); // 80 ticks = 1.333s at 60 Hz
+        }
+      }
+    });
+
+    describe('Mid-Reload Commit Tick & Interrupt Invariants', () => {
+      it('loses progress when tactical reload is interrupted BEFORE commit tick', () => {
+        const state = createDefaultWeaponState();
+        state.currentSlot = 0; // Assault Rifle
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 15;
+        slot.ammoReserve = 90;
+
+        triggerReload(state);
+        expect(state.actionState).toBe('reloading_tactical');
+
+        // Step 50 ticks (AR tactical commit is at 72 ticks)
+        for (let t = 0; t < 50; t++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+        expect(slot.ammoInMag).toBe(15); // Not committed yet
+
+        // Sprint interrupts reload before commit
+        cancelReloadOnSprint(state);
+        expect(state.actionState).toBe('idle');
+        expect(slot.ammoInMag).toBe(15); // Progress lost
+        expect(slot.ammoReserve).toBe(90);
+      });
+
+      it('retains replenished ammo when tactical reload is interrupted AFTER commit tick', () => {
+        const state = createDefaultWeaponState();
+        state.currentSlot = 0; // Assault Rifle
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 15;
+        slot.ammoReserve = 90;
+
+        triggerReload(state);
+        expect(state.actionState).toBe('reloading_tactical');
+
+        // Step 75 ticks (past commit tick 72)
+        for (let t = 0; t < 75; t++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+        expect(slot.ammoInMag).toBe(30); // Ammo committed!
+        expect(slot.ammoReserve).toBe(75);
+
+        // Sprint interrupts remaining animation to idle
+        cancelReloadOnSprint(state);
+        expect(state.actionState).toBe('idle');
+        expect(slot.ammoInMag).toBe(30); // Magazine retains credited ammo!
+        expect(slot.ammoReserve).toBe(75);
+      });
+    });
+
+    describe('Shotgun Fire-Interrupt Double-Pump Prevention', () => {
+      it('skips reload_shell_end directly to idle when fire interrupts with ammo > 0', () => {
+        const state = createDefaultWeaponState();
+        state.currentSlot = 3; // Shotgun
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 12;
+
+        triggerReload(state);
+        // Step through start (24) and into insert (20 ticks to commit 1 shell)
+        for (let t = 0; t < 44; t++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+        expect(slot.ammoInMag).toBe(1);
+        expect(state.actionState).toBe('reloading_shell_insert');
+
+        // Fire interrupts: immediately goes to idle, skipping reload_shell_end
+        const interrupted = cancelReloadOnFire(state);
+        expect(interrupted).toBe(true);
+        expect(state.actionState).toBe('idle');
+      });
+
+      it('rejects fire interrupt if magazine has 0 ammo', () => {
+        const state = createDefaultWeaponState();
+        state.currentSlot = 3; // Shotgun
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 12;
+
+        triggerReload(state);
+        // Step 10 ticks into start (no shells loaded yet)
+        for (let t = 0; t < 10; t++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+        expect(slot.ammoInMag).toBe(0);
+
+        const interrupted = cancelReloadOnFire(state);
+        expect(interrupted).toBe(false);
+        expect(state.actionState).toBe('reloading_shell_start');
+      });
+    });
+
+    describe('Anti-Quickswitch Exploit Prevention', () => {
+      it('persists nextReadyTick across swaps so swapping out/in cannot bypass bolt cycle', () => {
+        const state = createDefaultWeaponState();
+        state.currentSlot = 4; // Sniper
+        const sniperSlot = getCurrentSlot(state);
+
+        // Fire sniper at tick 100
+        state.currentSimTick = 100;
+        sniperSlot.ammoInMag--;
+        recordShotFired(state);
+
+        // Sniper has 80 boltCycleTicks -> nextReadyTick = 100 + 80 = 180
+        expect(sniperSlot.nextReadyTick).toBe(180);
+        expect(state.actionState).toBe('cycling_bolt');
+        expect(isWeaponReadyToFire(state)).toBe(false);
+
+        // Swap to pistol (pistol slot = 1)
+        triggerSwapBySlot(state, 1);
+        expect(state.actionState).toBe('swapping_out');
+
+        // Complete swap to pistol (15 ticks out + 9 ticks in = 24 ticks)
+        for (let t = 0; t < 30; t++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+        expect(state.currentSlot).toBe(1); // On pistol
+        expect(state.actionState).toBe('idle');
+
+        // Swap back to sniper at tick 130
+        triggerSwapBySlot(state, 4);
+        for (let t = 0; t < 30; t++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+        expect(state.currentSlot).toBe(4); // Back on sniper
+        expect(state.actionState).toBe('idle');
+
+        // Even though swap is finished, currentSimTick is ~160 (< 180 nextReadyTick)
+        expect(state.currentSimTick).toBeLessThan(180);
+        expect(isWeaponReadyToFire(state)).toBe(false); // QUICK-SWITCH EXPLOIT BLOCKED!
+
+        // Advance to tick 180
+        state.currentSimTick = 180;
+        expect(isWeaponReadyToFire(state)).toBe(true); // Now ready!
+      });
+    });
+
+    describe('Input Buffering', () => {
+      it('buffers fire input for up to 6 ticks while busy', () => {
+        const state = createDefaultWeaponState();
+        state.currentSlot = 4; // Sniper
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 4;
+        state.currentSimTick = 0;
+        recordShotFired(state);
+        expect(state.actionState).toBe('cycling_bolt');
+
+        bufferFireInput(state, 6);
+        expect(state.bufferedFireTicks).toBe(6);
+
+        // Step 2 ticks -> decrements buffer
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        expect(state.bufferedFireTicks).toBe(4);
+      });
+    });
+
+    describe('Seeded Deterministic Shotgun Pellet Spread', () => {
+      it('generates deterministic 8-pellet spread matching ring pattern with zero allocations', () => {
+        const offsets: PelletOffset[] = Array.from({ length: 8 }, () => ({ pitch: 0, yaw: 0 }));
+        const seed1 = hashPlayerShot('player_alpha', 42);
+        const seed2 = hashPlayerShot('player_alpha', 42);
+        expect(seed1).toBe(seed2);
+
+        generateSeededPelletOffsets(SHOTGUN_DEF.spread.base, seed1, offsets);
+        const snapshot1 = JSON.parse(JSON.stringify(offsets));
+
+        // Re-running with same seed produces identical results
+        generateSeededPelletOffsets(SHOTGUN_DEF.spread.base, seed2, offsets);
+        expect(offsets).toEqual(snapshot1);
+
+        // Pellet 0 is center core (r close to 0)
+        const centerDist = Math.hypot(offsets[0]!.pitch, offsets[0]!.yaw);
+        expect(centerDist).toBeCloseTo(0, 4);
+
+        // Pellets 1..7 lie on outer ring (radius around 0.85 * base spread)
+        for (let i = 1; i < 8; i++) {
+          const r = Math.hypot(offsets[i]!.pitch, offsets[i]!.yaw);
+          expect(r).toBeGreaterThan(SHOTGUN_DEF.spread.base * 0.7);
+          expect(r).toBeLessThan(SHOTGUN_DEF.spread.base * 1.05);
+        }
+
+        // Different shot sequence produces rotated pattern
+        const seedDifferentShot = hashPlayerShot('player_alpha', 43);
+        generateSeededPelletOffsets(SHOTGUN_DEF.spread.base, seedDifferentShot, offsets);
+        expect(offsets[1]!.pitch).not.toBe(snapshot1[1].pitch);
+      });
+    });
+
+    describe('1000-Step Determinism Replay Test', () => {
+      it('produces bit-for-bit identical state across two separate simulation instances', () => {
+        const state1 = createDefaultWeaponState();
+        const state2 = createDefaultWeaponState();
+        const rng = createSeededRng(99999);
+
+        for (let i = 0; i < 1000; i++) {
+          const action = rng.range(0, 10);
+          if (action < 2) {
+            triggerReload(state1);
+            triggerReload(state2);
+          } else if (action < 4) {
+            const slotIdx = Math.floor(rng.range(0, 5));
+            triggerSwapBySlot(state1, slotIdx);
+            triggerSwapBySlot(state2, slotIdx);
+          } else if (action < 5) {
+            cancelReloadOnSprint(state1);
+            cancelReloadOnSprint(state2);
+          } else if (action < 6) {
+            const sprint = rng.next() > 0.5;
+            setSprinting(state1, sprint);
+            setSprinting(state2, sprint);
+          } else if (action < 7) {
+            const slot1 = getCurrentSlot(state1);
+            const slot2 = getCurrentSlot(state2);
+            if (slot1.ammoInMag > 0) {
+              slot1.ammoInMag--;
+              recordShotFired(state1);
+            }
+            if (slot2.ammoInMag > 0) {
+              slot2.ammoInMag--;
+              recordShotFired(state2);
+            }
+          }
+
+          stepWeaponStateMachine(state1, SIM_TICK_DELTA);
+          stepWeaponStateMachine(state2, SIM_TICK_DELTA);
+
+          expect(state1.currentSlot).toBe(state2.currentSlot);
+          expect(state1.actionState).toBe(state2.actionState);
+          expect(state1.stateTicksRemaining).toBe(state2.stateTicksRemaining);
+          expect(state1.ticksIntoState).toBe(state2.ticksIntoState);
+          expect(state1.currentSimTick).toBe(state2.currentSimTick);
+          expect(state1.autoSwitchTimer).toBe(state2.autoSwitchTimer);
         }
       });
     });
