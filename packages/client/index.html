@@ -89,6 +89,29 @@
         border-radius: 4px;
         color: #38bdf8;
       }
+      .enter-btn {
+        margin-top: 18px;
+        width: 100%;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #0284c7, #38bdf8);
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.05em;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease;
+      }
+      .enter-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4);
+        background: linear-gradient(135deg, #0369a1, #0ea5e9);
+        color: #ffffff;
+      }
+      .enter-btn:active {
+        transform: translateY(0);
+      }
       /* HUD Diagnostics Overlay */
       #hud-overlay {
         position: absolute;
@@ -151,7 +174,7 @@
 
     <div id="lock-prompt">
       <div class="lock-card">
-        <div class="lock-title">Mini Arena — Phase 1</div>
+        <div class="lock-title">Mini Arena — Phase 2: Weapons Core</div>
         <div class="lock-subtitle">Click anywhere to capture mouse (Pointer Lock)</div>
         <div class="controls-grid">
           <div><code>WASD</code> Move</div>
@@ -165,6 +188,7 @@
           <div><code>1-5</code> Select Weapon</div>
           <div><code>Esc</code> Release Mouse</div>
         </div>
+        <button id="btn-enter-arena" class="enter-btn">ENTER ARENA (CLICK TO PLAY)</button>
       </div>
     </div>
 

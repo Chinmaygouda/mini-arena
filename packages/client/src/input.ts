@@ -19,19 +19,58 @@ export class InputManager {
   }
 
   private bindEvents(): void {
-    // Pointer lock request on click
+    const overlay = document.getElementById('lock-prompt');
+    const enterBtn = document.getElementById('btn-enter-arena');
+
+    const requestLock = (): void => {
+      try {
+        const p = this.element.requestPointerLock();
+        if (p && typeof (p as Promise<void>).catch === 'function') {
+          (p as Promise<void>).catch((err) => {
+            console.warn('Pointer lock request rejected:', err);
+          });
+        }
+      } catch (err) {
+        console.warn('Pointer lock error:', err);
+      }
+    };
+
+    // Request pointer lock on canvas click
     this.element.addEventListener('click', () => {
       if (!this.isLocked) {
-        this.element.requestPointerLock();
+        requestLock();
       }
     });
 
+    // Request pointer lock and immediately dismiss popup on overlay / button click
+    const handleOverlayClick = (): void => {
+      requestLock();
+      if (overlay) {
+        overlay.style.display = 'none';
+      }
+    };
+
+    if (overlay) {
+      overlay.addEventListener('click', handleOverlayClick);
+    }
+    if (enterBtn) {
+      enterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleOverlayClick();
+      });
+    }
+
     document.addEventListener('pointerlockchange', () => {
-      this.isLocked = document.pointerLockElement === this.element;
-      const overlay = document.getElementById('lock-prompt');
+      this.isLocked =
+        document.pointerLockElement === this.element ||
+        document.pointerLockElement === document.body;
       if (overlay) {
         overlay.style.display = this.isLocked ? 'none' : 'flex';
       }
+    });
+
+    document.addEventListener('pointerlockerror', () => {
+      console.warn('Pointer lock error or user dismissed lock');
     });
 
     // Mouse movement
