@@ -2,18 +2,37 @@ import * as THREE from 'three';
 import { WebGPURenderer } from 'three/webgpu';
 import Stats from 'stats-gl';
 import {
+  calculateDamage,
+  cancelReloadOnSprint,
+  computeEffectiveSpread,
   createDefaultPlayerState,
+  createDefaultWeaponState,
+  createFireTimingState,
+  createSeededRng,
   createTimestepState,
+  FireTimingState,
+  getCurrentSlot,
+  getCurrentWeaponDef,
   PLAYER_EYE_HEIGHT_CROUCH,
   PLAYER_EYE_HEIGHT_STAND,
   PlayerSimState,
+  sampleSpreadOffsets,
   SIM_TICK_DELTA,
+  stepFireTiming,
   stepPlayer,
+  stepWeaponStateMachine,
+  triggerReload,
+  triggerSwapBySlot,
+  tryConsumeShot,
   updateAccumulator,
+  Vec3,
+  WeaponState,
 } from '@mini-arena/shared';
 import { initPhysics, PhysicsEngine } from './physics';
 import { InputManager } from './input';
 import { buildGreyboxArena } from './arena';
+import { TargetDummyManager } from './dummies';
+import { triggerHitMarker, WeaponViewmodel } from './viewmodel';
 
 declare global {
   interface Window {
@@ -21,6 +40,10 @@ declare global {
     __playerState?: PlayerSimState;
     __inputManager?: InputManager;
     __physics?: PhysicsEngine;
+    __weaponState?: WeaponState;
+    __fireTiming?: FireTimingState;
+    __dummies?: TargetDummyManager;
+    __viewmodel?: WeaponViewmodel;
     __fps?: number;
   }
 }
@@ -106,9 +129,31 @@ async function initApp(): Promise<void> {
   // Build the greybox arena with geometry + Rapier colliders
   buildGreyboxArena(scene, physics.world);
 
+  // Target dummies in the arena
+  const dummies = new TargetDummyManager(scene);
+  window.__dummies = dummies;
+
+  // Viewmodel (box placeholder with muzzle/tracers)
+  const viewmodel = new WeaponViewmodel(camera, scene);
+  window.__viewmodel = viewmodel;
+
+  // Weapon state & fire timing
+  const weaponState = createDefaultWeaponState();
+  const fireTiming = createFireTimingState();
+  const rng = createSeededRng(1337);
+  window.__weaponState = weaponState;
+  window.__fireTiming = fireTiming;
+  viewmodel.updateWeaponVisual(getCurrentWeaponDef(weaponState));
+
   // Input manager
   const inputManager = new InputManager(container);
   window.__inputManager = inputManager;
+
+  // HUD elements for weapons
+  const hudWeaponName = document.getElementById('hud-weapon-name');
+  const hudAmmoMag = document.getElementById('hud-ammo-mag');
+  const hudAmmoReserve = document.getElementById('hud-ammo-reserve');
+  const hudWeaponAction = document.getElementById('hud-weapon-action');
 
   // Start player facing arena
   let currentState: PlayerSimState = createDefaultPlayerState(0, 0, 12);
@@ -138,6 +183,99 @@ async function initApp(): Promise<void> {
       const input = inputManager.sampleInput(tickCount);
 
       currentState = stepPlayer(currentState, input, SIM_TICK_DELTA, physics.collisionWorld);
+
+      // --- Weapon State Machine & Actions ---
+      // 1. Weapon swap request
+      if (input.weaponSlot !== undefined) {
+        if (triggerSwapBySlot(weaponState, input.weaponSlot)) {
+          viewmodel.updateWeaponVisual(getCurrentWeaponDef(weaponState));
+        }
+      }
+
+      // 2. Sprint cancel reload
+      if (currentState.isSprinting) {
+        cancelReloadOnSprint(weaponState);
+      }
+
+      // 3. Reload request
+      if (input.reload) {
+        triggerReload(weaponState);
+      }
+
+      // 4. Advance weapon timers
+      stepWeaponStateMachine(weaponState, SIM_TICK_DELTA);
+
+      // 5. Fire timing & shooting
+      const currentDef = getCurrentWeaponDef(weaponState);
+      const activeSlot = getCurrentSlot(weaponState);
+      const canShoot = weaponState.actionState === 'idle' && activeSlot.ammoInMag > 0;
+
+      // Step fractional fire accumulator
+      stepFireTiming(fireTiming, SIM_TICK_DELTA, currentDef);
+
+      if (input.fire && canShoot) {
+        if (tryConsumeShot(fireTiming, currentDef)) {
+          activeSlot.ammoInMag--;
+
+          // Recoil kick on viewmodel
+          const kickPitch = currentDef.recoil.pattern[0]?.pitch ?? 0.035;
+          viewmodel.applyRecoilKick(kickPitch);
+
+          // Stance-based spread cone
+          const hSpeed = Math.hypot(currentState.vx, currentState.vz);
+          const spreadDeg = computeEffectiveSpread(currentDef, {
+            isMoving: hSpeed > 0.5,
+            isCrouching: currentState.isCrouching,
+            isADS: Boolean(input.ads),
+            isSprinting: currentState.isSprinting,
+          });
+
+          const muzzlePos = viewmodel.getMuzzleWorldPosition();
+
+          // Fire each pellet (1 for rifles/pistols/sniper, 8 for shotgun)
+          for (let p = 0; p < currentDef.pellets; p++) {
+            const spreadOffset = sampleSpreadOffsets(spreadDeg, rng);
+            const netYaw = input.yaw + spreadOffset.yawOffset;
+            const netPitch = input.pitch + spreadOffset.pitchOffset;
+
+            const cp = Math.cos(netPitch);
+            const sp = Math.sin(netPitch);
+            const cy = Math.cos(netYaw);
+            const sy = Math.sin(netYaw);
+
+            const rayDir: Vec3 = {
+              x: -sy * cp,
+              y: sp,
+              z: -cy * cp,
+            };
+
+            const rayOrigin: Vec3 = {
+              x: camera.position.x,
+              y: camera.position.y,
+              z: camera.position.z,
+            };
+
+            // Hitscan query against all active target dummies
+            const hit = dummies.testRay(rayOrigin, rayDir, currentDef.range);
+
+            let hitPoint: Vec3;
+            if (hit.hit && hit.hitPoint) {
+              hitPoint = hit.hitPoint;
+              const dmg = calculateDamage(currentDef, hit.distance, hit.part === 'head');
+              triggerHitMarker(hit.part, dmg);
+            } else {
+              hitPoint = {
+                x: rayOrigin.x + rayDir.x * 50,
+                y: rayOrigin.y + rayDir.y * 50,
+                z: rayOrigin.z + rayDir.z * 50,
+              };
+            }
+
+            // Spawn visual tracer from gun muzzle to impact
+            viewmodel.spawnTracer(muzzlePos, hitPoint);
+          }
+        }
+      }
     }
 
     window.__playerState = currentState;
@@ -156,7 +294,21 @@ async function initApp(): Promise<void> {
     camera.position.set(renderX, renderY + currentEyeHeight, renderZ);
     camera.rotation.set(inputManager.pitch, inputManager.yaw, 0, 'YXZ');
 
-    // Update HUD overlay
+    // Smooth ADS camera FOV zoom
+    const activeDef = getCurrentWeaponDef(weaponState);
+    const targetFov = inputManager.isAds ? 75 * activeDef.adsFovMultiplier : 75;
+    if (Math.abs(camera.fov - targetFov) > 0.1) {
+      camera.fov += (targetFov - camera.fov) * Math.min(1.0, frameDelta * 16);
+      camera.updateProjectionMatrix();
+    }
+
+    // Update viewmodel animations, recoil spring & tracers
+    viewmodel.update(frameDelta, inputManager.isAds);
+
+    // Update target dummies (hit flash timer)
+    dummies.update(frameDelta);
+
+    // Update Player Movement HUD overlay
     if (hudPos) {
       hudPos.textContent = `${currentState.x.toFixed(1)}, ${currentState.y.toFixed(1)}, ${currentState.z.toFixed(1)}`;
     }
@@ -171,6 +323,39 @@ async function initApp(): Promise<void> {
       if (currentState.isCrouching) parts.push('Crouch');
       if (currentState.isSprinting) parts.push('Sprint');
       hudState.textContent = parts.join(' | ');
+    }
+
+    // Update Weapon HUD overlay
+    const activeSlot = getCurrentSlot(weaponState);
+    if (hudWeaponName) {
+      hudWeaponName.textContent = activeDef.name;
+    }
+    if (hudAmmoMag) {
+      hudAmmoMag.textContent = `${activeSlot.ammoInMag}`;
+    }
+    if (hudAmmoReserve) {
+      hudAmmoReserve.textContent = `/ ${activeSlot.ammoReserve}`;
+    }
+    if (hudWeaponAction) {
+      const isReloading =
+        weaponState.actionState === 'reloading_tactical' ||
+        weaponState.actionState === 'reloading_empty';
+      const isSwapping =
+        weaponState.actionState === 'swapping_out' ||
+        weaponState.actionState === 'swapping_in';
+
+      if (isReloading) {
+        hudWeaponAction.textContent = 'RELOADING...';
+        hudWeaponAction.style.color = '#f59e0b';
+      } else if (isSwapping) {
+        hudWeaponAction.textContent = 'SWAPPING...';
+        hudWeaponAction.style.color = '#38bdf8';
+      } else if (activeSlot.ammoInMag === 0) {
+        hudWeaponAction.textContent = 'EMPTY (PRESS R)';
+        hudWeaponAction.style.color = '#ef4444';
+      } else {
+        hudWeaponAction.textContent = '';
+      }
     }
 
     stats.update();

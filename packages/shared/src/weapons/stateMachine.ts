@@ -108,6 +108,17 @@ export function triggerSwap(state: WeaponState, targetWeaponId: WeaponId): boole
 }
 
 /**
+ * Triggers weapon swap using slot index (0..4).
+ */
+export function triggerSwapBySlot(state: WeaponState, slotIndex: number): boolean {
+  const targetSlot = state.slots[slotIndex];
+  if (!targetSlot) {
+    return false;
+  }
+  return triggerSwap(state, targetSlot.weaponId);
+}
+
+/**
  * Cancels reload if player initiates a sprint.
  */
 export function cancelReloadOnSprint(state: WeaponState): boolean {

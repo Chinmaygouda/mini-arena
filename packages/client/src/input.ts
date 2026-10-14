@@ -50,9 +50,31 @@ export class InputManager {
       this.pitch = Math.max(-maxPitch, Math.min(maxPitch, this.pitch));
     });
 
+    // Mouse button controls (Fire & ADS)
+    window.addEventListener('mousedown', (e) => {
+      if (e.button === 0) this.isFiring = true;
+      if (e.button === 2) this.isAds = true;
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (e.button === 0) this.isFiring = false;
+      if (e.button === 2) this.isAds = false;
+    });
+
+    // Prevent context menu on right click
+    window.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+
     // Keyboard controls
     window.addEventListener('keydown', (e) => {
       this.keys[e.code] = true;
+      if (e.code === 'Digit1') this.selectedSlot = 0;
+      if (e.code === 'Digit2') this.selectedSlot = 1;
+      if (e.code === 'Digit3') this.selectedSlot = 2;
+      if (e.code === 'Digit4') this.selectedSlot = 3;
+      if (e.code === 'Digit5') this.selectedSlot = 4;
+      if (e.code === 'KeyR') this.reloadRequested = true;
     });
 
     window.addEventListener('keyup', (e) => {
@@ -62,14 +84,38 @@ export class InputManager {
     // Handle blur / focus loss
     window.addEventListener('blur', () => {
       this.keys = {};
+      this.isFiring = false;
+      this.isAds = false;
+      this.reloadRequested = false;
     });
   }
 
+  public isFiring = false;
+  public isAds = false;
+  public selectedSlot: number | undefined = undefined;
+  public reloadRequested = false;
+
   /**
-   * Programmatic control hook for automated E2E tests.
+   * Programmatic control hooks for automated E2E tests.
    */
   public setKey(code: string, pressed: boolean): void {
     this.keys[code] = pressed;
+  }
+
+  public setFire(firing: boolean): void {
+    this.isFiring = firing;
+  }
+
+  public setAds(ads: boolean): void {
+    this.isAds = ads;
+  }
+
+  public setReload(reload: boolean): void {
+    this.reloadRequested = reload;
+  }
+
+  public setWeaponSlot(slot: number): void {
+    this.selectedSlot = slot;
   }
 
   public setLook(yaw: number, pitch: number): void {
@@ -97,6 +143,14 @@ export class InputManager {
     const sprint = Boolean(this.keys['ShiftLeft'] || this.keys['ShiftRight']);
     const crouch = Boolean(this.keys['KeyC'] || this.keys['ControlLeft']);
 
+    const fire = this.isFiring || Boolean(this.keys['Mouse0']);
+    const ads = this.isAds || Boolean(this.keys['Mouse2']);
+    const reload = this.reloadRequested || Boolean(this.keys['KeyR']);
+    this.reloadRequested = false;
+    const slot = this.selectedSlot;
+    // Clear slot trigger once sampled
+    this.selectedSlot = undefined;
+
     this.seq++;
 
     return {
@@ -109,6 +163,10 @@ export class InputManager {
       sprint,
       yaw: this.yaw,
       pitch: this.pitch,
+      fire,
+      ads,
+      reload,
+      weaponSlot: slot,
     };
   }
 }

@@ -159,6 +159,10 @@
           <div><code>Space</code> Jump</div>
           <div><code>Shift</code> Sprint</div>
           <div><code>C / Ctrl</code> Crouch</div>
+          <div><code>Left Click</code> Fire</div>
+          <div><code>Right Click</code> ADS (Aim)</div>
+          <div><code>R</code> Reload</div>
+          <div><code>1-5</code> Select Weapon</div>
           <div><code>Esc</code> Release Mouse</div>
         </div>
       </div>
@@ -182,6 +186,20 @@
         <span>State:</span>
         <span id="hud-state" class="hud-data">Grounded</span>
       </div>
+    </div>
+
+    <!-- Center Hit Marker Log -->
+    <div id="hud-hitlog" style="position: absolute; top: 55%; left: 50%; transform: translateX(-50%); font-size: 14px; font-weight: 700; color: #fef08a; font-family: monospace; opacity: 0; transition: opacity 0.15s ease-out; pointer-events: none; z-index: 100; text-shadow: 0 0 8px rgba(0,0,0,0.8);"></div>
+
+    <!-- Weapon Ammo HUD (Bottom Right) -->
+    <div id="weapon-hud" style="position: absolute; bottom: 24px; right: 24px; background: rgba(13, 15, 18, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); backdrop-filter: blur(8px); padding: 14px 20px; border-radius: 10px; color: #f8fafc; font-family: monospace; z-index: 100; min-width: 180px; text-align: right; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+      <div id="hud-weapon-name" style="font-size: 14px; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 4px;">Assault Rifle</div>
+      <div style="font-size: 26px; font-weight: 800; letter-spacing: 0.05em;">
+        <span id="hud-ammo-mag" style="color: #ffffff;">30</span>
+        <span style="color: #64748b; font-size: 18px;"> / </span>
+        <span id="hud-ammo-reserve" style="color: #94a3b8; font-size: 18px;">90</span>
+      </div>
+      <div id="hud-weapon-action" style="font-size: 11px; font-weight: 600; color: #22c55e; margin-top: 4px; text-transform: uppercase;">READY</div>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

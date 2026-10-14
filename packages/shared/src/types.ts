@@ -19,6 +19,10 @@ export interface PlayerInput {
   sprint: boolean;
   yaw: number; // radians (rotation around Y)
   pitch: number; // radians (look up/down)
+  fire?: boolean;
+  reload?: boolean;
+  ads?: boolean;
+  weaponSlot?: number; // 0..4
 }
 
 export interface PlayerSimState {
