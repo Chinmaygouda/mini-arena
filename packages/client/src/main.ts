@@ -147,21 +147,24 @@ async function initApp(): Promise<void> {
   camera.rotation.order = 'YXZ';
   scene.add(camera);
 
-  // Debug outside viewmodel inspection camera (?debug=1&vmCam=side|top|front)
+  // Debug outside viewmodel inspection camera (?debug=1&vmCam=side|top|front|sideLeft|quarterFront|quarterRear)
   const vmCam = url.searchParams.get('vmCam');
   let debugCamera: THREE.PerspectiveCamera | null = null;
   if (vmCam) {
     debugCamera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.01, 100);
     camera.add(debugCamera);
-    if (vmCam === 'side') {
+    if (vmCam === 'side' || vmCam === 'sideRight') {
       debugCamera.position.set(0.65, -0.05, -0.2);
-      debugCamera.lookAt(new THREE.Vector3(0.05, -0.15, -0.32));
+    } else if (vmCam === 'sideLeft') {
+      debugCamera.position.set(-0.65, -0.05, -0.2);
     } else if (vmCam === 'top') {
       debugCamera.position.set(0.05, 0.65, -0.32);
-      debugCamera.lookAt(new THREE.Vector3(0.05, -0.15, -0.32));
     } else if (vmCam === 'front') {
       debugCamera.position.set(0.05, -0.15, -0.9);
-      debugCamera.lookAt(new THREE.Vector3(0.05, -0.15, -0.32));
+    } else if (vmCam === 'quarterFront' || vmCam === 'frontRight') {
+      debugCamera.position.set(0.45, 0.05, -0.65);
+    } else if (vmCam === 'quarterRear' || vmCam === 'rearRight') {
+      debugCamera.position.set(0.4, 0.15, 0.15);
     }
   }
 
@@ -499,7 +502,16 @@ async function initApp(): Promise<void> {
     }
 
     stats.update();
-    renderer.render(scene, debugCamera || camera);
+    const activeCam = (isDebug && (window as unknown as { __debugCamera?: THREE.PerspectiveCamera }).__debugCamera) || debugCamera || camera;
+    if (activeCam !== camera) {
+      camera.updateMatrixWorld(true);
+      const lookTarget = (activeCam.userData && activeCam.userData.target)
+        ? (activeCam.userData.target as THREE.Vector3).clone()
+        : new THREE.Vector3(0.05, -0.15, -0.32);
+      camera.localToWorld(lookTarget);
+      activeCam.lookAt(lookTarget);
+    }
+    renderer.render(scene, activeCam);
   });
 }
 
