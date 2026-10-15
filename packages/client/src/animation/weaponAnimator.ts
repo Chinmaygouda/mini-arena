@@ -169,11 +169,11 @@ export class WeaponAnimator {
     // 6. Apply weapon root positional & rotational offsets
     this.weaponGroup.position.copy(this.interpolatedWeaponPos);
     this.weaponGroup.rotation.copy(this.interpolatedWeaponRot);
-    this.weaponGroup.updateMatrix();
+    this.weaponGroup.updateMatrixWorld(true);
 
-    // 7. Update arms rig IK in viewmodel space (transformed by weapon group matrix)
-    this.scratchLeftPos.copy(this.interpolatedLeftHandPos).applyMatrix4(this.weaponGroup.matrix);
-    this.scratchRightPos.copy(this.interpolatedRightHandPos).applyMatrix4(this.weaponGroup.matrix);
+    // 7. Update arms rig IK in world space (transformed by weapon group world matrix)
+    this.scratchLeftPos.copy(this.interpolatedLeftHandPos).applyMatrix4(this.weaponGroup.matrixWorld);
+    this.scratchRightPos.copy(this.interpolatedRightHandPos).applyMatrix4(this.weaponGroup.matrixWorld);
 
     this.armsRig.updateIK(
       this.scratchLeftPos,

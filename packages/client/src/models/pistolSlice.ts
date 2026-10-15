@@ -1,0 +1,473 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { KeyframeClip, WeaponVisualDef } from '../animation/types';
+import { SplitWeaponMesh } from './assaultRifle';
+import { RealWeaponSliceResult, countObjectTriangles } from './realWeaponSlice';
+
+/**
+ * Parses a loaded Pistol (pew.glb) GLTF scene into an asset-swappable SplitWeaponMesh.
+ * Separates `pewmagazine` cleanly from `pew` and `pewhaut` (slide) for discrete reload kinematics.
+ * Orients the barrel along -Z and centers the receiver at the weapon root.
+ */
+export function parseRealPistolModel(gltfScene: THREE.Group): SplitWeaponMesh {
+  let pewMesh: THREE.Mesh | null = null;
+  let slideMesh: THREE.Mesh | null = null;
+  let magMesh: THREE.Mesh | null = null;
+  let triggerMesh: THREE.Mesh | null = null;
+
+  gltfScene.traverse((child) => {
+    if (child.name === 'pew' && (child as THREE.Mesh).isMesh) {
+      pewMesh = child as THREE.Mesh;
+    }
+    if (child.name === 'pewhaut' && (child as THREE.Mesh).isMesh) {
+      slideMesh = child as THREE.Mesh;
+    }
+    if (child.name === 'pewmagazine' && (child as THREE.Mesh).isMesh) {
+      magMesh = child as THREE.Mesh;
+    }
+    if (child.name === 'pewtrigger' && (child as THREE.Mesh).isMesh) {
+      triggerMesh = child as THREE.Mesh;
+    }
+  });
+
+  const pew = pewMesh as THREE.Mesh | null;
+  const slide = slideMesh as THREE.Mesh | null;
+  const mag = magMesh as THREE.Mesh | null;
+
+  if (!pew || !slide || !mag) {
+    throw new Error('parseRealPistolModel: Failed to find pew, pewhaut, or pewmagazine nodes in GLTF scene.');
+  }
+
+  // Detach magazine from hierarchy
+  if (mag.parent) {
+    mag.parent.remove(mag);
+  }
+
+  // Calculate magazine center & offset geometry so local origin is at center of magazine
+  const magBox = new THREE.Box3().setFromObject(mag);
+  const magCenter = new THREE.Vector3();
+  magBox.getCenter(magCenter);
+
+  mag.geometry = mag.geometry.clone();
+  mag.geometry.translate(-magCenter.x, -magCenter.y, -magCenter.z);
+
+  // Detach slide from hierarchy so it can blow back along -Z during firing/bolt cycling
+  if (slide.parent) {
+    slide.parent.remove(slide);
+  }
+  const slideBox = new THREE.Box3().setFromObject(slide);
+  const slideCenter = new THREE.Vector3();
+  slideBox.getCenter(slideCenter);
+
+  slide.geometry = slide.geometry.clone();
+  slide.geometry.translate(-slideCenter.x, -slideCenter.y, -slideCenter.z);
+
+  // Receiver body group
+  const body = new THREE.Group();
+  body.name = 'Pistol_Real_Body';
+  body.add(pew);
+  if (triggerMesh) body.add(triggerMesh);
+
+  // Scale uniformly by 1.45 to match realistic pistol scale (19.8 cm long)
+  const SCALE = 1.45;
+  body.scale.set(SCALE, SCALE, SCALE);
+  slide.scale.set(SCALE, SCALE, SCALE);
+  mag.scale.set(SCALE, SCALE, SCALE);
+
+  // Barrel points along +X in raw GLB. Rotate +90 deg around Y so barrel points down -Z.
+  body.rotation.y = Math.PI / 2;
+  slide.rotation.y = Math.PI / 2;
+  mag.rotation.y = Math.PI / 2;
+
+  // Slide rest position in rotated weapon frame
+  // slideCenter raw: x=-0.0114, y=0.0357, z=0.0002
+  // In rotated space (y=rotY(pi/2)): x_rot = z_raw, y_rot = y_raw, z_rot = -x_raw
+  const slideRestPos = new THREE.Vector3(
+    slideCenter.z * SCALE,
+    slideCenter.y * SCALE,
+    -slideCenter.x * SCALE,
+  );
+  slide.position.copy(slideRestPos);
+
+  // Magazine rest position in rotated weapon frame
+  const magRestPos = new THREE.Vector3(
+    magCenter.z * SCALE,
+    magCenter.y * SCALE,
+    -magCenter.x * SCALE,
+  );
+  mag.position.copy(magRestPos);
+
+  // Sockets in weapon space
+  const muzzlePos = new THREE.Vector3(0, 0.036 * SCALE, -0.058 * SCALE);
+  const ejectPos = new THREE.Vector3(0.012 * SCALE, 0.040 * SCALE, -0.015 * SCALE);
+
+  const root = new THREE.Group();
+  root.name = 'Pistol_Root';
+  root.add(body);
+  root.add(slide);
+  root.add(mag);
+
+  const triangleCount = countObjectTriangles(root);
+
+  return {
+    root,
+    body,
+    mag,
+    bolt: slide, // Slide functions as the reciprocating bolt/slide for the pistol
+    muzzle: muzzlePos,
+    ejectionPort: ejectPos,
+    magRestPos,
+    boltRestPos: slideRestPos,
+    triangleCount,
+  };
+}
+
+/**
+ * Builds the complete procedural + keyframed WeaponVisualDef for the real Pistol.
+ */
+export function buildPistolVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
+  // Grip sockets
+  const rightGripRest = {
+    pos: new THREE.Vector3(0, -0.028, 0.062),
+    rot: new THREE.Euler(0.2, 0, 0),
+  };
+  const leftGripRest = {
+    pos: new THREE.Vector3(-0.015, -0.055, 0.062),
+    rot: new THREE.Euler(0.25, 0.1, -0.15),
+  };
+
+  // 1. IDLE CLIP
+  const idleClip: KeyframeClip = {
+    name: 'idle',
+    duration: 3.0,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 1.5,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0.0015, 0),
+        weaponRotOffset: new THREE.Euler(0.006, 0, 0),
+      },
+      {
+        time: 3.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [],
+  };
+
+  // 2. DRAW CLIP (0.3s)
+  const drawClip: KeyframeClip = {
+    name: 'draw',
+    duration: 0.3,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, -0.12, 0.05),
+        weaponRotOffset: new THREE.Euler(-0.4, 0.1, -0.1),
+      },
+      {
+        time: 0.7,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0.01, -0.01),
+        weaponRotOffset: new THREE.Euler(0.03, -0.01, 0.01),
+      },
+      {
+        time: 1.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [],
+  };
+
+  // 3. INSPECT CLIP (2.0s)
+  const inspectClip: KeyframeClip = {
+    name: 'inspect',
+    duration: 2.0,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 0.35,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(-0.04, 0.02, 0),
+        weaponRotOffset: new THREE.Euler(0.1, -0.4, 0.35),
+      },
+      {
+        time: 0.7,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.03, -0.01, 0),
+        weaponRotOffset: new THREE.Euler(-0.05, 0.35, -0.25),
+      },
+      {
+        time: 1.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [],
+  };
+
+  // 4. TACTICAL RELOAD (1.5s = 90 ticks, commit at tick 54 = 60%)
+  const reloadTacticalClip: KeyframeClip = {
+    name: 'reloadTactical',
+    duration: 1.5,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 0.3,
+        leftHand: { pos: new THREE.Vector3(0, -0.15, 0.06), rot: new THREE.Euler(0, 0, 0) },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, -0.08, 0),
+        magAttached: false,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(-0.02, 0.03, 0.02),
+        weaponRotOffset: new THREE.Euler(0.2, -0.15, 0.25),
+      },
+      {
+        time: 0.6,
+        leftHand: { pos: new THREE.Vector3(0, -0.03, 0.06), rot: new THREE.Euler(0, 0, 0) },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(-0.01, 0.04, 0.01),
+        weaponRotOffset: new THREE.Euler(0.25, -0.1, 0.2),
+      },
+      {
+        time: 1.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [
+      { timeFraction: 0.3, type: 'mag_drop' },
+      { timeFraction: 0.6, type: 'mag_insert' },
+    ],
+  };
+
+  // 5. EMPTY RELOAD (1.9s = 114 ticks, commit at tick 68 = 60%, slide release at 78%)
+  const reloadEmptyClip: KeyframeClip = {
+    name: 'reloadEmpty',
+    duration: 1.9,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0.025), // Slide locked back
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 0.25,
+        leftHand: { pos: new THREE.Vector3(0, -0.15, 0.06), rot: new THREE.Euler(0, 0, 0) },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, -0.1, 0),
+        magAttached: false,
+        boltOffset: new THREE.Vector3(0, 0, 0.025),
+        weaponPosOffset: new THREE.Vector3(-0.02, 0.03, 0.02),
+        weaponRotOffset: new THREE.Euler(0.25, -0.15, 0.3),
+      },
+      {
+        time: 0.6,
+        leftHand: { pos: new THREE.Vector3(0, -0.03, 0.06), rot: new THREE.Euler(0, 0, 0) },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0.025),
+        weaponPosOffset: new THREE.Vector3(-0.01, 0.04, 0.01),
+        weaponRotOffset: new THREE.Euler(0.28, -0.1, 0.25),
+      },
+      {
+        time: 0.78,
+        leftHand: { pos: new THREE.Vector3(0, 0.04, 0.02), rot: new THREE.Euler(0.1, 0, 0) },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0.0), // Slide released!
+        weaponPosOffset: new THREE.Vector3(0, 0.01, 0.01),
+        weaponRotOffset: new THREE.Euler(0.05, -0.02, 0.02),
+      },
+      {
+        time: 1.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [
+      { timeFraction: 0.25, type: 'mag_drop' },
+      { timeFraction: 0.6, type: 'mag_insert' },
+      { timeFraction: 0.78, type: 'bolt_release' },
+    ],
+  };
+
+  // 6. FIRE RECOIL CLIP (400 RPM = 0.15s = 9 ticks)
+  const fireClip: KeyframeClip = {
+    name: 'fire',
+    duration: 0.15,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 0.22,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0.025), // Slide blowback!
+        weaponPosOffset: new THREE.Vector3(0, 0.01, 0.025),
+        weaponRotOffset: new THREE.Euler(0.065, 0.005, 0.005),
+      },
+      {
+        time: 1.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [{ timeFraction: 0.0, type: 'fire_recoil' }],
+  };
+
+  return {
+    weaponId: 'pistol',
+    name: 'Tactical Pistol',
+    bodyMesh: model.body,
+    magMesh: model.mag,
+    boltMesh: model.bolt,
+    muzzleOffset: model.muzzle,
+    ejectionPortOffset: model.ejectionPort,
+    magRestPos: model.magRestPos,
+    magDropVelocity: new THREE.Vector3(0, -1.8, 0.15),
+    boltRestPos: model.boltRestPos,
+    boltTravelVector: new THREE.Vector3(0, 0, 1),
+    sockets: {
+      gripR: rightGripRest.pos,
+      gripL: leftGripRest.pos,
+      muzzle: model.muzzle,
+      ejectPort: model.ejectionPort,
+      magWell: model.magRestPos,
+    },
+    clips: {
+      idle: idleClip,
+      draw: drawClip,
+      inspect: inspectClip,
+      reloadTactical: reloadTacticalClip,
+      reloadEmpty: reloadEmptyClip,
+      fire: fireClip,
+    },
+  };
+}
+
+/**
+ * Asynchronously loads the real Pistol model slice (/models/pistol.glb).
+ */
+export async function loadRealPistolSlice(basePath = '/models'): Promise<RealWeaponSliceResult> {
+  const loader = new GLTFLoader();
+  const gltf = await loader.loadAsync(`${basePath}/pistol.glb`);
+  const splitModel = parseRealPistolModel(gltf.scene);
+  const visualDef = buildPistolVisualDef(splitModel);
+
+  const gunTriangles = countObjectTriangles(visualDef.bodyMesh) +
+    (visualDef.magMesh ? countObjectTriangles(visualDef.magMesh) : 0) +
+    (visualDef.boltMesh ? countObjectTriangles(visualDef.boltMesh) : 0);
+
+  return {
+    visualDef,
+    rawGltfScene: gltf.scene,
+    armsMesh: null,
+    armsRigGroup: null,
+    triangleCount: gunTriangles,
+    gunTriangles,
+    armsTriangles: 0,
+    fileSizeBytes: 1738440,
+  };
+}

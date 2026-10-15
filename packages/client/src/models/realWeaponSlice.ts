@@ -136,13 +136,13 @@ export function parseRealAK47Model(gltfScene: THREE.Group): SplitWeaponMesh {
  */
 export function createRealAK47VisualDef(model: SplitWeaponMesh): WeaponVisualDef {
   const rightGripRest = {
-    pos: new THREE.Vector3(0.012, -0.065, 0.04),
-    rot: new THREE.Euler(-0.35, 0, 0),
+    pos: new THREE.Vector3(0.0, -0.065, 0.045),
+    rot: new THREE.Euler(1.2, 0.2, -0.4),
   };
 
   const leftHandguardRest = {
-    pos: new THREE.Vector3(-0.03, -0.01, -0.16),
-    rot: new THREE.Euler(0.2, 0.35, -0.45),
+    pos: new THREE.Vector3(-0.02, -0.015, -0.21),
+    rot: new THREE.Euler(1.4, -0.1, -1.1),
   };
 
   // 1. IDLE CLIP (3.0s = 180 ticks)

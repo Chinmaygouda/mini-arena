@@ -9,6 +9,7 @@ import { createSniperVisualDef } from './animation/sniperDef';
 import { WeaponVisualDef } from './animation/types';
 import { WeaponAnimator } from './animation/weaponAnimator';
 import { loadRealAK47Slice } from './models/realWeaponSlice';
+import { loadRealPistolSlice } from './models/pistolSlice';
 
 export interface Tracer {
   mesh: THREE.Line;
@@ -88,7 +89,7 @@ export class WeaponViewmodel {
 
     // 1. First-Person Rigged Arms
     this.armsRig = new FirstPersonArmsRig();
-    this.group.add(this.armsRig.group);
+    this.camera.add(this.armsRig.group);
     this.totalTriangles += this.armsRig.totalTriangles;
 
     // 2. Pre-instantiate all 5 modular weapon visual definitions
@@ -122,16 +123,27 @@ export class WeaponViewmodel {
             this.currentVisualDef = slice.visualDef;
             this.animator.setVisualDef(slice.visualDef);
           }
-          if (slice.armsRigGroup) {
-            slice.armsRigGroup.position.set(0, -1.65, 0.05);
-            this.group.add(slice.armsRigGroup);
+          if (slice.armsRigGroup && slice.armsMesh) {
+            this.armsRig.setSkinnedArms(slice.armsRigGroup, slice.armsMesh);
           }
           this.totalTriangles = 0;
           this.countTriangles(this.animator.weaponGroup);
-          if (slice.armsRigGroup) this.countTriangles(slice.armsRigGroup);
+          this.countTriangles(this.armsRig.group);
         })
         .catch((err) => {
-          console.warn('Real model slice fallback to procedural:', err);
+          console.warn('Real AK-47 model slice fallback to procedural:', err);
+        });
+
+      loadRealPistolSlice('/models')
+        .then((slice) => {
+          this.visualDefs.pistol = slice.visualDef;
+          if (this.currentVisualDef.weaponId === 'pistol') {
+            this.currentVisualDef = slice.visualDef;
+            this.animator.setVisualDef(slice.visualDef);
+          }
+        })
+        .catch((err) => {
+          console.warn('Real Pistol model slice fallback to procedural:', err);
         });
     }
   }
@@ -221,11 +233,13 @@ export class WeaponViewmodel {
         this.sniperScopeElement.style.display = 'block';
         this.sniperScopeElement.style.opacity = '1';
         this.group.visible = false; // Hide 3D viewmodel arms in high-magnification scope
+        this.armsRig.group.visible = false;
       } else {
         this.sniperScopeElement.classList.remove('active');
         this.sniperScopeElement.style.opacity = '0';
         this.sniperScopeElement.style.display = 'none';
         this.group.visible = true;
+        this.armsRig.group.visible = true;
       }
     }
 

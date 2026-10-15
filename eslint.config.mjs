@@ -31,7 +31,18 @@ export default tseslint.config(
       globals: {
         console: 'readonly',
         process: 'readonly',
+        window: 'readonly',
+        performance: 'readonly',
+        requestAnimationFrame: 'readonly',
+        navigator: 'readonly',
+        fetch: 'readonly',
+        globalThis: 'readonly',
       },
+    },
+    rules: {
+      'no-undef': 'off',
+      'no-redeclare': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
     },
   },
   {

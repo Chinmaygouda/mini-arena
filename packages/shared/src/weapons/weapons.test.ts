@@ -482,9 +482,133 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
       expect(canceled).toBe(false);
       expect(state.actionState).toBe('reloading_shell');
     });
+
+    it('shotgun fire interrupt before commit tick 20 discards progress; after commit tick 20 keeps shell and avoids double pump', () => {
+      // 1. Interrupt BEFORE commit tick 20 (at tick 15)
+      const s1 = createDefaultWeaponState();
+      s1.currentSlot = 3; // Shotgun
+      const slot1 = getCurrentSlot(s1);
+      slot1.ammoInMag = 2;
+      slot1.ammoReserve = 10;
+      triggerReload(s1);
+      expect(s1.actionState).toBe('reloading_shell_start');
+      for (let t = 0; t < 24; t++) {
+        stepWeaponStateMachine(s1, SIM_TICK_DELTA);
+      }
+      expect(s1.actionState).toBe('reloading_shell_insert');
+
+      for (let t = 0; t < 15; t++) {
+        stepWeaponStateMachine(s1, SIM_TICK_DELTA);
+      }
+      expect(slot1.ammoInMag).toBe(2); // Not committed yet
+      const cancelBefore = cancelReloadOnFire(s1);
+      expect(cancelBefore).toBe(true);
+      expect(s1.actionState).toBe('idle');
+      expect(slot1.ammoInMag).toBe(2); // Progress discarded
+
+      // 2. Interrupt AFTER commit tick 20 (at tick 22)
+      const s2 = createDefaultWeaponState();
+      s2.currentSlot = 3;
+      const slot2 = getCurrentSlot(s2);
+      slot2.ammoInMag = 2;
+      slot2.ammoReserve = 10;
+      triggerReload(s2);
+      for (let t = 0; t < 24; t++) {
+        stepWeaponStateMachine(s2, SIM_TICK_DELTA);
+      }
+      expect(s2.actionState).toBe('reloading_shell_insert');
+
+      for (let t = 0; t < 22; t++) {
+        stepWeaponStateMachine(s2, SIM_TICK_DELTA);
+      }
+      expect(slot2.ammoInMag).toBe(3); // Committed at tick 20!
+      expect(slot2.ammoReserve).toBe(9);
+      const cancelAfter = cancelReloadOnFire(s2);
+      expect(cancelAfter).toBe(true);
+      expect(s2.actionState).toBe('idle');
+      expect(slot2.ammoInMag).toBe(3); // Committed shell kept! No double pump!
+    });
+
+    it('shotgun mag-0 reload initiates pump chambering startTicks before looping inserts', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 3;
+      const slot = getCurrentSlot(state);
+      slot.ammoInMag = 0;
+      slot.ammoReserve = 12;
+
+      triggerReload(state);
+      expect(state.actionState).toBe('reloading_shell_start');
+      expect(state.stateTicksRemaining).toBe(SHOTGUN_DEF.reloadSpec.shell!.startTicks);
+
+      // Advance through start phase (24 ticks)
+      for (let t = 0; t < 24; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
+      expect(state.actionState).toBe('reloading_shell_insert');
+      expect(slot.ammoInMag).toBe(0);
+    });
+
+    it('shotgun reload loop exits cleanly when magazine reaches max capacity (6 shells)', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 3;
+      const slot = getCurrentSlot(state);
+      slot.ammoInMag = 5; // Needs exactly 1 shell to reach full capacity of 6
+      slot.ammoReserve = 10;
+
+      triggerReload(state);
+      expect(state.actionState).toBe('reloading_shell_start');
+      for (let t = 0; t < 24; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
+      expect(state.actionState).toBe('reloading_shell_insert');
+
+      // Step through commit (20 ticks) and completion (total 32 ticks) of the 6th shell
+      for (let t = 0; t < 32; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
+
+      expect(slot.ammoInMag).toBe(6); // Max capacity reached
+      expect(slot.ammoReserve).toBe(9);
+      // Next state transitions to reloading_shell_end (pump close)
+      expect(state.actionState).toBe('reloading_shell_end');
+      for (let t = 0; t < 24; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
+      expect(state.actionState).toBe('idle');
+    });
   });
 
   describe('Precision Sniper Rifle Mechanics', () => {
+    it('sniper reloadEmpty initiates chambering bolt cycle delay after reload', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 4; // Sniper
+      const slot = getCurrentSlot(state);
+      slot.ammoInMag = 0;
+      slot.ammoReserve = 15;
+
+      triggerReload(state);
+      expect(state.actionState).toBe('reloading_empty');
+      const emptyReloadTicks = SNIPER_DEF.reloadSpec.magazine!.emptyReloadTicks; // 210 ticks
+      expect(state.stateTicksRemaining).toBe(emptyReloadTicks);
+
+      // Step until commit tick (114 ticks)
+      const commitTick = SNIPER_DEF.reloadSpec.magazine!.emptyCommitTick;
+      for (let t = 0; t < commitTick; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
+      expect(slot.ammoInMag).toBe(5); // Committed
+      expect(slot.ammoReserve).toBe(10);
+
+      // Step remainder of reload animation
+      const remainingReload = emptyReloadTicks - commitTick;
+      for (let t = 0; t < remainingReload; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
+
+      // After reload, bolt chambering cycle ensures weapon is cycled before ready to fire
+      expect(state.actionState === 'idle' || state.actionState === 'cycling_bolt').toBe(true);
+      expect(slot.ammoInMag).toBe(5);
+    });
     it('enforces bolt cycle delay of 1.333s (45 RPM) between shots', () => {
       const fireState = createFireTimingState();
       const def = SNIPER_DEF;

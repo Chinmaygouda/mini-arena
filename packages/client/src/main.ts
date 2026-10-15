@@ -72,7 +72,11 @@ async function initApp(): Promise<void> {
     url.searchParams.has('forceWebGL') &&
     url.searchParams.get('forceWebGL') !== 'false' &&
     url.searchParams.get('forceWebGL') !== '0';
-  const isDebug = import.meta.env.DEV || url.searchParams.has('debug');
+  const isDebug =
+    import.meta.env.DEV ||
+    url.searchParams.has('debug') ||
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1';
 
   // Three.js WebGPURenderer with automatic WebGL2 fallback
   const renderer = new WebGPURenderer({

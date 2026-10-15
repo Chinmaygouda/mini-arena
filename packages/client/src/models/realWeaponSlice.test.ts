@@ -44,6 +44,15 @@ describe('Real Weapon Model Slice — AK-47 & PSX Arms Contract Verification', (
     expect(splitModel.magRestPos.x).toBeCloseTo(0, 2);
     expect(splitModel.magRestPos.z).toBeCloseTo(-0.125, 2);
 
+    const bBox = new THREE.Box3().setFromObject(splitModel.root);
+    console.log('AK-47 Root BBox:', bBox.min, bBox.max);
+    splitModel.root.traverse((c) => {
+      if ((c as THREE.Mesh).isMesh) {
+        const mb = new THREE.Box3().setFromObject(c);
+        console.log('AK Mesh:', c.name, 'min:', mb.min, 'max:', mb.max);
+      }
+    });
+
     // Build the visual definition
     const visualDef = createRealAK47VisualDef(splitModel);
     expect(visualDef.weaponId).toBe('assault_rifle');
@@ -98,5 +107,23 @@ describe('Real Weapon Model Slice — AK-47 & PSX Arms Contract Verification', (
     expect(totalTris).toBe(3549);
     // PLAN.md viewmodel budget is 10,000 triangles
     expect(totalTris).toBeLessThan(10000);
+
+    console.log('=== ARMS RIG HIERARCHY ===');
+    gltf.scene.traverse((c) => {
+      if ((c as THREE.Bone).isBone) {
+        console.log('Bone:', c.name, 'pos:', c.position);
+      }
+      if ((c as THREE.SkinnedMesh).isSkinnedMesh) {
+        const sm = c as THREE.SkinnedMesh;
+        console.log('SkinnedMesh:', sm.name, 'skeleton bones:', sm.skeleton.bones.length);
+        console.log('Geometry groups:', sm.geometry.groups);
+        console.log('Geometry attributes:', Object.keys(sm.geometry.attributes));
+        if (Array.isArray(sm.material)) {
+          sm.material.forEach((m, idx) => console.log('Mat[' + idx + ']:', m.name, m.type));
+        } else {
+          console.log('Mat:', sm.material.name, sm.material.type);
+        }
+      }
+    });
   });
 });
