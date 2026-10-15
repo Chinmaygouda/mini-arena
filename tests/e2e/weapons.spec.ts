@@ -622,5 +622,161 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     });
     expect(viewmodelRestored).toBe(true);
   });
+
+  test('tactical reload commits ammo at integer commit tick and updates HUD', async ({ page }) => {
+    // Assault rifle with 10 rounds in mag, 90 in reserve
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[0]!;
+      slot.ammoInMag = 10;
+      slot.ammoReserve = 90;
+    });
+
+    // Press reload
+    await page.evaluate(() => {
+      window.__inputManager!.setReload(true);
+    });
+    await page.waitForTimeout(50);
+    await page.evaluate(() => {
+      window.__inputManager!.setReload(false);
+    });
+
+    // Wait for reloading state
+    await page.waitForFunction(() => {
+      const ws = window.__weaponState!;
+      return ws.actionState === 'reloading_tactical';
+    }, { timeout: 6000 });
+
+    const actionText = page.locator('#hud-weapon-action');
+    await expect(actionText).toHaveText('RELOADING...');
+
+    // Wait until reload finishes and state returns to idle
+    await page.waitForFunction(() => {
+      const ws = window.__weaponState!;
+      return ws.actionState === 'idle';
+    }, { timeout: 6000 });
+
+    // Verify ammo is refilled to 30 / 70
+    const magEl = page.locator('#hud-ammo-mag');
+    const reserveEl = page.locator('#hud-ammo-reserve');
+    await expect(magEl).toHaveText('30');
+    await expect(reserveEl).toHaveText('/ 70');
+  });
+
+  test('auto-reload triggers automatically when magazine hits 0 with reserve > 0', async ({ page }) => {
+    // Empty mag of pistol (slot 1) with reserve = 24
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(1);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 1);
+
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[1]!;
+      slot.ammoInMag = 0;
+      slot.ammoReserve = 24;
+      window.__weaponState!.actionState = 'idle';
+      window.__weaponState!.shotCooldownTimer = 0;
+    });
+
+    // Wait for auto-reload to engage
+    await page.waitForFunction(() => {
+      const ws = window.__weaponState!;
+      return ws.actionState === 'reloading_tactical' || ws.actionState === 'reloading_empty';
+    }, { timeout: 6000 });
+
+    const isReloading = await page.evaluate(() => {
+      const ws = window.__weaponState!;
+      return ws.actionState === 'reloading_tactical' || ws.actionState === 'reloading_empty';
+    });
+    expect(isReloading).toBe(true);
+  });
+
+  test('auto-switch swaps to next weapon with ammo prioritizing last-used when mag and reserve hit 0', async ({ page }) => {
+    // Setup: Player was using SMG (slot 2), now switched to Pistol (slot 1)
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(2);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 2);
+
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(1);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 1);
+
+    // Empty pistol completely (mag = 0, reserve = 0)
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[1]!;
+      slot.ammoInMag = 0;
+      slot.ammoReserve = 0;
+      window.__weaponState!.actionState = 'idle';
+      window.__weaponState!.lastUsedSlot = 2; // Last used was SMG
+    });
+
+    // Wait for auto-switch to activate and swap to SMG (slot 2)
+    await page.waitForFunction(() => {
+      return window.__weaponState!.currentSlot === 2;
+    }, { timeout: 6000 });
+
+    const activeSlot = await page.evaluate(() => window.__weaponState!.currentSlot);
+    expect(activeSlot).toBe(2);
+
+    const nameEl = page.locator('#hud-weapon-name');
+    await expect(nameEl).toHaveText('Rapid SMG');
+  });
+
+  test('manual weapon swap cancels active auto-switch countdown', async ({ page }) => {
+    // Empty pistol completely (mag = 0, reserve = 0)
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(1);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 1);
+
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[1]!;
+      slot.ammoInMag = 0;
+      slot.ammoReserve = 0;
+      window.__weaponState!.actionState = 'idle';
+    });
+
+    // Wait until autoSwitchTimer starts ticking down
+    await page.waitForFunction(() => {
+      return window.__weaponState!.autoSwitchTimer > 0;
+    }, { timeout: 6000 });
+
+    // Player manually swaps to Sniper (slot 4)
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(4);
+    });
+
+    // Auto-switch timer must immediately cancel to 0
+    await page.waitForFunction(() => {
+      return window.__weaponState!.autoSwitchTimer === 0;
+    }, { timeout: 6000 });
+
+    await page.waitForFunction(() => {
+      return window.__weaponState!.currentSlot === 4;
+    }, { timeout: 6000 });
+
+    const finalSlot = await page.evaluate(() => window.__weaponState!.currentSlot);
+    expect(finalSlot).toBe(4);
+  });
+
+  test('HUD displays OUT OF AMMO in red when all inventory slots are exhausted', async ({ page }) => {
+    // Exhaust all 5 slots
+    await page.evaluate(() => {
+      for (const slot of window.__weaponState!.slots) {
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 0;
+      }
+      window.__weaponState!.actionState = 'idle';
+    });
+
+    // Wait for isOutOfAmmo to be flagged
+    await page.waitForFunction(() => {
+      return window.__weaponState!.isOutOfAmmo === true;
+    }, { timeout: 6000 });
+
+    const actionText = page.locator('#hud-weapon-action');
+    await expect(actionText).toHaveText('OUT OF AMMO');
+  });
 });
 

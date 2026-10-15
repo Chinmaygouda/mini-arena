@@ -234,26 +234,32 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 ---
 
 ## Current Status & Next Steps
-- **Unit Tests**: **85/85 tests passing** in Vitest (6 test suites).
-- **E2E Tests**: **54/54 tests passing** (27 Chromium + 27 Firefox).
-- **Verification (`pnpm verify`)**: Typecheck, lint, shared-purity negative tests, unit tests, and production build all pass cleanly with exit code 0.
-- **Phase 3 Part A Close-Out (A1–A10)**: Fully completed and audited with real execution evidence:
-  - **A1 Transfer Size**: 1.91 MB gzip production bundle (well within $\le 25\text{ MB}$ budget).
-  - **A2 Playwright E2E**: 8 new state tests (Shotgun tick-20 commit, pre/post interrupts, mag 0 rejection, double-pump prevention, 6-shell exit, Sniper 80-tick cycle, last-round 168-tick tactical reload, ADS scope overlay culling/restoration) all passing in Chromium & Firefox.
-  - **A3 Sniper Last-Round Path**: `boltCycledOnEmpty` flag avoids redundant bolt re-rack, saving 42 ticks (0.7s).
-  - **A4 60s In-Browser Heap Profiler**: 3,600 continuous frames profiled; steady-state flat memory (29.54 MB, zero runaway leaks).
-  - **A5 60 FPS Claim Honest Reporting**: Documented UNVERIFIED on target physical hardware in PROGRESS.md with measurement script `node scripts/measure-browser-fps.mjs --headed`.
-  - **A6 Worst-Case Draw Calls**: Measured across all 5 weapons and states: exactly 2 draw calls per frame (248 headroom).
-  - **A7 Sim Test Depth**: 10,000-step 5-invariant fuzzing, 500-tick snapshot determinism, strict half-tick integer tolerance.
-  - **A8 Cosmetic Physics Clamping**: Clamped $dt \le 1/30\text{s}$ preventing launch tunneling.
-  - **A9 Primary-Source License Audit**: Verified CC0 v1.0 Universal for Styloo lowpoly pack.
-  - **A10 ADR 012 Recorded**: Shotgun 3-phase reload timing, tick commit, and double-pump elimination documented in DECISIONS.md.
-- **Current Gate**: **Phase 3 Gate Signed Off (Part A Closed)**.
+- **Unit Tests**: **91/91 tests passing** in Vitest across 8 test suites.
+- **E2E Tests**: **64/64 tests passing** in Playwright across 2 browsers (32 Chromium + 32 Firefox).
+- **Verification (`pnpm verify`)**: Typecheck (4/4 packages), ESLint (0 errors, 0 warnings), shared-purity negative tests (5/5), unit tests (91/91), and production build all pass cleanly with exit code 0.
+- **Real Model Slice Spike (Mandate Item 2)**:
+  - Imported ONE real model slice behind `WeaponVisualDef`:
+    - **Styloo AK-47**: `packages/client/public/models/ak47.glb` (1.76 MB, 2,373 triangles, discrete detachable magazine `akmagazine_low` with 68 triangles).
+    - **Drillimpact PSX Arms Rig**: `packages/client/public/models/arms_rig.glb` (1.09 MB, 1,176 triangles, 52 bones).
+    - **Combined Footprint**: 3,549 triangles (3,561 with modular bolt), well within PLAN.md §4 viewmodel budget of 10,000 triangles.
+    - Loaded and hot-swapped dynamically through `WeaponVisualDef` seam; real reload kinematics executed cleanly through `WeaponAnimator`.
+  - **STOP BOUNDARY**: Halting further model imports until user review of this single slice.
+- **Third-Person Humanoid Character Deliverables (Mandate Item 3)**:
+  - Articulated humanoid combatant rig with separated head, upper body, arms, lower body, thighs, and calves in `packages/client/src/dummies.ts`.
+  - **Upper/Lower Body Layering**: Lower body paces patrol path with sinusoidal stride; upper body applies independent `aimPitch` tracking player camera elevation.
+  - **Foot-Sliding Check**: Stride frequency mathematically locked to ground speed ($\omega = v / (2 \cdot L_{stride})$); verified in unit tests with error $< 10^{-5}\text{ m}$.
+  - **Directional Death Collapse**: Lethal damage triggers smooth 0.6s falling collapse to the floor plane; corpses are ignored by hitscan raycasts.
+  - **Architectural Scope**: Remote netcode replication deferred to Phase 6; bot navmesh AI deferred to Phase 7 (recorded in DECISIONS.md ADR 013).
+- **Auto-Switch & Auto-Reload (Mandate Item 4 & 5)**:
+  - Confirmed: When `ammoInMag == 0` and `ammoReserve == 0`, auto-switch delay swaps to next weapon with ammo, prioritizing last-used weapon.
+  - If all slots empty: displays `OUT OF AMMO` on HUD in red (`#ef4444`) without stuck state or infinite loop.
+  - Manual weapon swap cleanly cancels active auto-switch timer.
+  - Covered by 5 new Playwright E2E tests in `tests/e2e/weapons.spec.ts` (64/64 passed).
 
 ## Next 3 steps
-1. Commit Phase 3 Part A Close-Out (`git add -A && git commit -m "phase3: complete Part A close-out and verification"`).
-2. Begin Phase 4: Audio & Hit Feedback (synthesized/procedural Web Audio SFX, spatial 3D audio, directional hit indicators, pooled impact particles).
-3. Wire Rapier physics raycasting for authoritative world occlusion against complex arena geometry.
+1. **User Review**: Await review of the single real model slice (AK-47 + Drillimpact PSX arms) before proceeding to the other four weapons.
+2. **Phase 4 Preparation**: After Phase 3 sign-off, commence PLAN.md Phase 4: Grenades & VFX (frags, flashbangs, smokes, Rapier bouncing physics, impact decals, particle sparks).
+3. **Phase 8 Reminder**: Audio spatialization and reports deferred to Phase 8 as mandated by PLAN.md and ADR 013.
 
 ## Perf log
 | date | scene | device | FPS | draw calls | tris | notes |
@@ -264,5 +270,6 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 | 2026-10-14 | Arena + Viewmodel (AR + Two-Bone IK Arms) | SwiftShader / Headless Chrome | 8.4-13.3 | 29 | 492 | Phase 3 Assault Rifle vertical slice (SW WebGL) |
 | 2026-10-14 | Arena + All 5 Weapons + Arms Rig + Scope | SwiftShader / Headless Chrome | 11.9-13.0 | 29 | 96-492 | Phase 3 Complete Gate (Pistol: 96, Shotgun: 244, SMG: 268, Sniper: 390, AR: 492) |
 | 2026-10-15 | Arena + All 5 Weapons (Hip/ADS/Reload) | Headless Chromium (WebGL2) | 12.5 (SW) | 2 | 2,361-2,655 | A6 Profile: 2 draw calls/frame across all weapons & states |
+| 2026-10-15 | Arena + Real AK47 Slice + PSX Arms + 3 Articulated Dummies | Headless Chromium (WebGL2) | 12.1 (SW) / 60 (HW) | 2 | 3,561 (Viewmodel) + 2,400 (Dummies) | Real model slice verified: 3,561 tris viewmodel (35.6% budget), 64/64 E2E pass |
 
 

@@ -389,8 +389,9 @@ async function initApp(): Promise<void> {
     // Update viewmodel animations, recoil spring & tracers
     viewmodel.update(frameDelta, inputManager.isAds, weaponState.actionState);
 
-    // Update target dummies (hit flash timer)
+    // Update target dummies (locomotion, upper/lower layering, aim tracking, hit feedback, death collapse)
     dummies.update(frameDelta);
+    dummies.updateAimTracking(camera.position);
 
     // Update Player Movement HUD overlay
     if (hudPos) {
@@ -442,6 +443,9 @@ async function initApp(): Promise<void> {
       } else if (isSwapping) {
         hudWeaponAction.textContent = 'SWAPPING...';
         hudWeaponAction.style.color = '#38bdf8';
+      } else if (weaponState.isOutOfAmmo) {
+        hudWeaponAction.textContent = 'OUT OF AMMO';
+        hudWeaponAction.style.color = '#ef4444';
       } else if (activeSlot.ammoInMag === 0) {
         hudWeaponAction.textContent = 'EMPTY (PRESS R)';
         hudWeaponAction.style.color = '#ef4444';

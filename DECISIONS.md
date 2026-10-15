@@ -348,3 +348,39 @@ Additionally, a 4.70s reload in a fast-paced 2v2 tactical arena created sluggish
 4. **Verification**:
    - Enforced by automated unit tests in `packages/shared/src/weapons/weapons.test.ts` and clip duration verification in `packages/client/src/animation/validateVisualDef.ts`.
 
+---
+
+## ADR 013: Strict Adherence to PLAN.md Phase Sequencing & Third-Person Architecture Scope
+
+**Date**: 2026-10-15  
+**Status**: Accepted
+
+### Context
+In previous session reporting, a proposal labeled Phase 4 as "Audio & Hit Feedback". However, `PLAN.md` §5 explicitly defines the architectural phase sequence:
+- **Phase 3**: Animation pipeline & viewmodels
+- **Phase 4**: Grenades & VFX (frags, flashbangs, smokes, Rapier bouncing physics, pooled particle sparks/smoke, impact decals)
+- **Phase 5**: Maps & art pass
+- **Phase 6**: Authoritative multiplayer (Colyseus, state sync, lag compensation)
+- **Phase 7**: Modes, bots, minimap, HUD, match flow
+- **Phase 8**: Audio & polish (spatial Web Audio, footsteps, weapon reports, hit/kill sounds)
+
+Prematurely shifting audio into Phase 4 violates `PLAN.md` phase gates and dependencies (audio spatialization depends on physical map geometry and full grenade detonation timing from Phase 4 & 5).
+
+Furthermore, `PLAN.md` Phase 3 includes third-person character deliverables: upper/lower body layering, aim offset, death animation, foot-sliding check, and 4 characters at 60 FPS.
+
+### Decisions
+1. **Phase Ordering Reversion**:
+   - The project strictly reverts to `PLAN.md`: **Phase 4 is Grenades & VFX**. Audio is deferred to **Phase 8 (Audio & Polish)** as planned.
+   - Any hit feedback in Phase 4 is strictly visual VFX (bullet impact sparks, dust, bloodless rating-friendly impact flashes, screen shake).
+2. **Third-Person Humanoid Scope & Boundary**:
+   - **Implemented in Phase 3**:
+     - Third-person humanoid character representation with separated torso, head, and articulated limbs for target dummies and combatants.
+     - Upper/lower body layering: lower body drives cyclical locomotion animation while upper body applies pitch `aimOffset` to track look angles.
+     - Directional death animation / collapse: when a character's health drops to 0, it smoothly transitions into a falling collapse onto the ground plane.
+     - Foot-sliding check: stride animation rate synchronized with ground velocity ($\omega = v / r$).
+     - 4-character 60 FPS benchmark: local first-person viewmodel + 3 animated third-person combatants running concurrently in the live arena.
+   - **Deferred to Phase 6 & Phase 7**:
+     - Remote entity state serialization, packet compression, jitter buffering, and remote interpolation delay (~100 ms) are deferred to **Phase 6 (Authoritative Multiplayer)** where Colyseus rooms and schemas are constructed.
+     - Bot pathfinding, sight cones, and behavioral decision trees driving third-person inputs are deferred to **Phase 7 (Modes & Bots)** where Recast navmesh is integrated.
+
+

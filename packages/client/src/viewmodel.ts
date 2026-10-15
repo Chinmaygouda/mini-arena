@@ -8,6 +8,7 @@ import { createShotgunVisualDef } from './animation/shotgunDef';
 import { createSniperVisualDef } from './animation/sniperDef';
 import { WeaponVisualDef } from './animation/types';
 import { WeaponAnimator } from './animation/weaponAnimator';
+import { loadRealAK47Slice } from './models/realWeaponSlice';
 
 export interface Tracer {
   mesh: THREE.Line;
@@ -100,11 +101,30 @@ export class WeaponViewmodel {
     this.animator = new WeaponAnimator(this.currentVisualDef, this.armsRig);
     this.group.add(this.animator.weaponGroup);
 
-    // Count triangles
-    this.countTriangles(this.animator.weaponGroup);
-
     // 4. Cache scope overlay DOM element
     this.sniperScopeElement = document.getElementById('sniper-scope');
+
+    // 5. Asynchronously load the real AK-47 model slice & PSX arms
+    if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
+      loadRealAK47Slice('/models')
+        .then((slice) => {
+          this.visualDefs.assault_rifle = slice.visualDef;
+          if (this.currentVisualDef.weaponId === 'assault_rifle') {
+            this.currentVisualDef = slice.visualDef;
+            this.animator.setVisualDef(slice.visualDef);
+          }
+          if (slice.armsRigGroup) {
+            slice.armsRigGroup.position.set(0, -1.65, 0.05);
+            this.group.add(slice.armsRigGroup);
+          }
+          this.totalTriangles = 0;
+          this.countTriangles(this.animator.weaponGroup);
+          if (slice.armsRigGroup) this.countTriangles(slice.armsRigGroup);
+        })
+        .catch((err) => {
+          console.warn('Real model slice fallback to procedural:', err);
+        });
+    }
   }
 
   private countTriangles(obj: THREE.Object3D): void {
