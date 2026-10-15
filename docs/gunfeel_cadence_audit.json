@@ -1,0 +1,370 @@
+{
+  "assault_rifle": {
+    "name": "Assault Rifle (AK-47)",
+    "specRpm": 600,
+    "specIntervalMs": 100,
+    "specFireMode": "auto",
+    "totalShotsFiredIn10s": 60,
+    "burstIntervalsCount": 58,
+    "meanIntervalMs": 99.93,
+    "minIntervalMs": 98.2,
+    "maxIntervalMs": 101.4,
+    "autofiresOnHold": true,
+    "first5Shots": [
+      {
+        "shotId": 1,
+        "timeMs": 2795.4000000003725,
+        "ammoInMag": 29,
+        "actionState": "idle",
+        "simTick": 137
+      },
+      {
+        "shotId": 2,
+        "timeMs": 2895.100000000559,
+        "ammoInMag": 28,
+        "actionState": "idle",
+        "simTick": 143
+      },
+      {
+        "shotId": 3,
+        "timeMs": 2994.100000000559,
+        "ammoInMag": 27,
+        "actionState": "idle",
+        "simTick": 149
+      },
+      {
+        "shotId": 4,
+        "timeMs": 3093.2999999998137,
+        "ammoInMag": 26,
+        "actionState": "idle",
+        "simTick": 155
+      },
+      {
+        "shotId": 5,
+        "timeMs": 3192.600000000559,
+        "ammoInMag": 25,
+        "actionState": "idle",
+        "simTick": 161
+      }
+    ],
+    "pelletsLogged": 60,
+    "samplePelletsForShotgun": []
+  },
+  "pistol": {
+    "name": "Tactical Pistol",
+    "specRpm": 400,
+    "specIntervalMs": 150,
+    "specFireMode": "semi",
+    "totalShotsFiredIn10s": 72,
+    "burstIntervalsCount": 69,
+    "meanIntervalMs": 71.75,
+    "minIntervalMs": 0,
+    "maxIntervalMs": 151.9,
+    "autofiresOnHold": true,
+    "first5Shots": [
+      {
+        "shotId": 1,
+        "timeMs": 14158.799999999814,
+        "ammoInMag": 11,
+        "actionState": "idle",
+        "simTick": 819
+      },
+      {
+        "shotId": 61,
+        "timeMs": 14158.799999999814,
+        "ammoInMag": 11,
+        "actionState": "idle",
+        "simTick": 819
+      },
+      {
+        "shotId": 2,
+        "timeMs": 14309.5,
+        "ammoInMag": 10,
+        "actionState": "idle",
+        "simTick": 828
+      },
+      {
+        "shotId": 62,
+        "timeMs": 14309.600000000559,
+        "ammoInMag": 10,
+        "actionState": "idle",
+        "simTick": 828
+      },
+      {
+        "shotId": 3,
+        "timeMs": 14459.700000000186,
+        "ammoInMag": 9,
+        "actionState": "idle",
+        "simTick": 837
+      }
+    ],
+    "pelletsLogged": 72,
+    "samplePelletsForShotgun": []
+  },
+  "smg": {
+    "name": "Rapid SMG",
+    "specRpm": 800,
+    "specIntervalMs": 75,
+    "specFireMode": "auto",
+    "totalShotsFiredIn10s": 198,
+    "burstIntervalsCount": 195,
+    "meanIntervalMs": 26.92,
+    "minIntervalMs": 0,
+    "maxIntervalMs": 85,
+    "autofiresOnHold": true,
+    "first5Shots": [
+      {
+        "shotId": 1,
+        "timeMs": 25526.10000000056,
+        "ammoInMag": 29,
+        "actionState": "idle",
+        "simTick": 1501
+      },
+      {
+        "shotId": 37,
+        "timeMs": 25526.10000000056,
+        "ammoInMag": 29,
+        "actionState": "idle",
+        "simTick": 1501
+      },
+      {
+        "shotId": 97,
+        "timeMs": 25526.10000000056,
+        "ammoInMag": 29,
+        "actionState": "idle",
+        "simTick": 1501
+      },
+      {
+        "shotId": 2,
+        "timeMs": 25609.700000000186,
+        "ammoInMag": 28,
+        "actionState": "idle",
+        "simTick": 1506
+      },
+      {
+        "shotId": 38,
+        "timeMs": 25609.799999999814,
+        "ammoInMag": 28,
+        "actionState": "idle",
+        "simTick": 1506
+      }
+    ],
+    "pelletsLogged": 198,
+    "samplePelletsForShotgun": []
+  },
+  "shotgun": {
+    "name": "Combat Shotgun",
+    "specRpm": 80,
+    "specIntervalMs": 750,
+    "specFireMode": "semi",
+    "totalShotsFiredIn10s": 40,
+    "burstIntervalsCount": 39,
+    "meanIntervalMs": 248.28,
+    "minIntervalMs": 0,
+    "maxIntervalMs": 1488.3,
+    "autofiresOnHold": true,
+    "first5Shots": [
+      {
+        "shotId": 1,
+        "timeMs": 36958.799999999814,
+        "ammoInMag": 5,
+        "actionState": "idle",
+        "simTick": 2187
+      },
+      {
+        "shotId": 67,
+        "timeMs": 36958.799999999814,
+        "ammoInMag": 5,
+        "actionState": "idle",
+        "simTick": 2187
+      },
+      {
+        "shotId": 103,
+        "timeMs": 36958.90000000037,
+        "ammoInMag": 5,
+        "actionState": "idle",
+        "simTick": 2187
+      },
+      {
+        "shotId": 163,
+        "timeMs": 36958.90000000037,
+        "ammoInMag": 5,
+        "actionState": "idle",
+        "simTick": 2187
+      },
+      {
+        "shotId": 2,
+        "timeMs": 37718.90000000037,
+        "ammoInMag": 4,
+        "actionState": "idle",
+        "simTick": 2232
+      }
+    ],
+    "pelletsLogged": 320,
+    "samplePelletsForShotgun": [
+      {
+        "shotId": 1,
+        "timeMs": 36958.799999999814,
+        "from": {
+          "x": 0.14,
+          "y": 1.545,
+          "z": 11.363
+        },
+        "to": {
+          "x": 0,
+          "y": 1.67,
+          "z": -7.816
+        }
+      },
+      {
+        "shotId": 67,
+        "timeMs": 36958.799999999814,
+        "from": {
+          "x": 0.14,
+          "y": 1.545,
+          "z": 11.363
+        },
+        "to": {
+          "x": 0,
+          "y": 1.67,
+          "z": -7.816
+        }
+      },
+      {
+        "shotId": 103,
+        "timeMs": 36958.90000000037,
+        "from": {
+          "x": 0.14,
+          "y": 1.545,
+          "z": 11.363
+        },
+        "to": {
+          "x": 0,
+          "y": 1.67,
+          "z": -7.816
+        }
+      },
+      {
+        "shotId": 163,
+        "timeMs": 36958.90000000037,
+        "from": {
+          "x": 0.14,
+          "y": 1.545,
+          "z": 11.363
+        },
+        "to": {
+          "x": 0,
+          "y": 1.67,
+          "z": -7.816
+        }
+      },
+      {
+        "shotId": 1,
+        "timeMs": 36959.299999999814,
+        "from": {
+          "x": 0.14,
+          "y": 1.545,
+          "z": 11.363
+        },
+        "to": {
+          "x": -0.014,
+          "y": 1.67,
+          "z": -7.816
+        }
+      },
+      {
+        "shotId": 67,
+        "timeMs": 36959.299999999814,
+        "from": {
+          "x": 0.14,
+          "y": 1.545,
+          "z": 11.363
+        },
+        "to": {
+          "x": -0.014,
+          "y": 1.67,
+          "z": -7.816
+        }
+      },
+      {
+        "shotId": 103,
+        "timeMs": 36959.299999999814,
+        "from": {
+          "x": 0.14,
+          "y": 1.545,
+          "z": 11.363
+        },
+        "to": {
+          "x": -0.014,
+          "y": 1.67,
+          "z": -7.816
+        }
+      },
+      {
+        "shotId": 163,
+        "timeMs": 36959.299999999814,
+        "from": {
+          "x": 0.14,
+          "y": 1.545,
+          "z": 11.363
+        },
+        "to": {
+          "x": -0.014,
+          "y": 1.67,
+          "z": -7.816
+        }
+      }
+    ]
+  },
+  "sniper": {
+    "name": "Precision Sniper",
+    "specRpm": 45,
+    "specIntervalMs": 1333.3,
+    "specFireMode": "semi",
+    "totalShotsFiredIn10s": 30,
+    "burstIntervalsCount": 28,
+    "meanIntervalMs": 190.44,
+    "minIntervalMs": 0,
+    "maxIntervalMs": 1334,
+    "autofiresOnHold": true,
+    "first5Shots": [
+      {
+        "shotId": 1,
+        "timeMs": 48408.200000000186,
+        "ammoInMag": 4,
+        "actionState": "cycling_bolt",
+        "simTick": 2874
+      },
+      {
+        "shotId": 11,
+        "timeMs": 48408.200000000186,
+        "ammoInMag": 4,
+        "actionState": "cycling_bolt",
+        "simTick": 2874
+      },
+      {
+        "shotId": 77,
+        "timeMs": 48408.200000000186,
+        "ammoInMag": 4,
+        "actionState": "cycling_bolt",
+        "simTick": 2874
+      },
+      {
+        "shotId": 113,
+        "timeMs": 48408.200000000186,
+        "ammoInMag": 4,
+        "actionState": "cycling_bolt",
+        "simTick": 2874
+      },
+      {
+        "shotId": 173,
+        "timeMs": 48408.200000000186,
+        "ammoInMag": 4,
+        "actionState": "cycling_bolt",
+        "simTick": 2874
+      }
+    ],
+    "pelletsLogged": 30,
+    "samplePelletsForShotgun": []
+  }
+}
