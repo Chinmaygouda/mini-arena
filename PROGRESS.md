@@ -234,23 +234,36 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 ---
 
 ## Current Status & Next Steps
-- **Phase 3 Gate Review**: Kept open per user decision (*Option A-lite*, import the 4 weapons one at a time behind a gate).
-- **All 4 Real Weapons Imported Behind Visual Def Contracts**:
-  1. **Tactical Pistol** ([pistolSlice.ts](file:///d:/Games/FPS/packages/client/src/models/pistolSlice.ts)): 1,724 triangles (receiver: 680, slide: 952, mag: 92). Blowback reciprocating slide and detachable mag. Validated in [pistolSlice.test.ts](file:///d:/Games/FPS/packages/client/src/models/pistolSlice.test.ts).
-  2. **Rapid SMG** ([smgSlice.ts](file:///d:/Games/FPS/packages/client/src/models/smgSlice.ts)): 2,126 triangles (receiver: 1,296, bolt: 120, mag: 710). HK slap reciprocating bolt and stick magazine. Validated in [smgSlice.test.ts](file:///d:/Games/FPS/packages/client/src/models/smgSlice.test.ts).
-  3. **Combat Shotgun** ([shotgunSlice.ts](file:///d:/Games/FPS/packages/client/src/models/shotgunSlice.ts)): 2,012 triangles (receiver: 1,756, pump slide: 224, 12-gauge shell: 32). Movable pump action slide and shell insertion. Validated in [shotgunSlice.test.ts](file:///d:/Games/FPS/packages/client/src/models/shotgunSlice.test.ts).
-  4. **Precision Sniper** ([sniperSlice.ts](file:///d:/Games/FPS/packages/client/src/models/sniperSlice.ts)): 2,330 triangles (receiver & scope: 2,186, bolt handle: 84, box mag: 60). Dedicated bolt handle with knob for discrete 80-tick bolt cycling kinematics and detachable box mag. Validated in [sniperSlice.test.ts](file:///d:/Games/FPS/packages/client/src/models/sniperSlice.test.ts).
-- **Art Direction Option A-lite Hand Attachment & Shading**:
-  - Drillimpact PSX arms rig attached via analytical Two-Bone IK solver tracking weapon `gripL` and `gripR` sockets, wrapping fingers naturally around grips.
-  - Tactical matte PBR material swap applied to sleeves and gloves, resolving flat-shaded blockiness.
-- **Unit Tests**: **99/99 tests passing** in Vitest across 12 test suites.
-- **E2E Tests**: **70/70 tests passing** in Playwright across Chromium and Firefox.
-- **Verification (`pnpm verify`)**: Typecheck (4/4 packages), ESLint (0 errors), shared-purity tests (5/5), unit tests (99/99), and production build all pass cleanly with exit code 0.
+- **Phase 3 Gate Review**: Kept open per user instruction ("Phase 3 is still open. Do not start Phase 4").
+- **All 5 Real Weapons Verified with Hands on Grips in Real Chrome**:
+  1. **Assault Rifle (AK-47)**: 3,761 tris (receiver + mag + bolt + arms). Hand-to-socket: HandR = 0.29 cm, HandL = 0.29 cm.
+  2. **Tactical Pistol**: 1,724 tris. Hand-to-socket: HandR = 0.00 cm, HandL = 0.01 cm.
+  3. **Rapid SMG**: 1,770 tris. Hand-to-socket: HandR = 0.00 cm, HandL = 0.00 cm.
+  4. **Combat Shotgun**: 2,012 tris. Hand-to-socket: HandR = 0.00 cm, HandL = 0.00 cm.
+  5. **Precision Sniper**: 2,330 tris. Hand-to-socket: HandR = 0.00 cm, HandL = 0.00 cm. Dedicated bolt handle and discrete 80-tick bolt cycling kinematics.
+- **Sniper Optical Scope Overlay & Culling Verification**:
+  - ADS-In: 2D optical scope active, 3D viewmodel and arms culled (`{ vmHidden: true, armsHidden: true, scopeActive: true }`).
+  - ADS-Out: viewmodel and arms restored, scope overlay hidden (`{ vmRestored: true, armsRestored: true, scopeHidden: true }`).
+  - Swap-during-ADS: viewmodel and arms restored immediately to next equipped weapon (Pistol slot 1), scope overlay hidden (`{ currentSlot: 1, vmRestored: true, armsRestored: true, scopeHidden: true }`).
+- **60-Second In-Browser Heap Profiling (`scripts/profile-client-heap-60s.mjs`)**:
+  - Baseline post-GC: 30.100 MB.
+  - Final post-GC after 3,600 continuous frames (firing, swapping, reloading, sprinting): 30.701 MB (+0.602 MB net, +0.0100 MB/s average growth, steady state, PASS).
+- **In-Engine Per-Weapon Hardware Benchmarks (`scripts/measure-perf-all-weapons.mjs`)**:
+  - AK-47: 0.060 ms CPU/frame (sim 0.057 ms, render 0.001 ms) | 99.6% headroom
+  - Pistol: 0.068 ms CPU/frame (sim 0.063 ms, render 0.002 ms) | 99.6% headroom
+  - SMG: 0.051 ms CPU/frame (sim 0.048 ms, render 0.001 ms) | 99.7% headroom
+  - Shotgun: 0.060 ms CPU/frame (sim 0.057 ms, render 0.002 ms) | 99.6% headroom
+  - Sniper: 0.055 ms CPU/frame (sim 0.051 ms, render 0.003 ms) | 99.7% headroom
+  - Worst-case draw calls: 2 passes under WebGL2 fallback, 110 calls under WebGPU (budget: $\le 250$).
+  - Production wire size: 10.16 MB (JS gzip 1.82 MB, HTML 8.18 KB, 5 GLBs + arms 8.33 MB uncompressed; budget: $\le 25.00$ MB).
+- **Unit Tests**: **100/100 tests passing** in Vitest across 12 test suites (including discrete RPM accuracy, snapshot determinism, anti-quickswitch, and sniper double-rack prevention).
+- **E2E Tests**: **23/23 weapons tests passing**, **12/12 controller & smoke tests passing** in Playwright on Chromium.
+- **Verification (`pnpm verify`)**: Typecheck (4/4 packages), ESLint (0 errors), shared-purity tests (5/5), unit tests (100/100), and production build all pass cleanly with exit code 0.
 
 ## Next 3 steps
-1. **User In-Browser Verification**: User reviews real 3D weapon models (AK-47, Pistol, SMG, Shotgun, Sniper) with attached arms in-browser (`pnpm dev`).
-2. **Phase 3 Final Gate Sign-Off**: Confirm all 5 weapons and Option A-lite visuals satisfy user expectations before closing Phase 3.
-3. **Phase 4 Kickoff**: Transition to Phase 4 (grenades, Rapier physics, particle sparks, smoke, decals).
+1. **User Review of Real Chrome Screenshots**: User reviews the 16 screenshots in `docs/screenshots/` (hip, ADS, reload, and sniper scope overlay).
+2. **Phase 3 Formal Sign-off**: User reviews hardware perf re-measurements and signs off Phase 3 closure.
+3. **Phase 4 Kickoff**: Start Phase 4 (grenades, Rapier physics, particle sparks, smoke, decals).
 
 ## Perf log
 | date | scene | device | FPS | draw calls | tris | notes |
@@ -262,7 +275,7 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 | 2026-10-14 | Arena + All 5 Weapons + Arms Rig + Scope | SwiftShader / Headless Chrome | 11.9-13.0 | 29 | 96-492 | Phase 3 Complete Gate (Pistol: 96, Shotgun: 244, SMG: 268, Sniper: 390, AR: 492) |
 | 2026-10-15 | Arena + All 5 Weapons (Hip/ADS/Reload) | Headless Chromium (WebGL2) | 12.5 (SW) | 2 | 2,361-2,655 | A6 Profile: 2 passes reported by WebGL2 fallback |
 | 2026-10-15 | Arena + Real AK47 Slice + PSX Arms + 3 Dummies | Real Chrome (Hardware Intel GPU, WebGPU) | 60.3 | 110 | 6,006 | True hardware benchmark: 60.3 FPS (WebGPU), 60.2 FPS (WebGL2), 110 draw calls |
-| 2026-10-15 | Arena + All 5 Real Weapons (AK47, Pistol, SMG, Shotgun, Sniper) + PSX Arms | Headless / CI | 60 | 110-144 | 1,724-2,373 | All 5 real weapon slices imported, verified, and passing 99 unit + 70 E2E tests |
+| 2026-10-15 | Arena + All 5 Real Weapons + Attached Arms | Real Chrome (Hardware composition) | 60.3 | 110 | 1,724-3,761 | All 5 weapons measured: CPU frame time 0.051-0.068 ms (>99.6% headroom), wire size 10.16 MB |
 
 
 

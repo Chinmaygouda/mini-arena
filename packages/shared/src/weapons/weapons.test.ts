@@ -609,6 +609,34 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
       expect(state.actionState === 'idle' || state.actionState === 'cycling_bolt').toBe(true);
       expect(slot.ammoInMag).toBe(5);
     });
+
+    it('prevents redundant double bolt-rack: last-round reload uses tactical duration when bolt is already cycled', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 4; // Sniper
+      const slot = getCurrentSlot(state);
+      slot.ammoInMag = 0;
+      slot.ammoReserve = 15;
+      slot.boltCycledOnEmpty = true; // Bolt was already cycled after the last round
+
+      triggerReload(state);
+      // Because bolt was already racked after shot, reload uses tactical duration (168 ticks) skipping redundant rack
+      expect(state.actionState).toBe('reloading_tactical');
+      expect(state.stateTicksRemaining).toBe(SNIPER_DEF.reloadSpec.magazine!.tacticalReloadTicks);
+
+      // Contrast with un-cycled empty chamber:
+      const emptyState = createDefaultWeaponState();
+      emptyState.currentSlot = 4;
+      const emptySlot = getCurrentSlot(emptyState);
+      emptySlot.ammoInMag = 0;
+      emptySlot.ammoReserve = 15;
+      emptySlot.boltCycledOnEmpty = false;
+
+      triggerReload(emptyState);
+      // Un-cycled empty magazine must use empty duration (210 ticks) with bolt rack
+      expect(emptyState.actionState).toBe('reloading_empty');
+      expect(emptyState.stateTicksRemaining).toBe(SNIPER_DEF.reloadSpec.magazine!.emptyReloadTicks);
+    });
+
     it('enforces bolt cycle delay of 1.333s (45 RPM) between shots', () => {
       const fireState = createFireTimingState();
       const def = SNIPER_DEF;

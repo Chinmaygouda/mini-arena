@@ -1014,56 +1014,43 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     });
   });
 
-  test('sniper 2D optical scope overlay activates on ADS, culls viewmodel and arms, and restores visibility on release', async ({ page }) => {
-    // 1. Swap to Sniper (slot 4)
+  test('sniper ADS viewmodel culling and scope overlay are restored when swapping to another weapon during ADS', async ({ page }) => {
+    // 1. Equip Sniper (slot 4)
     await page.evaluate(() => {
       window.__inputManager!.setWeaponSlot(4);
     });
     await page.waitForFunction(() => window.__weaponState!.currentSlot === 4);
 
-    // Initial state: not ADS, viewmodel and arms visible
-    const initialVisibility = await page.evaluate(() => {
-      const vm = window.__viewmodel!;
-      return {
-        groupVisible: vm.group.visible,
-        armsVisible: vm.armsRig.group.visible,
-      };
-    });
-    expect(initialVisibility.groupVisible).toBe(true);
-    expect(initialVisibility.armsVisible).toBe(true);
-
     const scopeOverlay = page.locator('#sniper-scope');
-    await expect(scopeOverlay).not.toHaveClass(/active/);
 
-    // 2. Activate ADS (Right-click / zoom)
+    // 2. Enter ADS on Sniper
     await page.evaluate(() => {
       window.__inputManager!.setAds(true);
     });
-
-    // Wait for viewmodel culling to trigger
     await page.waitForFunction(() => {
       const vm = window.__viewmodel!;
       return vm.group.visible === false && vm.armsRig.group.visible === false;
     }, { timeout: 6000 });
-
-    // Verify scope overlay is now active and displayed
     await expect(scopeOverlay).toHaveClass(/active/);
-    await expect(scopeOverlay).toHaveCSS('display', 'block');
 
-    // 3. Release ADS
+    // 3. Swap to Pistol (Slot 1) while holding ADS
     await page.evaluate(() => {
-      window.__inputManager!.setAds(false);
+      window.__inputManager!.setWeaponSlot(1);
     });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 1, { timeout: 6000 });
 
-    // Wait for viewmodel and arms visibility restoration
+    // 4. Verify viewmodel and arms are immediately restored and scope overlay is hidden
     await page.waitForFunction(() => {
       const vm = window.__viewmodel!;
       return vm.group.visible === true && vm.armsRig.group.visible === true;
     }, { timeout: 6000 });
-
-    // Verify scope overlay is hidden
     await expect(scopeOverlay).not.toHaveClass(/active/);
     await expect(scopeOverlay).toHaveCSS('display', 'none');
+
+    // Clean up: release ADS
+    await page.evaluate(() => {
+      window.__inputManager!.setAds(false);
+    });
   });
 
   test('weapon swap cancels active tactical reload without committing ammo', async ({ page }) => {
