@@ -483,7 +483,7 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
       expect(state.actionState).toBe('reloading_shell');
     });
 
-    it('shotgun fire interrupt before commit tick 20 discards progress; after commit tick 20 keeps shell and avoids double pump', () => {
+    it('shotgun fire interrupt before commit tick 20 discards progress, while interrupt after tick 20 retains committed shell', () => {
       // 1. Interrupt BEFORE commit tick 20 (at tick 15)
       const s1 = createDefaultWeaponState();
       s1.currentSlot = 3; // Shotgun
@@ -521,12 +521,32 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
       for (let t = 0; t < 22; t++) {
         stepWeaponStateMachine(s2, SIM_TICK_DELTA);
       }
-      expect(slot2.ammoInMag).toBe(3); // Committed at tick 20!
+      expect(slot2.ammoInMag).toBe(3); // Committed at tick 20
       expect(slot2.ammoReserve).toBe(9);
       const cancelAfter = cancelReloadOnFire(s2);
       expect(cancelAfter).toBe(true);
-      expect(s2.actionState).toBe('idle');
-      expect(slot2.ammoInMag).toBe(3); // Committed shell kept! No double pump!
+      expect(slot2.ammoInMag).toBe(3); // Committed shell retained
+    });
+
+    it('shotgun fire interrupt transitions directly to idle skipping reloading_shell_end to prevent double-pump', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 3;
+      const slot = getCurrentSlot(state);
+      slot.ammoInMag = 1;
+      slot.ammoReserve = 10;
+      triggerReload(state);
+      for (let t = 0; t < 24; t++) {
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+      }
+      expect(state.actionState).toBe('reloading_shell_insert');
+
+      // Player fires mid-insert: state must bypass reloading_shell_end entirely
+      const interrupted = cancelReloadOnFire(state);
+      expect(interrupted).toBe(true);
+      expect(state.actionState).toBe('idle');
+      expect(state.actionState).not.toBe('reloading_shell_end');
+      expect(state.stateTimer).toBe(0);
+      expect(state.stateTicksRemaining).toBe(0);
     });
 
     it('shotgun mag-0 reload initiates pump chambering startTicks before looping inserts', () => {

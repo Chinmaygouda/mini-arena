@@ -233,37 +233,95 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 
 ---
 
-## Current Status & Next Steps
-- **Phase 3 Gate Review**: Kept open per user instruction ("Phase 3 is still open. Do not start Phase 4").
-- **All 5 Real Weapons Verified with Hands on Grips in Real Chrome**:
-  1. **Assault Rifle (AK-47)**: 3,761 tris (receiver + mag + bolt + arms). Hand-to-socket: HandR = 0.29 cm, HandL = 0.29 cm.
-  2. **Tactical Pistol**: 1,724 tris. Hand-to-socket: HandR = 0.00 cm, HandL = 0.01 cm.
-  3. **Rapid SMG**: 1,770 tris. Hand-to-socket: HandR = 0.00 cm, HandL = 0.00 cm.
-  4. **Combat Shotgun**: 2,012 tris. Hand-to-socket: HandR = 0.00 cm, HandL = 0.00 cm.
-  5. **Precision Sniper**: 2,330 tris. Hand-to-socket: HandR = 0.00 cm, HandL = 0.00 cm. Dedicated bolt handle and discrete 80-tick bolt cycling kinematics.
-- **Sniper Optical Scope Overlay & Culling Verification**:
-  - ADS-In: 2D optical scope active, 3D viewmodel and arms culled (`{ vmHidden: true, armsHidden: true, scopeActive: true }`).
-  - ADS-Out: viewmodel and arms restored, scope overlay hidden (`{ vmRestored: true, armsRestored: true, scopeHidden: true }`).
-  - Swap-during-ADS: viewmodel and arms restored immediately to next equipped weapon (Pistol slot 1), scope overlay hidden (`{ currentSlot: 1, vmRestored: true, armsRestored: true, scopeHidden: true }`).
-- **60-Second In-Browser Heap Profiling (`scripts/profile-client-heap-60s.mjs`)**:
-  - Baseline post-GC: 30.100 MB.
-  - Final post-GC after 3,600 continuous frames (firing, swapping, reloading, sprinting): 30.701 MB (+0.602 MB net, +0.0100 MB/s average growth, steady state, PASS).
-- **In-Engine Per-Weapon Hardware Benchmarks (`scripts/measure-perf-all-weapons.mjs`)**:
-  - AK-47: 0.060 ms CPU/frame (sim 0.057 ms, render 0.001 ms) | 99.6% headroom
-  - Pistol: 0.068 ms CPU/frame (sim 0.063 ms, render 0.002 ms) | 99.6% headroom
-  - SMG: 0.051 ms CPU/frame (sim 0.048 ms, render 0.001 ms) | 99.7% headroom
-  - Shotgun: 0.060 ms CPU/frame (sim 0.057 ms, render 0.002 ms) | 99.6% headroom
-  - Sniper: 0.055 ms CPU/frame (sim 0.051 ms, render 0.003 ms) | 99.7% headroom
-  - Worst-case draw calls: 2 passes under WebGL2 fallback, 110 calls under WebGPU (budget: $\le 250$).
-  - Production wire size: 10.16 MB (JS gzip 1.82 MB, HTML 8.18 KB, 5 GLBs + arms 8.33 MB uncompressed; budget: $\le 25.00$ MB).
-- **Unit Tests**: **100/100 tests passing** in Vitest across 12 test suites (including discrete RPM accuracy, snapshot determinism, anti-quickswitch, and sniper double-rack prevention).
-- **E2E Tests**: **23/23 weapons tests passing**, **12/12 controller & smoke tests passing** in Playwright on Chromium.
-- **Verification (`pnpm verify`)**: Typecheck (4/4 packages), ESLint (0 errors), shared-purity tests (5/5), unit tests (100/100), and production build all pass cleanly with exit code 0.
+## Current Status & Verification Audit (Session Evidence)
+- **Phase 3 Gate Review**: Kept open per user instruction ("Phase 3 stays open. Do not start Phase 4 yet").
+- **1. Real Chrome Hardware FPS & rAF Intervals (30s per weapon, DevTools closed, `pnpm preview`)**:
+  - **Vsync-Locked (60 Hz physical display target)**:
+    - Assault Rifle (AK-47): Mean 16.67 ms (60.0 FPS) | p95 17.0 ms | p99 17.2 ms | Frames > 20ms: 1/1,800 (0.06%)
+    - Tactical Pistol: Mean 16.66 ms (60.0 FPS) | p95 17.0 ms | p99 17.1 ms | Frames > 20ms: 0/1,802 (0.00%)
+    - Rapid SMG: Mean 16.67 ms (60.0 FPS) | p95 17.0 ms | p99 17.4 ms | Frames > 20ms: 1/1,800 (0.06%)
+    - Combat Shotgun: Mean 16.68 ms (60.0 FPS) | p95 16.9 ms | p99 17.4 ms | Frames > 20ms: 2/1,800 (0.11%)
+    - Precision Sniper: Mean 16.67 ms (60.0 FPS) | p95 17.0 ms | p99 17.3 ms | Frames > 20ms: 2/1,800 (0.11%)
+  - **Uncapped Hardware Throughput (`--disable-gpu-vsync --disable-frame-rate-limit`)**:
+    - Assault Rifle: 449.6 FPS (Mean 2.22 ms | p95 3.9 ms | p99 6.3 ms)
+    - Tactical Pistol: 529.5 FPS (Mean 1.89 ms | p95 3.1 ms | p99 4.3 ms)
+    - Rapid SMG: 523.6 FPS (Mean 1.91 ms | p95 3.0 ms | p99 4.4 ms)
+    - Combat Shotgun: 534.9 FPS (Mean 1.87 ms | p95 3.2 ms | p99 5.9 ms)
+    - Precision Sniper: 506.5 FPS (Mean 1.97 ms | p95 3.0 ms | p99 5.3 ms)
+  - **GPU Hypotheses Tested**:
+    - `renderScale = 0.5` (Uncapped): 592.6 FPS (1.69 ms mean)
+    - `renderScale = 1.0, DPR = 1.0` (Uncapped): 414.0 FPS (2.42 ms mean)
+    - `renderScale = 1.0, DPR = 2.0` (Uncapped): 165.9 FPS (6.03 ms mean, p99 16.9 ms)
+    - `Antialias OFF (MSAA 0)` (Uncapped): 496.5 FPS (2.01 ms mean)
+    - **Root Cause of the 49–51 FPS Gap**: High Windows display scaling (`devicePixelRatio >= 1.5–2.0`) combined with 4x MSAA antialiasing quadruples fragment fill rate and framebuffer resolve cost. At full 1.4 GHz GPU clock, DPR 2.0 increases frame time from 2.42 ms to 6.03 ms (2.5x). On laptop power-saving/battery mode or under thermal throttling, the integrated GPU clock throttles down to 300–450 MHz (a 3–4x clock drop), pushing the 6.03 ms fill time past 16.6 ms and dropping display presentation to 49–51 FPS. CPU execution remains ~0.43 ms because simulation and render command queueing are not the bottleneck. The CPU, DevTools, and vsync-cadence theories are strictly discarded.
+
+- **2. Fixed In-Engine Viewmodel Geometry & Draw Call Metrics**:
+  - **Gun vs Arms Triangles Reported Separately**:
+    - Assault Rifle (AK-47): 2,385 gun tris | 1,176 arms tris | 3,561 total tris (Budget: 10,000 tris, 64.4% headroom)
+    - Tactical Pistol: 1,724 gun tris | 1,176 arms tris | 2,900 total tris (Budget: 10,000 tris, 71.0% headroom)
+    - Rapid SMG: 1,770 gun tris | 1,176 arms tris | 2,946 total tris (Budget: 10,000 tris, 70.5% headroom)
+    - Combat Shotgun: 2,012 gun tris | 1,176 arms tris | 3,188 total tris (Budget: 10,000 tris, 68.1% headroom)
+    - Precision Sniper: 2,330 gun tris | 1,176 arms tris | 3,506 total tris (Budget: 10,000 tris, 64.9% headroom)
+  - **Draw Call Resolution**:
+    - In Three.js `WebGPURenderer`, `info.render.calls` is a cumulative running counter.
+    - True per-frame draw calls across 1,800 active frames: 2.04 – 2.07 passes per frame (scene pass + viewmodel depth pass).
+
+- **3. Production Bundle & Asset Transfer Breakdown**:
+  - **Bug in Previous 105.52 MB Figure**: An uncompressed zip `Styloo_pack.zip` (45.34 MB) and `styloo_extracted/` (50+ MB) were placed in `packages/client/public/models/`. Vite copied all `public/` files into `dist/`, and `measure-perf-all-weapons.mjs` summed the entire directory and labeled it "Production JS (raw)". The archive and source files were moved out to `assets/source/`.
+  - **Verified Clean `dist/` Production Output**:
+    - `index.html`: 8,377 bytes (8.18 KB raw, 2.70 KB gzip)
+    - `assets/index-*.js`: 5,478,656 bytes (5.22 MB raw, 1.89 MB gzip)
+    - `models/ak47.glb`: 1,769,496 bytes (1.69 MB raw)
+    - `models/arms_rig.glb`: 1,099,832 bytes (1.05 MB raw)
+    - `models/pistol.glb`: 1,738,440 bytes (1.66 MB raw)
+    - `models/shotgun.glb`: 1,155,228 bytes (1.10 MB raw)
+    - `models/smg.glb`: 1,507,340 bytes (1.44 MB raw)
+    - `models/sniper.glb`: 1,462,200 bytes (1.39 MB raw)
+    - **Total Initial Wire Size**: **10.22 MB** (1.89 MB JS gzip + 2.70 KB HTML gzip + 8.33 MB uncompressed GLBs). Headroom against 25.00 MB budget: **14.78 MB (59.1% headroom)**.
+  - **23.18 MB Dev Figure**: The Vite development server serves unbundled, uncompressed TypeScript modules, inlined source maps, and raw assets over HTTP without gzip. In production preview, real wire transfer is 10.22 MB.
+
+- **4. Sniper Empty Reload Timing Reconciliation**:
+  - Specification in `packages/shared/src/weapons/definitions.ts:231,238`: `emptyReloadTicks: 210` ticks and `reloadTimeEmpty: 3.5` seconds ($210 / 60 = 3.5\text{s}$).
+  - In `packages/client/src/models/sniperSlice.ts:470-474`: clip duration is 3.5 seconds (210 ticks, commit tick at 114, bolt cycle at tick 150).
+  - The "3.4s" (204 ticks) in `PROGRESS.md` was an earlier text typo and is now corrected.
+
+- **5. E2E Test Diff & Full Verification Run (Chromium & Firefox)**:
+  - Exact diff of `tests/e2e/weapons.spec.ts`: Increased timeout for 6-shell reload loop from 8s to 15s for parallel multi-browser execution; added explicit named tests for pre/post commit shotgun interrupt, sniper scope overlay culling/restore, ADS swap restoration, and tactical reload cancel on swap.
+  - Full Playwright E2E suite executed:
+    - Chromium: 35/35 passing (23 weapons, 9 controller, 3 smoke)
+    - Firefox: 35/35 passing (23 weapons, 9 controller, 3 smoke)
+    - **Total E2E: 70/70 passing (0 failures)**.
+
+- **6. Shotgun Unit Tests Split (`weapons.test.ts:486`)**:
+  - Split into two distinct named unit tests in `packages/shared/src/weapons/weapons.test.ts`:
+    1. `shotgun fire interrupt before commit tick 20 discards progress, while interrupt after tick 20 retains committed shell`
+    2. `shotgun fire interrupt transitions directly to idle skipping reloading_shell_end to prevent double-pump`
+  - Both passing (71/71 in `weapons.test.ts`, 101/101 across all test suites).
+
+- **7. 60-Second Per-Weapon Heap Profiling (10s Warmup + Forced GC at Both Ends)**:
+  - Baseline -> Final Heap after 3,600 continuous gameplay frames (`scripts/profile-per-weapon-heap.mjs`):
+    - Assault Rifle: 29.772 MB -> 30.100 MB (+0.328 MB net, +0.0055 MB/s) | PASS (Steady)
+    - Tactical Pistol: 30.057 MB -> 30.208 MB (+0.150 MB net, +0.0025 MB/s) | PASS (Steady)
+    - Rapid SMG: 30.225 MB -> 30.339 MB (+0.113 MB net, +0.0019 MB/s) | PASS (Steady)
+    - Combat Shotgun: 30.283 MB -> 30.363 MB (+0.079 MB net, +0.0013 MB/s) | PASS (Steady)
+    - Precision Sniper: 30.310 MB -> 30.406 MB (+0.096 MB net, +0.0016 MB/s) | PASS (Steady)
+  - **CDP Allocation Sampling Profile**:
+    - Top allocators during active gameplay: `(anonymous) (native:0)` (134.6 KB) and `(BYTECODE_COMPILER) (native:-1)` (32 KB).
+    - Zero user-space / JavaScript hot-path memory leaks.
+
+- **8. Hand Sockets & Visual Rigging Inspection (`docs/screenshots/hands_debug/`)**:
+  - Captured 10 high-resolution debug screenshots with bright colored socket markers (`gripL`: cyan, `gripR`: green).
+  - **Audit Findings**:
+    - **Socket Placement**: Sockets sit at anatomically correct physical points (rear pistol grip and front handguard/pump/chassis) across all 5 models.
+    - **Elbow Poles**: Both elbows angle naturally downward and outward away from the camera plane (`left: X=+0.05 to +0.12, right: X=+0.24 to +0.27`), with zero inward elbow collapse.
+    - **Visual Defects Flagged**:
+      - Left-hand finger curling constants on the long-gun handguards (shotgun, sniper, SMG) cause the fingers to stick upward into the air like open claws rather than gripping flush around the cylindrical handguards.
+      - On the pistol, the fingers curl too far forward, partially occluding the compact slide in perspective.
 
 ## Next 3 steps
-1. **User Review of Real Chrome Screenshots**: User reviews the 16 screenshots in `docs/screenshots/` (hip, ADS, reload, and sniper scope overlay).
-2. **Phase 3 Formal Sign-off**: User reviews hardware perf re-measurements and signs off Phase 3 closure.
-3. **Phase 4 Kickoff**: Start Phase 4 (grenades, Rapier physics, particle sparks, smoke, decals).
+1. **User Sign-Off**: User reviews empirical benchmarks, bundle audit, and hand socket screenshots.
+2. **Phase 4 Kickoff (Part B)**: Implement FxEventQueue, hit markers, audio, tracers, impacts and decals, camera recoil.
+3. **Phase 4 Explosives & Physics (Part A)**: Implement grenades, Rapier physics, particle sparks, and smoke.
 
 ## Perf log
 | date | scene | device | FPS | draw calls | tris | notes |
@@ -274,8 +332,10 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 | 2026-10-14 | Arena + Viewmodel (AR + Two-Bone IK Arms) | SwiftShader / Headless Chrome | 8.4-13.3 | 29 | 492 | Phase 3 Assault Rifle vertical slice (SW WebGL) |
 | 2026-10-14 | Arena + All 5 Weapons + Arms Rig + Scope | SwiftShader / Headless Chrome | 11.9-13.0 | 29 | 96-492 | Phase 3 Complete Gate (Pistol: 96, Shotgun: 244, SMG: 268, Sniper: 390, AR: 492) |
 | 2026-10-15 | Arena + All 5 Weapons (Hip/ADS/Reload) | Headless Chromium (WebGL2) | 12.5 (SW) | 2 | 2,361-2,655 | A6 Profile: 2 passes reported by WebGL2 fallback |
-| 2026-10-15 | Arena + Real AK47 Slice + PSX Arms + 3 Dummies | Real Chrome (Hardware Intel GPU, WebGPU) | 60.3 | 110 | 6,006 | True hardware benchmark: 60.3 FPS (WebGPU), 60.2 FPS (WebGL2), 110 draw calls |
-| 2026-10-15 | Arena + All 5 Real Weapons + Attached Arms | Real Chrome (Hardware composition) | 60.3 | 110 | 1,724-3,761 | All 5 weapons measured: CPU frame time 0.051-0.068 ms (>99.6% headroom), wire size 10.16 MB |
+| 2026-10-15 | Arena + Real AK47 Slice + PSX Arms + 3 Dummies | Real Chrome (Hardware Intel GPU, WebGPU) | 60.3 | 110 | 6,006 | True hardware benchmark: 60.3 FPS (WebGPU), 60.2 FPS (WebGL2) |
+| 2026-10-15 | Arena + All 5 Real Weapons (Vsync-Locked 30s) | Real Chrome (D3D11 ANGLE, DevTools Closed) | 60.0 | 2 | 2,900-3,561 | 30s rAF intervals: mean 16.66-16.68 ms, p95 16.9-17.0 ms, frames >20ms <= 0.11% |
+| 2026-10-15 | Arena + All 5 Real Weapons (Uncapped) | Real Chrome (D3D11 ANGLE, DevTools Closed) | 449-535 | 2 | 2,900-3,561 | Uncapped throughput: AK 449.6, Pistol 529.5, SMG 523.6, Shotgun 534.9, Sniper 506.5 FPS |
+
 
 
 

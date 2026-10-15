@@ -54,6 +54,8 @@ declare global {
     __fps?: number;
     __threeRenderer?: WebGPURenderer;
     __camera?: THREE.PerspectiveCamera;
+    __scene?: THREE.Scene;
+    THREE?: typeof THREE;
   }
 }
 
@@ -78,14 +80,24 @@ async function initApp(): Promise<void> {
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1';
 
+  const renderScale = url.searchParams.has('renderScale')
+    ? Math.max(0.1, Math.min(2.0, parseFloat(url.searchParams.get('renderScale')!)))
+    : 1.0;
+  const dpr = url.searchParams.has('dpr')
+    ? parseFloat(url.searchParams.get('dpr')!)
+    : window.devicePixelRatio;
+  const antialias =
+    url.searchParams.get('antialias') !== '0' &&
+    url.searchParams.get('antialias') !== 'false';
+
   // Three.js WebGPURenderer with automatic WebGL2 fallback
   const renderer = new WebGPURenderer({
-    antialias: true,
+    antialias,
     forceWebGL,
   });
 
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(dpr * renderScale, 2));
   container.appendChild(renderer.domElement);
 
   // Mandatory asynchronous initialization for WebGPU
@@ -135,6 +147,8 @@ async function initApp(): Promise<void> {
   scene.add(camera);
   if (isDebug) {
     window.__camera = camera;
+    window.__scene = scene;
+    (window as unknown as { THREE: unknown }).THREE = THREE;
   }
 
   // Lighting

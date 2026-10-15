@@ -76,8 +76,16 @@ export class WeaponViewmodel {
   // Tracers
   private tracers: Tracer[] = [];
 
-  // Triangle count for performance budgeting
+  // Triangle counts for performance budgeting
+  public gunTriangles = 0;
+  public armsTriangles = 0;
   public totalTriangles = 0;
+
+  // Promise signaling that all 5 real weapon GLBs have fully loaded and replaced procedurals
+  public readonly modelsLoaded: Promise<void> = Promise.resolve();
+
+  // Socket debug markers
+  private debugSocketGroup: THREE.Group | null = null;
 
   // DOM 2D Scope Overlay
   private sniperScopeElement: HTMLElement | null = null;
@@ -93,7 +101,7 @@ export class WeaponViewmodel {
     // 1. First-Person Rigged Arms
     this.armsRig = new FirstPersonArmsRig();
     this.camera.add(this.armsRig.group);
-    this.totalTriangles += this.armsRig.totalTriangles;
+    this.armsTriangles = this.armsRig.totalTriangles;
 
     // 2. Pre-instantiate all 5 modular weapon visual definitions
     this.visualDefs = {
@@ -113,13 +121,14 @@ export class WeaponViewmodel {
     // 3. Animator
     this.animator = new WeaponAnimator(this.currentVisualDef, this.armsRig);
     this.group.add(this.animator.weaponGroup);
+    this.refreshTriangleCounts();
 
     // 4. Cache scope overlay DOM element
     this.sniperScopeElement = document.getElementById('sniper-scope');
 
-    // 5. Asynchronously load the real AK-47 model slice & PSX arms
+    // 5. Asynchronously load the real 5 weapon model slices & PSX arms
     if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
-      loadRealAK47Slice('/models')
+      const pAR = loadRealAK47Slice('/models')
         .then((slice) => {
           this.visualDefs.assault_rifle = slice.visualDef;
           if (this.currentVisualDef.weaponId === 'assault_rifle') {
@@ -129,75 +138,130 @@ export class WeaponViewmodel {
           if (slice.armsRigGroup && slice.armsMesh) {
             this.armsRig.setSkinnedArms(slice.armsRigGroup, slice.armsMesh);
           }
-          this.totalTriangles = 0;
-          this.countTriangles(this.animator.weaponGroup);
-          this.countTriangles(this.armsRig.group);
+          this.refreshTriangleCounts();
         })
         .catch((err) => {
           console.warn('Real AK-47 model slice fallback to procedural:', err);
         });
 
-      loadRealPistolSlice('/models')
+      const pPistol = loadRealPistolSlice('/models')
         .then((slice) => {
           this.visualDefs.pistol = slice.visualDef;
           if (this.currentVisualDef.weaponId === 'pistol') {
             this.currentVisualDef = slice.visualDef;
             this.animator.setVisualDef(slice.visualDef);
+            this.refreshTriangleCounts();
           }
         })
         .catch((err) => {
           console.warn('Real Pistol model slice fallback to procedural:', err);
         });
 
-      loadRealSmgSlice('/models')
+      const pSmg = loadRealSmgSlice('/models')
         .then((slice) => {
           this.visualDefs.smg = slice.visualDef;
           if (this.currentVisualDef.weaponId === 'smg') {
             this.currentVisualDef = slice.visualDef;
             this.animator.setVisualDef(slice.visualDef);
+            this.refreshTriangleCounts();
           }
         })
         .catch((err) => {
           console.warn('Real SMG model slice fallback to procedural:', err);
         });
 
-      loadRealShotgunSlice('/models')
+      const pShotgun = loadRealShotgunSlice('/models')
         .then((slice) => {
           this.visualDefs.shotgun = slice.visualDef;
           if (this.currentVisualDef.weaponId === 'shotgun') {
             this.currentVisualDef = slice.visualDef;
             this.animator.setVisualDef(slice.visualDef);
+            this.refreshTriangleCounts();
           }
         })
         .catch((err) => {
           console.warn('Real Shotgun model slice fallback to procedural:', err);
         });
 
-      loadRealSniperSlice('/models')
+      const pSniper = loadRealSniperSlice('/models')
         .then((slice) => {
           this.visualDefs.sniper = slice.visualDef;
           if (this.currentVisualDef.weaponId === 'sniper') {
             this.currentVisualDef = slice.visualDef;
             this.animator.setVisualDef(slice.visualDef);
+            this.refreshTriangleCounts();
           }
         })
         .catch((err) => {
           console.warn('Real Sniper model slice fallback to procedural:', err);
         });
+
+      this.modelsLoaded = Promise.all([pAR, pPistol, pSmg, pShotgun, pSniper]).then(() => {});
     }
   }
 
-  private countTriangles(obj: THREE.Object3D): void {
-    obj.traverse((child) => {
+  public refreshTriangleCounts(): void {
+    let gun = 0;
+    this.animator.weaponGroup.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         if (mesh.geometry.index) {
-          this.totalTriangles += mesh.geometry.index.count / 3;
+          gun += mesh.geometry.index.count / 3;
         } else if (mesh.geometry.attributes.position) {
-          this.totalTriangles += mesh.geometry.attributes.position.count / 3;
+          gun += mesh.geometry.attributes.position.count / 3;
         }
       }
     });
+    this.gunTriangles = gun;
+    this.armsTriangles = this.armsRig.totalTriangles;
+    this.totalTriangles = this.gunTriangles + this.armsTriangles;
+  }
+
+  public setSocketDebugMarkers(visible: boolean): void {
+    if (!visible) {
+      if (this.debugSocketGroup) {
+        this.debugSocketGroup.visible = false;
+      }
+      return;
+    }
+    if (!this.debugSocketGroup) {
+      this.debugSocketGroup = new THREE.Group();
+      this.debugSocketGroup.name = 'Socket_Debug_Markers';
+
+      // Left grip: cyan sphere (radius 0.015m)
+      const geomL = new THREE.SphereGeometry(0.015, 16, 16);
+      const matL = new THREE.MeshBasicMaterial({ color: 0x00ffff, depthTest: false });
+      const sphereL = new THREE.Mesh(geomL, matL);
+      sphereL.name = 'DebugMarker_gripL';
+      sphereL.renderOrder = 999;
+      this.debugSocketGroup.add(sphereL);
+
+      // Right grip: bright green sphere (radius 0.015m)
+      const geomR = new THREE.SphereGeometry(0.015, 16, 16);
+      const matR = new THREE.MeshBasicMaterial({ color: 0x22c55e, depthTest: false });
+      const sphereR = new THREE.Mesh(geomR, matR);
+      sphereR.name = 'DebugMarker_gripR';
+      sphereR.renderOrder = 999;
+      this.debugSocketGroup.add(sphereR);
+
+      this.group.add(this.debugSocketGroup);
+    }
+    this.debugSocketGroup.visible = true;
+    this.updateSocketDebugMarkers();
+  }
+
+  public updateSocketDebugMarkers(): void {
+    if (!this.debugSocketGroup || !this.debugSocketGroup.visible) return;
+    const socketL = this.currentVisualDef.sockets?.gripL;
+    const socketR = this.currentVisualDef.sockets?.gripR;
+    const markerL = this.debugSocketGroup.getObjectByName('DebugMarker_gripL');
+    const markerR = this.debugSocketGroup.getObjectByName('DebugMarker_gripR');
+    if (markerL && socketL) {
+      markerL.position.copy(socketL);
+    }
+    if (markerR && socketR) {
+      markerR.position.copy(socketR);
+    }
   }
 
   public updateWeaponVisual(weapon: WeaponDef): void {
@@ -213,8 +277,8 @@ export class WeaponViewmodel {
 
     // Hot-swap modular mesh parts on animator
     this.animator.setVisualDef(this.currentVisualDef);
-    this.totalTriangles = 0;
-    this.countTriangles(this.animator.weaponGroup);
+    this.refreshTriangleCounts();
+    this.updateSocketDebugMarkers();
   }
 
   public playClip(
