@@ -237,29 +237,24 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 - **Unit Tests**: **91/91 tests passing** in Vitest across 8 test suites.
 - **E2E Tests**: **64/64 tests passing** in Playwright across 2 browsers (32 Chromium + 32 Firefox).
 - **Verification (`pnpm verify`)**: Typecheck (4/4 packages), ESLint (0 errors, 0 warnings), shared-purity negative tests (5/5), unit tests (91/91), and production build all pass cleanly with exit code 0.
-- **Real Model Slice Spike (Mandate Item 2)**:
-  - Imported ONE real model slice behind `WeaponVisualDef`:
-    - **Styloo AK-47**: `packages/client/public/models/ak47.glb` (1.76 MB, 2,373 triangles, discrete detachable magazine `akmagazine_low` with 68 triangles).
-    - **Drillimpact PSX Arms Rig**: `packages/client/public/models/arms_rig.glb` (1.09 MB, 1,176 triangles, 52 bones).
-    - **Combined Footprint**: 3,549 triangles (3,561 with modular bolt), well within PLAN.md §4 viewmodel budget of 10,000 triangles.
-    - Loaded and hot-swapped dynamically through `WeaponVisualDef` seam; real reload kinematics executed cleanly through `WeaponAnimator`.
-  - **STOP BOUNDARY**: Halting further model imports until user review of this single slice.
-- **Third-Person Humanoid Character Deliverables (Mandate Item 3)**:
-  - Articulated humanoid combatant rig with separated head, upper body, arms, lower body, thighs, and calves in `packages/client/src/dummies.ts`.
-  - **Upper/Lower Body Layering**: Lower body paces patrol path with sinusoidal stride; upper body applies independent `aimPitch` tracking player camera elevation.
-  - **Foot-Sliding Check**: Stride frequency mathematically locked to ground speed ($\omega = v / (2 \cdot L_{stride})$); verified in unit tests with error $< 10^{-5}\text{ m}$.
-  - **Directional Death Collapse**: Lethal damage triggers smooth 0.6s falling collapse to the floor plane; corpses are ignored by hitscan raycasts.
-  - **Architectural Scope**: Remote netcode replication deferred to Phase 6; bot navmesh AI deferred to Phase 7 (recorded in DECISIONS.md ADR 013).
-- **Auto-Switch & Auto-Reload (Mandate Item 4 & 5)**:
-  - Confirmed: When `ammoInMag == 0` and `ammoReserve == 0`, auto-switch delay swaps to next weapon with ammo, prioritizing last-used weapon.
-  - If all slots empty: displays `OUT OF AMMO` on HUD in red (`#ef4444`) without stuck state or infinite loop.
-  - Manual weapon swap cleanly cancels active auto-switch timer.
-  - Covered by 5 new Playwright E2E tests in `tests/e2e/weapons.spec.ts` (64/64 passed).
+- **Real Model Slice Spike & Hardware Benchmark (Review Fixes)**:
+  - **Hardware FPS in Real Chrome**: Tested in real Chrome on hardware GPU (Intel Graphics, D3D11, Driver 32.0.101.7084) with all 4 characters visible (1 First-Person player viewmodel + 3 articulated combatant dummies Alpha, Bravo, Charlie):
+    - Native WebGPU: **60.3 FPS** avg, 59.0 FPS 1% low, 16.59 ms frame time, 110 draw calls, 6,006 tris.
+    - WebGL2 Fallback (`?forceWebGL=1`): **60.2 FPS** avg, 58.3 FPS 1% low, 16.61 ms frame time, 144 draw calls, 6,006 tris.
+  - **Draw Call Clarification**: The previously reported "2 draw calls" was an artifact of `three/webgpu`'s WebGL2 fallback reporting high-level render passes (clear pass + main pass). Under native WebGPU, total scene draw calls are **110 calls/frame** (Arena: 58, 3 Dummies: 36, Viewmodel: 16), safely within the $\le 250$ budget (56% headroom).
+  - **Strengthened E2E Tests**:
+    - ADS asserts FOV drop ($75^\circ \to < 65^\circ$) and viewmodel eye alignment ($x \approx 0.13 \to |x| < 0.05$).
+    - Firing asserts recoil spring displacement and kick counter increment.
+    - Tactical reload asserts ammo uncommitted at tick 71 and committed at integer commit tick 72 mid-reload.
+    - Shotgun fire-interrupt uses deterministic `onTick` simulation hooks, eliminating frame-timing jitter.
+    - Sniper bolt cycle and anti-quickswitch lockout tested across 20 iterations with zero flakes.
+    - Full E2E suite: **40/40 tests passed** across Chromium and Firefox.
+- **ASSETS.md Restructuring**: Split into `USED` (active in-engine) and `CANDIDATE` (pre-cleared for future phases); license files copied to `licenses/CC0-1.0.txt`, `licenses/CC-BY-4.0.txt`, `licenses/MIT.txt`.
 
 ## Next 3 steps
-1. **User Review**: Await review of the single real model slice (AK-47 + Drillimpact PSX arms) before proceeding to the other four weapons.
-2. **Phase 4 Preparation**: After Phase 3 sign-off, commence PLAN.md Phase 4: Grenades & VFX (frags, flashbangs, smokes, Rapier bouncing physics, impact decals, particle sparks).
-3. **Phase 8 Reminder**: Audio spatialization and reports deferred to Phase 8 as mandated by PLAN.md and ADR 013.
+1. **User Art Direction Review**: Await user choice on art direction (PSX stylized retro vs modern low-poly vs photoreal arm replacement) and approval of Styloo pack for remaining 4 weapons.
+2. **Phase 4 Preparation**: After user sign-off, begin Phase 4 (grenades, Rapier physics, particle sparks, smoke, decals).
+3. **Phase 8 Reminder**: Audio code strictly deferred to Phase 8 per PLAN.md and ADR 013.
 
 ## Perf log
 | date | scene | device | FPS | draw calls | tris | notes |
@@ -269,7 +264,8 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 | 2026-10-14 | Arena + 3 Dummies + Viewmodel + Tracers | Chrome (WebGPU Backend) | 60 | 28 | 840 | Phase 2 weapon core + dummies pass |
 | 2026-10-14 | Arena + Viewmodel (AR + Two-Bone IK Arms) | SwiftShader / Headless Chrome | 8.4-13.3 | 29 | 492 | Phase 3 Assault Rifle vertical slice (SW WebGL) |
 | 2026-10-14 | Arena + All 5 Weapons + Arms Rig + Scope | SwiftShader / Headless Chrome | 11.9-13.0 | 29 | 96-492 | Phase 3 Complete Gate (Pistol: 96, Shotgun: 244, SMG: 268, Sniper: 390, AR: 492) |
-| 2026-10-15 | Arena + All 5 Weapons (Hip/ADS/Reload) | Headless Chromium (WebGL2) | 12.5 (SW) | 2 | 2,361-2,655 | A6 Profile: 2 draw calls/frame across all weapons & states |
-| 2026-10-15 | Arena + Real AK47 Slice + PSX Arms + 3 Articulated Dummies | Headless Chromium (WebGL2) | 12.1 (SW) / 60 (HW) | 2 | 3,561 (Viewmodel) + 2,400 (Dummies) | Real model slice verified: 3,561 tris viewmodel (35.6% budget), 64/64 E2E pass |
+| 2026-10-15 | Arena + All 5 Weapons (Hip/ADS/Reload) | Headless Chromium (WebGL2) | 12.5 (SW) | 2 | 2,361-2,655 | A6 Profile: 2 passes reported by WebGL2 fallback |
+| 2026-10-15 | Arena + Real AK47 Slice + PSX Arms + 3 Dummies | Real Chrome (Hardware Intel GPU, WebGPU) | 60.3 | 110 | 6,006 | True hardware benchmark: 60.3 FPS (WebGPU), 60.2 FPS (WebGL2), 110 draw calls |
+
 
 

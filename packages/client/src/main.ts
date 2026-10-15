@@ -53,6 +53,7 @@ declare global {
     __viewmodel?: WeaponViewmodel;
     __fps?: number;
     __threeRenderer?: WebGPURenderer;
+    __camera?: THREE.PerspectiveCamera;
   }
 }
 
@@ -128,6 +129,9 @@ async function initApp(): Promise<void> {
   );
   camera.rotation.order = 'YXZ';
   scene.add(camera);
+  if (isDebug) {
+    window.__camera = camera;
+  }
 
   // Lighting
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);

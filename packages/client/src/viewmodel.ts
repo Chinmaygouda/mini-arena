@@ -59,6 +59,15 @@ export class WeaponViewmodel {
   // Procedural recoil kick spring
   private recoilOffsetZ = 0;
   private recoilPitch = 0;
+  public kickCount = 0;
+
+  public getRecoilOffsetZ(): number {
+    return this.recoilOffsetZ;
+  }
+
+  public getRecoilPitch(): number {
+    return this.recoilPitch;
+  }
 
   // Tracers
   private tracers: Tracer[] = [];
@@ -178,6 +187,7 @@ export class WeaponViewmodel {
     // Kick viewmodel back and tilt nose up
     this.recoilOffsetZ += 0.04;
     this.recoilPitch += pitchKick * 0.7;
+    this.kickCount++;
 
     // Trigger weapon animator fire recoil clip
     this.animator.playClip('fire', true);

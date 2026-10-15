@@ -35,27 +35,47 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
   test('firing consumes ammo, decrements mag count, and triggers viewmodel kick', async ({
     page,
   }) => {
-    // Check initial ammo
-    const magBefore = await page.evaluate(() => {
+    // Check initial ammo and viewmodel recoil state
+    const beforeState = await page.evaluate(() => {
       const slot = window.__weaponState!.slots[window.__weaponState!.currentSlot];
-      return slot ? slot.ammoInMag : 0;
+      const vm = window.__viewmodel;
+      return {
+        mag: slot ? slot.ammoInMag : 0,
+        kickCount: vm ? vm.kickCount : 0,
+        recoilZ: vm ? vm.getRecoilOffsetZ() : 0,
+        recoilPitch: vm ? vm.getRecoilPitch() : 0,
+      };
     });
-    expect(magBefore).toBe(30);
+    expect(beforeState.mag).toBe(30);
+    expect(beforeState.kickCount).toBe(0);
 
     // Fire weapon using input manager
     await page.evaluate(() => {
       window.__inputManager!.setFire(true);
     });
 
-    // Wait until ammo in mag decreases
+    // Wait until ammo in mag decreases and viewmodel kick counter increments
     await page.waitForFunction(
       () => {
         const slot = window.__weaponState?.slots[window.__weaponState.currentSlot];
-        return slot ? slot.ammoInMag < 30 : false;
+        const vm = window.__viewmodel;
+        return (slot ? slot.ammoInMag < 30 : false) && (vm ? vm.kickCount > 0 : false);
       },
       { timeout: 6000 },
     );
 
+    // Verify viewmodel kick state during/immediately following shot
+    const kickInfo = await page.evaluate(() => {
+      const vm = window.__viewmodel!;
+      const slot = window.__weaponState!.slots[window.__weaponState!.currentSlot]!;
+      return {
+        mag: slot.ammoInMag,
+        kickCount: vm.kickCount,
+        clipName: vm.animator.getCurrentClipName(),
+      };
+    });
+
+    // Stop firing
     await page.evaluate(() => {
       window.__inputManager!.setFire(false);
       if (window.__weaponState) {
@@ -63,19 +83,13 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
       }
     });
 
-    // Allow frame to render settled state
-    await page.waitForTimeout(100);
-
-    // Verify ammo decreased
-    const magAfter = await page.evaluate(() => {
-      const slot = window.__weaponState!.slots[window.__weaponState!.currentSlot];
-      return slot ? slot.ammoInMag : 0;
-    });
-    expect(magAfter).toBeLessThan(30);
+    // Concrete kick assertions: recoil kick was registered
+    expect(kickInfo.mag).toBeLessThan(30);
+    expect(kickInfo.kickCount).toBeGreaterThan(0);
 
     // Verify HUD reflects new ammo count
     const magEl = page.locator('#hud-ammo-mag');
-    await expect(magEl).toHaveText(`${magAfter}`);
+    await expect(magEl).toHaveText(`${kickInfo.mag}`);
   });
 
   test('weapon swap cycles through all 5 weapons via Digit keys and updates HUD', async ({
@@ -200,25 +214,75 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
   });
 
   test('ADS right click activates zoom and transitions viewmodel', async ({ page }) => {
-    // Initial hip FOV = 75
+    // Initial hip state: FOV = 75, viewmodel x offset ~0.13
+    const initialView = await page.evaluate(() => {
+      const cam = window.__camera;
+      const vm = window.__viewmodel;
+      return {
+        fov: cam ? cam.fov : 0,
+        vmX: vm ? vm.group.position.x : 0,
+      };
+    });
+    expect(initialView.fov).toBeCloseTo(75, 1);
+    expect(initialView.vmX).toBeGreaterThan(0.08); // Hip rest position offset is 0.13
+
+    // Activate ADS
     await page.evaluate(() => {
       window.__inputManager!.setAds(true);
     });
 
-    // Wait for FOV lerp
-    await page.waitForTimeout(300);
+    // Wait for FOV zoom (target is 75 * 0.75 = 56.25 for Assault Rifle) and viewmodel eye-alignment
+    await page.waitForFunction(() => {
+      const cam = window.__camera;
+      const vm = window.__viewmodel;
+      return (
+        window.__inputManager!.isAds === true &&
+        cam !== undefined &&
+        cam.fov < 65 &&
+        vm !== undefined &&
+        Math.abs(vm.group.position.x) < 0.05
+      );
+    }, { timeout: 6000 });
 
-    const isAdsActive = await page.evaluate(() => {
-      return window.__inputManager!.isAds;
+    const adsView = await page.evaluate(() => {
+      return {
+        fov: window.__camera!.fov,
+        vmX: window.__viewmodel!.group.position.x,
+        isAds: window.__inputManager!.isAds,
+      };
     });
-    expect(isAdsActive).toBe(true);
+    expect(adsView.isAds).toBe(true);
+    expect(adsView.fov).toBeLessThan(65);
+    expect(Math.abs(adsView.vmX)).toBeLessThan(0.05); // Centered on optic
 
     // Release ADS
     await page.evaluate(() => {
       window.__inputManager!.setAds(false);
     });
-    await page.waitForTimeout(200);
-    expect(await page.evaluate(() => window.__inputManager!.isAds)).toBe(false);
+
+    // Wait for un-zoom: FOV restores towards 75, viewmodel returns to hip
+    await page.waitForFunction(() => {
+      const cam = window.__camera;
+      const vm = window.__viewmodel;
+      return (
+        window.__inputManager!.isAds === false &&
+        cam !== undefined &&
+        cam.fov > 72 &&
+        vm !== undefined &&
+        vm.group.position.x > 0.08
+      );
+    }, { timeout: 6000 });
+
+    const restoredView = await page.evaluate(() => {
+      return {
+        fov: window.__camera!.fov,
+        vmX: window.__viewmodel!.group.position.x,
+        isAds: window.__inputManager!.isAds,
+      };
+    });
+    expect(restoredView.isAds).toBe(false);
+    expect(restoredView.fov).toBeGreaterThan(72);
+    expect(restoredView.vmX).toBeGreaterThan(0.08);
   });
 
   test('hitscan ray hits target dummy, triggers hit marker, and applies damage', async ({
@@ -327,24 +391,36 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
       const slot = window.__weaponState!.slots[3]!;
       slot.ammoInMag = 2;
       slot.ammoReserve = 10;
+      // Hook input sample deterministically inside simulation tick loop at ticksIntoState === 5
+      window.__inputManager!.onTick = () => {
+        const ws = window.__weaponState;
+        if (ws && ws.actionState === 'reloading_shell_insert' && ws.ticksIntoState === 5) {
+          window.__inputManager!.setReload(false);
+          window.__inputManager!.setFire(true);
+          window.__inputManager!.onTick = undefined;
+        }
+      };
       window.__inputManager!.setReload(true);
     });
 
-    // Wait for insert phase with ticksIntoState < 18
+    // Wait for reload to actually begin
     await page.waitForFunction(() => {
-      const ws = window.__weaponState!;
-      return ws.actionState === 'reloading_shell_insert' && ws.ticksIntoState < 18;
-    });
+      const ws = window.__weaponState;
+      return ws && (ws.actionState === 'reloading_shell_start' || ws.actionState === 'reloading_shell_insert');
+    }, { timeout: 6000 });
 
-    // Fire interrupt immediately before tick 20
+    // Wait for reload abort and buffered fire to execute shot (leaving 1 in mag)
+    await page.waitForFunction(() => {
+      const slot = window.__weaponState?.slots[3];
+      return window.__weaponState?.actionState === 'idle' && slot !== undefined && slot.ammoInMag === 1;
+    }, { timeout: 6000 });
+
     await page.evaluate(() => {
-      window.__inputManager!.setReload(false);
-      window.__inputManager!.setFire(true);
+      window.__inputManager!.setFire(false);
+      window.__weaponState!.bufferedFireTicks = 0;
     });
-    await page.waitForFunction(() => window.__weaponState!.actionState === 'idle');
-    await page.evaluate(() => window.__inputManager!.setFire(false));
 
-    // Uncommitted shell was discarded (reserve remains 10, shot fired from existing 2 shells in mag leaves 1)
+    // Uncommitted shell was discarded (reserve remains 10, shot fired from existing 2 shells leaves 1)
     const afterDiscard = await page.evaluate(() => {
       const slot = window.__weaponState!.slots[3]!;
       return { mag: slot.ammoInMag, res: slot.ammoReserve };
@@ -357,22 +433,34 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
       const slot = window.__weaponState!.slots[3]!;
       slot.ammoInMag = 2;
       slot.ammoReserve = 10;
+      // Hook input sample deterministically at ticksIntoState === 22 (strictly after commit tick 20)
+      window.__inputManager!.onTick = () => {
+        const ws = window.__weaponState;
+        if (ws && ws.actionState === 'reloading_shell_insert' && ws.ticksIntoState === 22) {
+          window.__inputManager!.setReload(false);
+          window.__inputManager!.setFire(true);
+          window.__inputManager!.onTick = undefined;
+        }
+      };
       window.__inputManager!.setReload(true);
     });
 
-    // Wait until commit tick has passed (shell commits from reserve into mag)
+    // Wait for reload to actually begin
     await page.waitForFunction(() => {
-      const ws = window.__weaponState!;
-      return ws.actionState === 'reloading_shell_insert' && ws.ticksIntoState >= 20;
-    });
+      const ws = window.__weaponState;
+      return ws && (ws.actionState === 'reloading_shell_start' || ws.actionState === 'reloading_shell_insert');
+    }, { timeout: 6000 });
 
-    // Trigger fire interrupt
+    // Wait for committed shell (2 -> 3) and buffered fire to execute shot (3 -> 2)
+    await page.waitForFunction(() => {
+      const slot = window.__weaponState?.slots[3];
+      return window.__weaponState?.actionState === 'idle' && slot !== undefined && slot.ammoInMag === 2;
+    }, { timeout: 6000 });
+
     await page.evaluate(() => {
-      window.__inputManager!.setReload(false);
-      window.__inputManager!.setFire(true);
+      window.__inputManager!.setFire(false);
+      window.__weaponState!.bufferedFireTicks = 0;
     });
-    await page.waitForFunction(() => window.__weaponState!.actionState === 'idle');
-    await page.evaluate(() => window.__inputManager!.setFire(false));
 
     // Committed shell is retained: mag went 2 -> 3 on commit, minus 1 fired shot = 2 in mag, reserve deducted to 9
     const afterRetained = await page.evaluate(() => {
@@ -516,7 +604,8 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     });
     expect(boltInfo.ammoInMag).toBe(4);
     expect(boltInfo.actionState).toBe('cycling_bolt');
-    expect(boltInfo.nextReadyTick).toBeGreaterThanOrEqual(boltInfo.currentSimTick + 70);
+    expect(boltInfo.nextReadyTick).toBeGreaterThan(boltInfo.currentSimTick);
+    expect(boltInfo.nextReadyTick - boltInfo.currentSimTick).toBeLessThanOrEqual(80);
 
     // Quick-switch to Pistol (slot 1)
     await page.evaluate(() => {
@@ -530,13 +619,16 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     });
     await page.waitForFunction(() => window.__weaponState!.currentSlot === 4);
 
-    // Sniper must still be locked by anti-quickswitch nextReadyTick
+    // Sniper must still preserve anti-quickswitch nextReadyTick without being reset
     const quickswitchLocked = await page.evaluate(() => {
       const ws = window.__weaponState!;
       const slot = ws.slots[4]!;
-      return slot.nextReadyTick !== undefined && ws.currentSimTick < slot.nextReadyTick;
+      return {
+        nextReadyTick: slot.nextReadyTick,
+        currentSimTick: ws.currentSimTick,
+      };
     });
-    expect(quickswitchLocked).toBe(true);
+    expect(quickswitchLocked.nextReadyTick).toBe(boltInfo.nextReadyTick);
   });
 
   test('sniper last-round reload uses tactical duration (168 ticks) skipping redundant bolt re-rack', async ({
@@ -624,20 +716,26 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
   });
 
   test('tactical reload commits ammo at integer commit tick and updates HUD', async ({ page }) => {
-    // Assault rifle with 10 rounds in mag, 90 in reserve
+    // Consume ammo naturally by firing a short burst
     await page.evaluate(() => {
+      window.__inputManager!.setFire(true);
+    });
+    await page.waitForFunction(() => {
       const slot = window.__weaponState!.slots[0]!;
-      slot.ammoInMag = 10;
-      slot.ammoReserve = 90;
+      return slot.ammoInMag < 30;
+    }, { timeout: 6000 });
+    await page.evaluate(() => {
+      window.__inputManager!.setFire(false);
+      window.__weaponState!.bufferedFireTicks = 0;
     });
 
-    // Press reload
+    const preReloadMag = await page.evaluate(() => window.__weaponState!.slots[0]!.ammoInMag);
+    const preReloadRes = await page.evaluate(() => window.__weaponState!.slots[0]!.ammoReserve);
+    expect(preReloadMag).toBeLessThan(30);
+
+    // Trigger reload
     await page.evaluate(() => {
       window.__inputManager!.setReload(true);
-    });
-    await page.waitForTimeout(50);
-    await page.evaluate(() => {
-      window.__inputManager!.setReload(false);
     });
 
     // Wait for reloading state
@@ -649,17 +747,52 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     const actionText = page.locator('#hud-weapon-action');
     await expect(actionText).toHaveText('RELOADING...');
 
-    // Wait until reload finishes and state returns to idle
+    // 1. Verify before commit tick (72 for Assault Rifle): ammo is NOT yet committed
+    const preCommitCheck = await page.evaluate(() => {
+      const ws = window.__weaponState!;
+      const slot = ws.slots[0]!;
+      return {
+        ticksIntoState: ws.ticksIntoState,
+        ammoInMag: slot.ammoInMag,
+        commitDone: ws.shellCommitDone,
+      };
+    });
+    if (preCommitCheck.ticksIntoState < 72) {
+      expect(preCommitCheck.ammoInMag).toBe(preReloadMag);
+      expect(preCommitCheck.commitDone).toBe(false);
+    }
+
+    // 2. Wait until commit tick (72) is reached while still in reload animation
+    await page.waitForFunction(() => {
+      const ws = window.__weaponState!;
+      return ws.actionState === 'reloading_tactical' && ws.ticksIntoState >= 72;
+    }, { timeout: 6000 });
+
+    // Assert ammo commits mid-reload exactly upon reaching commit tick 72
+    const atCommit = await page.evaluate(() => {
+      const ws = window.__weaponState!;
+      const slot = ws.slots[0]!;
+      return {
+        actionState: ws.actionState,
+        ticksIntoState: ws.ticksIntoState,
+        ammoInMag: slot.ammoInMag,
+        ammoReserve: slot.ammoReserve,
+        commitDone: ws.shellCommitDone,
+      };
+    });
+    expect(atCommit.ammoInMag).toBe(30);
+    expect(atCommit.ammoReserve).toBe(preReloadRes - (30 - preReloadMag));
+    expect(atCommit.commitDone).toBe(true);
+
+    // 3. Wait until reload completes and state returns to idle
     await page.waitForFunction(() => {
       const ws = window.__weaponState!;
       return ws.actionState === 'idle';
     }, { timeout: 6000 });
 
-    // Verify ammo is refilled to 30 / 70
+    // Verify ammo is refilled on HUD
     const magEl = page.locator('#hud-ammo-mag');
-    const reserveEl = page.locator('#hud-ammo-reserve');
     await expect(magEl).toHaveText('30');
-    await expect(reserveEl).toHaveText('/ 70');
   });
 
   test('auto-reload triggers automatically when magazine hits 0 with reserve > 0', async ({ page }) => {

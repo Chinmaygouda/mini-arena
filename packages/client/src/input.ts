@@ -11,6 +11,8 @@ export class InputManager {
 
   public sensitivity = 0.0022;
 
+  public onTick?: (tick: number) => void;
+
   private keys: Record<string, boolean> = {};
 
   constructor(element: HTMLElement) {
@@ -196,6 +198,10 @@ export class InputManager {
    * Samples the current input frame into a deterministic PlayerInput struct.
    */
   public sampleInput(tick: number): PlayerInput {
+    if (this.onTick) {
+      this.onTick(tick);
+    }
+
     let moveForward = 0;
     if (this.keys['KeyW'] || this.keys['ArrowUp']) moveForward += 1;
     if (this.keys['KeyS'] || this.keys['ArrowDown']) moveForward -= 1;
