@@ -68,7 +68,7 @@ export function createSmgVisualDef(): WeaponVisualDef {
   };
 
   // --- 2. DRAW CLIP ---
-  const drawDuration = SMG_DEF.swapTime / 2; // 0.175s
+  const drawDuration = Math.round(SMG_DEF.swapTicks / 2) / 60; // 11 ticks at 60 Hz
   const drawClip: KeyframeClip = {
     name: 'draw',
     duration: drawDuration,

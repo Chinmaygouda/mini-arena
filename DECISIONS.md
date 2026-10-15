@@ -315,3 +315,36 @@ Phase 3 requires viewmodels, rigging, and animation definitions across all 5 wea
    - Full-viewport SVG overlay (`#sniper-scope`) with 4.0X magnification (`adsFovMultiplier: 0.25`), radial vignette shading, mil-dots, elevation stadia, and range markings.
    - 3D viewmodel arms and chassis are cleanly culled during sniper ADS to prevent internal clipping.
 
+---
+
+## ADR 012: Shotgun Reload Timing Specification, Integer-Tick Alignment & Double-Pump Elimination
+
+**Date**: 2026-10-15  
+**Status**: Accepted
+
+### Context
+The initial conceptual spec for the Combat Shotgun proposed a shell reload sequence of:
+$0.75\text{s start} + (6 \times 0.55\text{s insert}) + 0.65\text{s end} = 4.70\text{s full reload}$.
+However, converting floating-point seconds directly into a 60 Hz discrete fixed-timestep simulation created non-integer tick durations:
+- $0.75\text{s} = 45\text{ ticks}$
+- $0.55\text{s} = 33.333\dots\text{ ticks}$ (fractional tick, violating integer-tick determinism)
+- $0.65\text{s} = 39\text{ ticks}$
+Additionally, a 4.70s reload in a fast-paced 2v2 tactical arena created sluggish downtime, and naive implementation caused a redundant "double-pump" where racking the slide during reload_end was immediately followed by racking the slide on the subsequent shot.
+
+### Decision
+1. **Discrete Integer-Tick Timing Specification**:
+   - `startTicks`: $24\text{ ticks}$ ($0.400\text{s}$) — Bring weapon up and open loading gate.
+   - `insertTicks`: $32\text{ ticks}$ ($\approx 0.533\text{s}$) — Fluid shell push into magazine tube ($32\text{ ticks}$ at $60\text{ Hz}$ is cleanly integer-clean).
+   - `commitTick`: $20\text{ ticks}$ into each insert ($0.333\text{s}$) — Shell latches into magazine tube; ammo is credited here.
+   - `endTicks`: $24\text{ ticks}$ ($0.400\text{s}$) — Close loading gate and rack pump slide.
+   - `pumpCloseTick`: $12\text{ ticks}$ into end phase — Loading gate closed; pump cycle begins.
+2. **Total Durations**:
+   - Full empty-to-full reload ($6\text{ shells}$): $24 + (6 \times 32) + 24 = 240\text{ ticks} = 4.000\text{ seconds}$ (reduced from $4.70\text{s}$).
+   - Interrupted reload on last shell commit: $24 + (5 \times 32) + 20 = 204\text{ ticks} = 3.400\text{ seconds}$.
+3. **Double-Pump Elimination**:
+   - When the player presses fire during shell reloading, if $ammoInMag > 0$, the state machine immediately aborts `reloading_shell_insert` or `reloading_shell_start` directly to `'idle'`, skipping the `reloading_shell_end` phase.
+   - This eliminates the redundant double-pump artifact, allowing the player to fire immediately on the next tick without duplicate racking animations.
+   - If $ammoInMag == 0$, fire interrupt is rejected to prevent firing an empty weapon.
+4. **Verification**:
+   - Enforced by automated unit tests in `packages/shared/src/weapons/weapons.test.ts` and clip duration verification in `packages/client/src/animation/validateVisualDef.ts`.
+

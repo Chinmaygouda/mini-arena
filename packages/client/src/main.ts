@@ -23,6 +23,7 @@ import {
   stepPlayer,
   stepWeaponStateMachine,
   triggerReload,
+  cancelReloadOnFire,
   triggerSwapBySlot,
   tryConsumeShot,
   updateAccumulator,
@@ -51,6 +52,7 @@ declare global {
     __dummies?: TargetDummyManager;
     __viewmodel?: WeaponViewmodel;
     __fps?: number;
+    __threeRenderer?: WebGPURenderer;
   }
 }
 
@@ -91,6 +93,7 @@ async function initApp(): Promise<void> {
   const backendName: 'webgpu' | 'webgl2' = isWebGPU ? 'webgpu' : 'webgl2';
   if (isDebug) {
     window.__renderer = backendName;
+    window.__threeRenderer = renderer;
   }
 
   if (badge) {
@@ -241,15 +244,17 @@ async function initApp(): Promise<void> {
 
       // Buffer fire input if clicked while weapon is busy (e.g. bolt cycling or finishing swap)
       if (input.fire && !canShoot) {
+        cancelReloadOnFire(weaponState);
         bufferFireInput(weaponState, 6);
       }
 
+      const effectiveCanShoot = isWeaponReadyToFire(weaponState);
       const wantsToFire = Boolean(input.fire || weaponState.bufferedFireTicks > 0);
 
       // Step fractional fire accumulator
       stepFireTiming(fireTiming, SIM_TICK_DELTA, currentDef);
 
-      if (wantsToFire && canShoot) {
+      if (wantsToFire && effectiveCanShoot) {
         if (tryConsumeShot(fireTiming, currentDef)) {
           activeSlot.ammoInMag--;
           weaponState.bufferedFireTicks = 0; // Consume buffered fire request

@@ -51,4 +51,31 @@ describe('WeaponVisualDef Contract & Asset-Swappable Validator Tests', () => {
     expect(result.errors).toContain('Missing boltMesh');
     expect(result.errors).toContain('Missing clips dictionary');
   });
+
+  it('rejects a reload clip with non-integer tick duration at 60 Hz', () => {
+    const validDef = createAssaultRifleVisualDef();
+    // Tamper reloadTactical clip with non-integer ticks (e.g. 2.1333s = 127.998 ticks)
+    const tamperedDef: WeaponVisualDef = {
+      ...validDef,
+      clips: {
+        ...validDef.clips,
+        reloadTactical: {
+          ...validDef.clips.reloadTactical,
+          duration: 2.1333,
+        },
+      },
+    };
+
+    const result = validateWeaponVisualDef(tamperedDef);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('not integer-tick clean at 60 Hz'))).toBe(true);
+  });
+
+  it('allows half-tick duration strictly for fire clip (e.g. 800 RPM SMG = 4.5 ticks)', () => {
+    const smgDef = createSmgVisualDef();
+    expect(smgDef.clips.fire.duration).toBeCloseTo(0.075, 4); // 4.5 ticks
+    const result = validateWeaponVisualDef(smgDef);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
 });

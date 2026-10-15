@@ -1144,5 +1144,290 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
         }
       });
     });
+
+    describe('Sniper Last-Round Path & Bolt Cycling Optimization (A3)', () => {
+      it('routes to tactical reload (2.8s) when bolt cycle already ran on empty chamber, saving 0.7s redundant re-rack', () => {
+        const state = createDefaultWeaponState();
+        state.autoReload = false; // Disable auto-reload to inspect intermediate idle state
+        state.currentSlot = 4; // Sniper
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 1; // Last round in mag
+        slot.ammoReserve = 15;
+        state.currentSimTick = 100;
+
+        // Fire last shot
+        slot.ammoInMag = 0;
+        recordShotFired(state);
+        expect(state.actionState).toBe('cycling_bolt');
+        expect(state.stateTicksRemaining).toBe(80); // 80 ticks = 1.333s
+        expect(slot.boltCycledOnEmpty).toBeFalsy();
+
+        // Step through the 80 ticks of cycling bolt
+        for (let i = 0; i < 80; i++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+
+        // Bolt cycle has completed, chamber is empty and bolt was already cycled
+        expect(state.actionState).toBe('idle');
+        expect(slot.ammoInMag).toBe(0);
+        expect(slot.boltCycledOnEmpty).toBe(true);
+
+        // Player initiates reload
+        const reloaded = triggerReload(state);
+        expect(reloaded).toBe(true);
+
+        // Should route to tactical reload (168 ticks = 2.8s), NOT empty reload (210 ticks = 3.5s)
+        expect(state.actionState).toBe('reloading_tactical');
+        expect(state.stateTicksRemaining).toBe(168); // 168 ticks vs 210 ticks
+
+        // Step to commit tick (tactical commit is at tick 96)
+        for (let i = 0; i < 96; i++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+
+        // Ammo committed at tick 96
+        expect(state.shellCommitDone).toBe(true);
+        expect(slot.ammoInMag).toBe(5);
+        expect(slot.ammoReserve).toBe(10);
+        expect(slot.boltCycledOnEmpty).toBe(false);
+
+        // Step remaining ticks to complete reload
+        for (let i = 0; i < (168 - 96); i++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+
+        expect(state.actionState).toBe('idle');
+        expect(slot.ammoInMag).toBe(5);
+      });
+
+      it('automatically triggers tactical reload on last-round bolt completion when autoReload is enabled', () => {
+        const state = createDefaultWeaponState();
+        state.autoReload = true;
+        state.currentSlot = 4; // Sniper
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 1;
+        slot.ammoReserve = 15;
+
+        // Fire last shot
+        slot.ammoInMag = 0;
+        recordShotFired(state);
+        expect(state.actionState).toBe('cycling_bolt');
+
+        // Step through 80 ticks: upon cycling_bolt expiration, auto-reload seamlessly starts reloading_tactical
+        for (let i = 0; i < 80; i++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+
+        expect(state.actionState).toBe('reloading_tactical');
+        expect(state.stateTicksRemaining).toBe(168); // Saved 42 ticks (0.7s) vs empty reload (210 ticks)
+      });
+
+      it('routes to empty reload (3.5s / 210 ticks) if bolt cycle was never completed on empty mag', () => {
+        const state = createDefaultWeaponState();
+        state.currentSlot = 4; // Sniper
+        const slot = getCurrentSlot(state);
+        slot.ammoInMag = 0;
+        slot.ammoReserve = 15;
+        slot.boltCycledOnEmpty = false;
+
+        const reloaded = triggerReload(state);
+        expect(reloaded).toBe(true);
+        expect(state.actionState).toBe('reloading_empty');
+        expect(state.stateTicksRemaining).toBe(210); // 210 ticks = 3.5s
+      });
+
+      it('preserves boltCycledOnEmpty across weapon swaps', () => {
+        const state = createDefaultWeaponState();
+        state.autoReload = false; // Disable auto-reload so we can inspect manual reload
+        state.currentSlot = 4; // Sniper
+        const sniperSlot = getCurrentSlot(state);
+        sniperSlot.ammoInMag = 1;
+        sniperSlot.ammoReserve = 15;
+
+        // Fire last shot and finish bolt cycle
+        sniperSlot.ammoInMag = 0;
+        recordShotFired(state);
+        for (let i = 0; i < 80; i++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+        expect(sniperSlot.boltCycledOnEmpty).toBe(true);
+
+        // Swap out to pistol (slot 1)
+        triggerSwapBySlot(state, 1);
+        for (let i = 0; i < 30; i++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+        expect(state.currentSlot).toBe(1);
+        expect(sniperSlot.boltCycledOnEmpty).toBe(true);
+
+        // Swap back to sniper (slot 4)
+        triggerSwapBySlot(state, 4);
+        for (let i = 0; i < 30; i++) {
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        }
+        expect(state.currentSlot).toBe(4);
+        expect(sniperSlot.boltCycledOnEmpty).toBe(true);
+
+        // Trigger reload: still recognizes pre-cycled bolt
+        triggerReload(state);
+        expect(state.actionState).toBe('reloading_tactical');
+        expect(state.stateTicksRemaining).toBe(168);
+      });
+    });
+
+    describe('Extended 10,000-Step Simulation Fuzzing & Invariant Proofs (A7)', () => {
+      it('guarantees 5 sim invariants across 10,000 randomized steps and operations', () => {
+        const state = createDefaultWeaponState();
+        const rng = createSeededRng(133742);
+
+        // Record initial total ammo per slot
+        const initialTotals = state.slots.map((s) => s.ammoInMag + s.ammoReserve);
+
+        let previousStateTicks = state.stateTicksRemaining;
+        let previousAction = state.actionState;
+        let previousSimTick = state.currentSimTick;
+
+        for (let step = 0; step < 10000; step++) {
+          const action = rng.range(0, 100);
+
+          if (action < 15) {
+            triggerReload(state);
+          } else if (action < 30) {
+            const target = Math.floor(rng.range(0, 5));
+            triggerSwapBySlot(state, target);
+          } else if (action < 50) {
+            const slot = getCurrentSlot(state);
+            const ready = isWeaponReadyToFire(state);
+            if (ready && slot.ammoInMag > 0) {
+              slot.ammoInMag -= 1;
+              recordShotFired(state);
+            } else if (!ready && rng.next() > 0.5) {
+              bufferFireInput(state, 6);
+            }
+          } else if (action < 60) {
+            cancelReloadOnSprint(state);
+          } else if (action < 70) {
+            cancelReloadOnFire(state);
+          } else if (action < 80) {
+            setSprinting(state, rng.next() > 0.5);
+          }
+
+          // Step simulation
+          stepWeaponStateMachine(state, SIM_TICK_DELTA);
+
+          // --- INVARIANT 1: Ammo conservation (total ammo never increases) ---
+          for (let i = 0; i < state.slots.length; i++) {
+            const slot = state.slots[i]!;
+            const total = slot.ammoInMag + slot.ammoReserve;
+            expect(total).toBeLessThanOrEqual(initialTotals[i]!);
+            expect(slot.ammoReserve).toBeGreaterThanOrEqual(0);
+          }
+
+          // --- INVARIANT 2: Magazine capacity bounds ---
+          for (let i = 0; i < state.slots.length; i++) {
+            const slot = state.slots[i]!;
+            const def = WEAPON_REGISTRY[slot.weaponId];
+            expect(slot.ammoInMag).toBeGreaterThanOrEqual(0);
+            expect(slot.ammoInMag).toBeLessThanOrEqual(def.magSize);
+          }
+
+          // --- INVARIANT 3: Monotonic shell commit validity ---
+          if (state.actionState === 'reloading_shell_insert') {
+            const slot = getCurrentSlot(state);
+            const def = WEAPON_REGISTRY[slot.weaponId];
+            expect(slot.ammoInMag).toBeLessThanOrEqual(def.magSize);
+          }
+
+          // --- INVARIANT 4: Zero stuck states (simulation progress is monotonic) ---
+          expect(state.currentSimTick).toBe(previousSimTick + 1);
+          if (state.actionState !== 'idle' && state.actionState === previousAction) {
+            // Either remaining ticks decrease monotonically, or a newly triggered/reset action began (ticksIntoState <= 1)
+            const progressed = state.stateTicksRemaining < previousStateTicks || state.ticksIntoState <= 1;
+            expect(progressed).toBe(true);
+          }
+
+          // --- INVARIANT 5: Anti-quickswitch lock validity ---
+          const currentSlot = getCurrentSlot(state);
+          if (currentSlot.nextReadyTick !== undefined) {
+            expect(Number.isFinite(currentSlot.nextReadyTick)).toBe(true);
+          }
+
+          previousStateTicks = state.stateTicksRemaining;
+          previousAction = state.actionState;
+          previousSimTick = state.currentSimTick;
+        }
+      });
+
+      it('guarantees bit-for-bit snapshot-resume determinism across 500 ticks', () => {
+        interface StepAction {
+          kind: 'reload' | 'swap' | 'fire' | 'sprint' | 'none';
+          targetSlot?: number;
+          sprint?: boolean;
+        }
+
+        const preActions: StepAction[] = [];
+        const postActions: StepAction[] = [];
+        const rng = createSeededRng(424242);
+
+        // Pre-generate 250 pre-snapshot actions and 250 post-snapshot actions
+        for (let i = 0; i < 250; i++) {
+          const roll = rng.range(0, 10);
+          if (roll < 2) preActions.push({ kind: 'reload' });
+          else if (roll < 4) preActions.push({ kind: 'swap', targetSlot: Math.floor(rng.range(0, 5)) });
+          else if (roll < 7) preActions.push({ kind: 'fire' });
+          else if (roll < 8) preActions.push({ kind: 'sprint', sprint: rng.next() > 0.5 });
+          else preActions.push({ kind: 'none' });
+        }
+        for (let i = 0; i < 250; i++) {
+          const roll = rng.range(0, 10);
+          if (roll < 2) postActions.push({ kind: 'reload' });
+          else if (roll < 4) postActions.push({ kind: 'swap', targetSlot: Math.floor(rng.range(0, 5)) });
+          else if (roll < 7) postActions.push({ kind: 'fire' });
+          else if (roll < 8) postActions.push({ kind: 'sprint', sprint: rng.next() > 0.5 });
+          else postActions.push({ kind: 'none' });
+        }
+
+        function applyAction(s: ReturnType<typeof createDefaultWeaponState>, a: StepAction) {
+          if (a.kind === 'reload') triggerReload(s);
+          else if (a.kind === 'swap' && a.targetSlot !== undefined) triggerSwapBySlot(s, a.targetSlot);
+          else if (a.kind === 'fire') {
+            const slot = getCurrentSlot(s);
+            if (slot.ammoInMag > 0 && isWeaponReadyToFire(s)) {
+              slot.ammoInMag--;
+              recordShotFired(s);
+            }
+          } else if (a.kind === 'sprint' && a.sprint !== undefined) {
+            setSprinting(s, a.sprint);
+          }
+          stepWeaponStateMachine(s, SIM_TICK_DELTA);
+        }
+
+        const stateOriginal = createDefaultWeaponState();
+
+        // Step for 250 ticks
+        for (const act of preActions) {
+          applyAction(stateOriginal, act);
+        }
+
+        // Take snapshot at tick 250
+        const snapshotJson = JSON.stringify(stateOriginal);
+        const stateResumed: typeof stateOriginal = JSON.parse(snapshotJson);
+
+        // Run stateOriginal from tick 250 to 500
+        for (const act of postActions) {
+          applyAction(stateOriginal, act);
+        }
+
+        // Run stateResumed from tick 250 to 500
+        for (const act of postActions) {
+          applyAction(stateResumed, act);
+        }
+
+        // Compare every single property bit-for-bit
+        expect(JSON.stringify(stateResumed)).toBe(JSON.stringify(stateOriginal));
+        expect(stateResumed).toEqual(stateOriginal);
+      });
+    });
   });
 });
+

@@ -19,6 +19,7 @@ export interface WeaponInventorySlot {
   ammoInMag: number;
   ammoReserve: number;
   nextReadyTick?: number; // Absolute simulation tick when this slot is next allowed to fire (anti-quickswitch)
+  boltCycledOnEmpty?: boolean; // True if bolt cycle already completed on empty mag (skips redundant bolt re-rack)
 }
 
 export const AUTO_SWITCH_DELAY = 0.35; // Delay in seconds before auto-switching empty weapon
@@ -49,11 +50,11 @@ export function createDefaultWeaponState(): WeaponState {
   return {
     currentSlot: 0,
     slots: [
-      { weaponId: 'assault_rifle', ammoInMag: 30, ammoReserve: 90, nextReadyTick: 0 },
-      { weaponId: 'pistol', ammoInMag: 12, ammoReserve: 36, nextReadyTick: 0 },
-      { weaponId: 'smg', ammoInMag: 30, ammoReserve: 120, nextReadyTick: 0 },
-      { weaponId: 'shotgun', ammoInMag: 6, ammoReserve: 24, nextReadyTick: 0 },
-      { weaponId: 'sniper', ammoInMag: 5, ammoReserve: 15, nextReadyTick: 0 },
+      { weaponId: 'assault_rifle', ammoInMag: 30, ammoReserve: 90, nextReadyTick: 0, boltCycledOnEmpty: false },
+      { weaponId: 'pistol', ammoInMag: 12, ammoReserve: 36, nextReadyTick: 0, boltCycledOnEmpty: false },
+      { weaponId: 'smg', ammoInMag: 30, ammoReserve: 120, nextReadyTick: 0, boltCycledOnEmpty: false },
+      { weaponId: 'shotgun', ammoInMag: 6, ammoReserve: 24, nextReadyTick: 0, boltCycledOnEmpty: false },
+      { weaponId: 'sniper', ammoInMag: 5, ammoReserve: 15, nextReadyTick: 0, boltCycledOnEmpty: false },
     ],
     actionState: 'idle',
     stateTimer: 0,
@@ -134,7 +135,7 @@ export function triggerReload(state: WeaponState): boolean {
     state.ticksIntoState = 0;
     state.stateStartTick = state.currentSimTick;
     state.shellCommitDone = false;
-  } else if (slot.ammoInMag > 0) {
+  } else if (slot.ammoInMag > 0 || slot.boltCycledOnEmpty) {
     state.actionState = 'reloading_tactical';
     const reloadTicks = def.reloadSpec.magazine?.tacticalReloadTicks ?? Math.round(def.reloadTimeTactical * 60);
     state.stateTicksRemaining = reloadTicks;
@@ -162,6 +163,7 @@ export function triggerReload(state: WeaponState): boolean {
  */
 export function recordShotFired(state: WeaponState, cooldownSeconds?: number): void {
   const slot = getCurrentSlot(state);
+  slot.boltCycledOnEmpty = false;
   const def = getCurrentWeaponDef(state);
   const cooldown = cooldownSeconds ?? (60 / def.rpm);
   state.shotCooldownTimer = cooldown;
@@ -358,6 +360,7 @@ export function stepWeaponStateMachine(state: WeaponState, dt: number, tickCount
       const toAdd = Math.min(needed, slot.ammoReserve);
       slot.ammoInMag += toAdd;
       slot.ammoReserve -= toAdd;
+      slot.boltCycledOnEmpty = false;
       state.shellCommitDone = true;
     }
   } else if (state.actionState === 'reloading_empty' && !state.shellCommitDone) {
@@ -369,6 +372,7 @@ export function stepWeaponStateMachine(state: WeaponState, dt: number, tickCount
       const toAdd = Math.min(needed, slot.ammoReserve);
       slot.ammoInMag += toAdd;
       slot.ammoReserve -= toAdd;
+      slot.boltCycledOnEmpty = false;
       state.shellCommitDone = true;
     }
   } else if (state.actionState === 'reloading_shell_insert' && !state.shellCommitDone) {
@@ -389,9 +393,10 @@ export function stepWeaponStateMachine(state: WeaponState, dt: number, tickCount
     switch (state.actionState) {
       case 'reloading_tactical':
       case 'reloading_empty': {
+        const slot = getCurrentSlot(state);
+        slot.boltCycledOnEmpty = false;
         // Fallback commit if stepping with large dt
         if (!state.shellCommitDone) {
-          const slot = getCurrentSlot(state);
           const def = getWeaponDef(slot.weaponId);
           const needed = def.magSize - slot.ammoInMag;
           const toAdd = Math.min(needed, slot.ammoReserve);
@@ -487,6 +492,10 @@ export function stepWeaponStateMachine(state: WeaponState, dt: number, tickCount
       }
 
       case 'cycling_bolt': {
+        const slot = getCurrentSlot(state);
+        if (slot.ammoInMag === 0) {
+          slot.boltCycledOnEmpty = true;
+        }
         state.actionState = 'idle';
         state.stateTimer = 0;
         state.stateTicksRemaining = 0;

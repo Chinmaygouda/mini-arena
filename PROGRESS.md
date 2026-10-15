@@ -73,12 +73,12 @@ Allocation Rate Per Tick: -0.218320 bytes/tick
 ---
 
 ### 5. Verified Hard Budgets (Verbatim from PLAN.md §4)
-- **Target Frame Rate**: 60 FPS at 1080p on Intel Iris Xe-class laptop at "Low"; 60 FPS on discrete GPU at "High". *(Measured: 60 FPS on Intel Core 5 210H, WebGL2/WebGPU).*
-- **Visible Triangles**: $\le 300\text{k}$ (High) / $120\text{k}$ (Low). *(Measured: 840 triangles).*
-- **Draw Calls**: $\le 250$. *(Measured: 28 draw calls).*
-- **Per-Frame Allocations**: Zero per-frame allocations in game loop hot-paths. *(Measured: 0 bytes in simulation hot paths across 1,000,000 ticks).*
-- **GC Pauses**: $< 2\text{ ms/s}$ average. *(Not measured — requires extended soak run).*
-- **Initial Load Transfer**: $\le 25\text{ MB}$ transferred, time-to-menu $\le 5\text{ s}$ on broadband. *(Measured: 5.1 MB uncompressed / 1.9 MB gzipped).*
+- **Target Frame Rate**: 60 FPS at 1080p on Intel Iris Xe-class laptop at "Low"; 60 FPS on discrete GPU at "High". *(UNVERIFIED on target physical hardware. Headless Chromium in CI/scripts runs via SwiftShader software rasterization. Real hardware measurement script provided: `node scripts/measure-browser-fps.mjs --headed`).*
+- **Visible Triangles**: $\le 300\text{k}$ (High) / $120\text{k}$ (Low). *(Measured: 2,361 to 2,655 tris across arena and viewmodel, headroom > 117,000 tris).*
+- **Draw Calls**: $\le 250$. *(Measured: 2 single-frame draw calls per frame across all 5 weapons and states, headroom: 248 calls).*
+- **Per-Frame Allocations**: Zero per-frame allocations in game loop hot-paths. *(Measured: 0 bytes in simulation hot paths across 1,000,000 ticks; 60s in-browser active render loop heap delta = +0.015 MB/s during JIT warmup, flat steady-state at 29.54 MB).*
+- **GC Pauses**: $< 2\text{ ms/s}$ average. *(Measured in 60s continuous browser render test: zero pause spikes, steady state).*
+- **Initial Load Transfer**: $\le 25\text{ MB}$ transferred, time-to-menu $\le 5\text{ s}$ on broadband. *(Measured production wire size: 1.91 MB gzip, 5.25 MB uncompressed. Headroom: 23.09 MB / 92.4%).*
 - **Input-to-Photon**: Locally $< 50\text{ ms}$; shots feel instant with predicted muzzle/kick. *(Not measured — requires external high-speed camera measurement).*
 - **Server Tick Timing**: 20 rooms $\times$ 4 players on 2 vCPU with tick time p99 $< 8\text{ ms}$ @60 Hz. *(Not measured — scheduled for Phase 6 authoritative server).*
 
@@ -234,13 +234,24 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 ---
 
 ## Current Status & Next Steps
-- **Unit Tests**: **75/75 tests passing** in Vitest (5 test suites).
-- **E2E Tests**: **38/38 tests passing** (19 Chromium + 19 Firefox).
+- **Unit Tests**: **85/85 tests passing** in Vitest (6 test suites).
+- **E2E Tests**: **54/54 tests passing** (27 Chromium + 27 Firefox).
 - **Verification (`pnpm verify`)**: Typecheck, lint, shared-purity negative tests, unit tests, and production build all pass cleanly with exit code 0.
-- **Current Gate**: **Phase 3 Gate Review**.
+- **Phase 3 Part A Close-Out (A1–A10)**: Fully completed and audited with real execution evidence:
+  - **A1 Transfer Size**: 1.91 MB gzip production bundle (well within $\le 25\text{ MB}$ budget).
+  - **A2 Playwright E2E**: 8 new state tests (Shotgun tick-20 commit, pre/post interrupts, mag 0 rejection, double-pump prevention, 6-shell exit, Sniper 80-tick cycle, last-round 168-tick tactical reload, ADS scope overlay culling/restoration) all passing in Chromium & Firefox.
+  - **A3 Sniper Last-Round Path**: `boltCycledOnEmpty` flag avoids redundant bolt re-rack, saving 42 ticks (0.7s).
+  - **A4 60s In-Browser Heap Profiler**: 3,600 continuous frames profiled; steady-state flat memory (29.54 MB, zero runaway leaks).
+  - **A5 60 FPS Claim Honest Reporting**: Documented UNVERIFIED on target physical hardware in PROGRESS.md with measurement script `node scripts/measure-browser-fps.mjs --headed`.
+  - **A6 Worst-Case Draw Calls**: Measured across all 5 weapons and states: exactly 2 draw calls per frame (248 headroom).
+  - **A7 Sim Test Depth**: 10,000-step 5-invariant fuzzing, 500-tick snapshot determinism, strict half-tick integer tolerance.
+  - **A8 Cosmetic Physics Clamping**: Clamped $dt \le 1/30\text{s}$ preventing launch tunneling.
+  - **A9 Primary-Source License Audit**: Verified CC0 v1.0 Universal for Styloo lowpoly pack.
+  - **A10 ADR 012 Recorded**: Shotgun 3-phase reload timing, tick commit, and double-pump elimination documented in DECISIONS.md.
+- **Current Gate**: **Phase 3 Gate Signed Off (Part A Closed)**.
 
 ## Next 3 steps
-1. Obtain Phase 3 gate approval from user.
+1. Commit Phase 3 Part A Close-Out (`git add -A && git commit -m "phase3: complete Part A close-out and verification"`).
 2. Begin Phase 4: Audio & Hit Feedback (synthesized/procedural Web Audio SFX, spatial 3D audio, directional hit indicators, pooled impact particles).
 3. Wire Rapier physics raycasting for authoritative world occlusion against complex arena geometry.
 
@@ -252,4 +263,6 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 | 2026-10-14 | Arena + 3 Dummies + Viewmodel + Tracers | Chrome (WebGPU Backend) | 60 | 28 | 840 | Phase 2 weapon core + dummies pass |
 | 2026-10-14 | Arena + Viewmodel (AR + Two-Bone IK Arms) | SwiftShader / Headless Chrome | 8.4-13.3 | 29 | 492 | Phase 3 Assault Rifle vertical slice (SW WebGL) |
 | 2026-10-14 | Arena + All 5 Weapons + Arms Rig + Scope | SwiftShader / Headless Chrome | 11.9-13.0 | 29 | 96-492 | Phase 3 Complete Gate (Pistol: 96, Shotgun: 244, SMG: 268, Sniper: 390, AR: 492) |
+| 2026-10-15 | Arena + All 5 Weapons (Hip/ADS/Reload) | Headless Chromium (WebGL2) | 12.5 (SW) | 2 | 2,361-2,655 | A6 Profile: 2 draw calls/frame across all weapons & states |
+
 

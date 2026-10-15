@@ -2,6 +2,30 @@ import * as THREE from 'three';
 import { FirstPersonArmsRig } from './armsRig';
 import { KeyframeClip, TimedAnimationEvent, WeaponKeyframe, WeaponVisualDef } from './types';
 
+export const MAX_COSMETIC_PHYSICS_DT = 1 / 30; // Max dt ~33.3ms to prevent objects launching after background tab
+
+/**
+ * Steps cosmetic physics (dropped magazines/shells) with dt clamping to prevent launching objects
+ * into space if the browser tab is backgrounded.
+ */
+export function stepCosmeticPhysics(
+  pos: THREE.Vector3,
+  vel: THREE.Vector3,
+  rot: THREE.Euler,
+  rotVel: THREE.Vector3,
+  dt: number,
+  gravity = -9.8,
+  maxDt = MAX_COSMETIC_PHYSICS_DT,
+): number {
+  const clampedDt = Math.min(Math.max(0, dt), maxDt);
+  vel.y += gravity * clampedDt;
+  pos.addScaledVector(vel, clampedDt);
+  rot.x += rotVel.x * clampedDt;
+  rot.y += rotVel.y * clampedDt;
+  rot.z += rotVel.z * clampedDt;
+  return clampedDt;
+}
+
 export class WeaponAnimator {
   public visualDef: WeaponVisualDef;
   public armsRig: FirstPersonArmsRig;
@@ -160,15 +184,10 @@ export class WeaponAnimator {
 
     // 8. Update dropped physics magazines
     if (scene && this.droppedMags.length > 0) {
-      const gravity = -9.8;
       for (let i = this.droppedMags.length - 1; i >= 0; i--) {
         const item = this.droppedMags[i]!;
         item.life += dt;
-        item.velocity.y += gravity * dt;
-        item.mesh.position.addScaledVector(item.velocity, dt);
-        item.mesh.rotation.x += item.rotVel.x * dt;
-        item.mesh.rotation.y += item.rotVel.y * dt;
-        item.mesh.rotation.z += item.rotVel.z * dt;
+        stepCosmeticPhysics(item.mesh.position, item.velocity, item.mesh.rotation, item.rotVel, dt);
 
         // Clean up after 2.5 seconds
         if (item.life > 2.5) {

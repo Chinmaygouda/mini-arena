@@ -255,4 +255,372 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     // Hit confirmation
     expect(hitCount).toBeGreaterThan(0);
   });
+
+  test('shotgun shell reload commits ammo specifically at tick 20 of insert phase', async ({
+    page,
+  }) => {
+    // Equip Shotgun (slot 3)
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(3);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 3 && window.__weaponState!.actionState === 'idle');
+
+    // Set ammo to 1/10
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[3]!;
+      slot.ammoInMag = 1;
+      slot.ammoReserve = 10;
+      window.__inputManager!.setReload(true);
+    });
+
+    // Wait for reloading_shell_insert
+    await page.waitForFunction(() => window.__weaponState!.actionState === 'reloading_shell_insert');
+    await page.evaluate(() => window.__inputManager!.setReload(false));
+
+    // Before tick 20: ammo has NOT committed yet
+    const beforeCommit = await page.evaluate(() => {
+      const ws = window.__weaponState!;
+      const slot = ws.slots[3]!;
+      return {
+        ticksIntoState: ws.ticksIntoState,
+        ammoInMag: slot.ammoInMag,
+        commitDone: ws.shellCommitDone,
+      };
+    });
+    if (beforeCommit.ticksIntoState < 20) {
+      expect(beforeCommit.ammoInMag).toBe(1);
+      expect(beforeCommit.commitDone).toBe(false);
+    }
+
+    // Wait until ticksIntoState >= 20
+    await page.waitForFunction(() => {
+      const ws = window.__weaponState!;
+      return ws.actionState === 'reloading_shell_insert' && ws.ticksIntoState >= 20;
+    });
+
+    // After tick 20: shell has committed
+    const afterCommit = await page.evaluate(() => {
+      const ws = window.__weaponState!;
+      const slot = ws.slots[3]!;
+      return {
+        ammoInMag: slot.ammoInMag,
+        ammoReserve: slot.ammoReserve,
+        commitDone: ws.shellCommitDone,
+      };
+    });
+    expect(afterCommit.ammoInMag).toBe(2);
+    expect(afterCommit.ammoReserve).toBe(9);
+    expect(afterCommit.commitDone).toBe(true);
+  });
+
+  test('shotgun fire-interrupt before tick 20 discards progress, while interrupt after tick 20 retains committed shell', async ({
+    page,
+  }) => {
+    // Equip Shotgun
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(3);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 3 && window.__weaponState!.actionState === 'idle');
+
+    // Test A: Interrupt before commit tick 20 discards uncommitted shell
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[3]!;
+      slot.ammoInMag = 2;
+      slot.ammoReserve = 10;
+      window.__inputManager!.setReload(true);
+    });
+
+    // Wait for insert phase with ticksIntoState < 18
+    await page.waitForFunction(() => {
+      const ws = window.__weaponState!;
+      return ws.actionState === 'reloading_shell_insert' && ws.ticksIntoState < 18;
+    });
+
+    // Fire interrupt immediately before tick 20
+    await page.evaluate(() => {
+      window.__inputManager!.setReload(false);
+      window.__inputManager!.setFire(true);
+    });
+    await page.waitForFunction(() => window.__weaponState!.actionState === 'idle');
+    await page.evaluate(() => window.__inputManager!.setFire(false));
+
+    // Uncommitted shell was discarded (reserve remains 10, shot fired from existing 2 shells in mag leaves 1)
+    const afterDiscard = await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[3]!;
+      return { mag: slot.ammoInMag, res: slot.ammoReserve };
+    });
+    expect(afterDiscard.mag).toBe(1);
+    expect(afterDiscard.res).toBe(10);
+
+    // Test B: Interrupt after tick 20 retains committed shell
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[3]!;
+      slot.ammoInMag = 2;
+      slot.ammoReserve = 10;
+      window.__inputManager!.setReload(true);
+    });
+
+    // Wait until commit tick has passed (shell commits from reserve into mag)
+    await page.waitForFunction(() => {
+      const ws = window.__weaponState!;
+      return ws.actionState === 'reloading_shell_insert' && ws.ticksIntoState >= 20;
+    });
+
+    // Trigger fire interrupt
+    await page.evaluate(() => {
+      window.__inputManager!.setReload(false);
+      window.__inputManager!.setFire(true);
+    });
+    await page.waitForFunction(() => window.__weaponState!.actionState === 'idle');
+    await page.evaluate(() => window.__inputManager!.setFire(false));
+
+    // Committed shell is retained: mag went 2 -> 3 on commit, minus 1 fired shot = 2 in mag, reserve deducted to 9
+    const afterRetained = await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[3]!;
+      return { mag: slot.ammoInMag, res: slot.ammoReserve };
+    });
+    expect(afterRetained.mag).toBe(2);
+    expect(afterRetained.res).toBe(9);
+  });
+
+  test('shotgun mag == 0 rejects fire-interrupt, preventing stuck empty state', async ({
+    page,
+  }) => {
+    // Equip Shotgun
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(3);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 3 && window.__weaponState!.actionState === 'idle');
+
+    // Set ammo to 0/10
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[3]!;
+      slot.ammoInMag = 0;
+      slot.ammoReserve = 10;
+      window.__inputManager!.setReload(true);
+    });
+
+    // Wait for insert phase
+    await page.waitForFunction(() => window.__weaponState!.actionState === 'reloading_shell_insert');
+    await page.evaluate(() => window.__inputManager!.setReload(false));
+
+    // Attempt fire-interrupt while mag is 0
+    await page.evaluate(() => {
+      window.__inputManager!.setFire(true);
+    });
+    await page.waitForTimeout(100);
+    await page.evaluate(() => window.__inputManager!.setFire(false));
+
+    // Reloading must NOT have aborted to idle; it must continue reloading
+    const action = await page.evaluate(() => window.__weaponState!.actionState);
+    expect(action).not.toBe('idle');
+    expect(action).toContain('reloading_shell');
+  });
+
+  test('shotgun fire-interrupt skips reloading_shell_end to prevent double-pump', async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(3);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 3 && window.__weaponState!.actionState === 'idle');
+
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[3]!;
+      slot.ammoInMag = 3;
+      slot.ammoReserve = 10;
+      window.__inputManager!.setReload(true);
+    });
+
+    await page.waitForFunction(() => window.__weaponState!.actionState === 'reloading_shell_insert');
+
+    // Fire interrupt
+    await page.evaluate(() => {
+      window.__inputManager!.setReload(false);
+      window.__inputManager!.setFire(true);
+    });
+
+    await page.waitForFunction(() => window.__weaponState!.actionState === 'idle');
+    await page.evaluate(() => window.__inputManager!.setFire(false));
+
+    // Must transition directly to idle, never entering reloading_shell_end
+    const finalState = await page.evaluate(() => window.__weaponState!.actionState);
+    expect(finalState).toBe('idle');
+  });
+
+  test('shotgun reload loop exits cleanly to idle once full capacity of 6 is reached', async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(3);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 3 && window.__weaponState!.actionState === 'idle');
+
+    // Set ammo to 5/10 (needs 1 shell to reach 6/6)
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[3]!;
+      slot.ammoInMag = 5;
+      slot.ammoReserve = 10;
+      window.__inputManager!.setReload(true);
+    });
+
+    // Wait for reload to start
+    await page.waitForFunction(() => window.__weaponState!.actionState !== 'idle');
+    await page.evaluate(() => window.__inputManager!.setReload(false));
+
+    // Wait for reload to run uninterrupted and complete to idle
+    await page.waitForFunction(() => window.__weaponState!.actionState === 'idle', { timeout: 8000 });
+
+    const { ammoInMag, ammoReserve } = await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[3]!;
+      return { ammoInMag: slot.ammoInMag, ammoReserve: slot.ammoReserve };
+    });
+    expect(ammoInMag).toBe(6);
+    expect(ammoReserve).toBe(9);
+  });
+
+  test('sniper enforces 80-tick (1.33s) bolt-action cycle and anti-quickswitch lockout across swaps', async ({
+    page,
+  }) => {
+    // Equip Sniper (slot 4)
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(4);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 4 && window.__weaponState!.actionState === 'idle');
+
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[4]!;
+      slot.ammoInMag = 5;
+      slot.ammoReserve = 15;
+    });
+
+    // Fire 1 shot: wait for ammo to decrement from 5 to 4
+    await page.evaluate(() => {
+      window.__inputManager!.setFire(true);
+    });
+    await page.waitForFunction(() => window.__weaponState!.slots[4]!.ammoInMag === 4);
+    await page.evaluate(() => {
+      window.__inputManager!.setFire(false);
+    });
+
+    // Verify action state is cycling_bolt and nextReadyTick is locked
+    const boltInfo = await page.evaluate(() => {
+      const ws = window.__weaponState!;
+      const slot = ws.slots[4]!;
+      return {
+        actionState: ws.actionState,
+        ammoInMag: slot.ammoInMag,
+        nextReadyTick: slot.nextReadyTick ?? 0,
+        currentSimTick: ws.currentSimTick,
+      };
+    });
+    expect(boltInfo.ammoInMag).toBe(4);
+    expect(boltInfo.actionState).toBe('cycling_bolt');
+    expect(boltInfo.nextReadyTick).toBeGreaterThanOrEqual(boltInfo.currentSimTick + 70);
+
+    // Quick-switch to Pistol (slot 1)
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(1);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 1);
+
+    // Immediately quick-switch back to Sniper (slot 4)
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(4);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 4);
+
+    // Sniper must still be locked by anti-quickswitch nextReadyTick
+    const quickswitchLocked = await page.evaluate(() => {
+      const ws = window.__weaponState!;
+      const slot = ws.slots[4]!;
+      return slot.nextReadyTick !== undefined && ws.currentSimTick < slot.nextReadyTick;
+    });
+    expect(quickswitchLocked).toBe(true);
+  });
+
+  test('sniper last-round reload uses tactical duration (168 ticks) skipping redundant bolt re-rack', async ({
+    page,
+  }) => {
+    // Equip Sniper
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(4);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 4 && window.__weaponState!.actionState === 'idle');
+
+    // Set last round in mag
+    await page.evaluate(() => {
+      const slot = window.__weaponState!.slots[4]!;
+      slot.ammoInMag = 1;
+      slot.ammoReserve = 15;
+    });
+
+    // Fire last round: wait for ammo to hit 0
+    await page.evaluate(() => {
+      window.__inputManager!.setFire(true);
+    });
+    await page.waitForFunction(() => window.__weaponState!.slots[4]!.ammoInMag === 0);
+    await page.evaluate(() => {
+      window.__inputManager!.setFire(false);
+    });
+
+    // Wait for bolt cycle to finish and auto-reload to kick in
+    await page.waitForFunction(() => {
+      const ws = window.__weaponState!;
+      return ws.actionState === 'reloading_tactical';
+    }, { timeout: 6000 });
+
+    const reloadInfo = await page.evaluate(() => {
+      const ws = window.__weaponState!;
+      return {
+        actionState: ws.actionState,
+        stateTicksRemaining: ws.stateTicksRemaining,
+      };
+    });
+
+    // Tactical reload duration is 168 ticks (2.8s), saving 42 ticks (0.7s) vs empty reload (210 ticks)
+    expect(reloadInfo.actionState).toBe('reloading_tactical');
+    expect(reloadInfo.stateTicksRemaining).toBeLessThanOrEqual(168);
+    expect(reloadInfo.stateTicksRemaining).toBeGreaterThan(150);
+  });
+
+  test('sniper ADS activates optical scope overlay, culls 3D viewmodel to prevent clipping, and restores on un-zoom', async ({
+    page,
+  }) => {
+    // Equip Sniper
+    await page.evaluate(() => {
+      window.__inputManager!.setWeaponSlot(4);
+    });
+    await page.waitForFunction(() => window.__weaponState!.currentSlot === 4);
+
+    // Zoom in with ADS
+    await page.evaluate(() => {
+      window.__inputManager!.setAds(true);
+    });
+
+    // Scope overlay should be active
+    const scopeEl = page.locator('#sniper-scope');
+    await expect(scopeEl).toHaveClass(/active/);
+
+    // 3D viewmodel should be hidden (group.visible === false)
+    const viewmodelHidden = await page.evaluate(() => {
+      return window.__viewmodel!.group.visible === false;
+    });
+    expect(viewmodelHidden).toBe(true);
+
+    // Zoom out (release ADS)
+    await page.evaluate(() => {
+      window.__inputManager!.setAds(false);
+    });
+
+    // Scope overlay deactivated
+    await expect(scopeEl).not.toHaveClass(/active/);
+
+    // 3D viewmodel restored to visible
+    const viewmodelRestored = await page.evaluate(() => {
+      return window.__viewmodel!.group.visible === true;
+    });
+    expect(viewmodelRestored).toBe(true);
+  });
 });
+

@@ -72,9 +72,10 @@ export function validateWeaponVisualDef(def: WeaponVisualDef): VisualDefValidati
         errors.push(`Clip ${key} has non-positive duration: ${clip.duration}`);
       } else {
         const ticks = clip.duration * 60;
-        const isCleanTick = Math.abs(ticks - Math.round(ticks)) < 1e-3 || Math.abs(ticks * 2 - Math.round(ticks * 2)) < 1e-3;
-        if (!isCleanTick) {
-          errors.push(`Clip ${key} duration ${clip.duration}s is not clean at 60 Hz (${ticks} ticks)`);
+        const isStrictInteger = Math.abs(ticks - Math.round(ticks)) < 1e-3;
+        const isAllowedHalfTick = key === 'fire' && Math.abs(ticks * 2 - Math.round(ticks * 2)) < 1e-3;
+        if (!isStrictInteger && !isAllowedHalfTick) {
+          errors.push(`Clip ${key} duration ${clip.duration}s is not integer-tick clean at 60 Hz (${ticks} ticks)`);
         }
       }
       if (!clip.keyframes || clip.keyframes.length === 0) {
