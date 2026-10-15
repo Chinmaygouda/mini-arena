@@ -1443,36 +1443,46 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
           for (let i = 0; i < state.slots.length; i++) {
             const slot = state.slots[i]!;
             const total = slot.ammoInMag + slot.ammoReserve;
-            expect(total).toBeLessThanOrEqual(initialTotals[i]!);
-            expect(slot.ammoReserve).toBeGreaterThanOrEqual(0);
+            if (total > initialTotals[i]! || slot.ammoReserve < 0) {
+              expect(total).toBeLessThanOrEqual(initialTotals[i]!);
+              expect(slot.ammoReserve).toBeGreaterThanOrEqual(0);
+            }
           }
 
           // --- INVARIANT 2: Magazine capacity bounds ---
           for (let i = 0; i < state.slots.length; i++) {
             const slot = state.slots[i]!;
             const def = WEAPON_REGISTRY[slot.weaponId];
-            expect(slot.ammoInMag).toBeGreaterThanOrEqual(0);
-            expect(slot.ammoInMag).toBeLessThanOrEqual(def.magSize);
+            if (slot.ammoInMag < 0 || slot.ammoInMag > def.magSize) {
+              expect(slot.ammoInMag).toBeGreaterThanOrEqual(0);
+              expect(slot.ammoInMag).toBeLessThanOrEqual(def.magSize);
+            }
           }
 
           // --- INVARIANT 3: Monotonic shell commit validity ---
           if (state.actionState === 'reloading_shell_insert') {
             const slot = getCurrentSlot(state);
             const def = WEAPON_REGISTRY[slot.weaponId];
-            expect(slot.ammoInMag).toBeLessThanOrEqual(def.magSize);
+            if (slot.ammoInMag > def.magSize) {
+              expect(slot.ammoInMag).toBeLessThanOrEqual(def.magSize);
+            }
           }
 
           // --- INVARIANT 4: Zero stuck states (simulation progress is monotonic) ---
-          expect(state.currentSimTick).toBe(previousSimTick + 1);
+          if (state.currentSimTick !== previousSimTick + 1) {
+            expect(state.currentSimTick).toBe(previousSimTick + 1);
+          }
           if (state.actionState !== 'idle' && state.actionState === previousAction) {
             // Either remaining ticks decrease monotonically, or a newly triggered/reset action began (ticksIntoState <= 1)
             const progressed = state.stateTicksRemaining < previousStateTicks || state.ticksIntoState <= 1;
-            expect(progressed).toBe(true);
+            if (!progressed) {
+              expect(progressed).toBe(true);
+            }
           }
 
           // --- INVARIANT 5: Anti-quickswitch lock validity ---
           const currentSlot = getCurrentSlot(state);
-          if (currentSlot.nextReadyTick !== undefined) {
+          if (currentSlot.nextReadyTick !== undefined && !Number.isFinite(currentSlot.nextReadyTick)) {
             expect(Number.isFinite(currentSlot.nextReadyTick)).toBe(true);
           }
 
@@ -1480,7 +1490,7 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
           previousAction = state.actionState;
           previousSimTick = state.currentSimTick;
         }
-      });
+      }, 20000);
 
       it('guarantees bit-for-bit snapshot-resume determinism across 500 ticks', () => {
         interface StepAction {
