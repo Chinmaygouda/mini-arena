@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Pistol Re-Capture: WebGPU vs WebGL2 Side-by-Side</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #090b10; color: #f8fafc; font-family: sans-serif; padding: 30px; }
+    header { margin-bottom: 25px; border-bottom: 1px solid #1e293b; padding-bottom: 15px; }
+    h1 { font-size: 24px; color: #38bdf8; }
+    p { color: #94a3b8; font-size: 14px; margin-top: 6px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+    .col { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden; }
+    .col-header { padding: 10px 14px; background: #1e293b; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; }
+    .badge-webgpu { color: #34d399; }
+    .badge-webgl2 { color: #fbbf24; }
+    img { width: 100%; display: block; border-bottom: 1px solid #1e293b; }
+    .caption { padding: 10px 14px; font-size: 13px; color: #cbd5e1; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Tactical Pistol Re-Capture — WebGPU vs WebGL2 (Fallback)</h1>
+    <p>Verified with assertWeapon(id="pistol", HUD="Tactical Pistol"). Eliminates previous incorrect weapon-tile capture.</p>
+  </header>
+
+  <!-- Hip Comparison -->
+  <h2 style="font-size: 16px; margin-bottom: 12px; color: #94a3b8;">1. First-Person Hip Rest Hold</h2>
+  <div class="row">
+    <div class="col">
+      <div class="col-header"><span>WebGPU Backend</span><span class="badge-webgpu">ACTIVE</span></div>
+      <img src="pistol_webgpu_hip.png" />
+      <div class="caption">Tactical Pistol Hip Hold rendered on WebGPU</div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span>WebGL2 Fallback</span><span class="badge-webgl2">?forceWebGL=1</span></div>
+      <img src="pistol_webgl2_hip.png" />
+      <div class="caption">Tactical Pistol Hip Hold rendered on WebGL2 fallback</div>
+    </div>
+  </div>
+
+  <!-- ADS Comparison -->
+  <h2 style="font-size: 16px; margin-bottom: 12px; color: #94a3b8;">2. First-Person ADS (Aim Down Sights)</h2>
+  <div class="row">
+    <div class="col">
+      <div class="col-header"><span>WebGPU Backend</span><span class="badge-webgpu">ACTIVE</span></div>
+      <img src="pistol_webgpu_ads.png" />
+      <div class="caption">Tactical Pistol ADS centered on tritium front sight</div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span>WebGL2 Fallback</span><span class="badge-webgl2">?forceWebGL=1</span></div>
+      <img src="pistol_webgl2_ads.png" />
+      <div class="caption">Tactical Pistol ADS on WebGL2 fallback</div>
+    </div>
+  </div>
+
+  <!-- Quarter Comparison -->
+  <h2 style="font-size: 16px; margin-bottom: 12px; color: #94a3b8;">3. 3/4 Front-Right Angle (Grip Audit)</h2>
+  <div class="row">
+    <div class="col">
+      <div class="col-header"><span>WebGPU Backend</span><span class="badge-webgpu">ACTIVE</span></div>
+      <img src="pistol_webgpu_quarter.png" />
+      <div class="caption">Quarter perspective showing compact two-handed hold on pistol frame</div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span>WebGL2 Fallback</span><span class="badge-webgl2">?forceWebGL=1</span></div>
+      <img src="pistol_webgl2_quarter.png" />
+      <div class="caption">Quarter perspective on WebGL2 fallback</div>
+    </div>
+  </div>
+</body>
+</html>
+  

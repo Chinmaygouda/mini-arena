@@ -1,0 +1,297 @@
+[
+  {
+    "weapon": "AK-47 (Assault Rifle)",
+    "weaponId": "assault_rifle",
+    "gunTriangles": 2385,
+    "rightHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.417,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 84.8,
+      "poleVector": [
+        0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 23.8,
+      "fingertipDistsMm": {
+        "thumb03": 11.1,
+        "f_index03": 13.2,
+        "f_middle03": 0.6,
+        "f_ring03": 0.3,
+        "f_pinky03": 2.6
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    },
+    "leftHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.5112,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 48.5,
+      "poleVector": [
+        -0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 15.5,
+      "fingertipDistsMm": {
+        "thumb03": 85.2,
+        "f_index03": 95.5,
+        "f_middle03": 79.6,
+        "f_ring03": 2.1,
+        "f_pinky03": 67.8
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    }
+  },
+  {
+    "weapon": "Tactical Pistol",
+    "weaponId": "pistol",
+    "gunTriangles": 1724,
+    "rightHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.3521,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 103.7,
+      "poleVector": [
+        0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 3.2,
+      "fingertipDistsMm": {
+        "thumb03": 51.3,
+        "f_index03": 37.5,
+        "f_middle03": 42.1,
+        "f_ring03": 40.4,
+        "f_pinky03": 38.7
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    },
+    "leftHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.2046,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 140.7,
+      "poleVector": [
+        -0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 5,
+      "fingertipDistsMm": {
+        "thumb03": 45,
+        "f_index03": 42.9,
+        "f_middle03": 38.5,
+        "f_ring03": 61.3,
+        "f_pinky03": 27.3
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    }
+  },
+  {
+    "weapon": "Rapid SMG",
+    "weaponId": "smg",
+    "gunTriangles": 1770,
+    "rightHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.3962,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 91.2,
+      "poleVector": [
+        0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 6.6,
+      "fingertipDistsMm": {
+        "thumb03": 42.9,
+        "f_index03": 31.1,
+        "f_middle03": 30.6,
+        "f_ring03": 28.1,
+        "f_pinky03": 23
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    },
+    "leftHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.3425,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 106.3,
+      "poleVector": [
+        -0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 8,
+      "fingertipDistsMm": {
+        "thumb03": 64.4,
+        "f_index03": 69.9,
+        "f_middle03": 57.6,
+        "f_ring03": 68.7,
+        "f_pinky03": 45.6
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    }
+  },
+  {
+    "weapon": "Combat Shotgun",
+    "weaponId": "shotgun",
+    "gunTriangles": 2012,
+    "rightHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.4027,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 89.2,
+      "poleVector": [
+        0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 38.5,
+      "fingertipDistsMm": {
+        "thumb03": 18,
+        "f_index03": 20.7,
+        "f_middle03": 4.2,
+        "f_ring03": 1.4,
+        "f_pinky03": 1.5
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    },
+    "leftHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.4102,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 86.9,
+      "poleVector": [
+        -0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 36.4,
+      "fingertipDistsMm": {
+        "thumb03": 98.2,
+        "f_index03": 97.3,
+        "f_middle03": 93.8,
+        "f_ring03": 2.5,
+        "f_pinky03": 79.9
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    }
+  },
+  {
+    "weapon": "Precision Sniper",
+    "weaponId": "sniper",
+    "gunTriangles": 2330,
+    "rightHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.4027,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 89.2,
+      "poleVector": [
+        0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 9.5,
+      "fingertipDistsMm": {
+        "thumb03": 36.9,
+        "f_index03": 25.1,
+        "f_middle03": 28,
+        "f_ring03": 26.5,
+        "f_pinky03": 19.9
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    },
+    "leftHand": {
+      "upperLengthM": 0.3222,
+      "foreLengthM": 0.2373,
+      "totalArmReachM": 0.5595,
+      "shoulderToTargetM": 0.4978,
+      "stretchScaleUpper": 1,
+      "stretchScaleFore": 1,
+      "elbowAngleDeg": 55,
+      "poleVector": [
+        -0.35,
+        -0.65,
+        0.05
+      ],
+      "poleSpace": "Camera / Viewmodel Group Space",
+      "wristRotErrorDeg": 0,
+      "palmCenterDistMm": 7.4,
+      "fingertipDistsMm": {
+        "thumb03": 23.8,
+        "f_index03": 24.3,
+        "f_middle03": 24.8,
+        "f_ring03": 46.7,
+        "f_pinky03": 42.5
+      },
+      "handVertsAudited": 293,
+      "vertsInsideTotal": 0,
+      "vertsDeeperThan3mm": 0
+    }
+  }
+]
