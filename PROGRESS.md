@@ -317,6 +317,27 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
     - **Visual Defects Flagged**:
       - Left-hand finger curling constants on the long-gun handguards (shotgun, sniper, SMG) cause the fingers to stick upward into the air like open claws rather than gripping flush around the cylindrical handguards.
       - On the pistol, the fingers curl too far forward, partially occluding the compact slide in perspective.
+- **9. Rigid Hand-to-Gun Attachment Architecture & Analytical Two-Bone IK Solver (`docs/screenshots/hands_verified/`)**:
+  - **Mathematical Root Cause & Architectural Redesign**:
+    - Replaced iterative CCD IK with pure closed-form analytical two-bone IK ([twoBoneIk.ts](file:///d:/Games/FPS/packages/client/src/animation/twoBoneIk.ts)) using the law of cosines and orthonormal basis projection.
+    - Implemented per-frame `resetToBindPose()` restoring all 52 skeleton bones per frame to eliminate twist compounding across mouse movements.
+    - Sockets (`socketR`, `socketL`) are child `Object3D`s attached directly to `weaponGroup`, inheriting sway, bob, recoil springs, and ADS instantly with zero frame lag.
+    - Sockets use author grasp keyframes from `grab.R` and `grab.L` clips to eliminate claw fingers.
+    - Outward and downward pole targets (`X = ±0.35, Y = -0.65, Z = 0.05`) guarantee elbows naturally drop and point outward from torso with zero sky-flips.
+  - **Empirical Test Suite Results ([scripts/verify-ik-suite.mjs](file:///d:/Games/FPS/scripts/verify-ik-suite.mjs))**:
+    - Extreme mouse sweep across $\pm 75^\circ$ yaw and $\pm 60^\circ$ pitch (300 frames @ 60 Hz):
+      - Max Right Wrist-to-Socket Distance: **0.0055 cm** (budget < 1.0 cm) — **PASS**
+      - Max Left Wrist-to-Socket Distance: **0.0036 cm** (budget < 1.0 cm) — **PASS**
+      - Elbow sky-flip violations: **0** (budget = 0) — **PASS**
+      - Has NaN/Inf: **false** — **PASS**
+      - History Independence max bone angle diff: **0.0000e+0 rad** (budget < 1e-4) — **PASS**
+  - **Real Chrome Screenshots Captured ([docs/screenshots/hands_verified/](file:///d:/Games/FPS/docs/screenshots/hands_verified/))**:
+    - AK-47: `ak_01_hip.png`, `ak_02_ads.png`, `ak_03_look_up.png`, `ak_04_look_down.png`, `ak_05_look_hard.png`, `ak_06_mid_reload.png`, `ak_07_end_reload.png`, `ak_08_side_vmCam.png`.
+    - Combat Shotgun: `shotgun_01_hip.png`, `shotgun_02_ads.png`, `shotgun_03_look_up.png`, `shotgun_04_look_down.png`, `shotgun_05_look_hard.png`, `shotgun_06_mid_reload.png`, `shotgun_07_end_reload.png`, `shotgun_08_side_vmCam.png`.
+  - **HUD & Camera Polish**:
+    - Fixed HUD ammo double-slash typo (`30 / / 90` -> `30 / 90`).
+    - Added external inspection camera support: `?debug=1&vmCam=side|top|front`.
+    - Camera near plane adjusted to 0.01 to prevent pistol ADS near-plane clipping.
 
 ## Next 3 steps
 1. **User Sign-Off**: User reviews empirical benchmarks, bundle audit, and hand socket screenshots.

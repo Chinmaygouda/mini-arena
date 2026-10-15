@@ -56,10 +56,13 @@ export interface WeaponVisualDef {
   boltTravelVector: THREE.Vector3;
   sockets?: {
     gripR?: THREE.Vector3;
+    gripRRot?: THREE.Euler;
     gripL?: THREE.Vector3;
+    gripLRot?: THREE.Euler;
     muzzle?: THREE.Vector3;
     ejectPort?: THREE.Vector3;
     magWell?: THREE.Vector3;
+    loadingPort?: THREE.Vector3;
   };
   clips: {
     idle: KeyframeClip;

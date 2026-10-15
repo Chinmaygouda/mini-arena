@@ -107,12 +107,12 @@ export function parseRealShotgunModel(gltfScene: THREE.Group): SplitWeaponMesh {
  */
 export function buildShotgunVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
   const rightGripRest = {
-    pos: new THREE.Vector3(0, 0.01, 0.075),
-    rot: new THREE.Euler(0.2, 0, 0),
+    pos: new THREE.Vector3(0, -0.045, 0.08),
+    rot: new THREE.Euler(1.2, 0.2, -0.4),
   };
   const leftPumpRest = {
-    pos: new THREE.Vector3(0, 0.033, -0.146),
-    rot: new THREE.Euler(0.1, 0, 0),
+    pos: new THREE.Vector3(-0.015, -0.01, -0.11),
+    rot: new THREE.Euler(1.35, -0.1, -1.05),
   };
 
   // 1. IDLE CLIP
@@ -259,7 +259,7 @@ export function buildShotgunVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
       },
       {
         time: 1.0,
-        leftHand: { pos: new THREE.Vector3(0, -0.08, -0.04), rot: new THREE.Euler(0.2, 0, 0) },
+        leftHand: { pos: new THREE.Vector3(-0.02, -0.06, -0.04), rot: new THREE.Euler(1.5, 0.0, -0.7) },
         rightHand: rightGripRest,
         magOffset: new THREE.Vector3(0, 0, 0),
         magAttached: true,
@@ -278,7 +278,7 @@ export function buildShotgunVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
     keyframes: [
       {
         time: 0.0,
-        leftHand: { pos: new THREE.Vector3(0, -0.12, -0.04), rot: new THREE.Euler(0.2, 0, 0) },
+        leftHand: { pos: new THREE.Vector3(-0.02, -0.09, -0.04), rot: new THREE.Euler(1.5, 0.0, -0.7) },
         rightHand: rightGripRest,
         magOffset: new THREE.Vector3(0, -0.08, 0.04),
         magAttached: false,
@@ -288,17 +288,17 @@ export function buildShotgunVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
       },
       {
         time: 0.625, // Commit tick 20/32
-        leftHand: { pos: new THREE.Vector3(0, -0.03, -0.02), rot: new THREE.Euler(0.2, 0, 0) },
+        leftHand: { pos: new THREE.Vector3(-0.01, -0.025, -0.02), rot: new THREE.Euler(1.6, 0.1, -0.5) }, // Shell clicked into tube!
         rightHand: rightGripRest,
         magOffset: new THREE.Vector3(0, 0, 0),
-        magAttached: true, // Shell clicked into tube!
+        magAttached: true,
         boltOffset: new THREE.Vector3(0, 0, 0),
         weaponPosOffset: new THREE.Vector3(-0.015, 0.045, 0.02),
         weaponRotOffset: new THREE.Euler(0.22, -0.12, 0.32),
       },
       {
         time: 1.0,
-        leftHand: { pos: new THREE.Vector3(0, -0.06, -0.03), rot: new THREE.Euler(0.2, 0, 0) },
+        leftHand: { pos: new THREE.Vector3(-0.02, -0.05, -0.03), rot: new THREE.Euler(1.5, 0.0, -0.7) },
         rightHand: rightGripRest,
         magOffset: new THREE.Vector3(0, 0, 0),
         magAttached: true,
@@ -319,7 +319,7 @@ export function buildShotgunVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
     keyframes: [
       {
         time: 0.0,
-        leftHand: { pos: new THREE.Vector3(0, -0.06, -0.03), rot: new THREE.Euler(0.2, 0, 0) },
+        leftHand: { pos: new THREE.Vector3(-0.02, -0.05, -0.03), rot: new THREE.Euler(1.5, 0.0, -0.7) },
         rightHand: rightGripRest,
         magOffset: new THREE.Vector3(0, 0, 0),
         magAttached: true,

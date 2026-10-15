@@ -23,11 +23,57 @@ export interface SkinnedArmsData {
   upperArmL: THREE.Bone;
   forearmL: THREE.Bone;
   handL: THREE.Bone;
-  restUpperRDir: THREE.Vector3;
-  restForeRDir: THREE.Vector3;
-  restUpperLDir: THREE.Vector3;
-  restForeLDir: THREE.Vector3;
 }
+
+interface BoneBindTransform {
+  position: THREE.Vector3;
+  quaternion: THREE.Quaternion;
+}
+
+// Sculpted finger grasp quaternions from author's grab.R/grab.L animations
+const RIGHT_HAND_GRIP_QUATS: Record<string, [number, number, number, number]> = {
+  palm01R: [0.0042, -0.7724, -0.0896, 0.6287],
+  f_index01R: [0.7489, 0.0501, -0.011, 0.6607],
+  f_index02R: [0.6048, -0.0113, 0.019, 0.7961],
+  f_index03R: [0.6166, 0.0001, 0.0055, 0.7873],
+  thumb01R: [0.0619, -0.3948, -0.2959, 0.8676],
+  thumb02R: [0.5574, 0.0415, 0.0194, 0.829],
+  thumb03R: [0.4828, -0.0893, 0.0736, 0.868],
+  palm02R: [-0.0338, -0.7304, -0.0702, 0.6786],
+  f_middle01R: [0.7354, 0.0168, 0.0029, 0.6774],
+  f_middle02R: [0.6254, 0.0111, -0.0029, 0.7802],
+  f_middle03R: [0.6215, 0.0043, -0.0018, 0.7834],
+  palm03R: [0.0079, 0.6967, -0.0787, 0.713],
+  f_ring01R: [0.0189, -0.6785, 0.734, 0.0204],
+  f_ring02R: [0.615, -0.0012, 0.0064, 0.7885],
+  f_ring03R: [0.6485, 0.0325, -0.0219, 0.7602],
+  palm04R: [-0.1256, -0.6614, 0.0393, 0.7384],
+  f_pinky01R: [0.7284, -0.0087, 0.0124, 0.685],
+  f_pinky02R: [0.6398, 0.0348, -0.0034, 0.7677],
+  f_pinky03R: [0.5934, -0.0201, 0.0147, 0.8045],
+};
+
+const LEFT_HAND_GRIP_QUATS: Record<string, [number, number, number, number]> = {
+  palm01L: [0.01, 0.7703, 0.0982, 0.63],
+  f_index01L: [0.6802, -0.0462, -0.0224, 0.731],
+  f_index02L: [0.5167, 0.0206, -0.008, 0.855],
+  f_index03L: [0.4921, 0.0033, -0.0044, 0.87],
+  thumb01L: [0.0122, 0.414, 0.3093, 0.856],
+  thumb02L: [0.4771, -0.0033, -0.0225, 0.878],
+  thumb03L: [0.3923, 0.1114, -0.0314, 0.912],
+  palm02L: [-0.033, 0.7301, 0.0713, 0.6788],
+  f_middle01L: [0.7192, -0.0114, -0.0127, 0.694],
+  f_middle02L: [0.5892, -0.0105, -0.0046, 0.807],
+  f_middle03L: [0.5642, -0.0045, -0.0012, 0.825],
+  palm03L: [0.0034, -0.6955, 0.0825, 0.7138],
+  f_ring01L: [0.6922, 0.0871, -0.1575, 0.699],
+  f_ring02L: [0.5841, 0.0049, -0.0043, 0.811],
+  f_ring03L: [0.5698, -0.039, -0.0029, 0.82],
+  palm04L: [-0.1291, 0.6619, -0.0428, 0.7372],
+  f_pinky01L: [0.699, 0.0145, -0.0043, 0.714],
+  f_pinky02L: [0.5883, -0.0295, -0.0188, 0.807],
+  f_pinky03L: [0.541, 0.0249, 0.0008, 0.84],
+};
 
 /**
  * First-person rigged arms featuring realistic tactical sleeves and gloves.
@@ -42,18 +88,22 @@ export class FirstPersonArmsRig {
   private ikSolver: TwoBoneIKSolver;
 
   // Skinned GLB arms support (Option A-lite)
-  private skinnedArms: SkinnedArmsData | null = null;
+  public skinnedArms: SkinnedArmsData | null = null;
+  private boneBindTransforms: Map<THREE.Bone, BoneBindTransform> = new Map();
+  private fingerBones: Map<string, THREE.Bone> = new Map();
 
   // Preallocated vector & quaternion scratchpads for zero-allocation IK evaluation
   private leftElbowPos = new THREE.Vector3();
   private rightElbowPos = new THREE.Vector3();
   private scratchUp = new THREE.Vector3(0, 1, 0);
-  private scratchVec1 = new THREE.Vector3();
-  private scratchVec2 = new THREE.Vector3();
-  private scratchVec3 = new THREE.Vector3();
-  private scratchQuat1 = new THREE.Quaternion();
-  private scratchQuat2 = new THREE.Quaternion();
-  private scratchQuat3 = new THREE.Quaternion();
+
+  private shoulderWorldR = new THREE.Vector3();
+  private shoulderWorldL = new THREE.Vector3();
+  private poleWorldR = new THREE.Vector3();
+  private poleWorldL = new THREE.Vector3();
+
+  private scratchQuatL = new THREE.Quaternion();
+  private scratchQuatR = new THREE.Quaternion();
 
   public totalTriangles = 0;
 
@@ -62,18 +112,15 @@ export class FirstPersonArmsRig {
     this.group.name = 'FPArms_Rig';
     this.ikSolver = new TwoBoneIKSolver();
 
-    // Arm bone lengths tuned for first-person viewmodel perspective
     const upperLen = 0.32;
     const foreLen = 0.30;
 
-    // Tactical sleeve material (dark slate fabric)
     const sleeveMat = new THREE.MeshStandardMaterial({
       color: 0x334155,
       roughness: 0.85,
       metalness: 0.1,
     });
 
-    // Tactical combat glove material (reinforced polymer/leather)
     const gloveMat = new THREE.MeshStandardMaterial({
       color: 0x1e293b,
       roughness: 0.6,
@@ -91,52 +138,34 @@ export class FirstPersonArmsRig {
       armGroup.name = isLeft ? 'Arm_Left' : 'Arm_Right';
 
       const sideSign = isLeft ? -1 : 1;
-      const shoulderPos = new THREE.Vector3(sideSign * 0.20, -0.15, -0.05);
+      const shoulderPos = new THREE.Vector3(sideSign * 0.2, -0.15, -0.05);
       const poleHint = new THREE.Vector3(sideSign * 0.42, -0.42, -0.18);
 
-      // Upper arm
       const upperGeom = new THREE.CylinderGeometry(0.042, 0.038, upperLen, 8);
-      // Center along Y-axis
       upperGeom.translate(0, -upperLen / 2, 0);
       const upperArm = new THREE.Mesh(upperGeom, sleeveMat);
-      armGroup.add(upperArm);
-      this.countMesh(upperArm);
+      upperArm.name = isLeft ? 'UpperArm_Left' : 'UpperArm_Right';
 
-      // Forearm
-      const foreGeom = new THREE.CylinderGeometry(0.038, 0.032, foreLen, 8);
+      const foreGeom = new THREE.CylinderGeometry(0.036, 0.03, foreLen, 8);
       foreGeom.translate(0, -foreLen / 2, 0);
-      const forearm = new THREE.Mesh(foreGeom, sleeveMat);
-      armGroup.add(forearm);
-      this.countMesh(forearm);
+      const forearm = new THREE.Mesh(foreGeom, gloveMat);
+      forearm.name = isLeft ? 'Forearm_Left' : 'Forearm_Right';
 
-      // Hand and fingers group
       const hand = new THREE.Group();
       hand.name = isLeft ? 'Hand_Left' : 'Hand_Right';
 
-      // Palm
-      const palmGeom = new THREE.BoxGeometry(0.065, 0.035, 0.08);
-      const palm = new THREE.Mesh(palmGeom, gloveMat);
-      palm.position.set(0, 0, -0.04);
+      const palmGeom = new THREE.BoxGeometry(0.065, 0.075, 0.032);
+      const palm = new THREE.Mesh(palmGeom, palmMat);
       hand.add(palm);
-      this.countMesh(palm);
 
-      // Knuckle guard
-      const knuckleGeom = new THREE.BoxGeometry(0.068, 0.02, 0.025);
-      const knuckle = new THREE.Mesh(knuckleGeom, palmMat);
-      knuckle.position.set(0, 0.012, -0.05);
-      hand.add(knuckle);
-      this.countMesh(knuckle);
-
-      // Thumb
-      const thumbGeom = new THREE.BoxGeometry(0.022, 0.022, 0.05);
-      const thumb = new THREE.Mesh(thumbGeom, gloveMat);
-      thumb.position.set(sideSign * -0.035, -0.01, -0.02);
-      thumb.rotation.y = sideSign * 0.35;
-      hand.add(thumb);
-      this.countMesh(thumb);
-
+      armGroup.add(upperArm);
+      armGroup.add(forearm);
       armGroup.add(hand);
       this.group.add(armGroup);
+
+      this.countMesh(upperArm);
+      this.countMesh(forearm);
+      this.countMesh(palm);
 
       return {
         root: armGroup,
@@ -164,24 +193,22 @@ export class FirstPersonArmsRig {
 
   /**
    * Binds an external GLTF SkinnedMesh dual-arm rig (Option A-lite Drillimpact arms).
-   * Applies matte tactical PBR material (slate sleeves, dark combat gloves), hides procedural meshes,
-   * and hooks bones up to analytical Two-Bone IK.
+   * Stores initial bind pose for all bones and pre-indexes finger bones for grip poses.
    */
   public setSkinnedArms(rigGroup: THREE.Group, skinnedMesh: THREE.SkinnedMesh): void {
     this.group.add(rigGroup);
 
     // Drillimpact rig has camera at Y = 1.743155 in rest pose.
-    // Offset root by -1.743155 so the camera / eye socket sits at (0, 0, 0) in viewmodel space.
     rigGroup.position.set(0, -1.743155, 0);
     rigGroup.updateMatrixWorld(true);
 
-    // Option A-lite material swap: sleek tactical matte PBR palette matching Styloo weapons
-    const aLiteMaterial = new THREE.MeshStandardMaterial({
-      color: 0x334155, // Tactical slate gray
-      roughness: 0.75,
+    // Option A cohesive stylized material: lighter, readable contrast against dark arena
+    const tacticalMaterial = new THREE.MeshStandardMaterial({
+      color: 0x475569, // Lighter, desaturated slate gray
+      roughness: 0.7,
       metalness: 0.15,
     });
-    skinnedMesh.material = aLiteMaterial;
+    skinnedMesh.material = tacticalMaterial;
 
     // Hide procedural arm blocks
     this.leftArm.root.visible = false;
@@ -203,37 +230,22 @@ export class FirstPersonArmsRig {
       return;
     }
 
-    // Cache rest bone unit vectors
-    const restUpperRDir = forearmR.position.clone().normalize();
-    const restForeRDir = handR.position.clone().normalize();
-    const restUpperLDir = forearmL.position.clone().normalize();
-    const restForeLDir = handL.position.clone().normalize();
+    // Cache bind pose transforms for all bones (ensures strict history independence)
+    this.boneBindTransforms.clear();
+    this.fingerBones.clear();
 
-    // Apply natural finger curls to wrap around weapon grips
-    const curlFinger = (prefix: string, side: string, c1: number, c2: number, c3: number) => {
-      const f1 = rigGroup.getObjectByName(`f_${prefix}01${side}`);
-      const f2 = rigGroup.getObjectByName(`f_${prefix}02${side}`);
-      const f3 = rigGroup.getObjectByName(`f_${prefix}03${side}`);
-      if (f1) f1.rotation.x += c1;
-      if (f2) f2.rotation.x += c2;
-      if (f3) f3.rotation.x += c3;
-    };
-    const curlThumb = (side: string, c1: number, c2: number, c3: number) => {
-      const t1 = rigGroup.getObjectByName(`thumb01${side}`);
-      const t2 = rigGroup.getObjectByName(`thumb02${side}`);
-      const t3 = rigGroup.getObjectByName(`thumb03${side}`);
-      if (t1) { t1.rotation.z += c1; t1.rotation.y += c1 * 0.5; }
-      if (t2) t2.rotation.x += c2;
-      if (t3) t3.rotation.x += c3;
-    };
-
-    // Right hand pistol grip curl
-    ['index', 'middle', 'ring', 'pinky'].forEach(f => curlFinger(f, 'R', 1.0, 1.2, 0.8));
-    curlThumb('R', 0.8, 0.6, 0.6);
-
-    // Left hand handguard support curl
-    ['index', 'middle', 'ring', 'pinky'].forEach(f => curlFinger(f, 'L', 0.8, 1.0, 0.7));
-    curlThumb('L', -0.6, 0.6, 0.6);
+    rigGroup.traverse((obj) => {
+      if ((obj as THREE.Bone).isBone) {
+        const bone = obj as THREE.Bone;
+        this.boneBindTransforms.set(bone, {
+          position: bone.position.clone(),
+          quaternion: bone.quaternion.clone(),
+        });
+        if (bone.name.startsWith('f_') || bone.name.startsWith('thumb') || bone.name.startsWith('palm')) {
+          this.fingerBones.set(bone.name, bone);
+        }
+      }
+    });
 
     this.skinnedArms = {
       rigGroup,
@@ -246,10 +258,6 @@ export class FirstPersonArmsRig {
       upperArmL,
       forearmL,
       handL,
-      restUpperRDir,
-      restForeRDir,
-      restUpperLDir,
-      restForeLDir,
     };
 
     // Calculate actual triangles
@@ -258,26 +266,71 @@ export class FirstPersonArmsRig {
   }
 
   /**
-   * Updates arm bones using two-bone IK to reach target hand positions.
+   * Resets all skeleton bones to their pristine author bind pose.
+   * Guarantees zero accumulation of twist across frames.
+   */
+  public resetToBindPose(): void {
+    if (!this.skinnedArms) return;
+    for (const [bone, bind] of this.boneBindTransforms) {
+      bone.position.copy(bind.position);
+      bone.quaternion.copy(bind.quaternion);
+    }
+  }
+
+  /**
+   * Applies natural cylindrical finger grip poses to the hands.
+   * Eliminates splayed claws.
+   */
+  public applyFingerGrips(): void {
+    if (!this.skinnedArms) return;
+
+    // Right Hand (Pistol Grip)
+    for (const [name, q] of Object.entries(RIGHT_HAND_GRIP_QUATS)) {
+      const bone = this.fingerBones.get(name);
+      if (bone) {
+        bone.quaternion.set(q[0], q[1], q[2], q[3]);
+      }
+    }
+
+    // Left Hand (Handguard / Fore-end Wrap)
+    for (const [name, q] of Object.entries(LEFT_HAND_GRIP_QUATS)) {
+      const bone = this.fingerBones.get(name);
+      if (bone) {
+        bone.quaternion.set(q[0], q[1], q[2], q[3]);
+      }
+    }
+  }
+
+  /**
+   * Updates arm bones using analytical two-bone IK to reach target hand positions.
    *
-   * @param leftTargetPos Hand position for the left arm (weapon handguard or magazine)
-   * @param leftTargetRot Hand orientation for the left arm
-   * @param rightTargetPos Hand position for the right arm (pistol grip and trigger)
-   * @param rightTargetRot Hand orientation for the right arm
+   * @param leftTargetPos Hand position for the left arm in world space
+   * @param leftTargetRot Hand orientation for the left arm (Quaternion or Euler)
+   * @param rightTargetPos Hand position for the right arm in world space
+   * @param rightTargetRot Hand orientation for the right arm (Quaternion or Euler)
    */
   public updateIK(
     leftTargetPos: THREE.Vector3,
-    leftTargetRot: THREE.Euler,
+    leftTargetRot: THREE.Quaternion | THREE.Euler,
     rightTargetPos: THREE.Vector3,
-    rightTargetRot: THREE.Euler,
+    rightTargetRot: THREE.Quaternion | THREE.Euler,
   ): void {
+    const qLeft =
+      leftTargetRot instanceof THREE.Quaternion
+        ? leftTargetRot
+        : this.scratchQuatL.setFromEuler(leftTargetRot);
+
+    const qRight =
+      rightTargetRot instanceof THREE.Quaternion
+        ? rightTargetRot
+        : this.scratchQuatR.setFromEuler(rightTargetRot);
+
     if (this.skinnedArms) {
-      this.updateSkinnedIK(leftTargetPos, leftTargetRot, rightTargetPos, rightTargetRot);
+      this.updateSkinnedIK(leftTargetPos, qLeft, rightTargetPos, qRight);
       return;
     }
 
     // Procedural Fallback Arms
-    // 1. Solve Left Arm IK
     this.ikSolver.solve(
       this.leftArm.shoulderPos,
       leftTargetPos,
@@ -286,13 +339,11 @@ export class FirstPersonArmsRig {
       this.leftArm.foreLength,
       this.leftElbowPos,
     );
-
     this.positionBone(this.leftArm.upperArm, this.leftArm.shoulderPos, this.leftElbowPos, this.leftArm.upperLength);
     this.positionBone(this.leftArm.forearm, this.leftElbowPos, leftTargetPos, this.leftArm.foreLength);
     this.leftArm.hand.position.copy(leftTargetPos);
-    this.leftArm.hand.rotation.copy(leftTargetRot);
+    this.leftArm.hand.quaternion.copy(qLeft);
 
-    // 2. Solve Right Arm IK
     this.ikSolver.solve(
       this.rightArm.shoulderPos,
       rightTargetPos,
@@ -301,104 +352,63 @@ export class FirstPersonArmsRig {
       this.rightArm.foreLength,
       this.rightElbowPos,
     );
-
     this.positionBone(this.rightArm.upperArm, this.rightArm.shoulderPos, this.rightElbowPos, this.rightArm.upperLength);
     this.positionBone(this.rightArm.forearm, this.rightElbowPos, rightTargetPos, this.rightArm.foreLength);
     this.rightArm.hand.position.copy(rightTargetPos);
-    this.rightArm.hand.rotation.copy(rightTargetRot);
+    this.rightArm.hand.quaternion.copy(qRight);
   }
 
   /**
    * Solves two-bone IK for articulated GLTF SkinnedMesh dual arms with zero per-frame allocation.
+   * Guarantees bend direction, prevents elbow flips, and eliminates twist accumulation.
    */
   private updateSkinnedIK(
     leftTargetPos: THREE.Vector3,
-    leftTargetRot: THREE.Euler,
+    leftTargetQuat: THREE.Quaternion,
     rightTargetPos: THREE.Vector3,
-    rightTargetRot: THREE.Euler,
+    rightTargetQuat: THREE.Quaternion,
   ): void {
     const s = this.skinnedArms!;
+
+    // 1. Reset all bones to pristine author bind pose
+    this.resetToBindPose();
+
+    // 2. Apply finger grip poses (cylindrical wrap, no claws)
+    this.applyFingerGrips();
+
     this.group.updateMatrixWorld(true);
 
-    // Pole hints (elbows bend naturally down and out in world space)
-    const poleR = this.scratchVec1.set(0.35, -0.45, -0.2).applyMatrix4(this.group.matrixWorld);
-    const poleL = this.scratchVec2.set(-0.35, -0.45, -0.2).applyMatrix4(this.group.matrixWorld);
+    // 3. Construct low and outward pole targets (guarantees elbows point downward/outward)
+    this.poleWorldR.set(0.35, -0.65, 0.05).applyMatrix4(this.group.matrixWorld);
+    this.poleWorldL.set(-0.35, -0.65, 0.05).applyMatrix4(this.group.matrixWorld);
 
-    // 1. Solve Right Arm (Pistol Grip)
-    this.solveSkinnedArmChain(
-      s.shoulderR,
-      s.upperArmR,
-      s.forearmR,
-      s.handR,
-      s.restUpperRDir,
-      s.restForeRDir,
+    // 4. Solve Right Arm (Pistol Grip)
+    s.upperArmR.getWorldPosition(this.shoulderWorldR);
+    this.ikSolver.solve(
+      this.shoulderWorldR,
       rightTargetPos,
-      rightTargetRot,
-      poleR,
+      this.poleWorldR,
       0.3222,
       0.2373,
+      this.rightElbowPos,
     );
+    this.ikSolver.orientBone(s.upperArmR, this.shoulderWorldR, this.rightElbowPos, this.ikSolver.planeNormal, s.shoulderR, false);
+    this.ikSolver.orientBone(s.forearmR, this.rightElbowPos, rightTargetPos, this.ikSolver.planeNormal, s.upperArmR, false);
+    this.ikSolver.orientWrist(s.handR, s.forearmR, rightTargetQuat);
 
-    // 2. Solve Left Arm (Handguard / Mag)
-    this.solveSkinnedArmChain(
-      s.shoulderL,
-      s.upperArmL,
-      s.forearmL,
-      s.handL,
-      s.restUpperLDir,
-      s.restForeLDir,
+    // 5. Solve Left Arm (Support Hand)
+    s.upperArmL.getWorldPosition(this.shoulderWorldL);
+    this.ikSolver.solve(
+      this.shoulderWorldL,
       leftTargetPos,
-      leftTargetRot,
-      poleL,
+      this.poleWorldL,
       0.3222,
       0.2373,
+      this.leftElbowPos,
     );
-  }
-
-  private solveSkinnedArmChain(
-    shoulderBone: THREE.Bone,
-    upperArmBone: THREE.Bone,
-    forearmBone: THREE.Bone,
-    handBone: THREE.Bone,
-    restUpperDir: THREE.Vector3,
-    restForeDir: THREE.Vector3,
-    targetPos: THREE.Vector3,
-    targetRot: THREE.Euler,
-    poleHint: THREE.Vector3,
-    upperLen: number,
-    foreLen: number,
-  ): void {
-    shoulderBone.updateMatrixWorld(true);
-
-    // 1. Get shoulder world position
-    const shoulderWorld = this.scratchVec3;
-    upperArmBone.getWorldPosition(shoulderWorld);
-
-    // 2. Solve elbow position
-    const elbowWorld = this.scratchVec1;
-    this.ikSolver.solve(shoulderWorld, targetPos, poleHint, upperLen, foreLen, elbowWorld);
-
-    // 3. Orient upper arm from shoulder to elbow
-    const upperDir = this.scratchVec2.subVectors(elbowWorld, shoulderWorld).normalize();
-    const shoulderWorldQuat = shoulderBone.getWorldQuaternion(this.scratchQuat1);
-    const upperDirLocal = upperDir.applyQuaternion(shoulderWorldQuat.invert());
-    upperArmBone.quaternion.setFromUnitVectors(restUpperDir, upperDirLocal);
-    upperArmBone.updateMatrixWorld(true);
-
-    // 4. Orient forearm from elbow to targetPos
-    const forearmWorld = shoulderWorld;
-    forearmBone.getWorldPosition(forearmWorld);
-    const foreDir = this.scratchVec2.subVectors(targetPos, forearmWorld).normalize();
-    const upperWorldQuat = upperArmBone.getWorldQuaternion(this.scratchQuat2);
-    const foreDirLocal = foreDir.applyQuaternion(upperWorldQuat.invert());
-    forearmBone.quaternion.setFromUnitVectors(restForeDir, foreDirLocal);
-    forearmBone.updateMatrixWorld(true);
-
-    // 5. Orient hand to targetRot
-    const foreWorldQuat = forearmBone.getWorldQuaternion(this.scratchQuat3);
-    const targetQuat = this.scratchQuat1.setFromEuler(targetRot);
-    handBone.quaternion.copy(targetQuat).premultiply(foreWorldQuat.invert());
-    handBone.updateMatrixWorld(true);
+    this.ikSolver.orientBone(s.upperArmL, this.shoulderWorldL, this.leftElbowPos, this.ikSolver.planeNormal, s.shoulderL, true);
+    this.ikSolver.orientBone(s.forearmL, this.leftElbowPos, leftTargetPos, this.ikSolver.planeNormal, s.upperArmL, true);
+    this.ikSolver.orientWrist(s.handL, s.forearmL, leftTargetQuat);
   }
 
   private positionBone(mesh: THREE.Mesh, from: THREE.Vector3, to: THREE.Vector3, baseLen: number): void {
@@ -412,4 +422,3 @@ export class FirstPersonArmsRig {
     }
   }
 }
-

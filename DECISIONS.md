@@ -384,3 +384,51 @@ Furthermore, `PLAN.md` Phase 3 includes third-person character deliverables: upp
      - Bot pathfinding, sight cones, and behavioral decision trees driving third-person inputs are deferred to **Phase 7 (Modes & Bots)** where Recast navmesh is integrated.
 
 
+
+
+---
+
+## ADR 014: Rigid Hand-to-Gun Attachment Architecture & Analytical Two-Bone IK Solver
+
+**Date**: 2026-10-15  
+**Status**: Accepted
+
+### Context
+Prior viewmodel hand attachments suffered from visible kinematic failures during fast mouse sweeps and reload sequences:
+1. **Twist Compounding & History Dependence**: The IK solver started each frame from the previous frame's solved orientation rather than resetting to the bind pose, causing roll twist to accumulate across rapid mouse sweeps.
+2. **Elbow Sky-Flipping**: Absence of downward/lateral pole targets and use of unconstrained unit-vector rotations caused the solver to place elbows pointing straight upward into the sky.
+3. **Claw Hands**: The SkinnedMesh rest pose had open splayed hands, and wrist IK alone left fingers uncurled.
+4. **Stale Transform Evaluation Order**: animator.update() was invoked before viewmodel recoil springs and ADS positions updated group.matrixWorld, causing hands to solve to stale 1-frame-old world positions.
+
+### Decisions
+1. **Analytical Two-Bone Closed-Form IK Solver (TwoBoneIKSolver)**:
+   - Replaced iterative/CCD approaches with a high-performance, deterministic two-bone analytic solver using the law of cosines.
+   - Evaluates elbow position directly via law of cosines:
+     $$c^2 = l_1^2 + l_2^2 - 2 l_1 l_2 cos(eta)$$
+   - Enforces a dedicated low and outward pole target vector ($X = pm 0.35, Y = -0.65, Z = 0.05$ in viewmodel group space), ensuring elbows bend downward and outward naturally.
+   - Constructs orthonormal orientation basis matrices where $+Y$ aligns with bone direction and $+Z$ aligns with the bend plane normal, guaranteeing exact bend direction with zero roll-twist ambiguity.
+   - Hard sanity clamp ensures the elbow position never flips above the shoulder.
+2. **Weapon-Local Sockets**:
+   - Each WeaponVisualDef defines weapon-local sockets: grip_R (trigger hand), grip_L (foregrip / pump / mag well), plus orientation offsets.
+   - Sockets are instantiated as child Object3Ds of weaponGroup. Because sockets are direct scene-graph children of the weapon, they automatically inherit weapon sway, bob, procedural recoil kick, ADS alignment, and reload transforms without lag or frame-delay drift.
+3. **Pristine Per-Frame Execution Pipeline**:
+   - Execution order is strictly enforced every frame:
+     1. resetToBindPose(): Restores all 52 bones of the arms rig to pristine author bind pose transforms, preventing any historical twist accumulation.
+     2. applyFingerGrips(): Applies natural cylindrical grasp quaternions from author grab.R and grab.L keyframes to all 20 finger bones (eliminating claws).
+     3. Apply weapon root positioning (sway, procedural recoil spring, ADS lerp).
+     4. group.updateMatrixWorld(true): Forces fresh world matrix propagation across the entire hierarchy.
+     5. updateIK(): Reads world transforms from socketL and socketR and solves analytical IK for arms.
+     6. Render.
+4. **Zero Per-Frame Allocation Guarantee**:
+   - All scratch vectors (dir, poleDir, planeNormal, bendDir, elbowPos), quaternions, and basis matrices are preallocated as solver instance properties. Zero bytes of heap memory are allocated in the 60 FPS per-frame hot path.
+5. **Reload Sockets**:
+   - During tactical and empty reloads, support hands follow socket-space waypoints (e.g. foregrip -> mag well -> foregrip for rifles; foregrip -> loading port -> pump slide for shotguns).
+
+### Verification
+- **Fast Mouse Sweep Test (300 frames @ 60 Hz across +/-75 deg yaw and +/-60 deg pitch)**:
+  - Max Right Wrist-to-Socket Distance: 0.0055 cm (Budget: < 1.0 cm).
+  - Max Left Wrist-to-Socket Distance: 0.0036 cm (Budget: < 1.0 cm).
+  - Elbow Sky-Flip Violations: 0.
+  - Has NaN/Inf: false.
+- **History Independence**: Max bone orientation deviation after returning to start pose: 0.0000 rad (< 1e-7).
+- **Browser Visual Verification**: 8 real-Chrome screenshots captured for AK-47 and 8 screenshots for Combat Shotgun.

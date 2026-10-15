@@ -31,6 +31,10 @@ export class WeaponAnimator {
   public armsRig: FirstPersonArmsRig;
   public weaponGroup: THREE.Group;
 
+  // Sockets parented directly to the weapon root so they inherit all sway, bob, recoil, and ADS transforms
+  public socketR: THREE.Object3D;
+  public socketL: THREE.Object3D;
+
   // Active clip state
   private currentClip: KeyframeClip;
   private clipTime = 0;
@@ -48,12 +52,10 @@ export class WeaponAnimator {
   // Reusable scratchpads to eliminate allocations in update loop
   private scratchLeftPos = new THREE.Vector3();
   private scratchRightPos = new THREE.Vector3();
-  private scratchLeftRot = new THREE.Euler();
-  private scratchRightRot = new THREE.Euler();
+  private scratchLeftQuat = new THREE.Quaternion();
+  private scratchRightQuat = new THREE.Quaternion();
   private scratchMagPos = new THREE.Vector3();
   private scratchBoltPos = new THREE.Vector3();
-  private scratchWeaponPos = new THREE.Vector3();
-  private scratchWeaponRot = new THREE.Euler();
 
   // Dropped magazine shared material and geometry
   private magGeomCache: THREE.BufferGeometry;
@@ -70,6 +72,15 @@ export class WeaponAnimator {
     this.weaponGroup.add(this.visualDef.bodyMesh);
     this.weaponGroup.add(this.visualDef.magMesh);
     this.weaponGroup.add(this.visualDef.boltMesh);
+
+    // Create weapon sockets as child Object3Ds of weaponGroup
+    this.socketR = new THREE.Object3D();
+    this.socketR.name = 'Socket_Grip_R';
+    this.socketL = new THREE.Object3D();
+    this.socketL.name = 'Socket_Grip_L';
+
+    this.weaponGroup.add(this.socketR);
+    this.weaponGroup.add(this.socketL);
 
     this.currentClip = this.visualDef.clips.draw;
     this.isLooping = false;
@@ -112,9 +123,7 @@ export class WeaponAnimator {
     const nextClip = this.visualDef.clips[clipName];
     if (!nextClip) return;
 
-    if (this.currentClip.name === clipName && !forceRestart && this.isLooping) {
-      return;
-    }
+    if (this.currentClip === nextClip && !forceRestart) return;
 
     this.currentClip = nextClip;
     this.clipTime = 0;
@@ -122,8 +131,13 @@ export class WeaponAnimator {
     this.firedEvents.clear();
   }
 
-  public getCurrentClipName(): string {
+  public getClipName(): string {
     return this.currentClip.name;
+  }
+
+  public isFinished(): boolean {
+    if (this.isLooping) return false;
+    return this.clipTime >= this.currentClip.duration;
   }
 
   public update(dt: number, scene?: THREE.Scene): void {
@@ -169,27 +183,39 @@ export class WeaponAnimator {
     // 6. Apply weapon root positional & rotational offsets
     this.weaponGroup.position.copy(this.interpolatedWeaponPos);
     this.weaponGroup.rotation.copy(this.interpolatedWeaponRot);
+
+    // 7. Update sockets in WEAPON-LOCAL space
+    this.socketR.position.copy(this.interpolatedRightHandPos);
+    this.socketR.rotation.copy(this.interpolatedRightHandRot);
+
+    this.socketL.position.copy(this.interpolatedLeftHandPos);
+    this.socketL.rotation.copy(this.interpolatedLeftHandRot);
+
+    // Force weapon hierarchy matrix update so sockets receive new world matrices
     this.weaponGroup.updateMatrixWorld(true);
 
-    // 7. Update arms rig IK in world space (transformed by weapon group world matrix)
-    this.scratchLeftPos.copy(this.interpolatedLeftHandPos).applyMatrix4(this.weaponGroup.matrixWorld);
-    this.scratchRightPos.copy(this.interpolatedRightHandPos).applyMatrix4(this.weaponGroup.matrixWorld);
+    // 8. Read world transforms directly from sockets (inherits sway, bob, recoil, ADS)
+    this.socketL.getWorldPosition(this.scratchLeftPos);
+    this.socketL.getWorldQuaternion(this.scratchLeftQuat);
 
+    this.socketR.getWorldPosition(this.scratchRightPos);
+    this.socketR.getWorldQuaternion(this.scratchRightQuat);
+
+    // 9. Solve analytical two-bone IK
     this.armsRig.updateIK(
       this.scratchLeftPos,
-      this.interpolatedLeftHandRot,
+      this.scratchLeftQuat,
       this.scratchRightPos,
-      this.interpolatedRightHandRot,
+      this.scratchRightQuat,
     );
 
-    // 8. Update dropped physics magazines
+    // 10. Update dropped physics magazines
     if (scene && this.droppedMags.length > 0) {
       for (let i = this.droppedMags.length - 1; i >= 0; i--) {
         const item = this.droppedMags[i]!;
         item.life += dt;
         stepCosmeticPhysics(item.mesh.position, item.velocity, item.mesh.rotation, item.rotVel, dt);
 
-        // Clean up after 2.5 seconds
         if (item.life > 2.5) {
           scene.remove(item.mesh);
           this.droppedMags.splice(i, 1);
@@ -200,7 +226,6 @@ export class WeaponAnimator {
 
   private handleAnimationEvent(ev: TimedAnimationEvent, scene?: THREE.Scene): void {
     if (ev.type === 'mag_drop' && scene) {
-      // Spawn physically falling empty magazine
       const droppedMesh = new THREE.Mesh(this.magGeomCache, this.magMatCache);
       const worldPos = new THREE.Vector3();
       this.visualDef.magMesh.getWorldPosition(worldPos);
@@ -248,7 +273,6 @@ export class WeaponAnimator {
       return;
     }
 
-    // Find bounding keyframes
     let k0 = keyframes[0]!;
     let k1 = keyframes[1]!;
     for (let i = 0; i < keyframes.length - 1; i++) {
@@ -261,39 +285,43 @@ export class WeaponAnimator {
 
     const span = Math.max(0.0001, k1.time - k0.time);
     const alpha = (t - k0.time) / span;
-    // Smooth cosine blending
-    const smoothAlpha = 0.5 - 0.5 * Math.cos(alpha * Math.PI);
 
-    this.interpolatedLeftHandPos.lerpVectors(k0.leftHand.pos, k1.leftHand.pos, smoothAlpha);
-    this.lerpEuler(this.interpolatedLeftHandRot, k0.leftHand.rot, k1.leftHand.rot, smoothAlpha);
+    // Position interpolation
+    this.interpolatedLeftHandPos.lerpVectors(k0.leftHand.pos, k1.leftHand.pos, alpha);
+    this.interpolatedRightHandPos.lerpVectors(k0.rightHand.pos, k1.rightHand.pos, alpha);
+    this.interpolatedMagOffset.lerpVectors(k0.magOffset, k1.magOffset, alpha);
+    this.interpolatedBoltOffset.lerpVectors(k0.boltOffset, k1.boltOffset, alpha);
+    this.interpolatedWeaponPos.lerpVectors(k0.weaponPosOffset, k1.weaponPosOffset, alpha);
 
-    this.interpolatedRightHandPos.lerpVectors(k0.rightHand.pos, k1.rightHand.pos, smoothAlpha);
-    this.lerpEuler(this.interpolatedRightHandRot, k0.rightHand.rot, k1.rightHand.rot, smoothAlpha);
+    // Rotation interpolation
+    this.interpolatedLeftHandRot.set(
+      k0.leftHand.rot.x + (k1.leftHand.rot.x - k0.leftHand.rot.x) * alpha,
+      k0.leftHand.rot.y + (k1.leftHand.rot.y - k0.leftHand.rot.y) * alpha,
+      k0.leftHand.rot.z + (k1.leftHand.rot.z - k0.leftHand.rot.z) * alpha,
+    );
+    this.interpolatedRightHandRot.set(
+      k0.rightHand.rot.x + (k1.rightHand.rot.x - k0.rightHand.rot.x) * alpha,
+      k0.rightHand.rot.y + (k1.rightHand.rot.y - k0.rightHand.rot.y) * alpha,
+      k0.rightHand.rot.z + (k1.rightHand.rot.z - k0.rightHand.rot.z) * alpha,
+    );
+    this.interpolatedWeaponRot.set(
+      k0.weaponRotOffset.x + (k1.weaponRotOffset.x - k0.weaponRotOffset.x) * alpha,
+      k0.weaponRotOffset.y + (k1.weaponRotOffset.y - k0.weaponRotOffset.y) * alpha,
+      k0.weaponRotOffset.z + (k1.weaponRotOffset.z - k0.weaponRotOffset.z) * alpha,
+    );
 
-    this.interpolatedMagOffset.lerpVectors(k0.magOffset, k1.magOffset, smoothAlpha);
-    this.interpolatedMagAttached = k1.magAttached;
-
-    this.interpolatedBoltOffset.lerpVectors(k0.boltOffset, k1.boltOffset, smoothAlpha);
-
-    this.interpolatedWeaponPos.lerpVectors(k0.weaponPosOffset, k1.weaponPosOffset, smoothAlpha);
-    this.lerpEuler(this.interpolatedWeaponRot, k0.weaponRotOffset, k1.weaponRotOffset, smoothAlpha);
+    this.interpolatedMagAttached = k0.magAttached && k1.magAttached;
   }
 
-  private copyKeyframe(kf: WeaponKeyframe): void {
-    this.interpolatedLeftHandPos.copy(kf.leftHand.pos);
-    this.interpolatedLeftHandRot.copy(kf.leftHand.rot);
-    this.interpolatedRightHandPos.copy(kf.rightHand.pos);
-    this.interpolatedRightHandRot.copy(kf.rightHand.rot);
-    this.interpolatedMagOffset.copy(kf.magOffset);
-    this.interpolatedMagAttached = kf.magAttached;
-    this.interpolatedBoltOffset.copy(kf.boltOffset);
-    this.interpolatedWeaponPos.copy(kf.weaponPosOffset);
-    this.interpolatedWeaponRot.copy(kf.weaponRotOffset);
-  }
-
-  private lerpEuler(out: THREE.Euler, a: THREE.Euler, b: THREE.Euler, t: number): void {
-    out.x = a.x + (b.x - a.x) * t;
-    out.y = a.y + (b.y - a.y) * t;
-    out.z = a.z + (b.z - a.z) * t;
+  private copyKeyframe(k: WeaponKeyframe): void {
+    this.interpolatedLeftHandPos.copy(k.leftHand.pos);
+    this.interpolatedLeftHandRot.copy(k.leftHand.rot);
+    this.interpolatedRightHandPos.copy(k.rightHand.pos);
+    this.interpolatedRightHandRot.copy(k.rightHand.rot);
+    this.interpolatedMagOffset.copy(k.magOffset);
+    this.interpolatedBoltOffset.copy(k.boltOffset);
+    this.interpolatedWeaponPos.copy(k.weaponPosOffset);
+    this.interpolatedWeaponRot.copy(k.weaponRotOffset);
+    this.interpolatedMagAttached = k.magAttached;
   }
 }

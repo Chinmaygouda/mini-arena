@@ -54,6 +54,7 @@ declare global {
     __fps?: number;
     __threeRenderer?: WebGPURenderer;
     __camera?: THREE.PerspectiveCamera;
+    __debugCamera?: THREE.PerspectiveCamera | null;
     __scene?: THREE.Scene;
     THREE?: typeof THREE;
   }
@@ -140,13 +141,33 @@ async function initApp(): Promise<void> {
   const camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
-    0.05,
+    0.01,
     500,
   );
   camera.rotation.order = 'YXZ';
   scene.add(camera);
+
+  // Debug outside viewmodel inspection camera (?debug=1&vmCam=side|top|front)
+  const vmCam = url.searchParams.get('vmCam');
+  let debugCamera: THREE.PerspectiveCamera | null = null;
+  if (vmCam) {
+    debugCamera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.01, 100);
+    camera.add(debugCamera);
+    if (vmCam === 'side') {
+      debugCamera.position.set(0.65, -0.05, -0.2);
+      debugCamera.lookAt(new THREE.Vector3(0.05, -0.15, -0.32));
+    } else if (vmCam === 'top') {
+      debugCamera.position.set(0.05, 0.65, -0.32);
+      debugCamera.lookAt(new THREE.Vector3(0.05, -0.15, -0.32));
+    } else if (vmCam === 'front') {
+      debugCamera.position.set(0.05, -0.15, -0.9);
+      debugCamera.lookAt(new THREE.Vector3(0.05, -0.15, -0.32));
+    }
+  }
+
   if (isDebug) {
     window.__camera = camera;
+    window.__debugCamera = debugCamera;
     window.__scene = scene;
     (window as unknown as { THREE: unknown }).THREE = THREE;
   }
@@ -441,7 +462,7 @@ async function initApp(): Promise<void> {
       hudAmmoMag.textContent = `${activeSlot.ammoInMag}`;
     }
     if (hudAmmoReserve) {
-      hudAmmoReserve.textContent = `/ ${activeSlot.ammoReserve}`;
+      hudAmmoReserve.textContent = `${activeSlot.ammoReserve}`;
     }
     if (hudWeaponAction) {
       const isReloading =
@@ -478,7 +499,7 @@ async function initApp(): Promise<void> {
     }
 
     stats.update();
-    renderer.render(scene, camera);
+    renderer.render(scene, debugCamera || camera);
   });
 }
 

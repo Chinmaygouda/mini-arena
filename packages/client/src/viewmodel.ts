@@ -346,22 +346,23 @@ export class WeaponViewmodel {
       }
     }
 
-    // 3. Step the weapon animator, arms IK, and dropping magazine physics
-    this.animator.update(dt, this.scene);
-
-    // 4. Lerp between hip and ADS position
+    // 3. Lerp between hip and ADS position
     const targetPos = isAds ? this.adsPos : this.hipPos;
     const lerpSpeed = isAds ? 16.0 : 12.0;
     this.currentPos.lerp(targetPos, Math.min(1.0, dt * lerpSpeed));
 
-    // 5. Recover procedural recoil springs smoothly
+    // 4. Recover procedural recoil springs smoothly
     this.recoilOffsetZ = Math.max(0, this.recoilOffsetZ - dt * 0.35);
     this.recoilPitch = Math.max(0, this.recoilPitch - dt * 2.2);
 
-    // Apply combined positioning to viewmodel group
+    // Apply combined positioning to viewmodel group BEFORE solving arms IK
     this.group.position.copy(this.currentPos);
     this.group.position.z += this.recoilOffsetZ;
     this.group.rotation.x = this.recoilPitch;
+    this.group.updateMatrixWorld(true);
+
+    // 5. Step the weapon animator, arms IK, and dropping magazine physics with fresh matrixWorld
+    this.animator.update(dt, this.scene);
 
     // 6. Update bullet tracers
     for (let i = this.tracers.length - 1; i >= 0; i--) {
