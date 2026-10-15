@@ -10,6 +10,7 @@ import { WeaponVisualDef } from './animation/types';
 import { WeaponAnimator } from './animation/weaponAnimator';
 import { loadRealAK47Slice } from './models/realWeaponSlice';
 import { loadRealPistolSlice } from './models/pistolSlice';
+import { loadRealSmgSlice } from './models/smgSlice';
 
 export interface Tracer {
   mesh: THREE.Line;
@@ -144,6 +145,18 @@ export class WeaponViewmodel {
         })
         .catch((err) => {
           console.warn('Real Pistol model slice fallback to procedural:', err);
+        });
+
+      loadRealSmgSlice('/models')
+        .then((slice) => {
+          this.visualDefs.smg = slice.visualDef;
+          if (this.currentVisualDef.weaponId === 'smg') {
+            this.currentVisualDef = slice.visualDef;
+            this.animator.setVisualDef(slice.visualDef);
+          }
+        })
+        .catch((err) => {
+          console.warn('Real SMG model slice fallback to procedural:', err);
         });
     }
   }
