@@ -40,4 +40,5 @@ pnpm-debug.log*
 scratch*
 packages/client/public/models/styloo_extracted/
 assets/source/
+artifacts/
 
