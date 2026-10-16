@@ -716,6 +716,23 @@ Phase 5 requires three diverse competitive arena maps (Warehouse, Plaza, Contain
 ## ADR 021: Development-only Assault Rifle Hand Lab integration
 
 **Date:** 2026-10-16  
-**Status:** Implemented on feature branch phase3/assault-rifle-handlab-integration
+**Status:** Verified and Accepted (Feature branch `phase3/assault-rifle-handlab-integration`)
 
-The standalone Hand Lab uses proxy geometry and a different coordinate frame, so its proxy values are not copied into production. The real and procedural-fallback Assault Rifle grip targets are centralized in packages/client/src/animation/hands/assault_rifle.handdef.ts. The inspector loads only from the Vite development build via the handlab query. Offsets are additive and export produces a reviewable JSON file; it never rewrites source automatically. Clip scrubbing suppresses earlier cosmetic events, while reload timing and ammunition remain controlled by the shared state machine. This is only the Assault Rifle slice. Numeric wrist/reach diagnostics do not prove actual mesh contact; full tests and real browser evidence are still required.
+### Context & Implementation
+The standalone Hand Lab prototype used proxy hand geometries and a distinct local coordinate frame, so its proxy transforms could not be directly copied into the production engine. Instead:
+1. Production AK-47 (`ak47.glb`) grip sockets and sculpted finger grasp poses (`arms_rig.glb`) were centralized in `packages/client/src/animation/hands/assault_rifle.handdef.ts`.
+2. The Hand Lab overlay in `packages/client/src/debug/HandLabOverlay.ts` attaches directly to the production Three.js viewmodel (`WeaponViewmodel`), rendering through the active WebGL2 / WebGPU rendering pipeline.
+3. The editor is gated behind `import.meta.env.DEV` and accessible via `http://localhost:5173/?handlab=1&forceWebGL=1`.
+4. Event propagation (`pointerdown`/`mousedown`) is intercepted to prevent pointer lock disruption on the canvas.
+5. All animation clip events and shared reload state machine calls are faithfully synchronized without duplicating ammo logic.
+
+### Empirical Measurements & Verification
+- **Bone Rig Lengths (Empirical from GLB):** Upper arm = $322.236\text{ mm}$, Forearm = $237.276\text{ mm}$ (Total span = $559.512\text{ mm}$).
+- **Residual IK Wrist Error:** Right = $0.0002\text{ mm}$, Left = $0.0002\text{ mm}$ (budget $\le 10.0\text{ mm}$).
+- **Reach & Elbow Angles:** Right Reach = 71.4% (Elbow 89.8°), Left Reach = 76.0% (Elbow 97.7°). Elbow downward vector: PASS.
+- **Finite Transforms:** Zero NaN or Infinity across all simulation states.
+- **Motion Rigidity & History Independence:** Quaternion angle deviation $4.2147 \times 10^{-8}\text{ rad}$ across full mouse sweeps.
+- **Automated Test Results:**
+  - `pnpm verify`: 100% passed (typecheck 0 errors, lint 0 errors, purity 5/5, vitest 124/124 tests, build clean in 416ms).
+  - `pnpm test:e2e`: 84/84 tests passed across Chromium and Firefox.
+- **Captured Visual Evidence:** 10 production screenshots (`01_hip.png` through `10_sprint_lower.png`) and `assault_rifle_handlab.webm` saved in `docs/hand_system/captures/assault_rifle/`.

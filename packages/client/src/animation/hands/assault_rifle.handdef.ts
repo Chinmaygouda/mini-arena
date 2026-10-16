@@ -30,12 +30,12 @@ export function createAssaultRifleRestTargets(profile: AssaultRifleHoldProfile =
   const data = ASSAULT_RIFLE_HANDDEF[profile];
   return {
     rightGripRest: {
-      pos: new THREE.Vector3(...data.gripR.position),
-      rot: new THREE.Euler(...data.gripR.rotation, 'XYZ'),
+      pos: new THREE.Vector3(data.gripR.position[0], data.gripR.position[1], data.gripR.position[2]),
+      rot: new THREE.Euler(data.gripR.rotation[0], data.gripR.rotation[1], data.gripR.rotation[2], 'XYZ'),
     },
     leftHandguardRest: {
-      pos: new THREE.Vector3(...data.gripL.position),
-      rot: new THREE.Euler(...data.gripL.rotation, 'XYZ'),
+      pos: new THREE.Vector3(data.gripL.position[0], data.gripL.position[1], data.gripL.position[2]),
+      rot: new THREE.Euler(data.gripL.rotation[0], data.gripL.rotation[1], data.gripL.rotation[2], 'XYZ'),
     },
   };
 }

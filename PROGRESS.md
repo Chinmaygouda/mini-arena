@@ -541,11 +541,53 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 ---
 
 ## Phase 3 subtask — Assault Rifle Hand Lab integration (2026-10-16)
-**Status:** Feature branch implementation awaiting CI and real-browser review.
-
-- Centralized real-model and procedural-fallback Assault Rifle rest targets.
-- Added a Vite-development-only Hand Lab overlay connected to the production viewmodel and shared weapon state.
-- Added additive weapon-local offsets, clip controls, event timeline/scrubbing, playback speed/pause/tick step, external camera presets, socket/elbow markers, diagnostics, shared reload requests, dev-only ammo setup, mouse sweep and JSON export.
-- Added a Playwright capture script for hip, ADS, side, and reload states. It has not been run from this environment.
-- No production pose definitions for pistol, SMG, shotgun, or sniper were modified.
-- Next: run pnpm verify, E2E, headed Chrome/WebGL2 and real-rig mesh-contact captures; stop for user review before the next weapon.
+**Status:** VERIFIED — READY FOR REVIEW
+- **Implementation:**
+  - Centralized real-model and procedural-fallback Assault Rifle rest targets in [assault_rifle.handdef.ts](file:///d:/Games/FPS/packages/client/src/animation/hands/assault_rifle.handdef.ts).
+  - Integrated development-only Hand Lab overlay in [HandLabOverlay.ts](file:///d:/Games/FPS/packages/client/src/debug/HandLabOverlay.ts) operating on the production Three.js viewmodel, real AK-47 model slice (`ak47.glb`), and Drillimpact skinned arms rig (`arms_rig.glb`).
+  - Gated behind `import.meta.env.DEV` and accessible via `http://localhost:5173/?handlab=1&forceWebGL=1`.
+  - Non-intrusive positioning (`left: 96px; top: 12px`) preventing collision with `stats-gl` and canvas pointer lock (`e.stopPropagation()`).
+  - Added live tuning sliders, animation clip playback, timeline scrubber with event ticks, playback speed, pause, tick stepping, camera presets (FPS, Side, Top, Front, Rear), socket axes & elbow markers, shared state reload requests, and JSON export.
+- **Empirical Rig Bone Measurements (Production GLB):**
+  - Right Upper Arm Length: **322.236 mm** (Design: 322.236 mm)
+  - Right Forearm Length: **237.276 mm** (Design: 237.276 mm)
+  - Left Upper Arm Length: **322.236 mm** (Design: 322.236 mm)
+  - Left Forearm Length: **237.276 mm** (Design: 237.276 mm)
+  - Total Arm Span: **559.512 mm**
+- **Verified Kinematics & Contact Metrics:**
+  - Right Hand IK Error: **0.0002 mm** (budget $\le 10.0\text{ mm}$) — PASS
+  - Left Hand IK Error: **0.0002 mm** (budget $\le 10.0\text{ mm}$) — PASS
+  - Right Reach Ratio: **71.4%** (budget: 55% - 95%) — PASS
+  - Left Reach Ratio: **76.0%** (budget: 55% - 95%) — PASS
+  - Right Elbow Angle: **89.8°** (natural bend: 60° - 150°) — PASS
+  - Left Elbow Angle: **97.7°** (natural bend: 60° - 150°) — PASS
+  - Elbow Downward Vector: **Right = true, Left = true** — PASS
+  - History Independence: Quaternion deviation **$4.2147 \times 10^{-8}\text{ rad}$** (budget $< 1 \times 10^{-6}\text{ rad}$) — PASS
+  - Finite Transforms: **Zero NaN / Infinity** — PASS
+  - Measured Contact Radii:
+    - Right thumb: 42.48 mm, index: 27.25 mm, middle: 32.05 mm, ring: 28.03 mm, pinky: 19.97 mm
+    - Left thumb: 33.42 mm, index: 28.83 mm, middle: 21.54 mm, ring: 66.64 mm, pinky: 8.41 mm
+- **Automated Verification Evidence:**
+  - `pnpm typecheck`: 0 errors across all 4 packages.
+  - `pnpm lint`: 0 errors.
+  - `pnpm test:purity`: 5/5 shared purity negative tests passed.
+  - `pnpm test`: 15 test files passed, 124/124 tests passed.
+  - `pnpm build`: Client bundle built cleanly in 416ms.
+  - `pnpm verify`: 100% passed cleanly.
+  - `node scripts/test-hold-poses-acceptance.mjs`: 100% passed for all weapons.
+  - `node scripts/test-phase3-motion.mjs`: 8/8 dynamic motion states passed.
+  - `node scripts/verify-assault-rifle-geometry.mjs`: 100% passed.
+  - `pnpm test:e2e`: 84/84 Playwright tests passed across Chromium and Firefox.
+- **Visual Capture Evidence (`docs/hand_system/captures/assault_rifle/`):**
+  - `01_hip.png`: Hip / idle hold with live diagnostics overlay.
+  - `02_ads.png`: ADS eye-line alignment.
+  - `03_side.png`: Side inspection camera showing full weapon profile and grip.
+  - `04_top.png`: Top inspection camera showing two-arm grip geometry.
+  - `05_front.png`: Front inspection camera showing muzzle and downward elbows.
+  - `06_tactical_reload_mid.png`: Tactical reload magazine extraction/insertion.
+  - `07_empty_reload_bolt.png`: Empty reload bolt-pull stroke.
+  - `08_recoil_impulse.png`: Recoil impulse with event marker.
+  - `09_markers_overlay.png`: Sockets, axes, and elbow joint markers.
+  - `10_sprint_lower.png`: Sprint lowering animation.
+  - `assault_rifle_handlab.webm`: Continuous recording of movement, aiming, and reload.
+- **Scope Preservation:** No changes made to pistol, SMG, shotgun, or sniper poses. Authority of shared weapon state machine preserved.

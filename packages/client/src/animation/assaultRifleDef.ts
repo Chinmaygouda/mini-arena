@@ -566,8 +566,8 @@ export function createAssaultRifleVisualDef(): WeaponVisualDef {
     boltRestPos: model.boltRestPos,
     boltTravelVector: new THREE.Vector3(0, 0, 1),
     fingerGrips: {
-      right: AK_GRIP_RIGHT,
-      left: AK_GRIP_LEFT,
+      right: ASSAULT_RIFLE_HANDDEF.fingerGrips.right,
+      left: ASSAULT_RIFLE_HANDDEF.fingerGrips.left,
     },
     clips: {
       idle: idleClip,
