@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { ASSAULT_RIFLE_DEF } from '@mini-arena/shared';
 import { KeyframeClip, WeaponVisualDef } from './types';
 import { buildAssaultRifleModel } from '../models/assaultRifle';
-import { AK_GRIP_RIGHT, AK_GRIP_LEFT } from './fingerGripPoses';
+import { ASSAULT_RIFLE_HANDDEF, createAssaultRifleRestTargets } from './hands/assault_rifle.handdef';
 
 /**
  * Creates the asset-swappable WeaponVisualDef for the Assault Rifle.
@@ -12,17 +12,8 @@ import { AK_GRIP_RIGHT, AK_GRIP_LEFT } from './fingerGripPoses';
 export function createAssaultRifleVisualDef(): WeaponVisualDef {
   const model = buildAssaultRifleModel();
 
-  // Baseline hand rests relative to weapon root
-  // Right hand grips pistol grip
-  const rightGripRest = {
-    pos: new THREE.Vector3(0.012, -0.065, 0.04),
-    rot: new THREE.Euler(-0.35, 0, 0),
-  };
-
-  const leftHandguardRest = {
-    pos: new THREE.Vector3(-0.042, -0.045, -0.14),
-    rot: new THREE.Euler(0.2, 0.4, -0.3),
-  };
+  // Centralized targets keep fallback-model coordinates separate from the real GLB profile.
+  const { rightGripRest, leftHandguardRest } = createAssaultRifleRestTargets('proceduralFallback');
 
   // --- 1. IDLE CLIP ---
   const idleClip: KeyframeClip = {

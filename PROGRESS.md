@@ -536,3 +536,16 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 
 
 
+
+
+---
+
+## Phase 3 subtask — Assault Rifle Hand Lab integration (2026-10-16)
+**Status:** Feature branch implementation awaiting CI and real-browser review.
+
+- Centralized real-model and procedural-fallback Assault Rifle rest targets.
+- Added a Vite-development-only Hand Lab overlay connected to the production viewmodel and shared weapon state.
+- Added additive weapon-local offsets, clip controls, event timeline/scrubbing, playback speed/pause/tick step, external camera presets, socket/elbow markers, diagnostics, shared reload requests, dev-only ammo setup, mouse sweep and JSON export.
+- Added a Playwright capture script for hip, ADS, side, and reload states. It has not been run from this environment.
+- No production pose definitions for pistol, SMG, shotgun, or sniper were modified.
+- Next: run pnpm verify, E2E, headed Chrome/WebGL2 and real-rig mesh-contact captures; stop for user review before the next weapon.

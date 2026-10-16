@@ -250,6 +250,54 @@ async function initApp(): Promise<void> {
     window.__inputManager = inputManager;
   }
 
+  // Dev-only Hand Lab; dynamic import keeps the module out of production builds.
+  if (import.meta.env.DEV && url.searchParams.get('handlab') === '1') {
+    const { HandLabOverlay } = await import('./debug/HandLabOverlay');
+    let sweepTimer: number | null = null;
+    const handLab = new HandLabOverlay(viewmodel, camera, scene, {
+      selectAssaultRifle: () => {
+        triggerSwapBySlot(weaponState, 0);
+        viewmodel.updateWeaponVisual(getCurrentWeaponDef(weaponState));
+      },
+      getAmmo: () => {
+        const def = getCurrentWeaponDef(weaponState);
+        const slot = getCurrentSlot(weaponState);
+        return { weaponId: def.id, mag: slot.ammoInMag, reserve: slot.ammoReserve, magSize: def.magSize, reserveMax: def.reserveMax };
+      },
+      setAmmo: (mag, reserve) => {
+        const def = getCurrentWeaponDef(weaponState);
+        const slot = getCurrentSlot(weaponState);
+        slot.ammoInMag = Math.max(0, Math.min(def.magSize, Math.trunc(mag)));
+        slot.ammoReserve = Math.max(0, Math.min(def.reserveMax, Math.trunc(reserve)));
+      },
+      requestReload: (empty) => {
+        if (getCurrentWeaponDef(weaponState).id !== 'assault_rifle') return;
+        const def = getCurrentWeaponDef(weaponState);
+        const slot = getCurrentSlot(weaponState);
+        if (empty) slot.ammoInMag = 0;
+        else if (slot.ammoInMag >= def.magSize) slot.ammoInMag = Math.max(0, def.magSize - 1);
+        if (slot.ammoReserve <= 0) slot.ammoReserve = def.magSize;
+        triggerReload(weaponState);
+      },
+      setInspectionCamera: (nextCamera) => { window.__debugCamera = nextCamera; },
+      startMouseSweep: () => {
+        if (sweepTimer !== null) window.clearInterval(sweepTimer);
+        const yaw = inputManager.yaw, pitch = inputManager.pitch, start = performance.now();
+        sweepTimer = window.setInterval(() => {
+          const t = (performance.now() - start) / 5000;
+          if (t >= 1) {
+            inputManager.yaw = yaw; inputManager.pitch = pitch;
+            if (sweepTimer !== null) window.clearInterval(sweepTimer);
+            sweepTimer = null; return;
+          }
+          inputManager.yaw = yaw + Math.sin(t * Math.PI * 8) * THREE.MathUtils.degToRad(75);
+          inputManager.pitch = THREE.MathUtils.clamp(pitch + Math.sin(t * Math.PI * 12) * THREE.MathUtils.degToRad(45), -Math.PI / 2 + 0.02, Math.PI / 2 - 0.02);
+        }, 16);
+      },
+    });
+    handLab.mount();
+  }
+
   // Decal Manager (instanced bullet holes & blast scorches)
   const decalManager = new DecalManager(scene);
 

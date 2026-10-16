@@ -709,3 +709,13 @@ Phase 5 requires three diverse competitive arena maps (Warehouse, Plaza, Contain
 
 
 
+
+
+---
+
+## ADR 021: Development-only Assault Rifle Hand Lab integration
+
+**Date:** 2026-10-16  
+**Status:** Implemented on feature branch phase3/assault-rifle-handlab-integration
+
+The standalone Hand Lab uses proxy geometry and a different coordinate frame, so its proxy values are not copied into production. The real and procedural-fallback Assault Rifle grip targets are centralized in packages/client/src/animation/hands/assault_rifle.handdef.ts. The inspector loads only from the Vite development build via the handlab query. Offsets are additive and export produces a reviewable JSON file; it never rewrites source automatically. Clip scrubbing suppresses earlier cosmetic events, while reload timing and ammunition remain controlled by the shared state machine. This is only the Assault Rifle slice. Numeric wrist/reach diagnostics do not prove actual mesh contact; full tests and real browser evidence are still required.

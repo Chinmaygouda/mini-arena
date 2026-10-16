@@ -36,6 +36,17 @@ export class WeaponAnimator {
   public socketR: THREE.Object3D;
   public socketL: THREE.Object3D;
 
+  // Development-only Hand Lab offsets; additive and disabled outside the Lab.
+  public readonly handLabPositionOffsetR = new THREE.Vector3();
+  public readonly handLabPositionOffsetL = new THREE.Vector3();
+  public readonly handLabRotationOffsetR = new THREE.Vector3();
+  public readonly handLabRotationOffsetL = new THREE.Vector3();
+  private handLabEnabled = false;
+  private handLabPaused = false;
+  private handLabSpeed = 1;
+  private handLabLoop = false;
+  private handLabStepPending = false;
+
   // Active clip state
   private currentClip: KeyframeClip;
   private clipTime = 0;
@@ -166,34 +177,93 @@ export class WeaponAnimator {
     return this.getClipName();
   }
 
+  public setHandLabMode(enabled: boolean): void {
+    this.handLabEnabled = enabled;
+    if (!enabled) {
+      this.handLabPaused = false;
+      this.handLabStepPending = false;
+    }
+  }
+
+  public getHandLabPlayback(): { paused: boolean; speed: number; loop: boolean } {
+    return { paused: this.handLabPaused, speed: this.handLabSpeed, loop: this.handLabLoop };
+  }
+
+  public setHandLabPlayback(paused: boolean, speed: number, loop: boolean): void {
+    this.handLabPaused = Boolean(paused);
+    this.handLabSpeed = Math.max(0.1, Math.min(2, Number.isFinite(speed) ? speed : 1));
+    this.handLabLoop = Boolean(loop);
+    this.handLabEnabled = true;
+  }
+
+  public stepHandLabTick(): void {
+    if (this.handLabEnabled && this.handLabPaused) this.handLabStepPending = true;
+  }
+
+  public getHandLabProgress(): number {
+    return Math.max(0, Math.min(1, this.clipTime / Math.max(0.001, this.currentClip.duration)));
+  }
+
+  public getCurrentClipDuration(): number {
+    return this.currentClip.duration;
+  }
+
+  /** Scrub without replaying cosmetic events from before the selected frame. */
+  public scrubHandLabTo(clipName: WeaponClipName, progress: number): void {
+    const clip = this.visualDef.clips[clipName];
+    if (!clip) return;
+    this.playClip(clipName, true);
+    const t = Math.max(0, Math.min(0.999, Number.isFinite(progress) ? progress : 0));
+    this.clipTime = clip.duration * t;
+    this.firedEvents.clear();
+    for (const ev of this.currentClip.events) {
+      if (ev.timeFraction <= t) this.firedEvents.add(ev);
+    }
+    this.sampleKeyframes(this.currentClip.keyframes, t);
+  }
+
   public isFinished(): boolean {
     if (this.isLooping) return false;
     return this.clipTime >= this.currentClip.duration;
   }
 
   public update(dt: number, scene?: THREE.Scene): void {
-    // 1. Advance clip progress
-    this.clipTime += dt;
+    let clipDelta = Math.max(0, dt);
+    if (this.handLabEnabled) {
+      if (this.handLabPaused) {
+        clipDelta = this.handLabStepPending ? 1 / 60 : 0;
+        this.handLabStepPending = false;
+      } else {
+        clipDelta *= this.handLabSpeed;
+      }
+    }
+
+    // Preview time is separate; the shared weapon/gameplay clock remains authoritative.
+    this.clipTime += clipDelta;
     const duration = Math.max(0.001, this.currentClip.duration);
     let normalizedTime = this.clipTime / duration;
+    const shouldLoop = this.handLabEnabled
+      ? this.handLabLoop && !this.currentClip.name.startsWith('reload') && this.currentClip.name !== 'boltCycle'
+      : this.isLooping;
 
     if (normalizedTime >= 1.0) {
-      if (this.isLooping) {
-        this.clipTime = this.clipTime % duration;
+      if (shouldLoop) {
+        this.clipTime %= duration;
         normalizedTime = this.clipTime / duration;
         this.firedEvents.clear();
-      } else {
-        // Non-looping clip finished -> return to idle
+      } else if (clipDelta > 0) {
         this.playClip('idle');
         normalizedTime = 0;
       }
     }
 
-    // 2. Process animation events
-    for (const ev of this.currentClip.events) {
-      if (normalizedTime >= ev.timeFraction && !this.firedEvents.has(ev)) {
-        this.firedEvents.add(ev);
-        this.handleAnimationEvent(ev, scene);
+    // Scrubbing never emits historical mag-drop or casing events.
+    if (clipDelta > 0) {
+      for (const ev of this.currentClip.events) {
+        if (normalizedTime >= ev.timeFraction && !this.firedEvents.has(ev)) {
+          this.firedEvents.add(ev);
+          this.handleAnimationEvent(ev, scene);
+        }
       }
     }
 
@@ -218,9 +288,21 @@ export class WeaponAnimator {
     // 7. Update sockets in WEAPON-LOCAL space
     this.socketR.position.copy(this.interpolatedRightHandPos);
     this.socketR.rotation.copy(this.interpolatedRightHandRot);
+    if (this.handLabEnabled) {
+      this.socketR.position.add(this.handLabPositionOffsetR);
+      this.socketR.rotation.x += this.handLabRotationOffsetR.x;
+      this.socketR.rotation.y += this.handLabRotationOffsetR.y;
+      this.socketR.rotation.z += this.handLabRotationOffsetR.z;
+    }
 
     this.socketL.position.copy(this.interpolatedLeftHandPos);
     this.socketL.rotation.copy(this.interpolatedLeftHandRot);
+    if (this.handLabEnabled) {
+      this.socketL.position.add(this.handLabPositionOffsetL);
+      this.socketL.rotation.x += this.handLabRotationOffsetL.x;
+      this.socketL.rotation.y += this.handLabRotationOffsetL.y;
+      this.socketL.rotation.z += this.handLabRotationOffsetL.z;
+    }
 
     // Force weapon hierarchy matrix update so sockets receive new world matrices
     this.weaponGroup.updateMatrixWorld(true);

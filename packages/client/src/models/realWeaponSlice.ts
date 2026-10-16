@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ASSAULT_RIFLE_DEF } from '@mini-arena/shared';
 import { KeyframeClip, WeaponVisualDef } from '../animation/types';
-import { AK_GRIP_RIGHT, AK_GRIP_LEFT } from '../animation/fingerGripPoses';
+import { ASSAULT_RIFLE_HANDDEF, createAssaultRifleRestTargets } from '../animation/hands/assault_rifle.handdef';
 import { SplitWeaponMesh } from './assaultRifle';
 
 export interface RealWeaponSliceResult {
@@ -136,15 +136,7 @@ export function parseRealAK47Model(gltfScene: THREE.Group): SplitWeaponMesh {
  * Authors keyframe clips with exact integer-tick timings matching ASSAULT_RIFLE_DEF.
  */
 export function createRealAK47VisualDef(model: SplitWeaponMesh): WeaponVisualDef {
-  const rightGripRest = {
-    pos: new THREE.Vector3(0.0, -0.065, 0.045),
-    rot: new THREE.Euler(1.2, 0.2, -0.4),
-  };
-
-  const leftHandguardRest = {
-    pos: new THREE.Vector3(-0.042, -0.045, -0.14),
-    rot: new THREE.Euler(0.2, 0.4, -0.3),
-  };
+  const { rightGripRest, leftHandguardRest } = createAssaultRifleRestTargets('realModel');
 
   // 1. IDLE CLIP (3.0s = 180 ticks)
   const idleClip: KeyframeClip = {
@@ -687,8 +679,8 @@ export function createRealAK47VisualDef(model: SplitWeaponMesh): WeaponVisualDef
       magWell: model.magRestPos,
     },
     fingerGrips: {
-      left: AK_GRIP_LEFT,
-      right: AK_GRIP_RIGHT,
+      left: ASSAULT_RIFLE_HANDDEF.fingerGrips.left,
+      right: ASSAULT_RIFLE_HANDDEF.fingerGrips.right,
     },
     clips: {
       idle: idleClip,
