@@ -436,8 +436,23 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
   - `scripts/test-phase3-motion.mjs`: 8/8 tests passed with 100% bone rigidity and 0 mm elbow separation.
   - `pnpm test:e2e`: 70/70 Playwright tests passed across Chromium and Firefox.
 
-
-
-
+### 8. Five-Weapon Pose, Coordinate, and Animation Reference (Sections 1–9)
+- **Status**: Complete & Verified.
+- **Deliverables**:
+  - Master Contact Sheet: [artifacts/five_weapons_contact_sheet.png](file:///d:/Games/FPS/artifacts/five_weapons_contact_sheet.png) capturing all 5 weapons across 10 standardized kinematic states (50 total in-engine captures).
+  - Individual High-Res Captures: [artifacts/weapon_reference/](file:///d:/Games/FPS/artifacts/weapon_reference/) (`manifest.json` and 50 PNG screenshots).
+  - Empirical Runtime Dataset: [five_weapons_runtime_measurements.json](file:///d:/Games/FPS/five_weapons_runtime_measurements.json) capturing real WebGL2 scene graph metrics.
+  - Comprehensive Reference Manual: [WEAPON_REFERENCE_GUIDE.md](file:///d:/Games/FPS/WEAPON_REFERENCE_GUIDE.md) and Brain Artifact `weapon_reference_and_calibration.md`.
+- **Coordinate Conventions Documented**:
+  - Right-handed Three.js convention: $+X$ Right, $+Y$ Up (Vertical elevation), $-Z$ Forward (Look heading).
+  - Ground movement in $(X, Z)$ plane; gravity ($-24.0\text{ m/s}^2$) and jump ($+8.0\text{ m/s}$) on $Y$ axis.
+  - Formal homogeneous transformations: $\mathbf{p}_{\text{camera}} = \mathbf{M}_{\text{camera\_world}}^{-1} \cdot \mathbf{M}_{\text{weapon\_world}} \cdot \mathbf{p}_{\text{weapon\_local}}$.
+- **Firing Cadence & Accumulators Grounded**:
+  - Assault Rifle: 600 RPM (0.100 s / 6 ticks) full-auto.
+  - Tactical Pistol: 400 RPM (0.150 s / 9 ticks) semi-auto (trigger release required).
+  - Rapid SMG: 800 RPM (0.075 s / 4.5 ticks) alternating 4/5 ticks averaging exactly 800 RPM.
+  - Combat Shotgun: 80 RPM (0.750 s / 45 ticks) semi-auto (8 pellets × 12 = 96 base dmg).
+  - Precision Sniper: 45 RPM (1.333 s / 80 ticks) bolt-action cycle lock across swaps.
+- **Safety Gate**: Tactical Pistol verified and approved. No weapon-specific modifications will be made to Rapid SMG, Combat Shotgun, or Precision Sniper until user explicitly gives sign-off.
 
 
