@@ -358,24 +358,44 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
     - `pnpm verify`: 0 lint errors/warnings, 0 typecheck errors, 5/5 purity tests passing, 104/104 vitest tests passing, production bundle built in 408ms.
     - Playwright multi-browser E2E suite: 70/70 passing across Chromium and Firefox.
 
-## Next 3 steps
-1. **User Phase 3 Gate Sign-Off**: User reviews Phase 3 Gate Report, empirical motion verification, and 25 first-person screenshots.
-2. **Phase 4 Visual & Audio Juice (Part A & B)**: Implement FxEventQueue, procedural camera recoil kick, muzzle flash lights, shell casing ejections, and impact decals.
-3. **Phase 4 Explosives & Physics (Part C)**: Implement grenade projectile physics (Rapier), bouncy fuse simulation, and explosion radius damage.
+- **11. Tactical Pistol Calibration — Dedicated Two-Handed Grip & In-Engine Empirical Verification**:
+  - **Calibrated Ergonomic Grip**:
+    - Replaced generic shared finger poses with a bespoke thumbs-forward tactical pistol grip.
+    - Right hand: trigger finger rests naturally along the frame outside the trigger guard ($6.42\text{ mm}$ contact, down from $47.32\text{ mm}$ baseline floating); right thumb rides flush against the frame flat below the slide rail ($2.59\text{ mm}$ contact, down from $46.83\text{ mm}$ baseline); middle ($2.15\text{ mm}$), ring ($0.88\text{ mm}$), and pinky ($2.54\text{ mm}$) wrap snugly around the frontstrap.
+    - Left hand: support palm cups the grip panel ($21.22\text{ mm}$, down from $30.64\text{ mm}$); corrected inverted bone local axis on left ring finger ($2.01\text{ mm}$ contact, down from $49.24\text{ mm}$ baseline); index ($14.58\text{ mm}$), middle ($7.39\text{ mm}$), and pinky ($4.20\text{ mm}$) cup over the right fingers; support thumb points forward along frame flat ($6.91\text{ mm}$ contact, down from $59.20\text{ mm}$ baseline) with safe positive slide clearance ($16.59\text{ mm}$, strictly $> 5.0\text{ mm}$).
+  - **In-Engine Empirical Contact Verification ([scripts/calibrate-pistol-grip.mjs](file:///d:/Games/FPS/scripts/calibrate-pistol-grip.mjs))**:
+    ```
+    ========================================================================================
+                 TACTICAL PISTOL: IN-ENGINE EMPIRICAL CALIBRATION VERIFICATION
+    ========================================================================================
+    | Landmark / Contact Bone     | Baseline Distance | Calibrated Distance | Delta / Status     |
+    |-----------------------------|-------------------|---------------------|--------------------|
+    | Right Palm to Grip          |         11.79 mm |           11.53 mm |          -0.27 mm |
+    | Right f_index03R            |         47.32 mm |            6.42 mm |         -40.89 mm |
+    | Right f_middle03R           |          0.65 mm |            2.15 mm |           1.50 mm |
+    | Right f_ring03R             |          0.13 mm |            0.88 mm |           0.75 mm |
+    | Right f_pinky03R            |          3.26 mm |            2.54 mm |          -0.73 mm |
+    | Right thumb03R              |         46.83 mm |            2.59 mm |         -44.25 mm |
+    |-----------------------------|-------------------|---------------------|--------------------|
+    | Left Palm to Grip           |         30.64 mm |           21.22 mm |          -9.42 mm |
+    | Left f_index03L             |         25.91 mm |           14.58 mm |         -11.34 mm |
+    | Left f_middle03L            |         14.56 mm |            7.39 mm |          -7.16 mm |
+    | Left f_ring03L              |         49.24 mm |            2.01 mm |         -47.23 mm |
+    | Left f_pinky03L             |          2.75 mm |            4.20 mm |           1.45 mm |
+    | Left thumb03L               |         59.20 mm |            6.91 mm |         -52.29 mm |
+    |-----------------------------|-------------------|---------------------|--------------------|
+    | Left Thumb Slide Clearance  |         59.25 mm |           16.59 mm | Safe (>5mm)        |
+    ========================================================================================
+    ```
+  - **Authoritative Reload Timing Synchronization**:
+    - Tactical reload: $1.6\text{s}$ (96 ticks, integer commit at tick 54 = $56.25\%$).
+    - Empty reload: $2.1\text{s}$ (126 ticks, integer commit at tick 66 = $52.38\%$, thumb slide release at $78\%$).
+  - **Verification & Test Results**:
+    - `pnpm verify`: 0 lint errors/warnings, 0 typecheck errors, 5/5 purity passing, 104/104 unit tests passing, production bundle built in 494ms.
+    - Full rigid motion test suite ([scripts/test-phase3-motion.mjs](file:///d:/Games/FPS/scripts/test-phase3-motion.mjs)): 8/8 tests passed with 100% bone rigidity and 0 mm elbow separation.
+    - Playwright multi-browser test suite: 46/46 passed across Chromium and Firefox.
+    - 4 in-engine first-person screenshots captured in `artifacts/`: `tactical_pistol_hip.png`, `tactical_pistol_ads.png`, `tactical_pistol_reload.png`, `tactical_pistol_empty_reload_slide.png`.
 
-## Perf log
-| date | scene | device | FPS | draw calls | tris | notes |
-|---|---|---|---|---|---|---|
-| 2026-10-14 | Blank scene + test cube | Dev Machine (Chromium/Firefox) | 60 | 3 | 24 | Phase 0 baseline |
-| 2026-10-14 | 40x40m Greybox Arena + Physics | Chrome (WebGPU Backend) | 60 | 16 | 144 | Phase 1 full controller pass |
-| 2026-10-14 | Arena + 3 Dummies + Viewmodel + Tracers | Chrome (WebGPU Backend) | 60 | 28 | 840 | Phase 2 weapon core + dummies pass |
-| 2026-10-14 | Arena + Viewmodel (AR + Two-Bone IK Arms) | SwiftShader / Headless Chrome | 8.4-13.3 | 29 | 492 | Phase 3 Assault Rifle vertical slice (SW WebGL) |
-| 2026-10-14 | Arena + All 5 Weapons + Arms Rig + Scope | SwiftShader / Headless Chrome | 11.9-13.0 | 29 | 96-492 | Phase 3 Complete Gate (Pistol: 96, Shotgun: 244, SMG: 268, Sniper: 390, AR: 492) |
-| 2026-10-15 | Arena + All 5 Weapons (Hip/ADS/Reload) | Headless Chromium (WebGL2) | 12.5 (SW) | 2 | 2,361-2,655 | A6 Profile: 2 passes reported by WebGL2 fallback |
-| 2026-10-15 | Arena + Real AK47 Slice + PSX Arms + 3 Dummies | Real Chrome (Hardware Intel GPU, WebGPU) | 60.3 | 110 | 6,006 | True hardware benchmark: 60.3 FPS (WebGPU), 60.2 FPS (WebGL2) |
-| 2026-10-15 | Arena + All 5 Real Weapons (Vsync-Locked 30s) | Real Chrome (D3D11 ANGLE, DevTools Closed) | 60.0 | 2 | 2,900-3,561 | 30s rAF intervals: mean 16.66-16.68 ms, p95 16.9-17.0 ms, frames >20ms <= 0.11% |
-| 2026-10-15 | Arena + All 5 Real Weapons (Uncapped) | Real Chrome (D3D11 ANGLE, DevTools Closed) | 449-535 | 2 | 2,900-3,561 | Uncapped throughput: AK 449.6, Pistol 529.5, SMG 523.6, Shotgun 534.9, Sniper 506.5 FPS |
-| 2026-10-16 | Arena + All 5 Real Weapons (Rigid IK Suite) | Chromium + Firefox (Hardware GPU + SWGL) | 60.0 | 2 | 2,900-3,561 | Phase 3 Final Gate: 70/70 E2E passing, 100% bone rigidity, 0 mm elbow separation |
 
 
 

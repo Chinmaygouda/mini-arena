@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { PISTOL_DEF } from '@mini-arena/shared';
 import { KeyframeClip, WeaponVisualDef } from '../animation/types';
 import { PISTOL_GRIP_RIGHT, PISTOL_GRIP_LEFT } from '../animation/fingerGripPoses';
 import { SplitWeaponMesh } from './assaultRifle';
@@ -127,14 +128,14 @@ export function parseRealPistolModel(gltfScene: THREE.Group): SplitWeaponMesh {
  * Builds the complete procedural + keyframed WeaponVisualDef for the real Pistol.
  */
 export function buildPistolVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
-  // Grip sockets
+  // Grip sockets (calibrated to real pistol model mesh)
   const rightGripRest = {
-    pos: new THREE.Vector3(0, -0.045, 0.04),
-    rot: new THREE.Euler(1.1, 0.15, -0.3),
+    pos: new THREE.Vector3(0.0055, -0.040, 0.038),
+    rot: new THREE.Euler(1.12, 0.14, -0.32),
   };
   const leftGripRest = {
-    pos: new THREE.Vector3(-0.025, -0.065, 0.035),
-    rot: new THREE.Euler(0.4, 0.35, -0.2),
+    pos: new THREE.Vector3(-0.012, -0.048, 0.032),
+    rot: new THREE.Euler(0.65, 0.30, -0.32),
   };
 
   // 1. IDLE CLIP
@@ -264,10 +265,11 @@ export function buildPistolVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
     events: [],
   };
 
-  // 4. TACTICAL RELOAD (1.5s = 90 ticks, commit at tick 54 = 60%)
+  // 4. TACTICAL RELOAD (1.6s = 96 ticks, commit at tick 54 = 56.25%)
+  const tacDuration = PISTOL_DEF.reloadTimeTactical;
   const reloadTacticalClip: KeyframeClip = {
     name: 'reloadTactical',
-    duration: 1.5,
+    duration: tacDuration,
     keyframes: [
       {
         time: 0.0,
@@ -276,90 +278,60 @@ export function buildPistolVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
         magOffset: new THREE.Vector3(0, 0, 0),
         magAttached: true,
         boltOffset: new THREE.Vector3(0, 0, 0),
-        weaponPosOffset: new THREE.Vector3(0, 0, 0),
-        weaponRotOffset: new THREE.Euler(0, 0, 0),
-      },
-      {
-        time: 0.3,
-        leftHand: { pos: new THREE.Vector3(0, -0.15, 0.06), rot: new THREE.Euler(0, 0, 0) },
-        rightHand: rightGripRest,
-        magOffset: new THREE.Vector3(0, -0.08, 0),
-        magAttached: false,
-        boltOffset: new THREE.Vector3(0, 0, 0),
-        weaponPosOffset: new THREE.Vector3(-0.02, 0.03, 0.02),
-        weaponRotOffset: new THREE.Euler(0.2, -0.15, 0.25),
-      },
-      {
-        time: 0.6,
-        leftHand: { pos: new THREE.Vector3(0, -0.03, 0.06), rot: new THREE.Euler(0, 0, 0) },
-        rightHand: rightGripRest,
-        magOffset: new THREE.Vector3(0, 0, 0),
-        magAttached: true,
-        boltOffset: new THREE.Vector3(0, 0, 0),
-        weaponPosOffset: new THREE.Vector3(-0.01, 0.04, 0.01),
-        weaponRotOffset: new THREE.Euler(0.25, -0.1, 0.2),
-      },
-      {
-        time: 1.0,
-        leftHand: leftGripRest,
-        rightHand: rightGripRest,
-        magOffset: new THREE.Vector3(0, 0, 0),
-        magAttached: true,
-        boltOffset: new THREE.Vector3(0, 0, 0),
-        weaponPosOffset: new THREE.Vector3(0, 0, 0),
-        weaponRotOffset: new THREE.Euler(0, 0, 0),
-      },
-    ],
-    events: [
-      { timeFraction: 0.3, type: 'mag_drop' },
-      { timeFraction: 0.6, type: 'mag_insert' },
-    ],
-  };
-
-  // 5. EMPTY RELOAD (1.9s = 114 ticks, commit at tick 68 = 60%, slide release at 78%)
-  const reloadEmptyClip: KeyframeClip = {
-    name: 'reloadEmpty',
-    duration: 1.9,
-    keyframes: [
-      {
-        time: 0.0,
-        leftHand: leftGripRest,
-        rightHand: rightGripRest,
-        magOffset: new THREE.Vector3(0, 0, 0),
-        magAttached: true,
-        boltOffset: new THREE.Vector3(0, 0, 0.025), // Slide locked back
         weaponPosOffset: new THREE.Vector3(0, 0, 0),
         weaponRotOffset: new THREE.Euler(0, 0, 0),
       },
       {
         time: 0.25,
-        leftHand: { pos: new THREE.Vector3(0, -0.15, 0.06), rot: new THREE.Euler(0, 0, 0) },
-        rightHand: rightGripRest,
-        magOffset: new THREE.Vector3(0, -0.1, 0),
-        magAttached: false,
-        boltOffset: new THREE.Vector3(0, 0, 0.025),
-        weaponPosOffset: new THREE.Vector3(-0.02, 0.03, 0.02),
-        weaponRotOffset: new THREE.Euler(0.25, -0.15, 0.3),
-      },
-      {
-        time: 0.6,
-        leftHand: { pos: new THREE.Vector3(0, -0.03, 0.06), rot: new THREE.Euler(0, 0, 0) },
+        leftHand: {
+          pos: new THREE.Vector3(-0.04, -0.16, 0.04),
+          rot: new THREE.Euler(0.2, 0.1, -0.2),
+        },
         rightHand: rightGripRest,
         magOffset: new THREE.Vector3(0, 0, 0),
         magAttached: true,
-        boltOffset: new THREE.Vector3(0, 0, 0.025),
-        weaponPosOffset: new THREE.Vector3(-0.01, 0.04, 0.01),
-        weaponRotOffset: new THREE.Euler(0.28, -0.1, 0.25),
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(-0.02, 0.02, 0.0),
+        weaponRotOffset: new THREE.Euler(0.2, 0.1, -0.15),
       },
       {
-        time: 0.78,
-        leftHand: { pos: new THREE.Vector3(0, 0.04, 0.02), rot: new THREE.Euler(0.1, 0, 0) },
+        time: 0.35,
+        leftHand: {
+          pos: new THREE.Vector3(-0.02, -0.15, 0.03),
+          rot: new THREE.Euler(0.3, 0.1, -0.1),
+        },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, -0.06, 0.02),
+        magAttached: false, // Mag dropped
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(-0.02, 0.03, 0.0),
+        weaponRotOffset: new THREE.Euler(0.22, 0.1, -0.15),
+      },
+      {
+        time: 0.56, // Commit tick 54 / 96 = 0.5625
+        leftHand: {
+          pos: new THREE.Vector3(0.0, -0.065, 0.03),
+          rot: new THREE.Euler(0.1, 0, 0),
+        },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true, // New mag locked in
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(-0.01, 0.015, 0.0),
+        weaponRotOffset: new THREE.Euler(0.15, 0.05, -0.05),
+      },
+      {
+        time: 0.75,
+        leftHand: {
+          pos: new THREE.Vector3(-0.01, -0.05, 0.03),
+          rot: leftGripRest.rot,
+        },
         rightHand: rightGripRest,
         magOffset: new THREE.Vector3(0, 0, 0),
         magAttached: true,
-        boltOffset: new THREE.Vector3(0, 0, 0.0), // Slide released!
-        weaponPosOffset: new THREE.Vector3(0, 0.01, 0.01),
-        weaponRotOffset: new THREE.Euler(0.05, -0.02, 0.02),
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0.005, 0.0),
+        weaponRotOffset: new THREE.Euler(0.05, 0, 0),
       },
       {
         time: 1.0,
@@ -373,8 +345,106 @@ export function buildPistolVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
       },
     ],
     events: [
-      { timeFraction: 0.25, type: 'mag_drop' },
-      { timeFraction: 0.6, type: 'mag_insert' },
+      { timeFraction: 0.35, type: 'mag_drop' },
+      { timeFraction: 0.56, type: 'mag_insert' },
+    ],
+  };
+
+  // 5. EMPTY RELOAD (2.1s = 126 ticks, commit at tick 66 = 52.38%, slide release at 78%)
+  const emptyDuration = PISTOL_DEF.reloadTimeEmpty;
+  const reloadEmptyClip: KeyframeClip = {
+    name: 'reloadEmpty',
+    duration: emptyDuration,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0.035), // Slide locked back
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 0.25,
+        leftHand: {
+          pos: new THREE.Vector3(-0.04, -0.16, 0.04),
+          rot: new THREE.Euler(0.2, 0.1, -0.2),
+        },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0.035),
+        weaponPosOffset: new THREE.Vector3(-0.02, 0.02, 0.0),
+        weaponRotOffset: new THREE.Euler(0.2, 0.1, -0.15),
+      },
+      {
+        time: 0.30,
+        leftHand: {
+          pos: new THREE.Vector3(-0.02, -0.16, 0.03),
+          rot: new THREE.Euler(0.3, 0.1, -0.1),
+        },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, -0.08, 0.02),
+        magAttached: false, // Mag dropped
+        boltOffset: new THREE.Vector3(0, 0, 0.035),
+        weaponPosOffset: new THREE.Vector3(-0.02, 0.03, 0.0),
+        weaponRotOffset: new THREE.Euler(0.25, 0.1, -0.15),
+      },
+      {
+        time: 0.52, // Commit tick 66 / 126 = 0.5238
+        leftHand: {
+          pos: new THREE.Vector3(0.0, -0.065, 0.03),
+          rot: new THREE.Euler(0.1, 0, 0),
+        },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true, // Fresh mag seated
+        boltOffset: new THREE.Vector3(0, 0, 0.035),
+        weaponPosOffset: new THREE.Vector3(-0.01, 0.02, 0.0),
+        weaponRotOffset: new THREE.Euler(0.15, 0.05, -0.05),
+      },
+      {
+        time: 0.78, // Slide release tick
+        leftHand: {
+          pos: new THREE.Vector3(-0.015, 0.03, 0.02),
+          rot: new THREE.Euler(0.1, 0, 0),
+        },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0.0), // Slide snaps forward!
+        weaponPosOffset: new THREE.Vector3(0, 0.01, 0.01),
+        weaponRotOffset: new THREE.Euler(0.05, -0.02, 0.02),
+      },
+      {
+        time: 0.90,
+        leftHand: {
+          pos: new THREE.Vector3(-0.01, -0.05, 0.03),
+          rot: leftGripRest.rot,
+        },
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0.005, 0.0),
+        weaponRotOffset: new THREE.Euler(0.02, 0, 0),
+      },
+      {
+        time: 1.0,
+        leftHand: leftGripRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [
+      { timeFraction: 0.30, type: 'mag_drop' },
+      { timeFraction: 0.52, type: 'mag_insert' },
       { timeFraction: 0.78, type: 'bolt_release' },
     ],
   };

@@ -15,14 +15,14 @@ export function createPistolVisualDef(): WeaponVisualDef {
   // Baseline hand rests relative to weapon root
   // Right hand grips pistol handle
   const rightGripRest = {
-    pos: new THREE.Vector3(0.01, -0.045, 0.04),
-    rot: new THREE.Euler(1.1, 0.15, -0.3),
+    pos: new THREE.Vector3(0.0055, -0.040, 0.038),
+    rot: new THREE.Euler(1.12, 0.14, -0.32),
   };
 
   // Left hand wraps around right hand in modern thumbs-forward support grip
   const leftSupportRest = {
-    pos: new THREE.Vector3(-0.025, -0.065, 0.035),
-    rot: new THREE.Euler(0.4, 0.35, -0.2),
+    pos: new THREE.Vector3(-0.012, -0.048, 0.032),
+    rot: new THREE.Euler(0.65, 0.30, -0.32),
   };
 
   // --- 1. IDLE CLIP ---

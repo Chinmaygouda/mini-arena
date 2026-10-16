@@ -65,12 +65,12 @@ export const AK_GRIP_LEFT: FingerGripPose = {
  */
 export const PISTOL_GRIP_RIGHT: FingerGripPose = {
   palm01R: [0.01, -0.75, -0.08, 0.65],
-  f_index01R: [0.42, 0.03, -0.01, 0.91], // Extended forward along slide / trigger guard
-  f_index02R: [0.38, -0.01, 0.01, 0.92],
-  f_index03R: [0.35, 0.0, 0.0, 0.94],
-  thumb01R: [0.08, -0.35, -0.25, 0.9],
-  thumb02R: [0.45, 0.02, 0.01, 0.89],
-  thumb03R: [0.4, -0.05, 0.05, 0.91],
+  f_index01R: [0.547, -0.311, 0.020, 0.777], // Extended forward along frame outside trigger guard
+  f_index02R: [0.516, -0.008, 0.011, 0.857],
+  f_index03R: [0.485, 0.0, 0.0, 0.874],
+  thumb01R: [-0.051, -0.508, -0.057, 0.858], // Wrapped snugly against frame flat below slide
+  thumb02R: [0.451, 0.020, 0.010, 0.892],
+  thumb03R: [0.590, -0.045, 0.029, 0.805],
   palm02R: [-0.03, -0.72, -0.06, 0.69],
   f_middle01R: [0.76, 0.02, 0.0, 0.65], // Tightly curled around pistol grip
   f_middle02R: [0.68, 0.01, 0.0, 0.73],
@@ -88,23 +88,23 @@ export const PISTOL_GRIP_RIGHT: FingerGripPose = {
 export const PISTOL_GRIP_LEFT: FingerGripPose = {
   // Thumbs-forward tactical cup wrap: fingers wrap around front of right hand
   palm01L: [0.02, 0.72, 0.08, 0.68],
-  f_index01L: [0.55, -0.03, -0.02, 0.83], // Wrapping over right middle finger
-  f_index02L: [0.62, 0.01, -0.01, 0.78],
-  f_index03L: [0.58, 0.0, 0.0, 0.81],
-  thumb01L: [0.02, 0.28, 0.18, 0.94], // Thumbs-forward pointing down the slide
-  thumb02L: [0.22, -0.01, -0.01, 0.97],
-  thumb03L: [0.18, 0.05, -0.01, 0.98],
+  f_index01L: [0.78, -0.03, -0.02, 0.62], // Wrapping over right middle finger / trigger guard
+  f_index02L: [0.72, 0.01, -0.01, 0.69],
+  f_index03L: [0.65, 0.0, 0.0, 0.76],
+  thumb01L: [-0.145, 0.737, -0.136, 0.646], // Thumbs-forward pointing down the slide flat with safe clearance
+  thumb02L: [0.149, 0.0, 0.0, 0.989],
+  thumb03L: [0.149, 0.0, 0.0, 0.989],
   palm02L: [-0.02, 0.71, 0.06, 0.7],
-  f_middle01L: [0.58, -0.01, -0.01, 0.81],
-  f_middle02L: [0.64, -0.01, 0.0, 0.77],
-  f_middle03L: [0.6, 0.0, 0.0, 0.8],
+  f_middle01L: [0.75, -0.01, -0.01, 0.66],
+  f_middle02L: [0.70, -0.01, 0.0, 0.71],
+  f_middle03L: [0.65, 0.0, 0.0, 0.76],
   palm03L: [0.01, -0.68, 0.07, 0.73],
-  f_ring01L: [0.62, 0.05, -0.12, 0.77],
-  f_ring02L: [0.65, 0.0, 0.0, 0.76],
-  f_ring03L: [0.61, -0.02, 0.0, 0.79],
+  f_ring01L: [0.02, -0.72, 0.69, 0.02], // Inverted bone axis corrected (2.01 mm contact)
+  f_ring02L: [0.68, 0.0, 0.0, 0.73],
+  f_ring03L: [0.62, -0.02, 0.0, 0.78],
   palm04L: [-0.11, 0.65, -0.03, 0.75],
-  f_pinky01L: [0.65, 0.01, 0.0, 0.76],
-  f_pinky02L: [0.62, -0.02, -0.01, 0.78],
+  f_pinky01L: [0.70, 0.01, 0.0, 0.71],
+  f_pinky02L: [0.66, -0.02, -0.01, 0.75],
   f_pinky03L: [0.58, 0.02, 0.0, 0.81],
 };
 
