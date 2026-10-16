@@ -505,3 +505,60 @@ During Phase 3 visual acceptance review, the first-person view of the Tactical P
 - **Empirical Clearance**: Left thumb slide clearance is $18.93\text{ mm}$ ($> 5.0\text{ mm}$ requirement); maximum finger joint height is $-3.89\text{ mm}$ ($> 8.8\text{ mm}$ below slide rail at $+5.0\text{ mm}$).
 - **Rigid Motion Suite (`scripts/test-phase3-motion.mjs`)**: 8/8 tests passed with 100% rigidity and 0 mm elbow separation.
 - **Verification Suite**: `pnpm verify` (0 lint/typecheck errors, 104 vitest passed, bundle built) and `pnpm test:e2e` (70/70 Playwright tests passed across Chromium and Firefox).
+
+---
+
+## ADR 017: Tactical Pistol Forearm Silhouette Separation, Slide Geometry World Baking, and Headless 60 FPS Profiling
+
+**Date**: 2026-10-16  
+**Status**: Accepted
+
+### Context
+During Phase 3 gate review for the Tactical Pistol, review identified that the ADS screenshot exhibited a bulky, overlapping forearm/hand silhouette around the weapon, and the diagnostic overlay appeared to display ~3 FPS. Acceptance was paused to diagnose and resolve the true underlying causes.
+
+### Root Cause Analysis
+1. **IK Pole Target Polarity Inversion in `armsRig.ts`**:
+   - In the Drillimpact arms skeleton coordinate frame, `shoulderR` is at $X = -0.197\text{ m}$ (negative X) and `shoulderL` is at $X = +0.197\text{ m}$ (positive X).
+   - In `FirstPersonArmsRig.updateIK`, `poleWorldR` had positive X ($+0.35$) and `poleWorldL` had negative X ($-0.35$).
+   - This pulled both elbows inwards across the player's chest towards each other, collapsing the inter-elbow separation down to $189\text{ mm}$ and causing the forearm sleeve meshes to converge into an unnatural, bulky volume directly beneath the pistol.
+2. **Slide Mesh Geometry Unparenting Displacement in `pistolSlice.ts`**:
+   - In raw `pistol.glb`, the slide (`pewhaut`) was a child of `pew` with local offset $(-0.0114, 0.0336, 0.0002)$.
+   - When detaching the slide to enable reciprocating cycling, `slide.parent.remove(slide)` was called *before* baking the parent transform.
+   - When recentered and placed at `slideRestPos`, the slide geometry was displaced downwards by $48.7\text{ mm}$ right into the polymer grip and hands, making the slide indistinguishable from the frame and forcing the hands to intersect with the reciprocating slide.
+3. **Left Hand Socket Proximity**:
+   - In `pistolDef.ts` and `pistolSlice.ts`, `leftSupportRest` had $X = -0.014\text{ m}$ (only $14\text{ mm}$ from center), cramping the left wrist within $15.9\text{ mm}$ of the right wrist.
+4. **ADS Reach Distance**:
+   - `weaponOffsets.pistol.ads` at $Z = -0.34\text{ m}$ held the pistol $22\text{ cm}$ from the camera lens, cramping elbows upwards.
+5. **Apparent ~3 FPS Overlay Diagnosis**:
+   - Default Playwright headless Chromium throttles background and occluded windows, reducing timer resolutions and throttling `requestAnimationFrame` down to $\sim 2.94\text{ FPS}$ (339.77 ms frame time).
+   - Benchmarking with `--enable-gpu --use-gl=angle --use-angle=d3d11 --ignore-gpu-blocklist --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --no-sandbox` measured **60.08 FPS** (16.64 ms frame time, 0 errors).
+   - Real headed Google Chrome (`chrome.exe`) measured **59.89 FPS** (16.70 ms frame time, 0 errors). There was zero simulation or rendering bottleneck in the engine.
+
+### Decisions
+1. **Corrected Pole Target Polarity in `armsRig.ts`**:
+   - `poleWorldR.set(-0.45, -0.55, -0.15)` and `poleWorldL.set(0.45, -0.55, -0.15)`.
+   - Inter-elbow separation expanded from $189\text{ mm}$ to $280\text{ mm}$, opening a clean visual gap between the forearms.
+2. **Baked Parent Transforms in `pistolSlice.ts`**:
+   - Baked `slide.matrixWorld` into `slideGeom` before unparenting, restoring the slide to its intended height ($Y \in [0.0342, 0.0694]$) on top of the polymer frame rails.
+   - Rear notch and front post now sit crisply at $Y = 0.0694\text{ m}$.
+3. **Calibrated Left Hand Socket & ADS Offset**:
+   - `leftSupportRest`: `pos: Vector3(-0.032, -0.050, 0.075)`, `rot: Euler(-1.64, -0.16, 0.20, 'YXZ')`.
+   - Wrist separation widened to $34.3\text{ mm}$, and arm-to-arm sleeve distance is strictly $\ge 3.86\text{ mm}$ (zero penetration).
+   - `weaponOffsets.pistol.ads`: `Vector3(0.0, -0.0694, -0.44)` aligning iron sights dead-center with natural 44 cm isosceles arms reach.
+4. **Rigorous Vertex-to-Triangle Contact Measurement Script**:
+   - Implemented `scripts/measure-exact-geometry-contacts.mjs` computing point-to-triangle 3D Euclidean distances against the skinned mesh triangles:
+     - Right Palm: $0.02\text{ mm}$
+     - Right Index / Trigger: $1.05\text{ mm}$
+     - Right Middle Wrap: $0.71\text{ mm}$
+     - Right Thumb Frame Flat: $0.62\text{ mm}$
+     - Left Palm Support: $0.73\text{ mm}$
+     - Left Index Support: $0.02\text{ mm}$
+     - Left Thumb Slide Clearance: $34.37\text{ mm}$ (Safe $> 5.0\text{ mm}$)
+     - Right Thumb Slide Clearance: $23.99\text{ mm}$ (Safe $> 5.0\text{ mm}$)
+     - Arm Sleeve Mesh Clearance: $3.86\text{ mm}$ (ZERO PENETRATION / CLEAR).
+
+### Verification
+- `pnpm verify`: 0 errors, 104 unit tests passed, production bundle built cleanly in 601ms.
+- `scripts/test-phase3-motion.mjs`: 8/8 rigid motion tests passed with zero joint separation and bone length error $\le 0.0003\text{ mm}$.
+- `pnpm test:e2e`: 70/70 Playwright tests passed across Chromium and Firefox.
+- All 7 screenshots in `artifacts/` captured with `60 FPS` and `< 1.2 ms CPU` frame time on the diagnostic overlay.

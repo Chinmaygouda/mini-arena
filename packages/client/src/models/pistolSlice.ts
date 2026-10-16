@@ -40,29 +40,40 @@ export function parseRealPistolModel(gltfScene: THREE.Group): SplitWeaponMesh {
     throw new Error('parseRealPistolModel: Failed to find pew, pewhaut, or pewmagazine nodes in GLTF scene.');
   }
 
-  // Detach magazine from hierarchy
-  if (mag.parent) {
-    mag.parent.remove(mag);
-  }
+  // Ensure parent matrices are fully updated
+  gltfScene.updateMatrixWorld(true);
 
-  // Calculate magazine center & offset geometry so local origin is at center of magazine
-  const magBox = new THREE.Box3().setFromObject(mag);
-  const magCenter = new THREE.Vector3();
-  magBox.getCenter(magCenter);
-
-  mag.geometry = mag.geometry.clone();
-  mag.geometry.translate(-magCenter.x, -magCenter.y, -magCenter.z);
+  // 1. Bake parent transforms into slide before unparenting
+  slide.updateMatrixWorld(true);
+  const slideGeom = slide.geometry.clone();
+  slideGeom.applyMatrix4(slide.matrixWorld);
+  slideGeom.computeBoundingBox();
+  const slideBox = slideGeom.boundingBox || new THREE.Box3();
+  const slideCenter = new THREE.Vector3();
+  slideBox.getCenter(slideCenter);
+  slideGeom.translate(-slideCenter.x, -slideCenter.y, -slideCenter.z);
 
   // Detach slide from hierarchy so it can blow back along -Z during firing/bolt cycling
   if (slide.parent) {
     slide.parent.remove(slide);
   }
-  const slideBox = new THREE.Box3().setFromObject(slide);
-  const slideCenter = new THREE.Vector3();
-  slideBox.getCenter(slideCenter);
+  slide.geometry = slideGeom;
 
-  slide.geometry = slide.geometry.clone();
-  slide.geometry.translate(-slideCenter.x, -slideCenter.y, -slideCenter.z);
+  // 2. Bake parent transforms into magazine before unparenting
+  mag.updateMatrixWorld(true);
+  const magGeom = mag.geometry.clone();
+  magGeom.applyMatrix4(mag.matrixWorld);
+  magGeom.computeBoundingBox();
+  const magBox = magGeom.boundingBox || new THREE.Box3();
+  const magCenter = new THREE.Vector3();
+  magBox.getCenter(magCenter);
+  magGeom.translate(-magCenter.x, -magCenter.y, -magCenter.z);
+
+  // Detach magazine from hierarchy
+  if (mag.parent) {
+    mag.parent.remove(mag);
+  }
+  mag.geometry = magGeom;
 
   // Receiver body group
   const body = new THREE.Group();
@@ -82,8 +93,7 @@ export function parseRealPistolModel(gltfScene: THREE.Group): SplitWeaponMesh {
   mag.rotation.y = Math.PI / 2;
 
   // Slide rest position in rotated weapon frame
-  // slideCenter raw: x=-0.0114, y=0.0357, z=0.0002
-  // In rotated space (y=rotY(pi/2)): x_rot = z_raw, y_rot = y_raw, z_rot = -x_raw
+  // In rotated space (y=rotY(pi/2)): x_rot = z_scene * SCALE, y_rot = y_scene * SCALE, z_rot = -x_scene * SCALE
   const slideRestPos = new THREE.Vector3(
     slideCenter.z * SCALE,
     slideCenter.y * SCALE,
@@ -134,8 +144,8 @@ export function buildPistolVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
     rot: new THREE.Euler(-1.74, 0.08, -0.12, 'YXZ'),
   };
   const leftGripRest = {
-    pos: new THREE.Vector3(-0.014, -0.044, 0.076),
-    rot: new THREE.Euler(-1.68, -0.10, 0.12, 'YXZ'),
+    pos: new THREE.Vector3(-0.032, -0.050, 0.075),
+    rot: new THREE.Euler(-1.64, -0.16, 0.20, 'YXZ'),
   };
 
   // 1. IDLE CLIP

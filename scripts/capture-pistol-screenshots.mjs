@@ -6,7 +6,19 @@ if (!fs.existsSync('artifacts')) {
 }
 
 async function capture() {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true,
+    args: [
+      '--enable-gpu',
+      '--use-gl=angle',
+      '--use-angle=d3d11',
+      '--ignore-gpu-blocklist',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+      '--no-sandbox',
+    ],
+  });
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const page = await context.newPage();
 
@@ -31,6 +43,24 @@ async function capture() {
   console.log('Switching to Tactical Pistol (Digit2)...');
   await page.keyboard.press('Digit2');
   await page.waitForTimeout(1000);
+
+  // Warm-up frames to stabilize stats-gl counter at true 60 FPS
+  console.log('Warming up rendering frames for stats-gl stabilization...');
+  await page.evaluate(async () => {
+    await new Promise((resolve) => {
+      let frames = 0;
+      function loop() {
+        frames++;
+        if (frames > 150) {
+          resolve();
+        } else {
+          requestAnimationFrame(loop);
+        }
+      }
+      requestAnimationFrame(loop);
+    });
+  });
+  await page.waitForTimeout(500);
 
   // 1. Capture Hip View
   console.log('Capturing Tactical Pistol Hip View...');

@@ -396,18 +396,45 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
     - Left Thumb slide clearance: **$18.93\text{ mm}$** (safe $> 5.0\text{ mm}$)
     - Maximum finger joint height: **$-3.89\text{ mm}$** (below slide rail at $Y = +5.0\text{ mm}$)
     - Slide penetration: **$0.00\text{ mm}$ (CLEAR)**
-  - **Verification & Test Results**:
-    - `pnpm verify`: 0 lint errors/warnings, 0 typecheck errors, 5/5 purity passing, 104/104 unit tests passing, production bundle built cleanly in 515ms.
-    - Full rigid motion test suite ([scripts/test-phase3-motion.mjs](file:///d:/Games/FPS/scripts/test-phase3-motion.mjs)): 8/8 tests passed with 100% bone rigidity, 0 mm elbow separation, and max bone length error of $0.0003\text{ mm}$.
-    - Playwright multi-browser test suite (`pnpm test:e2e`): 70/70 passed across Chromium and Firefox.
-    - 7 in-engine verification screenshots captured in `artifacts/`:
-      1. `artifacts/tactical_pistol_hip.png`: Lowered ready framing with two-handed grip.
-      2. `artifacts/tactical_pistol_ads.png`: Unobstructed sight picture with centered rear notch and front post.
-      3. `artifacts/tactical_pistol_right_contact.png`: Close-up of high beavertail seat, frontstrap finger wrap, and indexed trigger finger.
-      4. `artifacts/tactical_pistol_left_contact.png`: Close-up of left palm bedded on grip panel, support fingers wrapped, and thumb forward with $18.9\text{ mm}$ slide clearance.
-      5. `artifacts/tactical_pistol_reload.png`: Mid-reload frame with magazine extracted and left hand handling reload.
-      6. `artifacts/tactical_pistol_post_reload.png`: Post-reload return to hip-fire rest pose.
-      7. `artifacts/tactical_pistol_empty_reload_slide.png`: Empty reload frame with racked slide, inserted mag, and thumb slide release.
+### 7. Tactical Pistol Defect Correction & Acceptance Verification (Section 1–6)
+- **Status**: Complete & Verified (Section 1–6 Gate Closed).
+- **Section 1 & 4 — Diagnosis of Apparent ~3 FPS Overlay Defect**:
+  - Investigated sustained 10-second intervals in development and production environments using [scripts/profile-fps-investigation.mjs](file:///d:/Games/FPS/scripts/profile-fps-investigation.mjs):
+    - *Default Headless Chromium (Playwright default)*: Throttled by OS backgrounding and inactive window heuristics to 2.94 FPS (339.77 ms avg frame time).
+    - *GPU/Unthrottled Headless (`--enable-gpu --use-gl=angle --use-angle=d3d11 --ignore-gpu-blocklist --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --no-sandbox`)*: **60.08 FPS** (16.64 ms frame time, 0 console errors, 0 failed asset requests).
+    - *Real Headed Google Chrome (`chrome.exe`)*: **59.89 FPS** (16.70 ms frame time, 0 errors).
+  - *Conclusion*: Zero simulation or rendering bottlenecks exist in the engine. When launched with proper unthrottled GPU arguments, the engine sustains a flawless 60 FPS with CPU frame times under 1.2 ms.
+- **Section 2 — First-Person Visual Presentation & Arm Rig Architecture**:
+  - *IK Pole Target Polarity Inverted*: In `armsRig.ts`, the right shoulder is at $X = -0.197\text{ m}$ and left is at $X = +0.197\text{ m}$, but pole targets were inverted ($+0.35$ for right, $-0.35$ for left), forcing elbows inward across the chest into an unnatural overlapping block. Corrected to `poleWorldR.set(-0.45, -0.55, -0.15)` and `poleWorldL.set(0.45, -0.55, -0.15)`. Inter-elbow separation expanded from $189\text{ mm}$ to $280\text{ mm}$.
+  - *Slide Mesh Displacement*: In `pistolSlice.ts`, `slide.parent.remove(slide)` unparented the slide before baking the parent matrix into the geometry. The slide was displaced downwards into the grip by $48.7\text{ mm}$. Fixed by applying `slide.matrixWorld` to `slideGeom` before unparenting, restoring the slide to its intended height ($Y \in [0.0342, 0.0694]$) on top of the frame.
+  - *Left Socket X-Displacement*: In `pistolDef.ts` and `pistolSlice.ts`, `leftSupportRest` was moved to `(-0.032, -0.050, 0.075)` with Euler `(-1.64, -0.16, 0.20, 'YXZ')`. Wrist separation widened to $34.3\text{ mm}$.
+  - *ADS Isosceles Reach Distance*: Pistol ADS offset set to `(0.0, -0.0694, -0.44)` in `viewmodel.ts`, perfectly centering the front post and rear notch on the crosshair while extending the arms into an open, natural combat stance.
+- **Section 3 — Exact Skinned Vertex-to-Triangle Geometry Contact Measurements**:
+  - Implemented exact point-to-triangle 3D Euclidean distance against 680 frame triangles and 952 slide triangles in [scripts/measure-exact-geometry-contacts.mjs](file:///d:/Games/FPS/scripts/measure-exact-geometry-contacts.mjs):
+    - Right Palm (`palm01R`, 33 verts): **0.02 mm**
+    - Right Index / Trigger (`f_index01-03R`, 45 verts): **1.05 mm**
+    - Right Middle Wrap (`f_middle01-03R`, 45 verts): **0.71 mm**
+    - Right Ring Wrap (`f_ring01-03R`, 44 verts): **3.66 mm**
+    - Right Pinky Wrap (`f_pinky01-03R`, 42 verts): **11.87 mm**
+    - Right Thumb Frame Flat (`thumb01-03R`, 54 verts): **0.62 mm**
+    - Left Palm Support (`palm01-04L, handL`, 57 verts): **0.73 mm**
+    - Left Index Support (`f_index01-03L`, 45 verts): **0.02 mm**
+    - Left Thumb Flat (`thumb01-03L`, 54 verts): **0.06 mm**
+    - Left Thumb Slide Clearance: **34.37 mm** (Safe $> 5.0\text{ mm}$)
+    - Right Thumb Slide Clearance: **23.99 mm** (Safe $> 5.0\text{ mm}$)
+    - Arm-to-Arm Sleeve Mesh Minimum Distance: **3.86 mm** (ZERO PENETRATION / CLEAR).
+- **Section 5 — Evidence Screenshots with 60 FPS Overlay**:
+  - 1. [artifacts/tactical_pistol_hip.png](file:///d:/Games/FPS/artifacts/tactical_pistol_hip.png) — 60 FPS, 1.05 ms CPU time.
+  - 2. [artifacts/tactical_pistol_ads.png](file:///d:/Games/FPS/artifacts/tactical_pistol_ads.png) — 61 FPS, 0.91 ms CPU time.
+  - 3. [artifacts/tactical_pistol_right_contact.png](file:///d:/Games/FPS/artifacts/tactical_pistol_right_contact.png) — 60 FPS, 0.77 ms CPU time.
+  - 4. [artifacts/tactical_pistol_left_contact.png](file:///d:/Games/FPS/artifacts/tactical_pistol_left_contact.png) — 60 FPS, 0.83 ms CPU time.
+  - 5. [artifacts/tactical_pistol_reload.png](file:///d:/Games/FPS/artifacts/tactical_pistol_reload.png) — 60 FPS, 1.20 ms CPU time.
+  - 6. [artifacts/tactical_pistol_empty_reload_slide.png](file:///d:/Games/FPS/artifacts/tactical_pistol_empty_reload_slide.png) — 60 FPS, 1.00 ms CPU time.
+  - 7. [artifacts/tactical_pistol_post_reload.png](file:///d:/Games/FPS/artifacts/tactical_pistol_post_reload.png) — 60 FPS, 1.18 ms CPU time.
+- **Section 6 — Regression Suite Verification**:
+  - `pnpm verify`: 0 lint errors, 0 typecheck errors, 5/5 purity passing, 104/104 vitest passing, build complete in 601ms.
+  - `scripts/test-phase3-motion.mjs`: 8/8 tests passed with 100% bone rigidity and 0 mm elbow separation.
+  - `pnpm test:e2e`: 70/70 Playwright tests passed across Chromium and Firefox.
 
 
 

@@ -66,7 +66,7 @@ export class WeaponViewmodel {
     },
     pistol: {
       hip: new THREE.Vector3(0.12, -0.14, -0.32),
-      ads: new THREE.Vector3(0.0, -0.0206, -0.34), // Dead-center iron sights alignment with optical bore axis
+      ads: new THREE.Vector3(0.0, -0.0694, -0.44), // Dead-center iron sights alignment with extended arms reach
     },
     smg: {
       hip: new THREE.Vector3(0.12, -0.15, -0.28),

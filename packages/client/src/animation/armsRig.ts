@@ -419,8 +419,8 @@ export class FirstPersonArmsRig {
     this.wristTargetPosL.subVectors(leftTargetPos, this.palmWorldOffsetL);
 
     // 4. Construct low and outward pole targets (guarantees elbows point downward/outward)
-    this.poleWorldR.set(0.35, -0.65, 0.05).applyMatrix4(this.group.matrixWorld);
-    this.poleWorldL.set(-0.35, -0.65, 0.05).applyMatrix4(this.group.matrixWorld);
+    this.poleWorldR.set(-0.45, -0.55, -0.15).applyMatrix4(this.group.matrixWorld);
+    this.poleWorldL.set(0.45, -0.55, -0.15).applyMatrix4(this.group.matrixWorld);
 
     // 5. Solve Right Arm (Weapon Grip) — strictly rigid bone lengths (0.322236m & 0.237276m)
     // Sockets are positioned in weapon-local space; runtime IK tracks socket with max 2cm residual correction

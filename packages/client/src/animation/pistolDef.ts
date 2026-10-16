@@ -21,8 +21,8 @@ export function createPistolVisualDef(): WeaponVisualDef {
 
   // Left hand wraps around right hand in modern thumbs-forward support grip
   const leftSupportRest = {
-    pos: new THREE.Vector3(-0.014, -0.044, 0.076),
-    rot: new THREE.Euler(-1.68, -0.10, 0.12, 'YXZ'),
+    pos: new THREE.Vector3(-0.032, -0.050, 0.075),
+    rot: new THREE.Euler(-1.64, -0.16, 0.20, 'YXZ'),
   };
 
   // --- 1. IDLE CLIP ---
