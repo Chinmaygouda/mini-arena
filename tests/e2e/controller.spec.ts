@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Mini Arena Phase 1 Controller & Arena E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?map=greybox');
     const canvas = page.locator('#canvas-container canvas');
     await expect(canvas).toBeVisible({ timeout: 15000 });
 

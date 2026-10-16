@@ -199,18 +199,33 @@ async function initApp(): Promise<void> {
 
   // Modular Map Loading (Phase 5)
   const mapParam = url.searchParams.get('map') || 'warehouse';
-  let currentMapSpec = getMapSpec(mapParam);
   const mapLoader = new MapLoader(scene, physics.world);
-  let mapSession = mapLoader.loadMap(currentMapSpec);
+  let mapSession: LoadedMapSession | null = null;
+  let currentMapSpec: MapSpec | null = null;
 
-  // Target dummies in the arena
   const dummies = new TargetDummyManager(scene);
-  dummies.repositionForMap(currentMapSpec.id);
+
+  if (mapParam === 'greybox') {
+    buildGreyboxArena(scene, physics.world);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const sunLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+    sunLight.position.set(15, 25, 10);
+    scene.add(sunLight);
+    const bounceLight = new THREE.DirectionalLight(0xf43f5e, 0.4);
+    bounceLight.position.set(-15, 10, -10);
+    scene.add(bounceLight);
+  } else {
+    currentMapSpec = getMapSpec(mapParam);
+    mapSession = mapLoader.loadMap(currentMapSpec);
+    dummies.repositionForMap(currentMapSpec.id);
+  }
+
   if (isDebug) {
     window.__dummies = dummies;
     window.__mapLoader = mapLoader;
-    window.__mapSession = mapSession;
-    window.__mapSpec = currentMapSpec;
+    if (mapSession) window.__mapSession = mapSession;
+    if (currentMapSpec) window.__mapSpec = currentMapSpec;
   }
 
   // Viewmodel (box placeholder with muzzle/tracers)
@@ -268,7 +283,7 @@ async function initApp(): Promise<void> {
   const damageVignette = document.getElementById('damage-vignette');
 
   // Start player facing arena at map spawn
-  const initialSpawn = currentMapSpec.spawns[0] ?? { pos: { x: 0, y: 0, z: 12 }, yaw: 0 };
+  const initialSpawn = currentMapSpec?.spawns[0] ?? { pos: { x: 0, y: 0, z: 12 }, yaw: 0 };
   let currentState: PlayerSimState = createDefaultPlayerState(
     initialSpawn.pos.x,
     initialSpawn.pos.y,

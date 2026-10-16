@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?map=greybox');
     await page.waitForSelector('#canvas-container canvas', { state: 'visible' });
 
     // Wait for Three.js engine and weapon state initialization
