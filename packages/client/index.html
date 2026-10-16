@@ -186,6 +186,8 @@
           <div><code>Right Click</code> ADS (Aim)</div>
           <div><code>R</code> Reload</div>
           <div><code>1-5</code> Select Weapon</div>
+          <div><code>G</code> Throw Grenade</div>
+          <div><code>T</code> Cycle Grenade</div>
           <div><code>Esc</code> Release Mouse</div>
         </div>
         <button id="btn-enter-arena" class="enter-btn">ENTER ARENA (CLICK TO PLAY)</button>
@@ -256,6 +258,40 @@
 
     <!-- Center Hit Marker Log -->
     <div id="hud-hitlog" style="position: absolute; top: 55%; left: 50%; transform: translateX(-50%); font-size: 14px; font-weight: 700; color: #fef08a; font-family: monospace; opacity: 0; transition: opacity 0.15s ease-out; pointer-events: none; z-index: 100; text-shadow: 0 0 8px rgba(0,0,0,0.8);"></div>
+
+    <!-- Damage Vignette Overlay -->
+    <div id="damage-vignette" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; box-shadow: inset 0 0 100px rgba(239, 68, 68, 0.0); transition: box-shadow 0.1s ease-out;"></div>
+
+    <!-- Flashbang Whiteout Overlay -->
+    <div id="flashbang-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 85; background: #ffffff; opacity: 0; transition: opacity 0.05s linear;"></div>
+
+    <!-- Health HUD (Bottom Left) -->
+    <div id="health-hud" style="position: absolute; bottom: 24px; left: 24px; background: rgba(13, 15, 18, 0.85); border: 1px solid rgba(239, 68, 68, 0.3); backdrop-filter: blur(8px); padding: 14px 20px; border-radius: 10px; color: #f8fafc; font-family: monospace; z-index: 100; min-width: 190px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 13px; font-weight: 700; color: #ef4444; letter-spacing: 0.05em;">HEALTH</span>
+        <span id="hud-spawn-protection" style="font-size: 11px; font-weight: 600; color: #38bdf8; display: none;">PROTECTED</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px;">
+        <span id="hud-health-num" style="font-size: 28px; font-weight: 800; color: #ffffff;">100</span>
+        <span style="font-size: 14px; color: #64748b;">/ 100</span>
+      </div>
+      <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+        <div id="hud-health-bar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #ef4444, #f87171); border-radius: 3px; transition: width 0.15s ease-out;"></div>
+      </div>
+    </div>
+
+    <!-- Grenade Tactical HUD (Beside Weapon HUD) -->
+    <div id="grenade-hud" style="position: absolute; bottom: 24px; right: 230px; background: rgba(13, 15, 18, 0.85); border: 1px solid rgba(34, 197, 94, 0.3); backdrop-filter: blur(8px); padding: 14px 18px; border-radius: 10px; color: #f8fafc; font-family: monospace; z-index: 100; min-width: 140px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span style="font-size: 11px; font-weight: 700; color: #22c55e;">GRENADE [G]</span>
+        <span style="font-size: 10px; color: #64748b;">[T] CYCLE</span>
+      </div>
+      <div id="hud-grenade-type" style="font-size: 14px; font-weight: 800; color: #4ade80; text-transform: uppercase;">M67 FRAG</div>
+      <div style="font-size: 20px; font-weight: 800; margin-top: 2px;">
+        <span id="hud-grenade-count" style="color: #ffffff;">2</span>
+        <span style="font-size: 12px; color: #94a3b8;"> REMAINING</span>
+      </div>
+    </div>
 
     <!-- Weapon Ammo HUD (Bottom Right) -->
     <div id="weapon-hud" style="position: absolute; bottom: 24px; right: 24px; background: rgba(13, 15, 18, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); backdrop-filter: blur(8px); padding: 14px 20px; border-radius: 10px; color: #f8fafc; font-family: monospace; z-index: 100; min-width: 180px; text-align: right; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">

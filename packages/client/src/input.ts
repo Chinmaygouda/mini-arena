@@ -134,6 +134,8 @@ export class InputManager {
       if (e.code === 'Digit5') this.selectedSlot = 4;
       if (e.code === 'KeyR') this.reloadRequested = true;
       if (e.code === 'KeyF') this.inspectRequested = true;
+      if (e.code === 'KeyG') this.throwGrenadeRequested = true;
+      if (e.code === 'KeyT') this.cycleGrenadeRequested = true;
     });
 
     window.addEventListener('keyup', (e) => {
@@ -155,6 +157,8 @@ export class InputManager {
   public selectedSlot: number | undefined = undefined;
   public reloadRequested = false;
   public inspectRequested = false;
+  public throwGrenadeRequested = false;
+  public cycleGrenadeRequested = false;
 
   /**
    * Dedicated test-only hooks isolated behind the testHooks namespace.
@@ -180,6 +184,12 @@ export class InputManager {
       this.yaw = yaw;
       this.pitch = pitch;
     },
+    setThrowGrenade: (val: boolean): void => {
+      this.throwGrenadeRequested = val;
+    },
+    setCycleGrenade: (val: boolean): void => {
+      this.cycleGrenadeRequested = val;
+    },
   };
 
   // Backwards-compatible aliases marked as testHooks
@@ -189,6 +199,8 @@ export class InputManager {
   public setReload = this.testHooks.setReload;
   public setWeaponSlot = this.testHooks.setWeaponSlot;
   public setLook = this.testHooks.setLook;
+  public setThrowGrenade = this.testHooks.setThrowGrenade;
+  public setCycleGrenade = this.testHooks.setCycleGrenade;
 
   public getIsLocked(): boolean {
     return this.isLocked;
@@ -220,6 +232,10 @@ export class InputManager {
     this.reloadRequested = false;
     const inspect = this.inspectRequested || Boolean(this.keys['KeyF']);
     this.inspectRequested = false;
+    const throwGrenade = this.throwGrenadeRequested || Boolean(this.keys['KeyG']);
+    this.throwGrenadeRequested = false;
+    const cycleGrenade = this.cycleGrenadeRequested || Boolean(this.keys['KeyT']);
+    this.cycleGrenadeRequested = false;
     const slot = this.selectedSlot;
     // Clear slot trigger once sampled
     this.selectedSlot = undefined;
@@ -241,6 +257,8 @@ export class InputManager {
       reload,
       inspect,
       weaponSlot: slot,
+      throwGrenade,
+      cycleGrenade,
     };
   }
 }

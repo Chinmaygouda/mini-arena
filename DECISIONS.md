@@ -627,3 +627,47 @@ Across all 8 dynamic motion states plus continuous 5s full-auto firing:
 - **History Independence**: Maximum bone quaternion angular deviation across 300 erratic disturbance frames is **$0.0000\times 10^{-8}\text{ rad}$** (Budget: $< 10^{-6}\text{ rad}$) — **Strictly History Independent**
 - **First-Person Visual Evidence**: Screenshots captured for all 5 weapons in `docs/screenshots/hold_pose_<weapon>.png` confirming natural grip alignment, sleeve clearance, and camera sightlines.
 
+---
+
+## ADR 019: Phase 4 Deterministic Grenade Simulation, Instanced Decals & Pooled Combat VFX
+
+**Date**: 2026-10-16  
+**Status**: Accepted
+
+### Context
+Phase 4 requires a complete grenade system (Frag, Flash, Smoke) and combat visual effects (bullet impact decals, blast scorches, brass shell casing ejections, and screen trauma) adhering strictly to:
+1. **Rule C (Architecture)**: Deterministic simulation in `packages/shared`, decoupled from DOM/Three.js/Rapier, driven by integer ticks.
+2. **Rule D (Performance)**: Zero heap allocations in per-tick and per-frame hot paths, fixed ring buffer pools for decals and casing meshes.
+3. **Rule B (Truthfulness & Verification)**: Verified under Playwright E2E and Vitest unit tests, with WebGL/WebGPU cross-browser rendering tests and visual screenshots in `docs/screenshots/phase4/`.
+
+### Architectural Decisions
+
+1. **Deterministic Shared Grenade Simulation (`packages/shared/src/grenades`)**:
+   - `GrenadeSimState` tracks in-flight grenades and billowing smoke clouds.
+   - Continuous collision detection (CCD) step: Subdivides trajectory when velocity $\times \Delta t$ exceeds grenade radius, testing collisions via `IGrenadeCollisionWorld.castSphere`.
+   - On surface impact, velocity is reflected along contact normal:
+     $$\mathbf{v}_{\text{reflected}} = \mathbf{v}_{\text{incident}} - (1 + e)(\mathbf{v}_{\text{incident}} \cdot \hat{\mathbf{n}})\hat{\mathbf{n}}$$
+     with tangential friction $f$ applied to perpendicular components. Resting state triggers when velocity drops below $0.4\text{ m/s}$.
+   - Determinism: Uses seedable integer-tick updates without `Math.random()` or DOM timestamps. Verified identical across 1,000 independent bounce trajectories.
+
+2. **Detonation & Gameplay Effects**:
+   - **Frag**: Quadratic damage falloff from 120 at point-blank to 15 at $7.0\text{ m}$, verifying line-of-sight via raycast from detonation origin to target torso.
+   - **Flash**: Line-of-sight raycast plus view orientation dot product decay ($\theta = \arccos(\hat{\mathbf{d}} \cdot \hat{\mathbf{f}})$); applies up to 240 ticks (4.0s) blindness overlay.
+   - **Smoke**: Spawns $5.5\text{ m}$ spherical occlusion cloud lasting 600 ticks (10.0s). `isLineBlockedBySmoke(p1, p2)` queries ray-sphere intersection for bullet LOS checks.
+
+3. **Physics Bridge (`RapierGrenadeWorldAdapter`)**:
+   - Translates `IGrenadeCollisionWorld` queries to Rapier 3D `world.castShape` and `world.castRay`.
+   - Filters out `physics.playerBody` collider to avoid self-intersection when throwing from the eye position inside the player's 1.8m capsule.
+
+4. **Zero-Allocation Instanced Rendering & Particle Pools**:
+   - **DecalManager**: Instanced meshes with ring buffers for 128 bullet holes (0.08m) and 32 explosion blast scorch marks (4.5m). Uses `polygonOffset: true` (`factor: -1, units: -1`) to prevent Z-fighting on coplanar geometry. FIFO index cycling guarantees strictly zero runtime allocations.
+   - **CombatVfxManager**: 32 pooled shell casing meshes with realistic tumbling kinematics, bouncing off floor colliders, and fading after 4 seconds. Instanced particle bursts for metal sparks, concrete dust, and wood splinters.
+   - **Screen Shake (Camera Trauma)**: Non-linear trauma decay ($\text{shake} = \text{trauma}^2$) driven by multi-frequency sinusoidal harmonics (24 Hz, 32 Hz, 40 Hz) for realistic concussive punch without nausea.
+
+### Acceptance & Verification Results
+- **Vitest Unit Tests**: 11 unit tests in `packages/shared/src/grenades/grenades.test.ts` (115/115 test suite passing).
+- **Playwright E2E**: 6/6 tests passing across Chromium and Firefox in `tests/e2e/grenades.spec.ts`.
+- **Performance**: Sustained **60.0 FPS avg / 59.5 FPS 1% low** under heavy detonation and continuous full-auto fire.
+- **Evidence**: 12 screenshots captured in `docs/screenshots/phase4/` validating throw arc, bounce, scorch decals, flash whiteout, smoke occlusion, and shell casing ejections.
+
+

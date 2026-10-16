@@ -537,6 +537,12 @@ export class WeaponViewmodel {
     this.animator.weaponGroup.localToWorld(muzzle);
     return { x: muzzle.x, y: muzzle.y, z: muzzle.z };
   }
+
+  public getEjectionWorldPosition(): Vec3 {
+    const ejection = this.currentVisualDef.ejectionPortOffset.clone();
+    this.animator.weaponGroup.localToWorld(ejection);
+    return { x: ejection.x, y: ejection.y, z: ejection.z };
+  }
 }
 
 /**

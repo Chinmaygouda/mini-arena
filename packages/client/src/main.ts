@@ -36,6 +36,10 @@ import {
   PelletOffset,
   canTriggerFire,
   updateTriggerState,
+  createInitialPlayerVitals,
+  stepPlayerVitals,
+  PlayerVitalsState,
+  GRENADE_DEFS,
 } from '@mini-arena/shared';
 import { initPhysics, PhysicsEngine } from './physics';
 import { InputManager } from './input';
@@ -43,6 +47,10 @@ import { buildGreyboxArena } from './arena';
 import { TargetDummyManager } from './dummies';
 import { triggerHitMarker, WeaponViewmodel } from './viewmodel';
 import { weaponAudio } from './audio';
+import { DecalManager } from './vfx/decalManager';
+import { CombatVfxManager } from './vfx/combatVfxManager';
+import { RapierGrenadeWorldAdapter } from './vfx/grenadeWorldAdapter';
+import { GrenadeClientManager } from './vfx/grenadeClientManager';
 
 declare global {
   interface Window {
@@ -59,6 +67,10 @@ declare global {
     __camera?: THREE.PerspectiveCamera;
     __debugCamera?: THREE.PerspectiveCamera | null;
     __scene?: THREE.Scene;
+    __decalManager?: DecalManager;
+    __combatVfx?: CombatVfxManager;
+    __grenadeManager?: GrenadeClientManager;
+    __playerVitals?: PlayerVitalsState;
     THREE?: typeof THREE;
   }
 }
@@ -221,11 +233,37 @@ async function initApp(): Promise<void> {
     window.__inputManager = inputManager;
   }
 
-  // HUD elements for weapons
+  // Decal Manager (instanced bullet holes & blast scorches)
+  const decalManager = new DecalManager(scene);
+
+  // Combat VFX Manager (shell ejection, surface impacts, camera trauma shake)
+  const combatVfx = new CombatVfxManager(scene);
+
+  // Grenade System with Rapier collision world adapter
+  const grenadeWorld = new RapierGrenadeWorldAdapter(physics.world, physics.raw, physics.playerBody);
+  const grenadeManager = new GrenadeClientManager(scene, camera, grenadeWorld, decalManager, combatVfx);
+
+  // Player Vitals System
+  const playerVitals = createInitialPlayerVitals('local_player');
+
+  if (isDebug) {
+    window.__decalManager = decalManager;
+    window.__combatVfx = combatVfx;
+    window.__grenadeManager = grenadeManager;
+    window.__playerVitals = playerVitals;
+  }
+
+  // HUD elements for weapons, grenades, and health
   const hudWeaponName = document.getElementById('hud-weapon-name');
   const hudAmmoMag = document.getElementById('hud-ammo-mag');
   const hudAmmoReserve = document.getElementById('hud-ammo-reserve');
   const hudWeaponAction = document.getElementById('hud-weapon-action');
+  const hudHealthNum = document.getElementById('hud-health-num');
+  const hudHealthBar = document.getElementById('hud-health-bar');
+  const hudSpawnProtection = document.getElementById('hud-spawn-protection');
+  const hudGrenadeType = document.getElementById('hud-grenade-type');
+  const hudGrenadeCount = document.getElementById('hud-grenade-count');
+  const damageVignette = document.getElementById('damage-vignette');
 
   // Start player facing arena
   let currentState: PlayerSimState = createDefaultPlayerState(0, 0, 12);
@@ -322,6 +360,11 @@ async function initApp(): Promise<void> {
           const kickPitch = currentDef.recoil.pattern[0]?.pitch ?? 0.035;
           viewmodel.applyRecoilKick(kickPitch);
 
+          // Shell casing ejection & camera trauma shake
+          const ejectionPos = viewmodel.getEjectionWorldPosition();
+          combatVfx.spawnShell(ejectionPos, currentDef.id, input.yaw, input.pitch);
+          combatVfx.addTrauma(currentDef.id === 'sniper' ? 0.35 : currentDef.id === 'shotgun' ? 0.22 : 0.08);
+
           // Stance-based spread cone (computeEffectiveSpread returns cone half-angle in radians)
           const hSpeed = Math.hypot(currentState.vx, currentState.vz);
           const spreadRad = computeEffectiveSpread(currentDef, {
@@ -361,11 +404,24 @@ async function initApp(): Promise<void> {
               };
 
               const hit = dummies.testRay(rayOrigin, rayDir, currentDef.range);
+              const rapierRay = new physics.raw.Ray(
+                { x: rayOrigin.x, y: rayOrigin.y, z: rayOrigin.z },
+                { x: rayDir.x, y: rayDir.y, z: rayDir.z },
+              );
+              const worldHit = physics.world.castRayAndGetNormal(rapierRay, currentDef.range, true);
+
               let hitPoint: Vec3;
-              if (hit.hit && hit.hitPoint) {
+              if (hit.hit && hit.hitPoint && (!worldHit || hit.distance <= worldHit.timeOfImpact)) {
                 hitPoint = hit.hitPoint;
                 const dmg = calculateDamage(currentDef, hit.distance, hit.part === 'head');
                 triggerHitMarker(hit.part, dmg);
+                dummies.applyHitFeedback(hit.dummyId!, hit.part);
+                combatVfx.spawnImpactParticles(hitPoint, { x: -rayDir.x, y: -rayDir.y, z: -rayDir.z }, 'flesh');
+                viewmodel.triggerImpact(hitPoint);
+              } else if (worldHit && worldHit.timeOfImpact <= currentDef.range) {
+                hitPoint = rapierRay.pointAt(worldHit.timeOfImpact);
+                decalManager.addBulletHole(hitPoint, worldHit.normal, 'concrete');
+                combatVfx.spawnImpactParticles(hitPoint, worldHit.normal, 'concrete');
                 viewmodel.triggerImpact(hitPoint);
               } else {
                 hitPoint = {
@@ -400,11 +456,24 @@ async function initApp(): Promise<void> {
             };
 
             const hit = dummies.testRay(rayOrigin, rayDir, currentDef.range);
+            const rapierRay = new physics.raw.Ray(
+              { x: rayOrigin.x, y: rayOrigin.y, z: rayOrigin.z },
+              { x: rayDir.x, y: rayDir.y, z: rayDir.z },
+            );
+            const worldHit = physics.world.castRayAndGetNormal(rapierRay, currentDef.range, true);
+
             let hitPoint: Vec3;
-            if (hit.hit && hit.hitPoint) {
+            if (hit.hit && hit.hitPoint && (!worldHit || hit.distance <= worldHit.timeOfImpact)) {
               hitPoint = hit.hitPoint;
               const dmg = calculateDamage(currentDef, hit.distance, hit.part === 'head');
               triggerHitMarker(hit.part, dmg);
+              dummies.applyHitFeedback(hit.dummyId!, hit.part);
+              combatVfx.spawnImpactParticles(hitPoint, { x: -rayDir.x, y: -rayDir.y, z: -rayDir.z }, 'flesh');
+              viewmodel.triggerImpact(hitPoint);
+            } else if (worldHit && worldHit.timeOfImpact <= currentDef.range) {
+              hitPoint = rapierRay.pointAt(worldHit.timeOfImpact);
+              decalManager.addBulletHole(hitPoint, worldHit.normal, 'concrete');
+              combatVfx.spawnImpactParticles(hitPoint, worldHit.normal, 'concrete');
               viewmodel.triggerImpact(hitPoint);
             } else {
               hitPoint = {
@@ -417,6 +486,31 @@ async function initApp(): Promise<void> {
           }
         }
       }
+
+      // --- Grenade Actions & Vitals Step ---
+      if (input.throwGrenade) {
+        grenadeManager.requestThrow();
+      }
+      if (input.cycleGrenade) {
+        grenadeManager.cycleType();
+      }
+
+      const eyePos: Vec3 = {
+        x: currentState.x,
+        y: currentState.y + currentEyeHeight,
+        z: currentState.z,
+      };
+      const isSwapping = weaponState.actionState === 'swapping_out' || weaponState.actionState === 'swapping_in';
+      grenadeManager.stepTick(
+        eyePos,
+        input.yaw,
+        input.pitch,
+        currentState.isSprinting,
+        isSwapping,
+        dummies.getHitTargets(),
+      );
+
+      stepPlayerVitals(playerVitals);
     }
 
     if (isDebug) {
@@ -433,9 +527,18 @@ async function initApp(): Promise<void> {
       : PLAYER_EYE_HEIGHT_STAND;
     currentEyeHeight += (targetEyeHeight - currentEyeHeight) * Math.min(1.0, frameDelta * 14);
 
-    // Apply position & orientation to camera
+    // Update cosmetic combat VFX and grenade visuals
+    combatVfx.update(frameDelta);
+    grenadeManager.update(frameDelta);
+
+    // Apply position & orientation to camera (including trauma screenshake)
     camera.position.set(renderX, renderY + currentEyeHeight, renderZ);
-    camera.rotation.set(inputManager.pitch, inputManager.yaw, 0, 'YXZ');
+    camera.rotation.set(
+      inputManager.pitch + combatVfx.shakePitch,
+      inputManager.yaw + combatVfx.shakeYaw,
+      combatVfx.shakeRoll,
+      'YXZ',
+    );
 
     // Smooth ADS camera FOV zoom
     const activeDef = getCurrentWeaponDef(weaponState);
@@ -451,6 +554,30 @@ async function initApp(): Promise<void> {
     // Update target dummies (locomotion, upper/lower layering, aim tracking, hit feedback, death collapse)
     dummies.update(frameDelta);
     dummies.updateAimTracking(camera.position);
+
+    // Update Health & Spawn Protection HUD overlay
+    if (hudHealthNum) {
+      hudHealthNum.textContent = `${playerVitals.health}`;
+    }
+    if (hudHealthBar) {
+      hudHealthBar.style.width = `${playerVitals.health}%`;
+    }
+    if (hudSpawnProtection) {
+      hudSpawnProtection.style.display = playerVitals.spawnProtectionTicksRemaining > 0 ? 'inline-block' : 'none';
+    }
+    if (damageVignette) {
+      const vignetteIntensity = (1.0 - playerVitals.health / 100) * 0.7;
+      damageVignette.style.boxShadow = `inset 0 0 100px rgba(239, 68, 68, ${vignetteIntensity.toFixed(2)})`;
+    }
+
+    // Update Grenade HUD overlay
+    if (hudGrenadeType) {
+      const def = GRENADE_DEFS[grenadeManager.inventory.selectedType];
+      hudGrenadeType.textContent = def ? def.name : 'FRAG';
+    }
+    if (hudGrenadeCount) {
+      hudGrenadeCount.textContent = `${grenadeManager.inventory.counts[grenadeManager.inventory.selectedType]}`;
+    }
 
     // Update Player Movement HUD overlay
     if (hudPos) {

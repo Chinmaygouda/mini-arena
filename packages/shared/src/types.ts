@@ -24,6 +24,8 @@ export interface PlayerInput {
   ads?: boolean;
   inspect?: boolean;
   weaponSlot?: number; // 0..4
+  throwGrenade?: boolean; // G key
+  cycleGrenade?: boolean; // T key
 }
 
 export interface PlayerSimState {

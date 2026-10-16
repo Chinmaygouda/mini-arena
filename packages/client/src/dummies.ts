@@ -389,6 +389,32 @@ export class TargetDummyManager {
     }
   }
 
+  public getHitTargets(): Array<{ id: string; isDummy: boolean; pos: Vec3; torsoPos: Vec3; headPos: Vec3 }> {
+    return this.dummies
+      .filter((d) => d.state === 'alive')
+      .map((d) => ({
+        id: d.id,
+        isDummy: true,
+        pos: { x: d.group.position.x, y: d.group.position.y, z: d.group.position.z },
+        torsoPos: { x: d.group.position.x, y: d.group.position.y + 0.75, z: d.group.position.z },
+        headPos: { x: d.group.position.x, y: d.group.position.y + 1.55, z: d.group.position.z },
+      }));
+  }
+
+  public applyBlastDamage(dummyId: string, damage: number): void {
+    const dummy = this.dummies.find((d) => d.id === dummyId);
+    if (!dummy || dummy.state !== 'alive') return;
+
+    dummy.hitCount++;
+    dummy.flashTimer = 0.15;
+    dummy.bodyMesh.material = this.flashMatBody;
+    dummy.health = Math.max(0, dummy.health - damage);
+
+    if (dummy.health <= 0) {
+      this.kill(dummyId);
+    }
+  }
+
   /**
    * Per-frame simulation update:
    * 1. Updates locomotion and foot-sliding check

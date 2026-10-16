@@ -1,6 +1,7 @@
 # PROGRESS
 
-## Current phase: 3 — Viewmodel, Animation & Rigging   Status: gate review
+## Current phase: 5 — Maps & Art   Status: in progress
+## Previous phase: 4 — Grenades & VFX   Status: signed off (Gate: docs/gates/phase4.md, Tag: phase4-gate)
 
 ## Verification & Carry-Over Closure Evidence
 
@@ -482,6 +483,29 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 - **Artifacts & Visual Evidence**:
   - First-person hold screenshots: `docs/screenshots/hold_pose_assault_rifle.png`, `hold_pose_pistol.png`, `hold_pose_smg.png`, `hold_pose_shotgun.png`, `hold_pose_sniper.png`.
   - Architecture Decision Record: [ADR 018 in DECISIONS.md](file:///d:/Games/FPS/DECISIONS.md#adr-018-reconciliation-of-target-hold-poses-with-empirical-glb-rig-measurements-ratio-scaled-targets-zero-bone-stretch).
+
+---
+
+### 10. Phase 4 — Grenades & Combat VFX
+- **Status**: Signed Off (Gate Report: `docs/gates/phase4.md`, Tag: `phase4-gate`).
+- **Shared Deterministic Logic**:
+  - M67 Frag (fuse 150 ticks / 2.5s, 18 m/s, 2G gravity, quadratic blast dmg 120-15 over 7m, 75% self-damage).
+  - M84 Flash (fuse 100 ticks / 1.667s, 16m radius, LOS check + view angle decay, up to 240 ticks / 4s whiteout).
+  - M18 Smoke (fuse 120 ticks / 2.0s, 5.5m radius, 600 ticks / 10s duration, continuous ray-sphere volume occlusion `isLineBlockedBySmoke`).
+  - CCD continuous collision detection sphere-cast reflection with friction; 1,000-run bit-identical determinism; thin-wall tunneling immunity.
+  - Vitals & Dummy Target integration: respawn cycle (180 ticks), spawn protection (90 ticks).
+- **Client VFX Systems**:
+  - `DecalManager`: Zero-allocation instanced ring buffers for 128 bullet holes (0.08m) and 32 blast scorch marks (4.5m) with `polygonOffset: true` (`-1, -1`) preventing coplanar Z-fighting.
+  - `CombatVfxManager`: 32 pooled shell casings with tumbling physics and floor bounces; instanced surface particles (metal sparks, concrete dust, wood splinters); camera trauma screen shake ($\text{shake} = \text{trauma}^2$ with harmonic decay).
+  - `GrenadeClientManager`: Pooled 3D grenade models, detonation shockwave/fireball, flashbang whiteout overlay, instanced 48-puff smoke cloud, and `RapierGrenadeWorldAdapter` filtering player capsule.
+- **Verification Evidence**:
+  - `pnpm verify`: 13 test files passing, 115/115 unit tests passing.
+  - `pnpm test:e2e`: 76/76 Playwright E2E tests passing across Chromium and Firefox.
+  - 12 visual screenshots in `docs/screenshots/phase4/` (throw, bounce, scorch decals, flash whiteout, smoke occlusion, muzzle shells across all 5 weapons, decals on surfaces).
+  - Memory: 0 heap allocations per frame / tick in hot path; 0 node leaks on 1,000-iteration teardown.
+  - Performance: **60.00 FPS avg, 59.52 FPS 1% low, 16.70 ms median frame time** under heavy combat.
+- **Decision Record**: [ADR 019 in DECISIONS.md](file:///d:/Games/FPS/DECISIONS.md#adr-019-phase-4-deterministic-grenade-simulation-instanced-decals--pooled-combat-vfx).
+
 
 
 

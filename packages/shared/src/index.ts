@@ -10,6 +10,8 @@ export * from './movement';
 export * from './timestep';
 export * from './rng';
 export * from './weapons';
+export * from './grenades';
+export * from './vitals';
 
 /**
  * Pure deterministic clamping helper.

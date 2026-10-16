@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-16T13:08:46.883Z",
+  "phase": 4,
+  "results": {
+    "grenadeThrowFlight": true,
+    "grenadeBounce": true,
+    "fragBlastDecal": true,
+    "flashbangFront": true,
+    "flashbangBehind": true,
+    "smokeLOSBlocking": true,
+    "muzzleFlashAndShells": true,
+    "bulletHoleDecals": true,
+    "poolExhaustionHandled": true,
+    "disposeTestPassed": true,
+    "fps": {
+      "avgFps": 60.00469310448858,
+      "onePercentLowFps": 59.523809523799216,
+      "medianFrameMs": 16.700000000000728
+    }
+  },
+  "screenshots": [
+    "throw_inflight.png",
+    "grenade_bounce.png",
+    "frag_blast_decal.png",
+    "flash_front_whiteout.png",
+    "flash_behind.png",
+    "smoke_blocking_dummy.png",
+    "muzzle_shells_ak47.png",
+    "muzzle_shells_pistol.png",
+    "muzzle_shells_smg.png",
+    "muzzle_shells_shotgun.png",
+    "muzzle_shells_sniper.png",
+    "decals_surfaces.png"
+  ]
+}
