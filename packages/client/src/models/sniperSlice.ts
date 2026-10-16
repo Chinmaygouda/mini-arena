@@ -118,7 +118,7 @@ export function buildSniperVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
     rot: new THREE.Euler(1.1, 0.15, -0.3),
   };
   const leftForendRest = {
-    pos: new THREE.Vector3(-0.042, -0.048, -0.22),
+    pos: new THREE.Vector3(-0.042, -0.048, -0.10),
     rot: new THREE.Euler(0.2, 0.35, -0.25),
   };
 

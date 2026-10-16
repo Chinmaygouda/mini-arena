@@ -142,7 +142,7 @@ export function createRealAK47VisualDef(model: SplitWeaponMesh): WeaponVisualDef
   };
 
   const leftHandguardRest = {
-    pos: new THREE.Vector3(-0.042, -0.045, -0.22),
+    pos: new THREE.Vector3(-0.042, -0.045, -0.14),
     rot: new THREE.Euler(0.2, 0.4, -0.3),
   };
 

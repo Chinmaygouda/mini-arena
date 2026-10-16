@@ -1,0 +1,317 @@
+{
+  "coordinate_system": "Three.js: +X right, +Y up, -Z forward, origin=eye, metres",
+  "shoulder_R": [
+    0.16,
+    -0.24,
+    0.14
+  ],
+  "shoulder_L": [
+    -0.16,
+    -0.24,
+    0.14
+  ],
+  "l1": 0.32,
+  "l2": 0.3,
+  "pole_R": [
+    0.35,
+    -0.65,
+    0.05
+  ],
+  "pole_L": [
+    -0.35,
+    -0.65,
+    0.05
+  ],
+  "ads_axis_xy": [
+    0.0,
+    -0.045
+  ],
+  "status": "PROPOSED targets, not measured from repo",
+  "weapons": {
+    "assault_rifle": {
+      "name": "Assault Rifle",
+      "key": 1,
+      "model_length_m": 0.87,
+      "butt_z": 0.04,
+      "bore_axis_xy": [
+        0.1,
+        -0.17
+      ],
+      "grip_R_cam": [
+        0.1,
+        -0.255,
+        -0.26
+      ],
+      "grip_L_cam": [
+        0.04,
+        -0.215,
+        -0.38
+      ],
+      "grip_R_gunlocal": {
+        "a": 0.3,
+        "drop": 0.085,
+        "lat": 0.0
+      },
+      "grip_L_gunlocal": {
+        "a": 0.42,
+        "drop": 0.045,
+        "lat": 0.06
+      },
+      "right_arm": {
+        "dist": 0.4048,
+        "reach_pct": 65.3,
+        "elbow_deg": 81.4,
+        "elbow_cam": [
+          0.2356,
+          -0.4561,
+          -0.0835
+        ]
+      },
+      "left_arm": {
+        "dist": 0.5577,
+        "reach_pct": 90.0,
+        "elbow_deg": 128.2,
+        "elbow_cam": [
+          -0.1088,
+          -0.3488,
+          -0.1565
+        ]
+      },
+      "ads_delta": [
+        -0.1,
+        0.125,
+        0.0
+      ],
+      "hold_note": "Stock at shoulder (behind camera, not rendered). Left hand cups handguard from below.",
+      "reload_note": "L hand: handguard -> mag (a0.42, drop0.15) -> pull down/left (drop0.40, lat0.12) -> fresh mag (lat0.18, drop0.45) -> insert -> handguard. Empty: R hand racks charging handle."
+    },
+    "pistol": {
+      "name": "Tactical Pistol",
+      "key": 2,
+      "model_length_m": 0.2,
+      "butt_z": -0.26,
+      "bore_axis_xy": [
+        0.03,
+        -0.12
+      ],
+      "grip_R_cam": [
+        0.03,
+        -0.19,
+        -0.31
+      ],
+      "grip_L_cam": [
+        -0.02,
+        -0.185,
+        -0.32
+      ],
+      "grip_R_gunlocal": {
+        "a": 0.05,
+        "drop": 0.07,
+        "lat": -0.0
+      },
+      "grip_L_gunlocal": {
+        "a": 0.06,
+        "drop": 0.065,
+        "lat": 0.05
+      },
+      "right_arm": {
+        "dist": 0.4711,
+        "reach_pct": 76.0,
+        "elbow_deg": 98.8,
+        "elbow_cam": [
+          0.1741,
+          -0.3919,
+          -0.1413
+        ]
+      },
+      "left_arm": {
+        "dist": 0.484,
+        "reach_pct": 78.1,
+        "elbow_deg": 102.6,
+        "elbow_cam": [
+          -0.1646,
+          -0.3824,
+          -0.1465
+        ]
+      },
+      "ads_delta": [
+        -0.03,
+        0.075,
+        0.0
+      ],
+      "hold_note": "Two-hand isosceles grip. Support hand wraps R fingers from the left, thumbs forward.",
+      "reload_note": "L hand leaves grip -> mag base (drop0.12) -> pull mag down -> fresh mag from belt (lat0.18, drop0.30) -> insert -> return. Slide release on empty."
+    },
+    "smg": {
+      "name": "Rapid SMG",
+      "key": 3,
+      "model_length_m": 0.5,
+      "butt_z": -0.1,
+      "bore_axis_xy": [
+        0.1,
+        -0.17
+      ],
+      "grip_R_cam": [
+        0.1,
+        -0.25,
+        -0.27
+      ],
+      "grip_L_cam": [
+        0.05,
+        -0.21,
+        -0.38
+      ],
+      "grip_R_gunlocal": {
+        "a": 0.17,
+        "drop": 0.08,
+        "lat": 0.0
+      },
+      "grip_L_gunlocal": {
+        "a": 0.28,
+        "drop": 0.04,
+        "lat": 0.05
+      },
+      "right_arm": {
+        "dist": 0.4145,
+        "reach_pct": 66.9,
+        "elbow_deg": 83.8,
+        "elbow_cam": [
+          0.2336,
+          -0.4496,
+          -0.0903
+        ]
+      },
+      "left_arm": {
+        "dist": 0.5616,
+        "reach_pct": 90.6,
+        "elbow_deg": 129.8,
+        "elbow_cam": [
+          -0.101,
+          -0.3427,
+          -0.1573
+        ]
+      },
+      "ads_delta": [
+        -0.1,
+        0.125,
+        0.0
+      ],
+      "hold_note": "Compact hold, elbows tucked. Left hand on front grip / magazine housing.",
+      "reload_note": "L hand: front grip -> mag (a0.20, drop0.14) -> pull down -> fresh mag -> insert -> return. Empty: R hand pulls bolt."
+    },
+    "shotgun": {
+      "name": "Combat Shotgun",
+      "key": 4,
+      "model_length_m": 0.98,
+      "butt_z": 0.06,
+      "bore_axis_xy": [
+        0.1,
+        -0.17
+      ],
+      "grip_R_cam": [
+        0.1,
+        -0.245,
+        -0.28
+      ],
+      "grip_L_cam": [
+        0.05,
+        -0.205,
+        -0.38
+      ],
+      "grip_R_gunlocal": {
+        "a": 0.34,
+        "drop": 0.075,
+        "lat": 0.0
+      },
+      "grip_L_gunlocal": {
+        "a": 0.44,
+        "drop": 0.035,
+        "lat": 0.05
+      },
+      "right_arm": {
+        "dist": 0.4243,
+        "reach_pct": 68.4,
+        "elbow_deg": 86.3,
+        "elbow_cam": [
+          0.2316,
+          -0.4429,
+          -0.0969
+        ]
+      },
+      "left_arm": {
+        "dist": 0.5619,
+        "reach_pct": 90.6,
+        "elbow_deg": 130.0,
+        "elbow_cam": [
+          -0.1006,
+          -0.3397,
+          -0.1582
+        ]
+      },
+      "ads_delta": [
+        -0.1,
+        0.125,
+        0.0
+      ],
+      "hold_note": "Left hand on the pump slide from below. Pump travel 0.08 m rearward.",
+      "reload_note": "Per shell: L hand pump -> belt/ammo (lat0.18, drop0.30) -> loading port (a0.34, drop0.02) -> push shell in -> repeat; loop exits at 6 rounds; final pump stroke."
+    },
+    "sniper": {
+      "name": "Precision Sniper",
+      "key": 5,
+      "model_length_m": 1.1,
+      "butt_z": 0.06,
+      "bore_axis_xy": [
+        0.1,
+        -0.17
+      ],
+      "grip_R_cam": [
+        0.1,
+        -0.25,
+        -0.28
+      ],
+      "grip_L_cam": [
+        0.05,
+        -0.215,
+        -0.38
+      ],
+      "grip_R_gunlocal": {
+        "a": 0.34,
+        "drop": 0.08,
+        "lat": 0.0
+      },
+      "grip_L_gunlocal": {
+        "a": 0.44,
+        "drop": 0.045,
+        "lat": 0.05
+      },
+      "right_arm": {
+        "dist": 0.4244,
+        "reach_pct": 68.4,
+        "elbow_deg": 86.3,
+        "elbow_cam": [
+          0.2318,
+          -0.4455,
+          -0.0945
+        ]
+      },
+      "left_arm": {
+        "dist": 0.5614,
+        "reach_pct": 90.5,
+        "elbow_deg": 129.7,
+        "elbow_cam": [
+          -0.1014,
+          -0.3456,
+          -0.1563
+        ]
+      },
+      "ads_delta": [
+        -0.1,
+        0.125,
+        0.0
+      ],
+      "hold_note": "Left hand under forend. R hand leaves grip to work the bolt at (a0.30, up0.035, lat0.045).",
+      "reload_note": "Bolt cycle (80 ticks): R hand grip -> bolt 0-8 -> lift 8-24 -> pull back 24-44 -> push 44-64 -> lower 64-72 -> back to grip 72-80. Mag reload: L hand to magazine well."
+    }
+  }
+}

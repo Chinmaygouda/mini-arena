@@ -562,3 +562,68 @@ During Phase 3 gate review for the Tactical Pistol, review identified that the A
 - `scripts/test-phase3-motion.mjs`: 8/8 rigid motion tests passed with zero joint separation and bone length error $\le 0.0003\text{ mm}$.
 - `pnpm test:e2e`: 70/70 Playwright tests passed across Chromium and Firefox.
 - All 7 screenshots in `artifacts/` captured with `60 FPS` and `< 1.2 ms CPU` frame time on the diagnostic overlay.
+
+---
+
+## ADR 018: Reconciliation of Target Hold Poses with Empirical GLB Rig Measurements (Ratio-Scaled Targets, Zero Bone Stretch)
+
+**Date**: 2026-10-16  
+**Status**: Accepted
+
+### Context
+`HOLD_POSES.md` and `hold_poses.json` proposed conceptual hold pose targets companion to `weapon_hold_poses_collage.png`. The proposed targets assumed idealized bone lengths ($l_1 = 0.32\text{ m}, l_2 = 0.30\text{ m}$, total reach $0.62\text{ m}$) and a narrow shoulder span ($320\text{ mm}$). Per `HOLD_POSES.md` § Required reconciliation, the actual rig dimensions must be measured directly from `arms_rig.glb`, target positions scaled by the exact reach ratio $r$, bones strictly prevented from stretching, and final calibrated numbers recorded.
+
+### Empirical GLB Rig Measurements
+
+1. **Drillimpact Rig Dimensions (`packages/client/public/models/arms_rig.glb`)**:
+   - Upper arm length ($l_1$, shoulder to elbow): **$0.322236\text{ m}$** ($322.24\text{ mm}$)
+   - Forearm + wrist length ($l_2$, elbow to wrist): **$0.237276\text{ m}$** ($237.28\text{ mm}$)
+   - Total maximum reach ($l_1 + l_2$): **$0.559512\text{ m}$** ($559.51\text{ mm}$)
+   - Right Shoulder ($S_R$ in camera space): $[-0.1970, -0.1491, -0.0267]\text{ m}$
+   - Left Shoulder ($S_L$ in camera space): $[+0.1970, -0.1491, -0.0267]\text{ m}$
+   - Shoulder Span: **$0.3940\text{ m}$** ($394.0\text{ mm}$)
+   - IK Outward Pole Targets (camera space): $P_R = [-0.45, -0.55, -0.15]\text{ m}$, $P_L = [+0.45, -0.55, -0.15]\text{ m}$
+   - Palm Offset Compensation: $\mathbf{o}_{\text{palm}, R} = (+0.00506, +0.03924, +0.00018)\text{ m}$, $\mathbf{o}_{\text{palm}, L} = (-0.00506, +0.03924, +0.00018)\text{ m}$
+
+2. **Reconciliation Reach Scale Ratio**:
+   $$r = \frac{\text{Actual Reach}}{\text{Proposed Reach}} = \frac{0.559512\text{ m}}{0.620000\text{ m}} \approx \mathbf{0.902439}$$
+
+3. **Weapon Model Bounding Dimensions (from GLBs)**:
+   - **Assault Rifle (AK-47)**: $0.119\text{ m} \times 0.287\text{ m} \times 0.880\text{ m}$
+   - **Tactical Pistol**: $0.052\text{ m} \times 0.169\text{ m} \times 0.234\text{ m}$
+   - **Rapid SMG**: $0.068\text{ m} \times 0.235\text{ m} \times 0.518\text{ m}$
+   - **Combat Shotgun**: $0.054\text{ m} \times 0.157\text{ m} \times 0.942\text{ m}$
+   - **Precision Sniper**: $0.098\text{ m} \times 0.260\text{ m} \times 1.206\text{ m}$
+
+### Calibrated First-Person Hold Configurations
+
+| Weapon | Hip Offset (m) | ADS Offset (m) | Right Grip Socket (Gun-Local) | Left Support Socket (Gun-Local) |
+|---|---|---|---|---|
+| **Assault Rifle** (`assault_rifle`) | $(0.13, -0.16, -0.28)$ | $(0.0, -0.085, -0.22)$ | $(0.0, -0.065, +0.045)$ | $(-0.042, -0.045, -0.140)$ |
+| **Tactical Pistol** (`pistol`) | $(0.06, -0.16, -0.42)$ | $(0.0, -0.0694, -0.44)$ | $(+0.012, -0.040, +0.082)$ | $(-0.032, -0.050, +0.075)$ |
+| **Rapid SMG** (`smg`) | $(0.12, -0.15, -0.28)$ | $(0.0, -0.072, -0.22)$ | $(0.0, -0.055, +0.035)$ | $(-0.035, -0.030, -0.150)$ |
+| **Combat Shotgun** (`shotgun`) | $(0.14, -0.16, -0.32)$ | $(0.0, -0.062, -0.24)$ | $(0.0, -0.050, +0.060)$ | $(-0.025, -0.035, -0.220)$ |
+| **Precision Sniper** (`sniper`) | $(0.13, -0.16, -0.28)$ | $(0.0, -0.090, -0.26)$ | $(0.0, -0.045, +0.085)$ | $(-0.042, -0.048, -0.100)$ |
+
+### Acceptance Test Suite Verification Results (`scripts/test-hold-poses-acceptance.mjs`)
+
+| Weapon | Wrist Camera R (m) | Wrist Camera L (m) | Reach R (55-95%) | Reach L (55-95%) | Elbow R (60-150°) | Elbow L (60-150°) | Elbow Downward | Forearm Twist | Palm Dist (mm) | Status |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **Assault Rifle** | $[0.1105, -0.2366, -0.2657]$ | $[0.0818, -0.2389, -0.4256]$ | **71.3%** | **75.9%** | **89.7°** | **97.6°** | True | $0.0^\circ$ | $0.00$ | **PASS** |
+| **Tactical Pistol** | $[0.0654, -0.1937, -0.2995]$ | $[0.0347, -0.2075, -0.3061]$ | **68.1%** | **58.7%** | **84.4°** | **70.0°** | True | $0.0^\circ$ | $0.00$ | **PASS** |
+| **Rapid SMG** | $[0.1020, -0.2321, -0.2858]$ | $[0.0734, -0.2333, -0.3783]$ | **72.3%** | **68.3%** | **91.2°** | **84.7°** | True | $0.0^\circ$ | $0.00$ | **PASS** |
+| **Combat Shotgun** | $[0.1204, -0.2208, -0.2705]$ | $[0.0934, -0.2467, -0.4764]$ | **72.7%** | **84.3%** | **91.9°** | **114.0°** | True | $0.0^\circ$ | $0.00$ | **PASS** |
+| **Precision Sniper** | $[0.1137, -0.2233, -0.2261]$ | $[0.0834, -0.2468, -0.3864]$ | **67.3%** | **69.6%** | **83.1°** | **86.9°** | True | $0.0^\circ$ | $0.00$ | **PASS** |
+
+### Dynamic Motion States Verification (8 States + 5s Full-Auto)
+
+Across all 8 dynamic motion states plus continuous 5s full-auto firing:
+- **Max Upper Arm Length Error**: $0.0003\text{ mm}$ (Budget: $\le 0.1\text{ mm}$) — **Strict Zero Stretch**
+- **Max Forearm Length Error**: $0.0001\text{ mm}$ (Budget: $\le 0.1\text{ mm}$) — **Strict Zero Stretch**
+- **Max Bone Scale Error**: $1.192\times 10^{-7}$ (Budget: $\le 10^{-5}$) — **Strict Rigid Uniform Scale**
+- **Elbow Separation**: $0.00\text{ mm}$ (Rigid hierarchical parent-child joint)
+- **Elbow Flip**: None (elbows strictly remain below shoulder across all states)
+- **NaN / Infinity**: Zero occurrences across 1,000+ continuous evaluated simulation frames
+- **History Independence**: Maximum bone quaternion angular deviation across 300 erratic disturbance frames is **$0.0000\times 10^{-8}\text{ rad}$** (Budget: $< 10^{-6}\text{ rad}$) — **Strictly History Independent**
+- **First-Person Visual Evidence**: Screenshots captured for all 5 weapons in `docs/screenshots/hold_pose_<weapon>.png` confirming natural grip alignment, sleeve clearance, and camera sightlines.
+

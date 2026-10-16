@@ -455,4 +455,33 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
   - Precision Sniper: 45 RPM (1.333 s / 80 ticks) bolt-action cycle lock across swaps.
 - **Safety Gate**: Tactical Pistol verified and approved. No weapon-specific modifications will be made to Rapid SMG, Combat Shotgun, or Precision Sniper until user explicitly gives sign-off.
 
+---
+
+### 9. Five-Weapon Hold Poses Calibration & Acceptance Suite Verification
+- **Status**: Complete & Verified (100% Passed).
+- **Target Spec & GLB Measurement Reconciliation**:
+  - `arms_rig.glb`: Upper arm length $l_1 = 0.322236\text{ m}$, Forearm + wrist length $l_2 = 0.237276\text{ m}$, Maximum reach $l_1 + l_2 = 0.559512\text{ m}$.
+  - Shoulder Positions (camera space): $S_R = [-0.1970, -0.1491, -0.0267]\text{ m}$, $S_L = [+0.1970, -0.1491, -0.0267]\text{ m}$ (span: $0.3940\text{ m}$).
+  - Reconciliation scale ratio: $r = \frac{0.559512\text{ m}}{0.620000\text{ m}} \approx \mathbf{0.902439}$. Zero bone stretching ($l_1, l_2$ held strictly rigid).
+- **In-Engine Acceptance Test Results (`scripts/test-hold-poses-acceptance.mjs`)**:
+  - **Part A: First-Person Static Hold Poses**:
+    - **Assault Rifle**: Reach R = 71.3%, Reach L = 75.9% (Target: 55-95%) | Elbow R = 89.7°, Elbow L = 97.6° (Target: 60-150°) | Elbow Down: True | Twist: 0.0° | Palm Dist: 0.00 mm -> **PASS**
+    - **Tactical Pistol**: Reach R = 68.1%, Reach L = 58.7% (Target: 55-95%) | Elbow R = 84.4°, Elbow L = 70.0° (Target: 60-150°) | Elbow Down: True | Twist: 0.0° | Palm Dist: 0.00 mm -> **PASS**
+    - **Rapid SMG**: Reach R = 72.3%, Reach L = 68.3% (Target: 55-95%) | Elbow R = 91.2°, Elbow L = 84.7° (Target: 60-150°) | Elbow Down: True | Twist: 0.0° | Palm Dist: 0.00 mm -> **PASS**
+    - **Combat Shotgun**: Reach R = 72.7%, Reach L = 84.3% (Target: 55-95%) | Elbow R = 91.9°, Elbow L = 114.0° (Target: 60-150°) | Elbow Down: True | Twist: 0.0° | Palm Dist: 0.00 mm -> **PASS**
+    - **Precision Sniper**: Reach R = 67.3%, Reach L = 69.6% (Target: 55-95%) | Elbow R = 83.1°, Elbow L = 86.9° (Target: 60-150°) | Elbow Down: True | Twist: 0.0° | Palm Dist: 0.00 mm -> **PASS**
+  - **Part B: Dynamic Motion States (8 States + 5s Full-Auto)**:
+    - Sway (60 frames), Recoil (60 frames), Sprint (60 frames), Crouch (60 frames), Jump Landing (60 frames), Swap (100 frames), Inspect (60 frames), Reload (90 frames), Full-Auto (300 frames):
+    - Max Upper Arm Length Error: $0.0003\text{ mm}$ (budget $\le 0.1\text{ mm}$)
+    - Max Forearm Length Error: $0.0001\text{ mm}$ (budget $\le 0.1\text{ mm}$)
+    - Max Bone Scale Error: $1.192\times 10^{-7}$ (budget $\le 10^{-5}$)
+    - Elbow Flipped Above Shoulder: False
+    - Zero NaN / Inf across 1000+ simulation frames -> **PASS**
+  - **Part C: History Independence**:
+    - Multi-axis disturbance with 300 erratic frames: Max Bone Quaternion Deviation = $0.0000\times 10^{-8}\text{ rad}$ (budget $< 10^{-6}\text{ rad}$) -> **PASS**
+- **Artifacts & Visual Evidence**:
+  - First-person hold screenshots: `docs/screenshots/hold_pose_assault_rifle.png`, `hold_pose_pistol.png`, `hold_pose_smg.png`, `hold_pose_shotgun.png`, `hold_pose_sniper.png`.
+  - Architecture Decision Record: [ADR 018 in DECISIONS.md](file:///d:/Games/FPS/DECISIONS.md#adr-018-reconciliation-of-target-hold-poses-with-empirical-glb-rig-measurements-ratio-scaled-targets-zero-bone-stretch).
+
+
 

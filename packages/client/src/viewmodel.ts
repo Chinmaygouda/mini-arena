@@ -61,11 +61,11 @@ export class WeaponViewmodel {
   // Per-weapon tailored hip and ADS eye-alignment offsets
   private weaponOffsets: Record<WeaponId, { hip: THREE.Vector3; ads: THREE.Vector3 }> = {
     assault_rifle: {
-      hip: new THREE.Vector3(0.13, -0.16, -0.32),
+      hip: new THREE.Vector3(0.13, -0.16, -0.28),
       ads: new THREE.Vector3(0.0, -0.085, -0.22), // Centers holographic optic
     },
     pistol: {
-      hip: new THREE.Vector3(0.12, -0.14, -0.32),
+      hip: new THREE.Vector3(0.06, -0.16, -0.42),
       ads: new THREE.Vector3(0.0, -0.0694, -0.44), // Dead-center iron sights alignment with extended arms reach
     },
     smg: {
@@ -77,7 +77,7 @@ export class WeaponViewmodel {
       ads: new THREE.Vector3(0.0, -0.062, -0.24), // Centers front brass bead
     },
     sniper: {
-      hip: new THREE.Vector3(0.13, -0.16, -0.34),
+      hip: new THREE.Vector3(0.13, -0.16, -0.28),
       ads: new THREE.Vector3(0.0, -0.09, -0.26), // Optical scope
     },
   };
