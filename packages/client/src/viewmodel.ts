@@ -65,8 +65,8 @@ export class WeaponViewmodel {
       ads: new THREE.Vector3(0.0, -0.085, -0.22), // Centers holographic optic
     },
     pistol: {
-      hip: new THREE.Vector3(0.11, -0.14, -0.26),
-      ads: new THREE.Vector3(0.0, -0.045, -0.28), // Centers iron sights at comfortable extended arm distance
+      hip: new THREE.Vector3(0.12, -0.14, -0.32),
+      ads: new THREE.Vector3(0.0, -0.0206, -0.34), // Dead-center iron sights alignment with optical bore axis
     },
     smg: {
       hip: new THREE.Vector3(0.12, -0.15, -0.28),

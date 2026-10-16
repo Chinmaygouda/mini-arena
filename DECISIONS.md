@@ -470,3 +470,38 @@ Phase 3 viewmodel rigging required strict adherence to authentic game animation 
     - NaN / Inf checks: clean (`false`).
 - **Playwright Multi-Browser E2E Suite**: 70/70 passing across Chromium and Firefox.
 - **Evidence Screenshots**: 25 first-person screenshots (5 weapons $\times$ 5 poses) captured with synchronized HUD action state text in `docs/screenshots/phase3/`.
+
+---
+
+## ADR 016: Tactical Pistol Visual Defect Correction & ADS Bore-Sight Alignment
+
+**Date**: 2026-10-16  
+**Status**: Accepted
+
+### Context
+During Phase 3 visual acceptance review, the first-person view of the Tactical Pistol exhibited severe visual defects:
+1. Fingers appeared disproportionately large and formed bloated, oversized blocks obscuring the pistol slide and frame.
+2. In ADS view, the player looked over the top of the slide, and the optical bore-sight was misaligned by $24.4\text{ mm}$ below the center of the screen.
+
+### Root Cause Analysis
+1. **Pitch Inversion (Primary Defect)**: In `pistolDef.ts` and `pistolSlice.ts`, socket rotations were defined with positive Euler X angles (`rightGripRest: Euler(1.12, 0.14, -0.32)` and `leftSupportRest: Euler(0.65, 0.30, -0.32)`). Because Euler X was $+1.12\text{ rad}$ ($+64^\circ$) instead of negative ($-\pi/2 \approx -1.74\text{ rad}$ in `'YXZ'`), the hand bone hierarchy was rotated upside down in pitch:
+   - Pinky knuckles were pitched upward to $Y = +24.9\text{ mm}$ (higher than the rear sight notch at $Y = +20.69\text{ mm}$).
+   - The knuckles were thrust directly toward the camera lens at $Z \approx -20\text{ cm}$, creating severe perspective foreshortening that made the fingers appear as giant, bloated blocks.
+2. **Z-Socket Dislocation**: The pistol grip backstrap sits between $Z = +60\text{ mm}$ and $+116\text{ mm}$. The original socket had $Z = +0.038\text{ m}$ ($38\text{ mm}$), placing the hand forward into the trigger guard.
+3. **ADS Bore-Sight Misalignment**: In `viewmodel.ts`, `weaponOffsets.pistol.ads` was $(0.0, -0.045, -0.28)$. The rear sight notch and front sight post sit at $Y = +0.0206\text{ m}$. Setting $Y = -0.045$ placed the sightline $24.4\text{ mm}$ below the optical center.
+
+### Decisions
+1. **Calibrated Sockets in `pistolDef.ts` and `pistolSlice.ts`**:
+   - `rightGripRest`: `pos: Vector3(0.012, -0.040, 0.082)`, `rot: Euler(-1.74, 0.08, -0.12, 'YXZ')`.
+   - `leftSupportRest`: `pos: Vector3(-0.014, -0.044, 0.076)`, `rot: Euler(-1.68, -0.10, 0.12, 'YXZ')`.
+2. **Calibrated Viewmodel Offsets in `viewmodel.ts`**:
+   - `weaponOffsets.pistol.hip`: `Vector3(0.12, -0.14, -0.32)` (lowered ready position with clean framing).
+   - `weaponOffsets.pistol.ads`: `Vector3(0.0, -0.0206, -0.34)` (dead-center iron sight alignment with front dot and rear notch at $(0.0000, \pm 0.0001)$ optical axis).
+3. **Dedicated In-Engine Verification Harness**:
+   - `scripts/capture-pistol-screenshots.mjs` updated to verify 7 specific conditions: hip framing, ADS bore alignment, right hand high beavertail / indexed finger contact, left palm / support finger contact with $18.93\text{ mm}$ slide clearance, tactical reload mid-stroke, post-reload return to hip pose, and empty reload slide lock & release.
+
+### Verification
+- **Sight Picture Alignment**: Rear notch at $(0.0000, +0.0001, -0.2585)$, front sight post at $(0.0000, -0.0001, -0.4257)$ — aligned to $< 0.1\text{ mm}$.
+- **Empirical Clearance**: Left thumb slide clearance is $18.93\text{ mm}$ ($> 5.0\text{ mm}$ requirement); maximum finger joint height is $-3.89\text{ mm}$ ($> 8.8\text{ mm}$ below slide rail at $+5.0\text{ mm}$).
+- **Rigid Motion Suite (`scripts/test-phase3-motion.mjs`)**: 8/8 tests passed with 100% rigidity and 0 mm elbow separation.
+- **Verification Suite**: `pnpm verify` (0 lint/typecheck errors, 104 vitest passed, bundle built) and `pnpm test:e2e` (70/70 Playwright tests passed across Chromium and Firefox).

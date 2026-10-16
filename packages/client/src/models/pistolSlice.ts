@@ -128,14 +128,14 @@ export function parseRealPistolModel(gltfScene: THREE.Group): SplitWeaponMesh {
  * Builds the complete procedural + keyframed WeaponVisualDef for the real Pistol.
  */
 export function buildPistolVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
-  // Grip sockets (calibrated to real pistol model mesh)
+  // Grip sockets calibrated to natural two-handed thumbs-forward pistol grip
   const rightGripRest = {
-    pos: new THREE.Vector3(0.0055, -0.040, 0.038),
-    rot: new THREE.Euler(1.12, 0.14, -0.32),
+    pos: new THREE.Vector3(0.012, -0.040, 0.082),
+    rot: new THREE.Euler(-1.74, 0.08, -0.12, 'YXZ'),
   };
   const leftGripRest = {
-    pos: new THREE.Vector3(-0.012, -0.048, 0.032),
-    rot: new THREE.Euler(0.65, 0.30, -0.32),
+    pos: new THREE.Vector3(-0.014, -0.044, 0.076),
+    rot: new THREE.Euler(-1.68, -0.10, 0.12, 'YXZ'),
   };
 
   // 1. IDLE CLIP

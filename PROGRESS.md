@@ -385,16 +385,29 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
     | Left thumb03L               |         59.20 mm |            6.91 mm |         -52.29 mm |
     |-----------------------------|-------------------|---------------------|--------------------|
     | Left Thumb Slide Clearance  |         59.25 mm |           16.59 mm | Safe (>5mm)        |
-    ========================================================================================
-    ```
-  - **Authoritative Reload Timing Synchronization**:
-    - Tactical reload: $1.6\text{s}$ (96 ticks, integer commit at tick 54 = $56.25\%$).
-    - Empty reload: $2.1\text{s}$ (126 ticks, integer commit at tick 66 = $52.38\%$, thumb slide release at $78\%$).
+  - **Visual Defect Root Cause Diagnosis & Calibration**:
+    - **Pitch Inversion Corrected**: In `pistolDef.ts` and `pistolSlice.ts`, socket rotations had positive Euler X angles (`+1.12` and `+0.65` rad) instead of negative angles (`-1.74` and `-1.68` rad in `'YXZ'`), which flipped the hand bone hierarchy upside down, thrusting the pinky knuckles higher than the rear sight at $Y = +24.9\text{ mm}$ and causing perspective bloat in front of the camera lens.
+    - **Z-Socket Translation**: Sockets shifted to $Z = +0.082\text{ m}$ (right) and $+0.076\text{ m}$ (left) matching the real pistol grip frame ($Z = +0.060\text{ m}$ to $+0.116\text{ m}$).
+    - **ADS Optical Bore-Sight Alignment**: Set `weaponOffsets.pistol.ads` to `(0.0, -0.0206, -0.34)` in `viewmodel.ts`. Rear sight notch and glowing cyan front sight post align dead-center with the screen center to within $0.1\text{ mm}$, providing an unobstructed sight picture.
+  - **Empirical Contact Measurements**:
+    - Right Palm-to-Socket: **$0.00\text{ mm}$**
+    - Left Palm-to-Socket: **$0.00\text{ mm}$**
+    - Right Thumb to frame flat: **$2.17\text{ mm}$**
+    - Left Thumb slide clearance: **$18.93\text{ mm}$** (safe $> 5.0\text{ mm}$)
+    - Maximum finger joint height: **$-3.89\text{ mm}$** (below slide rail at $Y = +5.0\text{ mm}$)
+    - Slide penetration: **$0.00\text{ mm}$ (CLEAR)**
   - **Verification & Test Results**:
-    - `pnpm verify`: 0 lint errors/warnings, 0 typecheck errors, 5/5 purity passing, 104/104 unit tests passing, production bundle built in 494ms.
-    - Full rigid motion test suite ([scripts/test-phase3-motion.mjs](file:///d:/Games/FPS/scripts/test-phase3-motion.mjs)): 8/8 tests passed with 100% bone rigidity and 0 mm elbow separation.
-    - Playwright multi-browser test suite: 46/46 passed across Chromium and Firefox.
-    - 4 in-engine first-person screenshots captured in `artifacts/`: `tactical_pistol_hip.png`, `tactical_pistol_ads.png`, `tactical_pistol_reload.png`, `tactical_pistol_empty_reload_slide.png`.
+    - `pnpm verify`: 0 lint errors/warnings, 0 typecheck errors, 5/5 purity passing, 104/104 unit tests passing, production bundle built cleanly in 515ms.
+    - Full rigid motion test suite ([scripts/test-phase3-motion.mjs](file:///d:/Games/FPS/scripts/test-phase3-motion.mjs)): 8/8 tests passed with 100% bone rigidity, 0 mm elbow separation, and max bone length error of $0.0003\text{ mm}$.
+    - Playwright multi-browser test suite (`pnpm test:e2e`): 70/70 passed across Chromium and Firefox.
+    - 7 in-engine verification screenshots captured in `artifacts/`:
+      1. `artifacts/tactical_pistol_hip.png`: Lowered ready framing with two-handed grip.
+      2. `artifacts/tactical_pistol_ads.png`: Unobstructed sight picture with centered rear notch and front post.
+      3. `artifacts/tactical_pistol_right_contact.png`: Close-up of high beavertail seat, frontstrap finger wrap, and indexed trigger finger.
+      4. `artifacts/tactical_pistol_left_contact.png`: Close-up of left palm bedded on grip panel, support fingers wrapped, and thumb forward with $18.9\text{ mm}$ slide clearance.
+      5. `artifacts/tactical_pistol_reload.png`: Mid-reload frame with magazine extracted and left hand handling reload.
+      6. `artifacts/tactical_pistol_post_reload.png`: Post-reload return to hip-fire rest pose.
+      7. `artifacts/tactical_pistol_empty_reload_slide.png`: Empty reload frame with racked slide, inserted mag, and thumb slide release.
 
 
 
