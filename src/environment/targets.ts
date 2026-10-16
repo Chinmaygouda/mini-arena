@@ -200,6 +200,19 @@ export class TargetManager {
     const intersects = this.raycaster.intersectObjects(this.scene.children, true);
 
     for (const hit of intersects) {
+      // 1. NEVER collide with player's own viewmodel, weapon geometry, arms, or anything closer than 1.0m
+      if (hit.distance < 1.0) continue;
+
+      // 2. Ignore FX objects, tracers, sparks, floating text sprites
+      if (
+        hit.object.userData?.ignoreRaycast ||
+        hit.object.userData?.isViewmodel ||
+        (hit.object as unknown as { isSprite?: boolean }).isSprite ||
+        hit.object.type === 'Sprite'
+      ) {
+        continue;
+      }
+
       const obj = hit.object as unknown as { isTarget?: boolean; isHead?: boolean; isBarrel?: boolean };
 
       // Check Reactive Target Hit
@@ -208,7 +221,7 @@ export class TargetManager {
         const dmg = Math.round(baseDamage * (isCrit ? critMultiplier : 1.0));
         sound.playTargetHit(isCrit);
 
-        // Find associated target
+        // Find associated target and trigger physical hinged swing
         for (const target of this.reactiveTargets) {
           if (target.group.getObjectById(hit.object.id)) {
             target.pitch = Math.PI * 0.45; // Knock back
@@ -245,7 +258,7 @@ export class TargetManager {
         }
       }
 
-      // Hit general world (ground/walls)
+      // Hit general world (ground/walls/berms)
       if (hit.point) {
         this.spawnSparks(hit.point, hit.face?.normal || new THREE.Vector3(0, 1, 0), 0xddccaa);
         return { hit: true, point: hit.point, damage: 0, isCrit: false, targetType: 'world' };

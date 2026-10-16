@@ -160,6 +160,7 @@ class FPSApp {
     const dist = dir.length();
     const tracerGeo = new THREE.CylinderGeometry(0.006, 0.006, Math.min(dist, 1.8), 6);
     const tracerMesh = new THREE.Mesh(tracerGeo, this.tracerMaterial);
+    tracerMesh.userData.ignoreRaycast = true;
 
     tracerMesh.position.copy(start).add(dir.clone().multiplyScalar(0.2));
     tracerMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());

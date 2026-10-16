@@ -67,10 +67,21 @@ export class WeaponManager {
     this.scene = scene;
     this.camera = camera;
     this.rootGroup = new THREE.Group();
+    this.rootGroup.userData.isViewmodel = true;
+    this.rootGroup.userData.ignoreRaycast = true;
     this.scene.add(this.rootGroup);
 
     this.ak47 = createAK47Model();
     this.pistol = createPistolModel();
+
+    this.ak47.root.traverse((child) => {
+      child.userData.isViewmodel = true;
+      child.userData.ignoreRaycast = true;
+    });
+    this.pistol.root.traverse((child) => {
+      child.userData.isViewmodel = true;
+      child.userData.ignoreRaycast = true;
+    });
 
     this.rootGroup.add(this.ak47.root);
     this.rootGroup.add(this.pistol.root);
