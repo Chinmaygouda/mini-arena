@@ -93,9 +93,9 @@ export const WEAPON_REGISTRY: Record<WeaponId, WeaponDef> = {
     // Transforms
     hipPosition: [0.18, -0.2, -0.4],
     hipRotation: [0, 0, 0],
-    adsPosition: [0.0, -0.062, -0.28],
+    adsPosition: [0.0, -0.042, -0.38],
     adsRotation: [0, 0, 0],
-    adsFov: 58,
+    adsFov: 62,
   },
   smg: {
     id: 'smg',

@@ -50,6 +50,10 @@ class FPSApp {
     vmFrontFill.position.set(-0.5, 0.5, -0.6);
     this.camera.add(vmFrontFill);
 
+    const vmEyeLight = new THREE.PointLight(0xfffaed, 0.9, 1.8, 1.2);
+    vmEyeLight.position.set(0, 0.08, -0.12);
+    this.camera.add(vmEyeLight);
+
     this.scene.add(this.camera);
 
     this.renderer = new THREE.WebGLRenderer({

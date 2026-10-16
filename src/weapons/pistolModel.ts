@@ -1,5 +1,6 @@
 // src/weapons/pistolModel.ts
-// Tactical Combat Pistol (M9 / Cyber 9mm) with blowback slide and articulated two-handed grip
+// Tactical Combat Pistol (M9 / 9mm Tactical) with blowback slide,
+// open U-notch tritium sights, ergonomic grip, and articulated arms.
 
 import * as THREE from 'three';
 
@@ -22,29 +23,29 @@ export function createPistolModel(): PistolComponents {
   const gunMeshGroup = new THREE.Group();
   root.add(gunMeshGroup);
 
-  // Materials
+  // Materials: Tactical Graphite, Anodized Titanium, and Textured Polymer
   const frameMat = new THREE.MeshStandardMaterial({
-    color: 0x32383e,
-    metalness: 0.7,
-    roughness: 0.35,
+    color: 0x3e454d,
+    metalness: 0.72,
+    roughness: 0.38,
   });
 
   const slideMat = new THREE.MeshStandardMaterial({
-    color: 0x22272d,
-    metalness: 0.95,
-    roughness: 0.22,
+    color: 0x4a525b,
+    metalness: 0.82,
+    roughness: 0.28,
   });
 
   const barrelMat = new THREE.MeshStandardMaterial({
-    color: 0x485058,
-    metalness: 0.96,
-    roughness: 0.18,
+    color: 0x5e6874,
+    metalness: 0.92,
+    roughness: 0.20,
   });
 
   const gripMat = new THREE.MeshStandardMaterial({
-    color: 0x111315,
+    color: 0x22272d,
     roughness: 0.85,
-    metalness: 0.1,
+    metalness: 0.12,
   });
 
   const tritiumGlowMat = new THREE.MeshBasicMaterial({
@@ -54,133 +55,197 @@ export function createPistolModel(): PistolComponents {
   const gloveMat = new THREE.MeshStandardMaterial({
     color: 0x1e242b,
     roughness: 0.85,
-    metalness: 0.1,
+    metalness: 0.10,
   });
 
   const sleeveMat = new THREE.MeshStandardMaterial({
-    color: 0x11161d,
-    roughness: 0.9,
+    color: 0x272d35,
+    roughness: 0.88,
     metalness: 0.05,
   });
 
-  // 1. Lower Polymer Frame
-  const frame = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.045, 0.22), frameMat);
-  frame.position.set(0, 0, 0);
+  // 1. Lower Tactical Polymer Frame
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.030, 0.20), frameMat);
+  frame.position.set(0, -0.005, 0);
   frame.castShadow = true;
   gunMeshGroup.add(frame);
 
+  // Accessory Under-barrel Rail
+  const underRail = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.006, 0.08), frameMat);
+  underRail.position.set(0, -0.022, -0.05);
+  gunMeshGroup.add(underRail);
+
   // Ergonomic Pistol Grip
-  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.135, 0.058), gripMat);
-  grip.position.set(0, -0.075, 0.06);
-  grip.rotation.x = 0.38;
+  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.030, 0.125, 0.052), gripMat);
+  grip.position.set(0, -0.075, 0.055);
+  grip.rotation.x = 0.36;
   grip.castShadow = true;
   gunMeshGroup.add(grip);
 
+  // Grip Texture Ribs
+  for (let i = 0; i < 4; i++) {
+    const rib = new THREE.Mesh(
+      new THREE.BoxGeometry(0.032, 0.005, 0.036),
+      new THREE.MeshStandardMaterial({ color: 0x161a1e, roughness: 0.95 })
+    );
+    rib.position.set(0, -0.055 - i * 0.016, 0.062 + i * 0.006);
+    rib.rotation.x = 0.36;
+    gunMeshGroup.add(rib);
+  }
+
   // Trigger Guard
-  const triggerGuard = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.04, 0.065), frameMat);
-  triggerGuard.position.set(0, -0.04, 0.02);
+  const triggerGuard = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.032, 0.055), frameMat);
+  triggerGuard.position.set(0, -0.035, 0.015);
   gunMeshGroup.add(triggerGuard);
 
-  const trigger = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.022, 0.012), frameMat);
-  trigger.position.set(0, -0.036, 0.018);
+  const trigger = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.018, 0.010), slideMat);
+  trigger.position.set(0, -0.032, 0.014);
   trigger.rotation.x = 0.25;
   gunMeshGroup.add(trigger);
 
-  // Fixed Internal Barrel
-  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.18, 12), barrelMat);
+  // Fixed Internal Match Barrel
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.0085, 0.0085, 0.19, 12), barrelMat);
   barrel.rotation.x = Math.PI / 2;
-  barrel.position.set(0, 0.032, -0.08);
+  barrel.position.set(0, 0.022, -0.06);
   gunMeshGroup.add(barrel);
 
   // 2. Reciprocating Blowback Slide
   const slideGroup = new THREE.Group();
-  slideGroup.position.set(0, 0.035, 0);
+  slideGroup.position.set(0, 0.022, 0);
 
-  const slideBody = new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.042, 0.23), slideMat);
+  // Sleek M9 Combat Slide
+  const slideBody = new THREE.Mesh(new THREE.BoxGeometry(0.030, 0.025, 0.21), slideMat);
   slideBody.position.set(0, 0, 0);
   slideBody.castShadow = true;
   slideGroup.add(slideBody);
 
-  // Rear Slide Serrations
-  const serrationL = new THREE.Mesh(new THREE.BoxGeometry(0.003, 0.03, 0.055), barrelMat);
-  serrationL.position.set(-0.022, 0, 0.06);
-  const serrationR = new THREE.Mesh(new THREE.BoxGeometry(0.003, 0.03, 0.055), barrelMat);
-  serrationR.position.set(0.022, 0, 0.06);
-  slideGroup.add(serrationL);
-  slideGroup.add(serrationR);
+  // Slide Chamfers / Angled Top Shoulders
+  const chamferL = new THREE.Mesh(new THREE.BoxGeometry(0.005, 0.005, 0.20), frameMat);
+  chamferL.position.set(-0.013, 0.011, 0);
+  chamferL.rotation.z = Math.PI / 4;
+  slideGroup.add(chamferL);
 
-  // Front Sight with Green Tritium Dot
-  const frontSightPost = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.014, 0.012), slideMat);
-  frontSightPost.position.set(0, 0.026, -0.1);
-  const frontDot = new THREE.Mesh(new THREE.SphereGeometry(0.002, 8, 8), tritiumGlowMat);
-  frontDot.position.set(0, 0.027, -0.093);
-  slideGroup.add(frontSightPost);
-  slideGroup.add(frontDot);
+  const chamferR = new THREE.Mesh(new THREE.BoxGeometry(0.005, 0.005, 0.20), frameMat);
+  chamferR.position.set(0.013, 0.011, 0);
+  chamferR.rotation.z = -Math.PI / 4;
+  slideGroup.add(chamferR);
 
-  // Rear Notched Sight with 2 Green Tritium Dots
-  const rearSightPost = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.014, 0.012), slideMat);
-  rearSightPost.position.set(0, 0.026, 0.095);
-  const rearDotL = new THREE.Mesh(new THREE.SphereGeometry(0.002, 8, 8), tritiumGlowMat);
-  rearDotL.position.set(-0.008, 0.027, 0.09);
-  const rearDotR = new THREE.Mesh(new THREE.SphereGeometry(0.002, 8, 8), tritiumGlowMat);
-  rearDotR.position.set(0.008, 0.027, 0.09);
-  slideGroup.add(rearSightPost);
+  // Rear Slide Cocking Serrations
+  for (let z = 0.045; z <= 0.085; z += 0.010) {
+    const serL = new THREE.Mesh(new THREE.BoxGeometry(0.003, 0.018, 0.004), barrelMat);
+    serL.position.set(-0.015, 0, z);
+    slideGroup.add(serL);
+
+    const serR = new THREE.Mesh(new THREE.BoxGeometry(0.003, 0.018, 0.004), barrelMat);
+    serR.position.set(0.015, 0, z);
+    slideGroup.add(serR);
+  }
+
+  // Ejection Port Cutout on Right
+  const ejectCutout = new THREE.Mesh(
+    new THREE.BoxGeometry(0.006, 0.012, 0.042),
+    new THREE.MeshStandardMaterial({ color: 0x181c20, roughness: 0.9 })
+  );
+  ejectCutout.position.set(0.013, 0.006, -0.01);
+  slideGroup.add(ejectCutout);
+
+  // -------------------------------------------------------------
+  // 3. Low-Profile Open U-Notch & Tritium Sights
+  // -------------------------------------------------------------
+  // Rear Sight: Dual Wing Blades with Wide Center Notch
+  const rearSightLeftWing = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.012, 0.008), slideMat);
+  rearSightLeftWing.position.set(-0.010, 0.0185, 0.092);
+  slideGroup.add(rearSightLeftWing);
+
+  const rearSightRightWing = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.012, 0.008), slideMat);
+  rearSightRightWing.position.set(0.010, 0.0185, 0.092);
+  slideGroup.add(rearSightRightWing);
+
+  const rearSightBase = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.003, 0.008), slideMat);
+  rearSightBase.position.set(0, 0.0135, 0.092);
+  slideGroup.add(rearSightBase);
+
+  // Rear Glowing Tritium Guide Dots (Left & Right)
+  const rearDotL = new THREE.Mesh(new THREE.SphereGeometry(0.0018, 8, 8), tritiumGlowMat);
+  rearDotL.position.set(-0.010, 0.020, 0.086);
   slideGroup.add(rearDotL);
+
+  const rearDotR = new THREE.Mesh(new THREE.SphereGeometry(0.0018, 8, 8), tritiumGlowMat);
+  rearDotR.position.set(0.010, 0.020, 0.086);
   slideGroup.add(rearDotR);
+
+  // Front Sight Post (Narrow centered blade with green dot)
+  const frontSightPost = new THREE.Mesh(new THREE.BoxGeometry(0.0035, 0.012, 0.008), slideMat);
+  frontSightPost.position.set(0, 0.0185, -0.092);
+  slideGroup.add(frontSightPost);
+
+  const frontDot = new THREE.Mesh(new THREE.SphereGeometry(0.0022, 8, 8), tritiumGlowMat);
+  frontDot.position.set(0, 0.020, -0.086);
+  slideGroup.add(frontDot);
 
   gunMeshGroup.add(slideGroup);
 
-  // 3. Drop Magazine
+  // 4. Drop Magazine
   const magazineGroup = new THREE.Group();
-  magazineGroup.position.set(0, -0.075, 0.06);
+  magazineGroup.position.set(0, -0.075, 0.015);
 
-  const magBody = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.12, 0.045), barrelMat);
-  magBody.position.set(0, -0.03, 0);
-  magBody.rotation.x = 0.38;
+  const magBody = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.11, 0.040), barrelMat);
+  magBody.position.set(0, -0.02, 0);
+  magBody.rotation.x = 0.36;
   magazineGroup.add(magBody);
 
-  const magBaseplate = new THREE.Mesh(new THREE.BoxGeometry(0.034, 0.012, 0.054), frameMat);
-  magBaseplate.position.set(0, -0.088, -0.024);
-  magBaseplate.rotation.x = 0.38;
+  const magBaseplate = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.010, 0.046), frameMat);
+  magBaseplate.position.set(0, -0.076, -0.018);
+  magBaseplate.rotation.x = 0.36;
   magazineGroup.add(magBaseplate);
 
   gunMeshGroup.add(magazineGroup);
 
-  // 4. Two-Handed Tactical Grip Arms
+  // 5. Two-Handed Tactical Grip Arms (Extended Combat Posture)
+  // Right Arm (Primary Firing Hand)
   const rightArmGroup = new THREE.Group();
-  rightArmGroup.position.set(0.08, -0.14, 0.15);
-  const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.058, 0.07, 0.08), gloveMat);
-  rightHand.position.set(-0.08, 0.065, -0.08);
-  rightHand.rotation.set(0.35, -0.1, 0.1);
+  rightArmGroup.position.set(0, 0, 0);
+
+  const rightHand = new THREE.Mesh(new THREE.BoxGeometry(0.052, 0.065, 0.072), gloveMat);
+  rightHand.position.set(0, -0.075, 0.065);
+  rightHand.rotation.set(0.36, 0, 0);
   rightArmGroup.add(rightHand);
 
-  const rightForearm = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.3, 8), sleeveMat);
-  rightForearm.position.set(-0.01, -0.05, 0.08);
-  rightForearm.rotation.set(-0.7, 0.2, -0.3);
+  // Forearm extending smoothly off-screen
+  const rightForearm = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.044, 0.056, 0.36, 10),
+    sleeveMat
+  );
+  rightForearm.position.set(0.08, -0.22, 0.22);
+  rightForearm.rotation.set(-0.85, 0.18, -0.35);
   rightArmGroup.add(rightForearm);
   gunMeshGroup.add(rightArmGroup);
 
-  // Left Hand (Supporting Cup Grip)
+  // Left Arm (Tactical Supporting Cup Grip)
   const leftArmGroup = new THREE.Group();
-  leftArmGroup.position.set(-0.08, -0.16, 0.12);
-  const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.058, 0.065, 0.08), gloveMat);
-  leftHand.position.set(0.06, 0.085, -0.06);
-  leftHand.rotation.set(0.2, 0.3, -0.2);
+  leftArmGroup.position.set(0, 0, 0);
+
+  const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.054, 0.060, 0.068), gloveMat);
+  leftHand.position.set(-0.025, -0.082, 0.065);
+  leftHand.rotation.set(0.28, 0.22, -0.20);
   leftArmGroup.add(leftHand);
 
-  const leftForearm = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.32, 8), sleeveMat);
-  leftForearm.position.set(-0.01, -0.06, 0.08);
-  leftForearm.rotation.set(-0.7, -0.2, 0.3);
+  const leftForearm = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.044, 0.056, 0.36, 10),
+    sleeveMat
+  );
+  leftForearm.position.set(-0.10, -0.23, 0.22);
+  leftForearm.rotation.set(-0.85, -0.18, 0.35);
   leftArmGroup.add(leftForearm);
   gunMeshGroup.add(leftArmGroup);
 
-  // 5. Muzzle Flash & Light
+  // 6. Muzzle Flash & Light
   const muzzleFlashGroup = new THREE.Group();
-  muzzleFlashGroup.position.set(0, 0.035, -0.19);
+  muzzleFlashGroup.position.set(0, 0.022, -0.17);
   muzzleFlashGroup.visible = false;
 
   const flash = new THREE.Mesh(
-    new THREE.OctahedronGeometry(0.045, 0),
+    new THREE.OctahedronGeometry(0.040, 0),
     new THREE.MeshBasicMaterial({ color: 0xfff0bb, transparent: true, opacity: 0.95 })
   );
   muzzleFlashGroup.add(flash);
@@ -189,7 +254,7 @@ export function createPistolModel(): PistolComponents {
   muzzleFlashGroup.add(muzzleLight);
   gunMeshGroup.add(muzzleFlashGroup);
 
-  const ejectionPoint = new THREE.Vector3(0.02, 0.04, 0.02);
+  const ejectionPoint = new THREE.Vector3(0.016, 0.025, 0.01);
 
   return {
     root,

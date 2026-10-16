@@ -154,7 +154,7 @@ export class WeaponManager {
     this.ak47.leftArmGroup.rotation.set(0, 0, 0);
 
     this.pistol.magazineGroup.position.set(0, -0.075, 0.015);
-    this.pistol.slideGroup.position.set(0, 0.038, 0);
+    this.pistol.slideGroup.position.set(0, 0.022, 0);
 
     this.smg.magazineGroup.position.set(0, -0.06, -0.06);
     this.smg.magazineGroup.rotation.set(0, 0, 0);
@@ -696,7 +696,7 @@ export class WeaponManager {
         this.ak47.leftArmGroup.rotation.set(0, 0, 0);
 
         this.pistol.magazineGroup.position.set(0, -0.075, 0.015);
-        this.pistol.slideGroup.position.set(0, 0.038, 0);
+        this.pistol.slideGroup.position.set(0, 0.022, 0);
 
         this.smg.magazineGroup.position.set(0, -0.06, -0.06);
         this.smg.magazineGroup.rotation.set(0, 0, 0);
