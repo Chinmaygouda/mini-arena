@@ -144,20 +144,28 @@ class FPSApp {
         this.weaponManager.switchWeapon('ak47');
       } else if (e.code === 'Digit2') {
         this.weaponManager.switchWeapon('pistol');
+      } else if (e.code === 'Digit3') {
+        this.weaponManager.switchWeapon('smg');
       } else if (e.code === 'KeyQ') {
         this.weaponManager.toggleADS();
       } else if (e.code === 'KeyV') {
         this.weaponManager.triggerInspect();
+      } else if (e.code === 'KeyT') {
+        this.hud.toggleTuning(this.weaponManager.currentDef);
       }
     });
 
     // Mouse wheel weapon switch
+    const weapons: Array<'ak47' | 'pistol' | 'smg'> = ['ak47', 'pistol', 'smg'];
     window.addEventListener('wheel', (e: WheelEvent) => {
       if (!this.controls.isLocked && !this.hud.isDismissed) return;
+      const currentIndex = weapons.indexOf(this.weaponManager.state.currentWeaponId);
       if (e.deltaY > 0) {
-        this.weaponManager.switchWeapon('pistol');
+        const nextIndex = (currentIndex + 1) % weapons.length;
+        this.weaponManager.switchWeapon(weapons[nextIndex]);
       } else if (e.deltaY < 0) {
-        this.weaponManager.switchWeapon('ak47');
+        const prevIndex = (currentIndex - 1 + weapons.length) % weapons.length;
+        this.weaponManager.switchWeapon(weapons[prevIndex]);
       }
     });
   }

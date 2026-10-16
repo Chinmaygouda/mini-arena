@@ -4,6 +4,8 @@
 class SoundManager {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
+  private activeVoices: Array<{ gain: GainNode; stop: () => void; endTime: number }> = [];
+  private readonly MAX_VOICES = 16;
 
   private init() {
     if (!this.ctx) {
@@ -16,6 +18,28 @@ class SoundManager {
     if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
+    // Prune completed voices
+    const now = this.ctx.currentTime;
+    this.activeVoices = this.activeVoices.filter(v => v.endTime > now);
+  }
+
+  private registerVoice(gain: GainNode, stopFn: () => void, duration: number) {
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    // Voice stealing if at capacity: fade out oldest voice smoothly
+    while (this.activeVoices.length >= this.MAX_VOICES) {
+      const oldest = this.activeVoices.shift();
+      if (oldest) {
+        try {
+          oldest.gain.gain.setValueAtTime(oldest.gain.gain.value, now);
+          oldest.gain.gain.linearRampToValueAtTime(0.001, now + 0.005);
+          oldest.stop();
+        } catch {
+          // already stopped
+        }
+      }
+    }
+    this.activeVoices.push({ gain, stop: stopFn, endTime: now + duration });
   }
 
   // Heavy AK-47 7.62mm Gunshot
@@ -117,6 +141,92 @@ class SoundManager {
     filter.connect(noiseGain);
     noiseGain.connect(this.masterGain);
     noise.start(now);
+  }
+
+  // Snappy High-Cadence CYCLONE-9 SMG (800 RPM / 13.3 shots/sec)
+  public playSMGShot(ammoRemaining?: number) {
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+    const now = this.ctx.currentTime;
+
+    // 1. Fast Sub-Bass Punch (180Hz -> 48Hz in 55ms)
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'triangle';
+    subOsc.frequency.setValueAtTime(180, now);
+    subOsc.frequency.exponentialRampToValueAtTime(48, now + 0.055);
+    subGain.gain.setValueAtTime(0.75, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+    subOsc.connect(subGain);
+    subGain.connect(this.masterGain);
+    subOsc.start(now);
+    subOsc.stop(now + 0.075);
+    this.registerVoice(subGain, () => subOsc.stop(), 0.075);
+
+    // 2. High-energy Crack & Gas Port Expansion (Bandpass White Noise)
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.08);
+    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const noiseFilter = this.ctx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.setValueAtTime(2400, now);
+    noiseFilter.frequency.exponentialRampToValueAtTime(600, now + 0.07);
+    noiseFilter.Q.setValueAtTime(2.2, now);
+
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(1.05, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.075);
+
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(this.masterGain);
+    noise.start(now);
+    this.registerVoice(noiseGain, () => noise.stop(), 0.075);
+
+    // 3. Metallic High-Speed Bolt Slap (720Hz -> 180Hz in 35ms)
+    const boltOsc = this.ctx.createOscillator();
+    const boltGain = this.ctx.createGain();
+    boltOsc.type = 'sawtooth';
+    boltOsc.frequency.setValueAtTime(720, now + 0.01);
+    boltOsc.frequency.exponentialRampToValueAtTime(180, now + 0.038);
+    boltGain.gain.setValueAtTime(0.3, now + 0.01);
+    boltGain.gain.exponentialRampToValueAtTime(0.001, now + 0.042);
+    boltOsc.connect(boltGain);
+    boltGain.connect(this.masterGain);
+    boltOsc.start(now + 0.01);
+    boltOsc.stop(now + 0.042);
+    this.registerVoice(boltGain, () => boltOsc.stop(), 0.042);
+
+    // 4. Low-Ammo Auditory Cue (Ting / Resonance when <= 5 rounds)
+    if (ammoRemaining !== undefined && ammoRemaining <= 5 && ammoRemaining > 0) {
+      const lowAmmoOsc = this.ctx.createOscillator();
+      const lowAmmoGain = this.ctx.createGain();
+      lowAmmoOsc.type = 'sine';
+      lowAmmoOsc.frequency.setValueAtTime(2200, now);
+      lowAmmoGain.gain.setValueAtTime(0.28, now);
+      lowAmmoGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+      lowAmmoOsc.connect(lowAmmoGain);
+      lowAmmoGain.connect(this.masterGain);
+      lowAmmoOsc.start(now);
+      lowAmmoOsc.stop(now + 0.09);
+      this.registerVoice(lowAmmoGain, () => lowAmmoOsc.stop(), 0.09);
+    }
+  }
+
+  // Rapid Burst Test Helper (for ?soundtest=1)
+  public playSMGBurst(rounds: number = 5, onShot?: (index: number) => void) {
+    for (let i = 0; i < rounds; i++) {
+      setTimeout(() => {
+        this.playSMGShot(rounds - i);
+        if (onShot) onShot(i);
+      }, i * 75); // 75ms = exactly 800 RPM
+    }
   }
 
   // Reload Mechanical Sounds

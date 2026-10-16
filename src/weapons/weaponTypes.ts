@@ -1,7 +1,7 @@
 // src/weapons/weaponTypes.ts
 // Weapon definitions, states, ballistics, and animation parameters
 
-export type WeaponId = 'ak47' | 'pistol';
+export type WeaponId = 'ak47' | 'pistol' | 'smg';
 
 export interface WeaponDef {
   id: WeaponId;
@@ -96,5 +96,35 @@ export const WEAPON_REGISTRY: Record<WeaponId, WeaponDef> = {
     adsPosition: [0.0, -0.062, -0.28],
     adsRotation: [0, 0, 0],
     adsFov: 58,
+  },
+  smg: {
+    id: 'smg',
+    name: 'CYCLONE-9 SMG',
+    caliber: '9×19mm Sub-Sonic',
+    fireMode: 'auto',
+    fireRate: 0.075, // 800 RPM (4.5 ticks per shot avg)
+    damage: 19,
+    critMultiplier: 1.7, // 32.3 headshot dmg
+    magCapacity: 30,
+    reserveCapacity: 120,
+    reloadDuration: 1.8,
+    spreadBase: 0.012,
+    spreadBloomPerShot: 0.005,
+    spreadMax: 0.085,
+    spreadDecayRate: 0.35,
+
+    // Recoil Profile
+    recoilKickZ: 0.045,
+    recoilPitchX: 0.038,
+    recoilYawY: 0.024,
+    recoilRecoverySpeed: 20.0,
+    cameraRecoilKick: 0.016,
+
+    // Transforms
+    hipPosition: [0.18, -0.20, -0.42],
+    hipRotation: [0, 0, 0],
+    adsPosition: [0.0, -0.074, -0.26],
+    adsRotation: [0, 0, 0],
+    adsFov: 54,
   },
 };
