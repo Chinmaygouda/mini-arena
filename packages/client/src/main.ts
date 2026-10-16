@@ -34,12 +34,15 @@ import {
   generateSeededPelletOffsets,
   hashPlayerShot,
   PelletOffset,
+  canTriggerFire,
+  updateTriggerState,
 } from '@mini-arena/shared';
 import { initPhysics, PhysicsEngine } from './physics';
 import { InputManager } from './input';
 import { buildGreyboxArena } from './arena';
 import { TargetDummyManager } from './dummies';
 import { triggerHitMarker, WeaponViewmodel } from './viewmodel';
+import { weaponAudio } from './audio';
 
 declare global {
   interface Window {
@@ -289,13 +292,16 @@ async function initApp(): Promise<void> {
       const canShoot = isWeaponReadyToFire(weaponState);
 
       // Buffer fire input if clicked while weapon is busy (e.g. bolt cycling or finishing swap)
-      if (input.fire && !canShoot) {
+      const isFirePressed = Boolean(input.fire);
+      updateTriggerState(weaponState, isFirePressed);
+
+      if (isFirePressed && !canShoot) {
         cancelReloadOnFire(weaponState);
         bufferFireInput(weaponState, 6);
       }
 
       const effectiveCanShoot = isWeaponReadyToFire(weaponState);
-      const wantsToFire = Boolean(input.fire || weaponState.bufferedFireTicks > 0);
+      const wantsToFire = canTriggerFire(weaponState, isFirePressed);
 
       // Step fractional fire accumulator
       stepFireTiming(fireTiming, SIM_TICK_DELTA, currentDef);
@@ -306,19 +312,24 @@ async function initApp(): Promise<void> {
           weaponState.bufferedFireTicks = 0; // Consume buffered fire request
           recordShotFired(weaponState);
 
+          // Audio feedback (procedural Web Audio API)
+          weaponAudio.playShot(currentDef.id);
+
+          // Visual muzzle flash billboard at weapon muzzle
+          viewmodel.triggerMuzzleFlash(currentDef.id);
+
           // Recoil kick on viewmodel
           const kickPitch = currentDef.recoil.pattern[0]?.pitch ?? 0.035;
           viewmodel.applyRecoilKick(kickPitch);
 
-          // Stance-based spread cone
+          // Stance-based spread cone (computeEffectiveSpread returns cone half-angle in radians)
           const hSpeed = Math.hypot(currentState.vx, currentState.vz);
-          const spreadDeg = computeEffectiveSpread(currentDef, {
+          const spreadRad = computeEffectiveSpread(currentDef, {
             isMoving: hSpeed > 0.5,
             isCrouching: currentState.isCrouching,
             isADS: Boolean(input.ads),
             isSprinting: currentState.isSprinting,
           });
-          const spreadRad = (spreadDeg * Math.PI) / 180;
 
           const muzzlePos = viewmodel.getMuzzleWorldPosition();
 
@@ -355,6 +366,7 @@ async function initApp(): Promise<void> {
                 hitPoint = hit.hitPoint;
                 const dmg = calculateDamage(currentDef, hit.distance, hit.part === 'head');
                 triggerHitMarker(hit.part, dmg);
+                viewmodel.triggerImpact(hitPoint);
               } else {
                 hitPoint = {
                   x: rayOrigin.x + rayDir.x * 50,
@@ -362,11 +374,11 @@ async function initApp(): Promise<void> {
                   z: rayOrigin.z + rayDir.z * 50,
                 };
               }
-              viewmodel.spawnTracer(muzzlePos, hitPoint);
+              viewmodel.spawnTracer(muzzlePos, hitPoint, currentDef.id);
             }
           } else {
             // Single bullet weapons (pistol, rifles, sniper)
-            const spreadOffset = sampleSpreadOffsets(spreadDeg, rng);
+            const spreadOffset = sampleSpreadOffsets(spreadRad, rng);
             const netYaw = input.yaw + spreadOffset.yawOffset;
             const netPitch = input.pitch + spreadOffset.pitchOffset;
 
@@ -393,6 +405,7 @@ async function initApp(): Promise<void> {
               hitPoint = hit.hitPoint;
               const dmg = calculateDamage(currentDef, hit.distance, hit.part === 'head');
               triggerHitMarker(hit.part, dmg);
+              viewmodel.triggerImpact(hitPoint);
             } else {
               hitPoint = {
                 x: rayOrigin.x + rayDir.x * 50,
@@ -400,7 +413,7 @@ async function initApp(): Promise<void> {
                 z: rayOrigin.z + rayDir.z * 50,
               };
             }
-            viewmodel.spawnTracer(muzzlePos, hitPoint);
+            viewmodel.spawnTracer(muzzlePos, hitPoint, currentDef.id);
           }
         }
       }
@@ -433,7 +446,7 @@ async function initApp(): Promise<void> {
     }
 
     // Update viewmodel animations, recoil spring & tracers
-    viewmodel.update(frameDelta, inputManager.isAds, weaponState.actionState);
+    viewmodel.update(frameDelta, inputManager.isAds, weaponState.actionState, currentState.isSprinting);
 
     // Update target dummies (locomotion, upper/lower layering, aim tracking, hit feedback, death collapse)
     dummies.update(frameDelta);
@@ -487,8 +500,14 @@ async function initApp(): Promise<void> {
         hudWeaponAction.textContent = 'CYCLING BOLT...';
         hudWeaponAction.style.color = '#c084fc';
       } else if (isSwapping) {
-        hudWeaponAction.textContent = 'SWAPPING...';
+        hudWeaponAction.textContent = 'EQUIPPING...';
         hudWeaponAction.style.color = '#38bdf8';
+      } else if (inputManager.isAds) {
+        hudWeaponAction.textContent = 'AIMING (ADS)';
+        hudWeaponAction.style.color = '#38bdf8';
+      } else if (currentState.isSprinting) {
+        hudWeaponAction.textContent = 'SPRINTING';
+        hudWeaponAction.style.color = '#94a3b8';
       } else if (weaponState.isOutOfAmmo) {
         hudWeaponAction.textContent = 'OUT OF AMMO';
         hudWeaponAction.style.color = '#ef4444';
@@ -510,8 +529,30 @@ async function initApp(): Promise<void> {
         : new THREE.Vector3(0.05, -0.15, -0.32);
       camera.localToWorld(lookTarget);
       activeCam.lookAt(lookTarget);
+      renderer.render(scene, activeCam);
+    } else {
+      // Dual-pass depth-cleared viewmodel rendering (Rule E: avoids wall clipping)
+      const vmVisible = viewmodel.group.visible;
+      const armsVisible = viewmodel.armsRig.group.visible;
+
+      renderer.autoClear = false;
+      renderer.clear();
+
+      // Pass 1: World scene
+      viewmodel.group.visible = false;
+      viewmodel.armsRig.group.visible = false;
+      renderer.render(scene, camera);
+
+      // Pass 2: Viewmodel & Arms rendered on top
+      if (vmVisible || armsVisible) {
+        renderer.clearDepth();
+        viewmodel.group.visible = vmVisible;
+        viewmodel.armsRig.group.visible = armsVisible;
+        renderer.render(scene, camera);
+      }
+
+      renderer.autoClear = true;
     }
-    renderer.render(scene, activeCam);
   });
 }
 

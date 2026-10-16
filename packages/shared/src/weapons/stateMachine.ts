@@ -44,6 +44,7 @@ export interface WeaponState {
   isOutOfAmmo: boolean; // Flagged true when all weapons in inventory are empty
   shellCommitDone: boolean; // Tracks whether ammo commit has already been credited in current reload action
   currentSimTick: number; // Current simulation tick counter
+  semiAutoTriggerReleased: boolean; // Semi-auto latch: requires trigger release between shots
 }
 
 export function createDefaultWeaponState(): WeaponState {
@@ -73,6 +74,7 @@ export function createDefaultWeaponState(): WeaponState {
     isOutOfAmmo: false,
     shellCommitDone: false,
     currentSimTick: 0,
+    semiAutoTriggerReleased: true,
   };
 }
 
@@ -159,12 +161,40 @@ export function triggerReload(state: WeaponState): boolean {
 }
 
 /**
+ * Updates trigger state for semi-automatic weapon release gating.
+ * Call every tick with the current raw fire input.
+ */
+export function updateTriggerState(state: WeaponState, isFirePressed: boolean): void {
+  if (!isFirePressed) {
+    state.semiAutoTriggerReleased = true;
+  }
+}
+
+/**
+ * Checks whether the current trigger state permits firing for the weapon's fireMode.
+ */
+export function canTriggerFire(state: WeaponState, isFirePressed: boolean): boolean {
+  const def = getCurrentWeaponDef(state);
+  if (def.fireMode === 'auto') {
+    return isFirePressed;
+  }
+  // Semi-automatic: must either have released trigger since last shot, or have a buffered click
+  return (isFirePressed && state.semiAutoTriggerReleased) || state.bufferedFireTicks > 0;
+}
+
+/**
  * Notifies the state machine that a shot was fired, updating slot nextReadyTick and bolt cycle.
  */
 export function recordShotFired(state: WeaponState, cooldownSeconds?: number): void {
   const slot = getCurrentSlot(state);
   slot.boltCycledOnEmpty = false;
   const def = getCurrentWeaponDef(state);
+
+  // Semi-auto latch: require trigger release before next shot
+  if (def.fireMode === 'semi') {
+    state.semiAutoTriggerReleased = false;
+  }
+
   const cooldown = cooldownSeconds ?? (60 / def.rpm);
   state.shotCooldownTimer = cooldown;
   const cooldownTicks = Math.round(cooldown * 60);

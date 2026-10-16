@@ -6,7 +6,7 @@ import { createPistolVisualDef } from './animation/pistolDef';
 import { createSmgVisualDef } from './animation/smgDef';
 import { createShotgunVisualDef } from './animation/shotgunDef';
 import { createSniperVisualDef } from './animation/sniperDef';
-import { WeaponVisualDef } from './animation/types';
+import { WeaponClipName, WeaponVisualDef } from './animation/types';
 import { WeaponAnimator } from './animation/weaponAnimator';
 import { loadRealAK47Slice } from './models/realWeaponSlice';
 import { loadRealPistolSlice } from './models/pistolSlice';
@@ -14,11 +14,37 @@ import { loadRealSmgSlice } from './models/smgSlice';
 import { loadRealShotgunSlice } from './models/shotgunSlice';
 import { loadRealSniperSlice } from './models/sniperSlice';
 
-export interface Tracer {
+export interface PooledTracer {
   mesh: THREE.Line;
+  geometry: THREE.BufferGeometry;
+  positionAttr: THREE.BufferAttribute;
   lifetime: number;
   maxLifetime: number;
+  active: boolean;
 }
+
+export interface PooledImpact {
+  mesh: THREE.Mesh;
+  lifetime: number;
+  maxLifetime: number;
+  active: boolean;
+}
+
+export const TRACER_CONFIGS: Record<WeaponId, { color: number; maxLifetime: number }> = {
+  pistol: { color: 0xfbbf24, maxLifetime: 0.06 },
+  smg: { color: 0xfde047, maxLifetime: 0.05 },
+  assault_rifle: { color: 0xfacc15, maxLifetime: 0.07 },
+  shotgun: { color: 0xf97316, maxLifetime: 0.06 },
+  sniper: { color: 0x67e8f9, maxLifetime: 0.14 },
+};
+
+export const MUZZLE_FLASH_CONFIGS: Record<WeaponId, { color: number; scale: number; duration: number }> = {
+  pistol: { color: 0xfde047, scale: 0.045, duration: 0.035 },
+  smg: { color: 0xfacc15, scale: 0.055, duration: 0.030 },
+  assault_rifle: { color: 0xf59e0b, scale: 0.090, duration: 0.045 },
+  shotgun: { color: 0xf97316, scale: 0.125, duration: 0.050 },
+  sniper: { color: 0xffffff, scale: 0.150, duration: 0.055 },
+};
 
 export class WeaponViewmodel {
   public group: THREE.Group;
@@ -40,7 +66,7 @@ export class WeaponViewmodel {
     },
     pistol: {
       hip: new THREE.Vector3(0.11, -0.14, -0.26),
-      ads: new THREE.Vector3(0.0, -0.045, -0.20), // Centers iron sights
+      ads: new THREE.Vector3(0.0, -0.045, -0.28), // Centers iron sights at comfortable extended arm distance
     },
     smg: {
       hip: new THREE.Vector3(0.12, -0.15, -0.28),
@@ -73,8 +99,16 @@ export class WeaponViewmodel {
     return this.recoilPitch;
   }
 
-  // Tracers
-  private tracers: Tracer[] = [];
+  // Zero-allocation pooled tracers
+  private tracerPool: PooledTracer[] = [];
+
+  // Zero-allocation pooled impact sparks
+  private impactPool: PooledImpact[] = [];
+
+  // Zero-allocation muzzle flash
+  private muzzleFlashGroup: THREE.Group;
+  private muzzleFlashMat: THREE.MeshBasicMaterial;
+  private muzzleFlashTimer = 0;
 
   // Triangle counts for performance budgeting
   public gunTriangles = 0;
@@ -123,7 +157,63 @@ export class WeaponViewmodel {
     this.group.add(this.animator.weaponGroup);
     this.refreshTriangleCounts();
 
-    // 4. Cache scope overlay DOM element
+    // 4. Pre-allocate 32 pooled bullet tracers (zero heap allocations during combat)
+    for (let i = 0; i < 32; i++) {
+      const geom = new THREE.BufferGeometry();
+      const posArray = new Float32Array(6);
+      const posAttr = new THREE.BufferAttribute(posArray, 3);
+      geom.setAttribute('position', posAttr);
+      const mat = new THREE.LineBasicMaterial({
+        color: 0xfacc15,
+        linewidth: 2,
+      });
+      const line = new THREE.Line(geom, mat);
+      line.visible = false;
+      this.scene.add(line);
+      this.tracerPool.push({
+        mesh: line,
+        geometry: geom,
+        positionAttr: posAttr,
+        lifetime: 0,
+        maxLifetime: 0.08,
+        active: false,
+      });
+    }
+
+    // 5. Pre-allocate 16 pooled impact spark flashes
+    const sparkGeom = new THREE.SphereGeometry(0.02, 4, 4);
+    const sparkMat = new THREE.MeshBasicMaterial({ color: 0xffedd5 });
+    for (let i = 0; i < 16; i++) {
+      const mesh = new THREE.Mesh(sparkGeom, sparkMat);
+      mesh.visible = false;
+      this.scene.add(mesh);
+      this.impactPool.push({
+        mesh,
+        lifetime: 0,
+        maxLifetime: 0.08,
+        active: false,
+      });
+    }
+
+    // 6. Pre-allocate cross-quad muzzle flash billboard attached to weaponGroup
+    this.muzzleFlashGroup = new THREE.Group();
+    this.muzzleFlashGroup.name = 'Muzzle_Flash_Group';
+    this.muzzleFlashMat = new THREE.MeshBasicMaterial({
+      color: 0xfacc15,
+      transparent: true,
+      opacity: 0.95,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const flashPlane1 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.muzzleFlashMat);
+    const flashPlane2 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.muzzleFlashMat);
+    flashPlane2.rotation.y = Math.PI / 2;
+    this.muzzleFlashGroup.add(flashPlane1);
+    this.muzzleFlashGroup.add(flashPlane2);
+    this.muzzleFlashGroup.visible = false;
+    this.animator.weaponGroup.add(this.muzzleFlashGroup);
+
+    // 7. Cache scope overlay DOM element
     this.sniperScopeElement = document.getElementById('sniper-scope');
 
     // 5. Asynchronously load the real 5 weapon model slices & PSX arms
@@ -282,17 +372,7 @@ export class WeaponViewmodel {
   }
 
   public playClip(
-    clipName:
-      | 'idle'
-      | 'draw'
-      | 'inspect'
-      | 'reloadTactical'
-      | 'reloadEmpty'
-      | 'fire'
-      | 'reloadShellStart'
-      | 'reloadShellInsert'
-      | 'reloadShellEnd'
-      | 'boltCycle',
+    clipName: WeaponClipName,
     forceRestart = false,
   ): void {
     this.animator.playClip(clipName, forceRestart);
@@ -308,7 +388,7 @@ export class WeaponViewmodel {
     this.animator.playClip('fire', true);
   }
 
-  public update(dt: number, isAds: boolean, actionState?: WeaponActionState): void {
+  public update(dt: number, isAds: boolean, actionState?: WeaponActionState, isSprinting = false): void {
     // 1. Sync animator with shared weapon action state
     if (actionState) {
       if (actionState === 'reloading_tactical') {
@@ -323,8 +403,16 @@ export class WeaponViewmodel {
         this.animator.playClip('reloadShellEnd');
       } else if (actionState === 'cycling_bolt') {
         this.animator.playClip('boltCycle');
+      } else if (actionState === 'swapping_out') {
+        this.animator.playClip('holster');
       } else if (actionState === 'swapping_in') {
         this.animator.playClip('draw');
+      } else if (actionState === 'idle') {
+        if (isSprinting && !isAds) {
+          this.animator.playClip('sprint');
+        } else if (!isAds && this.animator.getClipName() === 'sprint') {
+          this.animator.playClip('idle');
+        }
       }
     }
 
@@ -364,37 +452,84 @@ export class WeaponViewmodel {
     // 5. Step the weapon animator, arms IK, and dropping magazine physics with fresh matrixWorld
     this.animator.update(dt, this.scene);
 
-    // 6. Update bullet tracers
-    for (let i = this.tracers.length - 1; i >= 0; i--) {
-      const tracer = this.tracers[i]!;
+    // 6. Update bullet tracers (zero heap allocations)
+    for (let i = 0; i < this.tracerPool.length; i++) {
+      const tracer = this.tracerPool[i]!;
+      if (!tracer.active) continue;
       tracer.lifetime += dt;
       if (tracer.lifetime >= tracer.maxLifetime) {
-        this.scene.remove(tracer.mesh);
-        tracer.mesh.geometry.dispose();
-        (tracer.mesh.material as THREE.Material).dispose();
-        this.tracers.splice(i, 1);
+        tracer.active = false;
+        tracer.mesh.visible = false;
+      }
+    }
+
+    // 7. Update impact spark flashes (zero heap allocations)
+    for (let i = 0; i < this.impactPool.length; i++) {
+      const impact = this.impactPool[i]!;
+      if (!impact.active) continue;
+      impact.lifetime += dt;
+      if (impact.lifetime >= impact.maxLifetime) {
+        impact.active = false;
+        impact.mesh.visible = false;
+      }
+    }
+
+    // 8. Update muzzle flash timer
+    if (this.muzzleFlashTimer > 0) {
+      this.muzzleFlashTimer -= dt;
+      if (this.muzzleFlashTimer <= 0) {
+        this.muzzleFlashGroup.visible = false;
       }
     }
   }
 
-  public spawnTracer(fromPos: Vec3, toPos: Vec3): void {
-    const points = [
-      new THREE.Vector3(fromPos.x, fromPos.y, fromPos.z),
-      new THREE.Vector3(toPos.x, toPos.y, toPos.z),
-    ];
-    const geom = new THREE.BufferGeometry().setFromPoints(points);
-    const mat = new THREE.LineBasicMaterial({
-      color: 0xfef08a,
-      linewidth: 2,
-    });
-    const line = new THREE.Line(geom, mat);
-    this.scene.add(line);
+  /**
+   * Spawns a weapon-specific tracer from the pre-allocated pool with zero heap allocations.
+   */
+  public spawnTracer(fromPos: Vec3, toPos: Vec3, weaponId: WeaponId = 'assault_rifle'): void {
+    let tracer = this.tracerPool.find((t) => !t.active);
+    if (!tracer) {
+      tracer = this.tracerPool.reduce((oldest, t) => (t.lifetime > oldest.lifetime ? t : oldest), this.tracerPool[0]!);
+    }
 
-    this.tracers.push({
-      mesh: line,
-      lifetime: 0,
-      maxLifetime: 0.08, // 80ms duration capped
-    });
+    const attr = tracer.positionAttr;
+    attr.setXYZ(0, fromPos.x, fromPos.y, fromPos.z);
+    attr.setXYZ(1, toPos.x, toPos.y, toPos.z);
+    attr.needsUpdate = true;
+
+    const cfg = TRACER_CONFIGS[weaponId] ?? TRACER_CONFIGS.assault_rifle;
+    (tracer.mesh.material as THREE.LineBasicMaterial).color.setHex(cfg.color);
+    tracer.lifetime = 0;
+    tracer.maxLifetime = cfg.maxLifetime;
+    tracer.active = true;
+    tracer.mesh.visible = true;
+  }
+
+  /**
+   * Triggers a weapon-specific muzzle flash billboard at the muzzle socket.
+   */
+  public triggerMuzzleFlash(weaponId: WeaponId = 'assault_rifle'): void {
+    const muzzle = this.currentVisualDef.muzzleOffset;
+    this.muzzleFlashGroup.position.copy(muzzle);
+    const cfg = MUZZLE_FLASH_CONFIGS[weaponId] ?? MUZZLE_FLASH_CONFIGS.assault_rifle;
+    this.muzzleFlashGroup.scale.setScalar(cfg.scale);
+    this.muzzleFlashMat.color.setHex(cfg.color);
+    this.muzzleFlashTimer = cfg.duration;
+    this.muzzleFlashGroup.visible = true;
+  }
+
+  /**
+   * Triggers an impact spark flash at a world-space hit position.
+   */
+  public triggerImpact(hitPoint: Vec3): void {
+    let impact = this.impactPool.find((ip) => !ip.active);
+    if (!impact) {
+      impact = this.impactPool.reduce((oldest, ip) => (ip.lifetime > oldest.lifetime ? ip : oldest), this.impactPool[0]!);
+    }
+    impact.mesh.position.set(hitPoint.x, hitPoint.y, hitPoint.z);
+    impact.lifetime = 0;
+    impact.active = true;
+    impact.mesh.visible = true;
   }
 
   public getMuzzleWorldPosition(): Vec3 {

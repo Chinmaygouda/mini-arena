@@ -2,28 +2,28 @@
 
 Audit captured in real Chrome with exact weapon assertion checks and geometric mesh collision queries.
 
-## AK-47 (Assault Rifle) (2385 gun triangles)
+## AK-47 (Assault Rifle) (2389 gun triangles)
 
 | Measurement | Right Hand | Left Hand |
 |---|---|---|
-| **Upper-Arm Length** | 0.3222 m | 0.3222 m |
-| **Forearm Length** | 0.2373 m | 0.2373 m |
-| **Total Arm Reach** | 0.5595 m | 0.5595 m |
-| **Shoulder-to-Target Distance** | 0.417 m | 0.5112 m |
+| **Upper-Arm Length** | 0.3222 m | 0.3258 m |
+| **Forearm Length** | 0.2373 m | 0.2399 m |
+| **Total Arm Reach** | 0.5595 m | 0.5657 m |
+| **Shoulder-to-Target Distance** | 0.417 m | 0.5093 m |
 | **Stretch Scale Applied** | Upper: 1, Fore: 1 | Upper: 1, Fore: 1 |
-| **Elbow Angle** | 84.8° | 48.5° |
+| **Elbow Angle** | 82.5° | 36.1° |
 | **Pole Vector (and Space)** | `[0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) | `[-0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) |
 | **Wrist-to-Socket Rotation Error** | 0° | 0° |
-| **Palm Center to Grip Surface** | 23.8 mm | 15.5 mm |
-| **Thumb Tip Distance** | 11.1 mm | 85.2 mm |
-| **Index Tip Distance** | 13.2 mm | 95.5 mm |
-| **Middle Tip Distance** | 0.6 mm | 79.6 mm |
-| **Ring Tip Distance** | 0.3 mm | 2.1 mm |
-| **Pinky Tip Distance** | 2.6 mm | 67.8 mm |
-| **Hand Vertices Inside Gun Mesh (Total)** | 0 / 293 | 0 / 293 |
-| **Hand Vertices Deeper Than 3mm Inside Gun** | 0 / 293 | 0 / 293 |
+| **Palm Center to Grip Surface** | 0 mm | 1.6 mm |
+| **Thumb Tip Distance** | 22.8 mm | 32.5 mm |
+| **Index Tip Distance** | 10.3 mm | 3.9 mm |
+| **Middle Tip Distance** | 1.8 mm | 1.1 mm |
+| **Ring Tip Distance** | 11.4 mm | 3.5 mm |
+| **Pinky Tip Distance** | 12.9 mm | 21.6 mm |
+| **Hand Vertices Inside Gun Mesh (Total)** | 9 / 293 | 7 / 293 |
+| **Hand Vertices Deeper Than 3mm Inside Gun** | 9 / 293 | 7 / 293 |
 
-## Tactical Pistol (1724 gun triangles)
+## Tactical Pistol (1728 gun triangles)
 
 | Measurement | Right Hand | Left Hand |
 |---|---|---|
@@ -32,19 +32,19 @@ Audit captured in real Chrome with exact weapon assertion checks and geometric m
 | **Total Arm Reach** | 0.5595 m | 0.5595 m |
 | **Shoulder-to-Target Distance** | 0.3521 m | 0.2046 m |
 | **Stretch Scale Applied** | Upper: 1, Fore: 1 | Upper: 1, Fore: 1 |
-| **Elbow Angle** | 103.7° | 140.7° |
+| **Elbow Angle** | 102.7° | 135.8° |
 | **Pole Vector (and Space)** | `[0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) | `[-0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) |
 | **Wrist-to-Socket Rotation Error** | 0° | 0° |
-| **Palm Center to Grip Surface** | 3.2 mm | 5 mm |
-| **Thumb Tip Distance** | 51.3 mm | 45 mm |
-| **Index Tip Distance** | 37.5 mm | 42.9 mm |
-| **Middle Tip Distance** | 42.1 mm | 38.5 mm |
-| **Ring Tip Distance** | 40.4 mm | 61.3 mm |
-| **Pinky Tip Distance** | 38.7 mm | 27.3 mm |
-| **Hand Vertices Inside Gun Mesh (Total)** | 0 / 293 | 0 / 293 |
-| **Hand Vertices Deeper Than 3mm Inside Gun** | 0 / 293 | 0 / 293 |
+| **Palm Center to Grip Surface** | 0 mm | 6.6 mm |
+| **Thumb Tip Distance** | 51.5 mm | 44.4 mm |
+| **Index Tip Distance** | 39.8 mm | 42 mm |
+| **Middle Tip Distance** | 41.9 mm | 37.7 mm |
+| **Ring Tip Distance** | 40.4 mm | 62.2 mm |
+| **Pinky Tip Distance** | 34 mm | 26.5 mm |
+| **Hand Vertices Inside Gun Mesh (Total)** | 20 / 293 | 10 / 293 |
+| **Hand Vertices Deeper Than 3mm Inside Gun** | 18 / 293 | 10 / 293 |
 
-## Rapid SMG (1770 gun triangles)
+## Rapid SMG (1774 gun triangles)
 
 | Measurement | Right Hand | Left Hand |
 |---|---|---|
@@ -53,19 +53,19 @@ Audit captured in real Chrome with exact weapon assertion checks and geometric m
 | **Total Arm Reach** | 0.5595 m | 0.5595 m |
 | **Shoulder-to-Target Distance** | 0.3962 m | 0.3425 m |
 | **Stretch Scale Applied** | Upper: 1, Fore: 1 | Upper: 1, Fore: 1 |
-| **Elbow Angle** | 91.2° | 106.3° |
+| **Elbow Angle** | 88.5° | 104.1° |
 | **Pole Vector (and Space)** | `[0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) | `[-0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) |
 | **Wrist-to-Socket Rotation Error** | 0° | 0° |
-| **Palm Center to Grip Surface** | 6.6 mm | 8 mm |
-| **Thumb Tip Distance** | 42.9 mm | 64.4 mm |
-| **Index Tip Distance** | 31.1 mm | 69.9 mm |
-| **Middle Tip Distance** | 30.6 mm | 57.6 mm |
-| **Ring Tip Distance** | 28.1 mm | 68.7 mm |
-| **Pinky Tip Distance** | 23 mm | 45.6 mm |
-| **Hand Vertices Inside Gun Mesh (Total)** | 0 / 293 | 0 / 293 |
-| **Hand Vertices Deeper Than 3mm Inside Gun** | 0 / 293 | 0 / 293 |
+| **Palm Center to Grip Surface** | 0 mm | 7.9 mm |
+| **Thumb Tip Distance** | 47.9 mm | 42.1 mm |
+| **Index Tip Distance** | 36.1 mm | 41 mm |
+| **Middle Tip Distance** | 39 mm | 31.6 mm |
+| **Ring Tip Distance** | 22.2 mm | 53.7 mm |
+| **Pinky Tip Distance** | 4.4 mm | 24.4 mm |
+| **Hand Vertices Inside Gun Mesh (Total)** | 17 / 293 | 7 / 293 |
+| **Hand Vertices Deeper Than 3mm Inside Gun** | 17 / 293 | 7 / 293 |
 
-## Combat Shotgun (2012 gun triangles)
+## Combat Shotgun (2016 gun triangles)
 
 | Measurement | Right Hand | Left Hand |
 |---|---|---|
@@ -74,19 +74,19 @@ Audit captured in real Chrome with exact weapon assertion checks and geometric m
 | **Total Arm Reach** | 0.5595 m | 0.5595 m |
 | **Shoulder-to-Target Distance** | 0.4027 m | 0.4102 m |
 | **Stretch Scale Applied** | Upper: 1, Fore: 1 | Upper: 1, Fore: 1 |
-| **Elbow Angle** | 89.2° | 86.9° |
+| **Elbow Angle** | 88° | 77.3° |
 | **Pole Vector (and Space)** | `[0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) | `[-0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) |
 | **Wrist-to-Socket Rotation Error** | 0° | 0° |
-| **Palm Center to Grip Surface** | 38.5 mm | 36.4 mm |
-| **Thumb Tip Distance** | 18 mm | 98.2 mm |
-| **Index Tip Distance** | 20.7 mm | 97.3 mm |
-| **Middle Tip Distance** | 4.2 mm | 93.8 mm |
-| **Ring Tip Distance** | 1.4 mm | 2.5 mm |
-| **Pinky Tip Distance** | 1.5 mm | 79.9 mm |
-| **Hand Vertices Inside Gun Mesh (Total)** | 0 / 293 | 0 / 293 |
-| **Hand Vertices Deeper Than 3mm Inside Gun** | 0 / 293 | 0 / 293 |
+| **Palm Center to Grip Surface** | 0 mm | 15 mm |
+| **Thumb Tip Distance** | 27.1 mm | 59.6 mm |
+| **Index Tip Distance** | 20.7 mm | 61.8 mm |
+| **Middle Tip Distance** | 25.3 mm | 54.9 mm |
+| **Ring Tip Distance** | 26.1 mm | 5 mm |
+| **Pinky Tip Distance** | 23.1 mm | 50.4 mm |
+| **Hand Vertices Inside Gun Mesh (Total)** | 15 / 293 | 10 / 293 |
+| **Hand Vertices Deeper Than 3mm Inside Gun** | 15 / 293 | 9 / 293 |
 
-## Precision Sniper (2330 gun triangles)
+## Precision Sniper (2334 gun triangles)
 
 | Measurement | Right Hand | Left Hand |
 |---|---|---|
@@ -95,15 +95,15 @@ Audit captured in real Chrome with exact weapon assertion checks and geometric m
 | **Total Arm Reach** | 0.5595 m | 0.5595 m |
 | **Shoulder-to-Target Distance** | 0.4027 m | 0.4978 m |
 | **Stretch Scale Applied** | Upper: 1, Fore: 1 | Upper: 1, Fore: 1 |
-| **Elbow Angle** | 89.2° | 55° |
+| **Elbow Angle** | 86.9° | 52.9° |
 | **Pole Vector (and Space)** | `[0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) | `[-0.35, -0.65, 0.05]` (Camera / Viewmodel Group Space) |
 | **Wrist-to-Socket Rotation Error** | 0° | 0° |
-| **Palm Center to Grip Surface** | 9.5 mm | 7.4 mm |
-| **Thumb Tip Distance** | 36.9 mm | 23.8 mm |
-| **Index Tip Distance** | 25.1 mm | 24.3 mm |
-| **Middle Tip Distance** | 28 mm | 24.8 mm |
-| **Ring Tip Distance** | 26.5 mm | 46.7 mm |
-| **Pinky Tip Distance** | 19.9 mm | 42.5 mm |
-| **Hand Vertices Inside Gun Mesh (Total)** | 0 / 293 | 0 / 293 |
-| **Hand Vertices Deeper Than 3mm Inside Gun** | 0 / 293 | 0 / 293 |
+| **Palm Center to Grip Surface** | 0 mm | 0 mm |
+| **Thumb Tip Distance** | 45.9 mm | 38.6 mm |
+| **Index Tip Distance** | 31.7 mm | 40 mm |
+| **Middle Tip Distance** | 33.1 mm | 37.1 mm |
+| **Ring Tip Distance** | 31.5 mm | 45.1 mm |
+| **Pinky Tip Distance** | 25.4 mm | 30.6 mm |
+| **Hand Vertices Inside Gun Mesh (Total)** | 15 / 293 | 7 / 293 |
+| **Hand Vertices Deeper Than 3mm Inside Gun** | 14 / 293 | 7 / 293 |
 

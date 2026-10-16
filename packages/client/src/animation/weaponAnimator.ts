@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { FirstPersonArmsRig } from './armsRig';
-import { KeyframeClip, TimedAnimationEvent, WeaponKeyframe, WeaponVisualDef } from './types';
+import { KeyframeClip, TimedAnimationEvent, WeaponClipName, WeaponKeyframe, WeaponVisualDef } from './types';
+import { MAGAZINE_GRASP_LEFT, BOLT_HOOK_RIGHT } from './fingerGripPoses';
 
 export const MAX_COSMETIC_PHYSICS_DT = 1 / 30; // Max dt ~33.3ms to prevent objects launching after background tab
 
@@ -61,6 +62,19 @@ export class WeaponAnimator {
   private magGeomCache: THREE.BufferGeometry;
   private magMatCache: THREE.Material;
 
+  // Zero-allocation pooled spent cartridge casing ejection
+  private casingPool: Array<{
+    mesh: THREE.Mesh;
+    velocity: THREE.Vector3;
+    rotVel: THREE.Vector3;
+    life: number;
+    active: boolean;
+  }> = [];
+  private scratchEjectPos = new THREE.Vector3();
+  private weaponRight = new THREE.Vector3();
+  private weaponUp = new THREE.Vector3();
+  private weaponBack = new THREE.Vector3();
+
   constructor(visualDef: WeaponVisualDef, armsRig: FirstPersonArmsRig) {
     this.visualDef = visualDef;
     this.armsRig = armsRig;
@@ -88,6 +102,28 @@ export class WeaponAnimator {
     // Cache mag clone primitives
     this.magGeomCache = this.visualDef.magMesh.geometry;
     this.magMatCache = this.visualDef.magMesh.material as THREE.Material;
+    this.armsRig.setCustomFingerGrips(this.visualDef.fingerGrips?.left, this.visualDef.fingerGrips?.right);
+
+    // Pre-allocate 16 pooled spent cartridge casings (zero per-frame allocation)
+    const casingGeom = new THREE.CylinderGeometry(0.0035, 0.004, 0.024, 6);
+    casingGeom.rotateZ(Math.PI / 2);
+    const casingMat = new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
+      roughness: 0.25,
+      metalness: 0.95,
+    });
+    for (let i = 0; i < 16; i++) {
+      const mesh = new THREE.Mesh(casingGeom, casingMat);
+      mesh.name = `Spent_Casing_${i}`;
+      mesh.visible = false;
+      this.casingPool.push({
+        mesh,
+        velocity: new THREE.Vector3(),
+        rotVel: new THREE.Vector3(),
+        life: 0,
+        active: false,
+      });
+    }
   }
 
   public setVisualDef(newDef: WeaponVisualDef): void {
@@ -102,22 +138,13 @@ export class WeaponAnimator {
 
     this.magGeomCache = this.visualDef.magMesh.geometry;
     this.magMatCache = this.visualDef.magMesh.material as THREE.Material;
+    this.armsRig.setCustomFingerGrips(this.visualDef.fingerGrips?.left, this.visualDef.fingerGrips?.right);
 
     this.playClip('draw', true);
   }
 
   public playClip(
-    clipName:
-      | 'idle'
-      | 'draw'
-      | 'inspect'
-      | 'reloadTactical'
-      | 'reloadEmpty'
-      | 'fire'
-      | 'reloadShellStart'
-      | 'reloadShellInsert'
-      | 'reloadShellEnd'
-      | 'boltCycle',
+    clipName: WeaponClipName,
     forceRestart = false,
   ): void {
     const nextClip = this.visualDef.clips[clipName];
@@ -133,6 +160,10 @@ export class WeaponAnimator {
 
   public getClipName(): string {
     return this.currentClip.name;
+  }
+
+  public getCurrentClipName(): string {
+    return this.getClipName();
   }
 
   public isFinished(): boolean {
@@ -201,12 +232,24 @@ export class WeaponAnimator {
     this.socketR.getWorldPosition(this.scratchRightPos);
     this.socketR.getWorldQuaternion(this.scratchRightQuat);
 
-    // 9. Solve analytical two-bone IK
+    // 9. Solve analytical two-bone IK (bypassed on reload keyframes to follow authored trajectory)
+    const isReloading = this.currentClip.name.startsWith('reload');
+    const isCyclingBolt = this.currentClip.name === 'boltCycle';
+
+    if (isReloading) {
+      this.armsRig.setCustomFingerGrips(MAGAZINE_GRASP_LEFT, this.visualDef.fingerGrips?.right);
+    } else if (isCyclingBolt) {
+      this.armsRig.setCustomFingerGrips(this.visualDef.fingerGrips?.left, BOLT_HOOK_RIGHT);
+    } else {
+      this.armsRig.setCustomFingerGrips(this.visualDef.fingerGrips?.left, this.visualDef.fingerGrips?.right);
+    }
+
     this.armsRig.updateIK(
       this.scratchLeftPos,
       this.scratchLeftQuat,
       this.scratchRightPos,
       this.scratchRightQuat,
+      isReloading,
     );
 
     // 10. Update dropped physics magazines
@@ -219,6 +262,25 @@ export class WeaponAnimator {
         if (item.life > 2.5) {
           scene.remove(item.mesh);
           this.droppedMags.splice(i, 1);
+        }
+      }
+    }
+
+    // 11. Update spent cartridge casings
+    if (scene) {
+      for (let i = 0; i < this.casingPool.length; i++) {
+        const c = this.casingPool[i]!;
+        if (!c.active) continue;
+        c.life += dt;
+        c.velocity.y += -9.81 * dt;
+        c.mesh.position.addScaledVector(c.velocity, dt);
+        c.mesh.rotation.x += c.rotVel.x * dt;
+        c.mesh.rotation.y += c.rotVel.y * dt;
+        c.mesh.rotation.z += c.rotVel.z * dt;
+
+        if (c.life > 1.2) {
+          c.active = false;
+          c.mesh.visible = false;
         }
       }
     }
@@ -247,6 +309,49 @@ export class WeaponAnimator {
         ),
         life: 0,
       });
+    } else if (ev.type === 'fire_recoil' && scene) {
+      // Auto rifles, pistols, and SMGs eject casing immediately upon slide/bolt blowback
+      if (this.visualDef.weaponId !== 'shotgun' && this.visualDef.weaponId !== 'sniper') {
+        this.spawnSpentCasing(scene);
+      }
+    } else if (ev.type === 'bolt_pull' && scene) {
+      // Pump shotguns and bolt-action snipers eject spent casing when the action is manually cycled
+      if (this.visualDef.weaponId === 'shotgun' || this.visualDef.weaponId === 'sniper') {
+        this.spawnSpentCasing(scene);
+      }
+    }
+  }
+
+  private spawnSpentCasing(scene: THREE.Scene): void {
+    let casing = this.casingPool.find(c => !c.active);
+    if (!casing) {
+      casing = this.casingPool.reduce((oldest, c) => (c.life > oldest.life ? c : oldest), this.casingPool[0]!);
+    }
+
+    this.scratchEjectPos.copy(this.visualDef.ejectionPortOffset).applyMatrix4(this.weaponGroup.matrixWorld);
+    casing.mesh.position.copy(this.scratchEjectPos);
+
+    this.weaponRight.set(1, 0, 0).applyQuaternion(this.weaponGroup.quaternion);
+    this.weaponUp.set(0, 1, 0).applyQuaternion(this.weaponGroup.quaternion);
+    this.weaponBack.set(0, 0, 1).applyQuaternion(this.weaponGroup.quaternion);
+
+    casing.velocity
+      .copy(this.weaponRight).multiplyScalar(2.4 + (Math.random() - 0.5) * 0.4)
+      .addScaledVector(this.weaponUp, 1.4 + (Math.random() - 0.5) * 0.3)
+      .addScaledVector(this.weaponBack, 0.6 + (Math.random() - 0.5) * 0.3);
+
+    casing.rotVel.set(
+      (Math.random() - 0.5) * 30,
+      (Math.random() - 0.5) * 20,
+      (Math.random() - 0.5) * 30,
+    );
+
+    casing.life = 0;
+    casing.active = true;
+    casing.mesh.visible = true;
+
+    if (casing.mesh.parent !== scene) {
+      scene.add(casing.mesh);
     }
   }
 

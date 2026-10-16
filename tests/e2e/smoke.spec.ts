@@ -7,6 +7,8 @@ test.describe('Mini Arena Phase 0 Smoke Tests', () => {
     const canvas = page.locator('#canvas-container canvas');
     await expect(canvas).toBeVisible({ timeout: 15000 });
 
+    await page.waitForFunction(() => typeof window.__renderer === 'string', { timeout: 15000 });
+
     // Assert that the active renderer was recorded on window
     const rendererBackend = await page.evaluate(() => window.__renderer);
     expect(['webgpu', 'webgl2']).toContain(rendererBackend);
@@ -24,6 +26,8 @@ test.describe('Mini Arena Phase 0 Smoke Tests', () => {
     const canvas = page.locator('#canvas-container canvas');
     await expect(canvas).toBeVisible({ timeout: 15000 });
 
+    await page.waitForFunction(() => typeof window.__renderer === 'string', { timeout: 15000 });
+
     const rendererBackend = await page.evaluate(() => window.__renderer);
     expect(rendererBackend).toBe('webgl2');
 
@@ -36,6 +40,8 @@ test.describe('Mini Arena Phase 0 Smoke Tests', () => {
 
     const canvas = page.locator('#canvas-container canvas');
     await expect(canvas).toBeVisible({ timeout: 15000 });
+
+    await page.waitForFunction(() => typeof window.__renderer === 'string', { timeout: 15000 });
 
     const rendererBackend = await page.evaluate(() => window.__renderer);
     expect(rendererBackend).toBe('webgl2');

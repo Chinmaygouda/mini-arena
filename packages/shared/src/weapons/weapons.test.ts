@@ -39,6 +39,8 @@ import {
   hashPlayerShot,
   generateSeededPelletOffsets,
   PelletOffset,
+  updateTriggerState,
+  canTriggerFire,
 } from '../index';
 
 describe('Phase 2 Weapons Core Unit Tests', () => {
@@ -1611,5 +1613,70 @@ describe('Phase 2 Weapons Core Unit Tests', () => {
       });
     });
   });
+
+  describe('Phase 9 Weapon-Specific Firing Modes & Trigger Latches', () => {
+    it('semi-automatic pistol requires releasing the trigger before firing consecutive shots', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 1; // Tactical Pistol (fireMode: 'semi')
+      expect(getCurrentWeaponDef(state).fireMode).toBe('semi');
+
+      // 1. Initial click: can fire
+      expect(canTriggerFire(state, true)).toBe(true);
+      recordShotFired(state);
+      expect(state.semiAutoTriggerReleased).toBe(false);
+
+      // 2. Continuous hold: trigger NOT released -> cannot fire
+      updateTriggerState(state, true);
+      expect(canTriggerFire(state, true)).toBe(false);
+
+      // Even across 60 ticks (1.0 second), holding trigger prevents subsequent shot
+      for (let t = 0; t < 60; t++) {
+        updateTriggerState(state, true);
+        stepWeaponStateMachine(state, SIM_TICK_DELTA);
+        expect(canTriggerFire(state, true)).toBe(false);
+      }
+
+      // 3. Releasing trigger unlocks the semi-auto latch
+      updateTriggerState(state, false);
+      expect(state.semiAutoTriggerReleased).toBe(true);
+      expect(canTriggerFire(state, false)).toBe(false); // Released, not clicking
+
+      // 4. Next discrete click can fire
+      expect(canTriggerFire(state, true)).toBe(true);
+      recordShotFired(state);
+      expect(state.semiAutoTriggerReleased).toBe(false);
+    });
+
+    it('automatic assault rifle permits continuous fire while trigger is held', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 0; // Assault Rifle (fireMode: 'auto')
+      expect(getCurrentWeaponDef(state).fireMode).toBe('auto');
+
+      // Holding trigger permits firing across consecutive ticks
+      expect(canTriggerFire(state, true)).toBe(true);
+      recordShotFired(state);
+      updateTriggerState(state, true);
+      expect(canTriggerFire(state, true)).toBe(true);
+
+      // Releasing stops firing
+      updateTriggerState(state, false);
+      expect(canTriggerFire(state, false)).toBe(false);
+    });
+
+    it('semi-automatic input buffering allows clicking during cooldown without losing the shot', () => {
+      const state = createDefaultWeaponState();
+      state.currentSlot = 1; // Pistol
+      recordShotFired(state); // Shot fired, latch locked
+      expect(state.semiAutoTriggerReleased).toBe(false);
+
+      // Click while on cooldown buffers 6 ticks
+      bufferFireInput(state, 6);
+      expect(state.bufferedFireTicks).toBe(6);
+
+      // canTriggerFire permits the buffered shot even if trigger was not yet released
+      expect(canTriggerFire(state, true)).toBe(true);
+    });
+  });
 });
+
 

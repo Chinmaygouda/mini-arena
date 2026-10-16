@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { KeyframeClip, WeaponVisualDef } from '../animation/types';
+import { SHOTGUN_GRIP_RIGHT, SHOTGUN_GRIP_LEFT } from '../animation/fingerGripPoses';
 import { SplitWeaponMesh } from './assaultRifle';
 import { RealWeaponSliceResult, countObjectTriangles } from './realWeaponSlice';
 
@@ -111,8 +112,8 @@ export function buildShotgunVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
     rot: new THREE.Euler(1.2, 0.2, -0.4),
   };
   const leftPumpRest = {
-    pos: new THREE.Vector3(-0.015, -0.01, -0.11),
-    rot: new THREE.Euler(1.35, -0.1, -1.05),
+    pos: new THREE.Vector3(-0.042, -0.048, -0.15),
+    rot: new THREE.Euler(0.2, 0.35, -0.25),
   };
 
   // 1. IDLE CLIP
@@ -427,6 +428,166 @@ export function buildShotgunVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
     ],
   };
 
+  // 8. WALK CLIP
+  const walkClip: KeyframeClip = {
+    name: 'walk',
+    duration: 0.65,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftPumpRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 0.5,
+        leftHand: {
+          pos: leftPumpRest.pos.clone().add(new THREE.Vector3(-0.003, -0.006, 0.002)),
+          rot: leftPumpRest.rot,
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(-0.003, -0.006, 0.002)),
+          rot: rightGripRest.rot,
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(-0.003, -0.006, 0.002),
+        weaponRotOffset: new THREE.Euler(-0.012, 0.015, -0.01),
+      },
+      {
+        time: 1.0,
+        leftHand: leftPumpRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [],
+  };
+
+  // 9. SPRINT CLIP (High-ready Shotgun carry)
+  const sprintClip: KeyframeClip = {
+    name: 'sprint',
+    duration: 0.55,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: {
+          pos: leftPumpRest.pos.clone().add(new THREE.Vector3(-0.015, 0.035, 0.04)),
+          rot: new THREE.Euler(0.25, 0.45, -0.2),
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(0.01, 0.025, 0.03)),
+          rot: new THREE.Euler(-0.25, 0.1, 0.1),
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.02, -0.07, 0.04),
+        weaponRotOffset: new THREE.Euler(-0.3, 0.3, -0.18),
+      },
+      {
+        time: 0.5,
+        leftHand: {
+          pos: leftPumpRest.pos.clone().add(new THREE.Vector3(-0.018, 0.03, 0.05)),
+          rot: new THREE.Euler(0.28, 0.48, -0.18),
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(0.012, 0.02, 0.04)),
+          rot: new THREE.Euler(-0.22, 0.12, 0.12),
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.025, -0.08, 0.05),
+        weaponRotOffset: new THREE.Euler(-0.34, 0.34, -0.2),
+      },
+      {
+        time: 1.0,
+        leftHand: {
+          pos: leftPumpRest.pos.clone().add(new THREE.Vector3(-0.015, 0.035, 0.04)),
+          rot: new THREE.Euler(0.25, 0.45, -0.2),
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(0.01, 0.025, 0.03)),
+          rot: new THREE.Euler(-0.25, 0.1, 0.1),
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.02, -0.07, 0.04),
+        weaponRotOffset: new THREE.Euler(-0.3, 0.3, -0.18),
+      },
+    ],
+    events: [],
+  };
+
+  // 10. ADS CLIP
+  const adsClip: KeyframeClip = {
+    name: 'ads',
+    duration: 1.0,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftPumpRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 1.0,
+        leftHand: leftPumpRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [],
+  };
+
+  // 11. HOLSTER CLIP
+  const holsterClip: KeyframeClip = {
+    name: 'holster',
+    duration: 0.35,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftPumpRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 1.0,
+        leftHand: leftPumpRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, -0.18, 0.08),
+        weaponRotOffset: new THREE.Euler(-0.4, 0.1, -0.1),
+      },
+    ],
+    events: [],
+  };
+
   return {
     weaponId: 'shotgun',
     name: 'Combat Shotgun',
@@ -446,6 +607,10 @@ export function buildShotgunVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
       ejectPort: model.ejectionPort,
       magWell: model.magRestPos,
     },
+    fingerGrips: {
+      right: SHOTGUN_GRIP_RIGHT,
+      left: SHOTGUN_GRIP_LEFT,
+    },
     clips: {
       idle: idleClip,
       draw: drawClip,
@@ -456,6 +621,10 @@ export function buildShotgunVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
       reloadShellInsert: reloadShellInsertClip,
       reloadShellEnd: reloadShellEndClip,
       fire: fireClip,
+      walk: walkClip,
+      sprint: sprintClip,
+      ads: adsClip,
+      holster: holsterClip,
     },
   };
 }

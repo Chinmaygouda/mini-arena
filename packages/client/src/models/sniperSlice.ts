@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { SNIPER_DEF } from '@mini-arena/shared';
 import { KeyframeClip, WeaponVisualDef } from '../animation/types';
+import { SNIPER_GRIP_RIGHT, SNIPER_GRIP_LEFT } from '../animation/fingerGripPoses';
 import { SplitWeaponMesh } from './assaultRifle';
 import { RealWeaponSliceResult, countObjectTriangles } from './realWeaponSlice';
 
@@ -114,11 +115,11 @@ export function parseRealSniperModel(gltfScene: THREE.Group): SplitWeaponMesh {
 export function buildSniperVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
   const rightGripRest = {
     pos: new THREE.Vector3(0, -0.045, 0.085),
-    rot: new THREE.Euler(0.2, 0, 0),
+    rot: new THREE.Euler(1.1, 0.15, -0.3),
   };
   const leftForendRest = {
-    pos: new THREE.Vector3(0, 0.015, -0.18),
-    rot: new THREE.Euler(0.1, 0, 0),
+    pos: new THREE.Vector3(-0.042, -0.048, -0.22),
+    rot: new THREE.Euler(0.2, 0.35, -0.25),
   };
 
   // 1. IDLE CLIP (3.0s = 180 ticks @ 60 Hz)
@@ -554,6 +555,166 @@ export function buildSniperVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
     ],
   };
 
+  // 8. WALK CLIP
+  const walkClip: KeyframeClip = {
+    name: 'walk',
+    duration: 0.7,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftForendRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 0.5,
+        leftHand: {
+          pos: leftForendRest.pos.clone().add(new THREE.Vector3(-0.003, -0.006, 0.002)),
+          rot: leftForendRest.rot,
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(-0.003, -0.006, 0.002)),
+          rot: rightGripRest.rot,
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(-0.003, -0.006, 0.002),
+        weaponRotOffset: new THREE.Euler(-0.012, 0.015, -0.01),
+      },
+      {
+        time: 1.0,
+        leftHand: leftForendRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [],
+  };
+
+  // 9. SPRINT CLIP (High-ready Sniper carry)
+  const sprintClip: KeyframeClip = {
+    name: 'sprint',
+    duration: 0.6,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: {
+          pos: leftForendRest.pos.clone().add(new THREE.Vector3(-0.015, 0.035, 0.04)),
+          rot: new THREE.Euler(0.25, 0.45, -0.2),
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(0.01, 0.025, 0.03)),
+          rot: new THREE.Euler(-0.25, 0.1, 0.1),
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.02, -0.07, 0.04),
+        weaponRotOffset: new THREE.Euler(-0.3, 0.3, -0.18),
+      },
+      {
+        time: 0.5,
+        leftHand: {
+          pos: leftForendRest.pos.clone().add(new THREE.Vector3(-0.018, 0.03, 0.05)),
+          rot: new THREE.Euler(0.28, 0.48, -0.18),
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(0.012, 0.02, 0.04)),
+          rot: new THREE.Euler(-0.22, 0.12, 0.12),
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.025, -0.08, 0.05),
+        weaponRotOffset: new THREE.Euler(-0.34, 0.34, -0.2),
+      },
+      {
+        time: 1.0,
+        leftHand: {
+          pos: leftForendRest.pos.clone().add(new THREE.Vector3(-0.015, 0.035, 0.04)),
+          rot: new THREE.Euler(0.25, 0.45, -0.2),
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(0.01, 0.025, 0.03)),
+          rot: new THREE.Euler(-0.25, 0.1, 0.1),
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.02, -0.07, 0.04),
+        weaponRotOffset: new THREE.Euler(-0.3, 0.3, -0.18),
+      },
+    ],
+    events: [],
+  };
+
+  // 10. ADS CLIP
+  const adsClip: KeyframeClip = {
+    name: 'ads',
+    duration: 1.0,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftForendRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 1.0,
+        leftHand: leftForendRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [],
+  };
+
+  // 11. HOLSTER CLIP
+  const holsterClip: KeyframeClip = {
+    name: 'holster',
+    duration: SNIPER_DEF.swapTime / 2,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftForendRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 1.0,
+        leftHand: leftForendRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, -0.22, 0.1),
+        weaponRotOffset: new THREE.Euler(-0.4, 0.1, -0.1),
+      },
+    ],
+    events: [],
+  };
+
   return {
     weaponId: 'sniper',
     name: SNIPER_DEF.name,
@@ -573,6 +734,10 @@ export function buildSniperVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
       ejectPort: model.ejectionPort,
       magWell: model.magRestPos,
     },
+    fingerGrips: {
+      right: SNIPER_GRIP_RIGHT,
+      left: SNIPER_GRIP_LEFT,
+    },
     clips: {
       idle: idleClip,
       draw: drawClip,
@@ -581,6 +746,10 @@ export function buildSniperVisualDef(model: SplitWeaponMesh): WeaponVisualDef {
       boltCycle: boltCycleClip,
       reloadTactical: reloadTacticalClip,
       reloadEmpty: reloadEmptyClip,
+      walk: walkClip,
+      sprint: sprintClip,
+      ads: adsClip,
+      holster: holsterClip,
     },
   };
 }

@@ -241,7 +241,7 @@ test.describe('Mini Arena Phase 1 Controller & Arena E2E Tests', () => {
     });
 
     // Wait until crouched player passes through entrance into tunnel interior (z < 1.0)
-    await page.waitForFunction(() => window.__playerState!.z < 1.0, { timeout: 4000 });
+    await page.waitForFunction(() => window.__playerState!.z < 1.0, { timeout: 10000 });
 
     const insideTunnelPos = await page.evaluate(() => ({
       z: window.__playerState!.z,

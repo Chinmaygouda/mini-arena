@@ -19,15 +19,26 @@ export default defineConfig({
         launchOptions: {
           args: [
             '--enable-unsafe-webgpu',
-            '--use-gl=angle',
-            '--use-angle=swiftshader',
+            '--use-angle=default',
+            '--enable-dawn-features=allow_unsafe_apis',
           ],
         },
       },
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            'webgl.force-enabled': true,
+            'webgl.disabled': false,
+            'gfx.webrender.all': true,
+            'gfx.webrender.software': true,
+            'layers.acceleration.force-enabled': true,
+          },
+        },
+      },
     },
   ],
   webServer: {

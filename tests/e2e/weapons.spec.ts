@@ -20,6 +20,13 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     if (await prompt.isVisible()) {
       await prompt.click();
     }
+
+    // Ensure pointer-lock click does not leave inputManager in firing state
+    await page.evaluate(() => {
+      if (window.__inputManager) {
+        window.__inputManager.setFire(false);
+      }
+    });
   });
 
   test('HUD initializes with default weapon (Assault Rifle 30/90)', async ({ page }) => {
@@ -29,7 +36,7 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
 
     await expect(nameEl).toHaveText('Assault Rifle');
     await expect(magEl).toHaveText('30');
-    await expect(reserveEl).toHaveText('/ 90');
+    await expect(reserveEl).toHaveText('90');
   });
 
   test('firing consumes ammo, decrements mag count, and triggers viewmodel kick', async ({
@@ -37,8 +44,11 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
   }) => {
     // Check initial ammo and viewmodel recoil state
     const beforeState = await page.evaluate(() => {
+      if (window.__inputManager) window.__inputManager.setFire(false);
       const slot = window.__weaponState!.slots[window.__weaponState!.currentSlot];
+      if (slot) slot.ammoInMag = 30;
       const vm = window.__viewmodel;
+      if (vm) vm.kickCount = 0;
       return {
         mag: slot ? slot.ammoInMag : 0,
         kickCount: vm ? vm.kickCount : 0,
@@ -64,6 +74,14 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
       { timeout: 6000 },
     );
 
+    // Stop firing immediately
+    await page.evaluate(() => {
+      window.__inputManager!.setFire(false);
+      if (window.__weaponState) {
+        window.__weaponState.bufferedFireTicks = 0;
+      }
+    });
+
     // Verify viewmodel kick state during/immediately following shot
     const kickInfo = await page.evaluate(() => {
       const vm = window.__viewmodel!;
@@ -73,14 +91,6 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
         kickCount: vm.kickCount,
         clipName: vm.animator.getCurrentClipName(),
       };
-    });
-
-    // Stop firing
-    await page.evaluate(() => {
-      window.__inputManager!.setFire(false);
-      if (window.__weaponState) {
-        window.__weaponState.bufferedFireTicks = 0;
-      }
     });
 
     // Concrete kick assertions: recoil kick was registered
@@ -102,7 +112,7 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     let weaponName = await page.locator('#hud-weapon-name').textContent();
     expect(weaponName).toBe('Tactical Pistol');
     await expect(page.locator('#hud-ammo-mag')).toHaveText('12');
-    await expect(page.locator('#hud-ammo-reserve')).toHaveText('/ 36');
+    await expect(page.locator('#hud-ammo-reserve')).toHaveText('36');
 
     // 2. Swap to SMG (Digit3)
     await page.evaluate(() => window.__inputManager!.setWeaponSlot(2));
@@ -110,7 +120,7 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     weaponName = await page.locator('#hud-weapon-name').textContent();
     expect(weaponName).toBe('Rapid SMG');
     await expect(page.locator('#hud-ammo-mag')).toHaveText('30');
-    await expect(page.locator('#hud-ammo-reserve')).toHaveText('/ 120');
+    await expect(page.locator('#hud-ammo-reserve')).toHaveText('120');
 
     // 3. Swap to Shotgun (Digit4)
     await page.evaluate(() => window.__inputManager!.setWeaponSlot(3));
@@ -118,7 +128,7 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     weaponName = await page.locator('#hud-weapon-name').textContent();
     expect(weaponName).toBe('Combat Shotgun');
     await expect(page.locator('#hud-ammo-mag')).toHaveText('6');
-    await expect(page.locator('#hud-ammo-reserve')).toHaveText('/ 24');
+    await expect(page.locator('#hud-ammo-reserve')).toHaveText('24');
 
     // 4. Swap to Sniper (Digit5)
     await page.evaluate(() => window.__inputManager!.setWeaponSlot(4));
@@ -126,7 +136,7 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     weaponName = await page.locator('#hud-weapon-name').textContent();
     expect(weaponName).toBe('Precision Sniper');
     await expect(page.locator('#hud-ammo-mag')).toHaveText('5');
-    await expect(page.locator('#hud-ammo-reserve')).toHaveText('/ 15');
+    await expect(page.locator('#hud-ammo-reserve')).toHaveText('15');
 
     // 5. Swap back to Assault Rifle (Digit1)
     await page.evaluate(() => window.__inputManager!.setWeaponSlot(0));
@@ -138,6 +148,7 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
   test('tactical reload refills magazine from reserve ammo', async ({ page }) => {
     // Set magazine to 20/90
     await page.evaluate(() => {
+      if (window.__inputManager) window.__inputManager.setFire(false);
       const slot = window.__weaponState!.slots[window.__weaponState!.currentSlot];
       if (slot) slot.ammoInMag = 20;
     });
@@ -181,7 +192,7 @@ test.describe('Mini Arena Phase 2 Weapons Core & Offline Dummy Targets E2E Tests
     expect(ammoInMag).toBe(30);
     expect(ammoReserve).toBe(80);
     await expect(page.locator('#hud-ammo-mag')).toHaveText('30');
-    await expect(page.locator('#hud-ammo-reserve')).toHaveText('/ 80');
+    await expect(page.locator('#hud-ammo-reserve')).toHaveText('80');
   });
 
   test('sprint cancels active reload and preserves remaining ammo', async ({ page }) => {

@@ -2,10 +2,11 @@ import * as THREE from 'three';
 import { PISTOL_DEF } from '@mini-arena/shared';
 import { KeyframeClip, WeaponVisualDef } from './types';
 import { buildPistolModel } from '../models/pistol';
+import { PISTOL_GRIP_RIGHT, PISTOL_GRIP_LEFT } from './fingerGripPoses';
 
 /**
  * Creates the asset-swappable WeaponVisualDef for the Tactical Pistol.
- * Authors data-driven keyframes for idle, draw, inspect, tactical reload, empty reload, and fire.
+ * Authors data-driven keyframes for idle, draw, inspect, tactical reload, empty reload, fire, walk, sprint, and holster.
  * Timing matches pure shared gameplay rules authoritative in PISTOL_DEF.
  */
 export function createPistolVisualDef(): WeaponVisualDef {
@@ -14,14 +15,14 @@ export function createPistolVisualDef(): WeaponVisualDef {
   // Baseline hand rests relative to weapon root
   // Right hand grips pistol handle
   const rightGripRest = {
-    pos: new THREE.Vector3(0.01, -0.065, 0.03),
-    rot: new THREE.Euler(-0.25, 0, 0),
+    pos: new THREE.Vector3(0.01, -0.045, 0.04),
+    rot: new THREE.Euler(1.1, 0.15, -0.3),
   };
 
   // Left hand wraps around right hand in modern thumbs-forward support grip
   const leftSupportRest = {
-    pos: new THREE.Vector3(-0.022, -0.065, 0.035),
-    rot: new THREE.Euler(-0.2, 0.25, -0.2),
+    pos: new THREE.Vector3(-0.025, -0.065, 0.035),
+    rot: new THREE.Euler(0.4, 0.35, -0.2),
   };
 
   // --- 1. IDLE CLIP ---
@@ -77,19 +78,13 @@ export function createPistolVisualDef(): WeaponVisualDef {
     keyframes: [
       {
         time: 0.0,
-        leftHand: {
-          pos: new THREE.Vector3(-0.1, -0.25, -0.05),
-          rot: new THREE.Euler(0.3, 0.1, -0.2),
-        },
-        rightHand: {
-          pos: new THREE.Vector3(0.08, -0.22, 0.06),
-          rot: new THREE.Euler(-0.4, 0.1, 0.1),
-        },
+        leftHand: leftSupportRest,
+        rightHand: rightGripRest,
         magOffset: new THREE.Vector3(0, 0, 0),
         magAttached: true,
         boltOffset: new THREE.Vector3(0, 0, 0),
-        weaponPosOffset: new THREE.Vector3(0.06, -0.18, 0.04),
-        weaponRotOffset: new THREE.Euler(0.35, -0.15, 0.15),
+        weaponPosOffset: new THREE.Vector3(0.02, -0.08, 0.02),
+        weaponRotOffset: new THREE.Euler(0.2, -0.08, 0.08),
       },
       {
         time: 0.6,
@@ -382,6 +377,166 @@ export function createPistolVisualDef(): WeaponVisualDef {
     ],
   };
 
+  // --- 7. WALK CLIP ---
+  const walkClip: KeyframeClip = {
+    name: 'walk',
+    duration: 0.6,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftSupportRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 0.5,
+        leftHand: {
+          pos: leftSupportRest.pos.clone().add(new THREE.Vector3(-0.002, -0.005, 0.002)),
+          rot: leftSupportRest.rot,
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(-0.002, -0.005, 0.002)),
+          rot: rightGripRest.rot,
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(-0.002, -0.005, 0.002),
+        weaponRotOffset: new THREE.Euler(-0.01, 0.012, -0.008),
+      },
+      {
+        time: 1.0,
+        leftHand: leftSupportRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [],
+  };
+
+  // --- 8. SPRINT CLIP (Compressed high-ready pistol carry) ---
+  const sprintClip: KeyframeClip = {
+    name: 'sprint',
+    duration: 0.5,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: {
+          pos: leftSupportRest.pos.clone().add(new THREE.Vector3(-0.02, 0.03, 0.03)),
+          rot: new THREE.Euler(0.2, 0.35, -0.15),
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(0.01, 0.02, 0.02)),
+          rot: new THREE.Euler(-0.2, 0.1, 0.1),
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.015, -0.06, 0.03),
+        weaponRotOffset: new THREE.Euler(-0.25, 0.25, -0.15),
+      },
+      {
+        time: 0.5,
+        leftHand: {
+          pos: leftSupportRest.pos.clone().add(new THREE.Vector3(-0.022, 0.025, 0.04)),
+          rot: new THREE.Euler(0.24, 0.38, -0.12),
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(0.012, 0.015, 0.03)),
+          rot: new THREE.Euler(-0.18, 0.12, 0.12),
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.02, -0.07, 0.04),
+        weaponRotOffset: new THREE.Euler(-0.28, 0.28, -0.18),
+      },
+      {
+        time: 1.0,
+        leftHand: {
+          pos: leftSupportRest.pos.clone().add(new THREE.Vector3(-0.02, 0.03, 0.03)),
+          rot: new THREE.Euler(0.2, 0.35, -0.15),
+        },
+        rightHand: {
+          pos: rightGripRest.pos.clone().add(new THREE.Vector3(0.01, 0.02, 0.02)),
+          rot: new THREE.Euler(-0.2, 0.1, 0.1),
+        },
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.015, -0.06, 0.03),
+        weaponRotOffset: new THREE.Euler(-0.25, 0.25, -0.15),
+      },
+    ],
+    events: [],
+  };
+
+  // --- 9. ADS CLIP ---
+  const adsClip: KeyframeClip = {
+    name: 'ads',
+    duration: 1.0,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftSupportRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 1.0,
+        leftHand: leftSupportRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+    ],
+    events: [],
+  };
+
+  // --- 10. HOLSTER CLIP ---
+  const holsterClip: KeyframeClip = {
+    name: 'holster',
+    duration: PISTOL_DEF.swapTime / 2,
+    keyframes: [
+      {
+        time: 0.0,
+        leftHand: leftSupportRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0, 0, 0),
+        weaponRotOffset: new THREE.Euler(0, 0, 0),
+      },
+      {
+        time: 1.0,
+        leftHand: leftSupportRest,
+        rightHand: rightGripRest,
+        magOffset: new THREE.Vector3(0, 0, 0),
+        magAttached: true,
+        boltOffset: new THREE.Vector3(0, 0, 0),
+        weaponPosOffset: new THREE.Vector3(0.02, -0.08, 0.02),
+        weaponRotOffset: new THREE.Euler(0.2, -0.08, 0.08),
+      },
+    ],
+    events: [],
+  };
+
   return {
     weaponId: 'pistol',
     name: PISTOL_DEF.name,
@@ -401,6 +556,10 @@ export function createPistolVisualDef(): WeaponVisualDef {
       ejectPort: model.ejectionPort,
       magWell: model.magRestPos,
     },
+    fingerGrips: {
+      right: PISTOL_GRIP_RIGHT,
+      left: PISTOL_GRIP_LEFT,
+    },
     clips: {
       idle: idleClip,
       draw: drawClip,
@@ -408,6 +567,10 @@ export function createPistolVisualDef(): WeaponVisualDef {
       reloadTactical: reloadTacticalClip,
       reloadEmpty: reloadEmptyClip,
       fire: fireClip,
+      walk: walkClip,
+      sprint: sprintClip,
+      ads: adsClip,
+      holster: holsterClip,
     },
   };
 }

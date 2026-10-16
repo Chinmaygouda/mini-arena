@@ -15,6 +15,8 @@ export class TwoBoneIKSolver {
   public bendDir = new THREE.Vector3();
   public elbowPos = new THREE.Vector3();
 
+  public currentStretchScale = 1.0;
+
   private xAxis = new THREE.Vector3();
   private yAxis = new THREE.Vector3();
   private zAxis = new THREE.Vector3();
@@ -22,16 +24,21 @@ export class TwoBoneIKSolver {
 
   private qWorld = new THREE.Quaternion();
   private qParentInv = new THREE.Quaternion();
+  private qForearmWorld = new THREE.Quaternion();
+  private qRel = new THREE.Quaternion();
+  private qTwist = new THREE.Quaternion();
+  private qForearmRoll = new THREE.Quaternion();
 
   /**
-   * Solves elbow position for a two-bone kinematic chain.
+   * Solves elbow position for a two-bone kinematic chain with rigid, un-stretched bones.
    *
    * @param rootPos Position of the root joint (shoulder)
    * @param targetPos Target position for the end effector (hand/wrist)
    * @param polePos Elbow hint / pole target position (must be placed low and outward)
-   * @param len1 Length of the first bone (upper arm)
-   * @param len2 Length of the second bone (forearm)
+   * @param len1 Base length of the first bone (upper arm)
+   * @param len2 Base length of the second bone (forearm)
    * @param outElbowPos Vector3 to receive the computed elbow position
+   * @returns stretchScale applied to bone lengths (always 1.00 = rigid)
    */
   public solve(
     rootPos: THREE.Vector3,
@@ -40,14 +47,22 @@ export class TwoBoneIKSolver {
     len1: number,
     len2: number,
     outElbowPos: THREE.Vector3,
-  ): void {
+    _allowStretch = false,
+  ): number {
     // 1. Vector from root to target
     this.dir.subVectors(targetPos, rootPos);
     const dist = this.dir.length();
 
-    // Clamp distance within reachable range
-    const maxReach = len1 + len2 - 0.001;
-    const minReach = Math.max(0.001, Math.abs(len1 - len2) + 0.001);
+    // 2. Strict rigid bone lengths: no stretching or bone translation
+    const stretchScale = 1.0;
+    this.currentStretchScale = 1.0;
+
+    const effLen1 = len1;
+    const effLen2 = len2;
+
+    // Clamp distance within reachable range (prevents cosine domain error)
+    const maxReach = effLen1 + effLen2 - 0.0001;
+    const minReach = Math.max(0.0001, Math.abs(effLen1 - effLen2) + 0.0001);
     const clampedDist = Math.max(minReach, Math.min(maxReach, dist));
 
     if (dist > 0.0001) {
@@ -56,12 +71,12 @@ export class TwoBoneIKSolver {
       this.dir.set(0, 0, -1);
     }
 
-    // 2. Law of cosines to find angle at shoulder (alpha)
-    const cosAlpha = (len1 * len1 + clampedDist * clampedDist - len2 * len2) / (2 * len1 * clampedDist);
+    // 3. Law of cosines to find angle at shoulder (alpha)
+    const cosAlpha = (effLen1 * effLen1 + clampedDist * clampedDist - effLen2 * effLen2) / (2 * effLen1 * clampedDist);
     const clampedCosAlpha = Math.max(-1, Math.min(1, cosAlpha));
     const sinAlpha = Math.sqrt(Math.max(0, 1 - clampedCosAlpha * clampedCosAlpha));
 
-    // 3. Construct the bending plane using pole vector
+    // 4. Construct the bending plane using pole vector
     this.poleDir.subVectors(polePos, rootPos);
     this.planeNormal.crossVectors(this.dir, this.poleDir);
 
@@ -77,16 +92,18 @@ export class TwoBoneIKSolver {
     // Bend direction perpendicular to line of action within bend plane
     this.bendDir.crossVectors(this.planeNormal, this.dir).normalize();
 
-    // 4. Compute elbow position
+    // 5. Compute elbow position
     outElbowPos
       .copy(rootPos)
-      .addScaledVector(this.dir, len1 * clampedCosAlpha)
-      .addScaledVector(this.bendDir, len1 * sinAlpha);
+      .addScaledVector(this.dir, effLen1 * clampedCosAlpha)
+      .addScaledVector(this.bendDir, effLen1 * sinAlpha);
 
-    // 5. Sanity constraint: elbow must never flip above shoulder into the sky
+    // 6. Sanity constraint: elbow must never flip above shoulder into the sky
     if (outElbowPos.y > rootPos.y + 0.05) {
       outElbowPos.y = rootPos.y + 0.05;
     }
+
+    return stretchScale;
   }
 
   /**
@@ -131,13 +148,34 @@ export class TwoBoneIKSolver {
 
   /**
    * Aligns the hand wrist bone to match the weapon socket world rotation.
-   * Clamps relative forearm twist to prevent unnatural wrist spin.
+   * Distributes 35% of the twist along the forearm bone to prevent wrist "candy-wrapper" skinning pinch.
    */
   public orientWrist(
     handBone: THREE.Bone,
     forearmBone: THREE.Bone,
     targetQuatWorld: THREE.Quaternion,
+    twistShare = 0.35,
   ): void {
+    if (twistShare > 0) {
+      // 1. World rotation of forearm
+      forearmBone.getWorldQuaternion(this.qForearmWorld);
+
+      // 2. Relative rotation from forearm to target wrist
+      this.qRel.copy(this.qForearmWorld).invert().multiply(targetQuatWorld);
+
+      // 3. Extract twist component around local length axis (+Y)
+      this.qTwist.set(0, this.qRel.y, 0, this.qRel.w).normalize();
+      if (this.qRel.w < 0) {
+        this.qTwist.set(0, -this.qRel.y, 0, -this.qRel.w).normalize();
+      }
+
+      // 4. Distribute twist fraction to forearm
+      this.qForearmRoll.identity().slerp(this.qTwist, twistShare);
+      forearmBone.quaternion.multiply(this.qForearmRoll).normalize();
+      forearmBone.updateMatrixWorld(true);
+    }
+
+    // 5. Final wrist orientation matches targetQuatWorld exactly
     forearmBone.getWorldQuaternion(this.qParentInv).invert();
     handBone.quaternion.copy(this.qParentInv).multiply(targetQuatWorld).normalize();
     handBone.updateMatrixWorld(true);

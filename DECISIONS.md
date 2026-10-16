@@ -432,3 +432,41 @@ Prior viewmodel hand attachments suffered from visible kinematic failures during
   - Has NaN/Inf: false.
 - **History Independence**: Max bone orientation deviation after returning to start pose: 0.0000 rad (< 1e-7).
 - **Browser Visual Verification**: 8 real-Chrome screenshots captured for AK-47 and 8 screenshots for Combat Shotgun.
+
+---
+
+## ADR 015: Fully Rigid Viewmodel Rigging, Weapon-Local Arm Keyframing & Zero-IK Reload Architecture
+
+**Date**: 2026-10-16  
+**Status**: Accepted
+
+### Context
+Phase 3 viewmodel rigging required strict adherence to authentic game animation principles:
+1. **Bone Rigidity**: Bone scaling (`mesh.scale.set(1,1,1)`) must remain strictly $(1,1,1)$ with zero bone elongation and zero elbow joint separation across all motion states. Original bind pose lengths ($0.322236\text{ m}$ upper arm, $0.237276\text{ m}$ forearm) must be preserved within $\le 0.1\text{ mm}$.
+2. **Authoring Hands in Weapon-Local Space**: Arms and weapons must function as a single keyframed system. Hands are authored in weapon-local socket space, with runtime analytical IK serving only as a small residual corrector ($\le 2.0\text{ cm}$) during procedural recoil, sway, and weapon transitions.
+3. **Zero IK During Reload Keyframes**: During active reload animations (`isReloading = true`), analytical IK is disabled for the left arm to prevent joint flipping, receiver penetration, or artificial locking. The left arm kinematically traces author magazine grasp, shell insertion, and bolt re-rack keyframes along the shoulder-to-wrist vector.
+4. **First-Person View Visibility**: The left hand must remain prominently visible in first-person hip view across all 5 weapons without obstructing iron sights or optical scopes in ADS.
+
+### Decisions
+1. **Strict Bind-Pose Bone Length Invariant**:
+   - Skinned mesh scale is locked to $(1,1,1)$ every frame.
+   - Elbow and wrist joint positions in `updateSkinnedIK` enforce exact Euclidean segment lengths ($L_1 = 0.322236\text{ m}$, $L_2 = 0.237276\text{ m}$) via unit-vector projection from parent joints.
+2. **Weapon-Local Socket Offsets**:
+   - `draw` and `holster` keyframes are anchored to each weapon's rest sockets (`leftHandguardRest`, `leftSupportRest`, `leftForegripRest`, `leftPumpRest`, `leftForendRest`, `rightGripRest`) rather than world-space offsets, keeping target reach within natural human anatomical limits ($< 0.559\text{ m}$).
+3. **Zero-IK Reload Flagging**:
+   - `WeaponAnimator` exposes `isReloading = true` when playing `reloadTactical`, `reloadEmpty`, `reloadShellStart`, `reloadShellInsert`, or `reloadShellEnd`.
+   - `armsRig.updateSkinnedIK()` leaves the left arm in pure authored keyframe space during reload ticks, eliminating receiver clipping and elbow inversion.
+4. **Precision Sculpted Finger Grips**:
+   - All 5 weapons use distinct, tailored finger grip quaternion tables in `packages/client/src/animation/fingerGripPoses.ts` (`AK_GRIP_*`, `PISTOL_GRIP_*`, `SMG_GRIP_*`, `SHOTGUN_GRIP_*`, `SNIPER_GRIP_*`, `MAGAZINE_GRASP_LEFT`, `BOLT_HOOK_RIGHT`), eliminating open-claw hands.
+
+### Verification
+- **Automated Motion Test Suite (`scripts/test-phase3-motion.mjs`)**:
+  - Sampled 120–300 frames across 8 motion conditions (`sway`, `recoil`, `sprint`, `crouch`, `jump_landing`, `weapon_swap`, `inspect`, `full_auto`):
+    - Upper Arm Length Error: $\le 0.0003\text{ mm}$ (budget $\le 0.1\text{ mm}$)
+    - Forearm Length Error: $\le 0.0001\text{ mm}$ (budget $\le 0.1\text{ mm}$)
+    - Bone Scale Deviation: $1.1921 \times 10^{-7}$ (budget $\le 1 \times 10^{-5}$)
+    - Elbow Joint Separation: $0\text{ mm}$ (budget $0\text{ mm}$)
+    - Max Residual Palm-Socket IK: $0.9066\text{ cm}$ (budget $\le 2.0\text{ cm}$)
+    - NaN / Inf checks: clean (`false`).
+- **Playwright Multi-Browser E2E Suite**: 70/70 passing across Chromium and Firefox.
+- **Evidence Screenshots**: 25 first-person screenshots (5 weapons $\times$ 5 poses) captured with synchronized HUD action state text in `docs/screenshots/phase3/`.

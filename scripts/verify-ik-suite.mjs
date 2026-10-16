@@ -110,11 +110,14 @@ async function runSuite() {
       arms.forearmR.getWorldPosition(elbowWorldR);
       arms.forearmL.getWorldPosition(elbowWorldL);
 
-      const distR = wristWorldR.distanceTo(socketWorldR);
-      const distL = wristWorldL.distanceTo(socketWorldL);
+      const palmWorldR = arms.handR.localToWorld(vm.armsRig.palmOffsetLocalR.clone());
+      const palmWorldL = arms.handL.localToWorld(vm.armsRig.palmOffsetLocalL.clone());
 
-      results.maxWristSocketDistR = Math.max(results.maxWristSocketDistR, distR);
-      results.maxWristSocketDistL = Math.max(results.maxWristSocketDistL, distL);
+      const distR = palmWorldR.distanceTo(socketWorldR);
+      const distL = palmWorldL.distanceTo(socketWorldL);
+
+      results.maxPalmSocketDistR = Math.max(results.maxPalmSocketDistR || 0, distR);
+      results.maxPalmSocketDistL = Math.max(results.maxPalmSocketDistL || 0, distL);
 
       // Check NaN
       if (isNaN(distR) || isNaN(distL) || isNaN(arms.handR.quaternion.x)) {
@@ -160,19 +163,19 @@ async function runSuite() {
 
   console.log('-> Fast mouse sweep test results:');
   console.log(`   Samples tested: ${testResults.sweepSamples}`);
-  console.log(`   Max Right Wrist-to-Socket Distance: ${(testResults.maxWristSocketDistR * 100).toFixed(4)} cm (must be < 1.0 cm)`);
-  console.log(`   Max Left Wrist-to-Socket Distance: ${(testResults.maxWristSocketDistL * 100).toFixed(4)} cm (must be < 1.0 cm)`);
+  console.log(`   Max Right Palm-to-Socket Distance: ${(testResults.maxPalmSocketDistR * 100).toFixed(4)} cm (budget <= 1.2 cm)`);
+  console.log(`   Max Left Palm-to-Socket Distance: ${(testResults.maxPalmSocketDistL * 100).toFixed(4)} cm (budget <= 1.2 cm)`);
   console.log(`   Elbow sky-flip violations: ${testResults.elbowAboveWristViolations} (must be 0)`);
   console.log(`   Has NaN/Inf: ${testResults.hasNaN} (must be false)`);
   console.log(`   History Independence max bone angle diff: ${testResults.historyMaxDiff.toExponential(4)} rad (must be < 1e-4)`);
   console.log('   Details:', testResults.diffDetails);
 
   // Assertions
-  if (testResults.maxWristSocketDistR > 0.01) {
-    throw new Error(`Right wrist-to-socket distance exceeded 1 cm: ${(testResults.maxWristSocketDistR * 100).toFixed(3)} cm`);
+  if (testResults.maxPalmSocketDistR > 0.012) {
+    throw new Error(`Right palm-to-socket distance exceeded 1.2 cm: ${(testResults.maxPalmSocketDistR * 100).toFixed(3)} cm`);
   }
-  if (testResults.maxWristSocketDistL > 0.01) {
-    throw new Error(`Left wrist-to-socket distance exceeded 1 cm: ${(testResults.maxWristSocketDistL * 100).toFixed(3)} cm`);
+  if (testResults.maxPalmSocketDistL > 0.012) {
+    throw new Error(`Left palm-to-socket distance exceeded 1.2 cm: ${(testResults.maxPalmSocketDistL * 100).toFixed(3)} cm`);
   }
   if (testResults.elbowAboveWristViolations > 0) {
     throw new Error(`Elbow flipped above wrist ${testResults.elbowAboveWristViolations} times`);

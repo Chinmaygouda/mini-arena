@@ -64,6 +64,10 @@ export interface WeaponVisualDef {
     magWell?: THREE.Vector3;
     loadingPort?: THREE.Vector3;
   };
+  fingerGrips?: {
+    left?: Record<string, [number, number, number, number]>;
+    right?: Record<string, [number, number, number, number]>;
+  };
   clips: {
     idle: KeyframeClip;
     draw: KeyframeClip;
@@ -71,9 +75,15 @@ export interface WeaponVisualDef {
     reloadTactical: KeyframeClip;
     reloadEmpty: KeyframeClip;
     fire: KeyframeClip;
+    walk?: KeyframeClip;
+    sprint?: KeyframeClip;
+    holster?: KeyframeClip;
+    ads?: KeyframeClip;
     reloadShellStart?: KeyframeClip;
     reloadShellInsert?: KeyframeClip;
     reloadShellEnd?: KeyframeClip;
     boltCycle?: KeyframeClip;
   };
 }
+
+export type WeaponClipName = keyof WeaponVisualDef['clips'];

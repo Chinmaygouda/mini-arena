@@ -339,10 +339,29 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
     - Added external inspection camera support: `?debug=1&vmCam=side|top|front`.
     - Camera near plane adjusted to 0.01 to prevent pistol ADS near-plane clipping.
 
+- **10. Final Rigid Rig Architecture, Verified Motion Suite & 25 Phase 3 Evidence Screenshots (`docs/screenshots/phase3/`)**:
+  - **Rigid Bone Lengths & Scale Invariant**:
+    - Upper arm length: $0.322236\text{ m}$ (max error $\le 0.0003\text{ mm}$ across all frames).
+    - Forearm length: $0.237276\text{ m}$ (max error $\le 0.0001\text{ mm}$ across all frames).
+    - Bone scales strictly locked to $(1,1,1)$ (deviation $\le 1.1921 \times 10^{-7}$).
+    - Elbow joint separation: $0.0000\text{ mm}$ (Euclidean distance between forearm start and upper arm end).
+  - **Keyframe-First Authoring & Zero-IK Reload**:
+    - Hands authored in weapon-local space (`draw` and `holster` anchored to rest sockets within reach $< 0.559\text{ m}$).
+    - Analytical IK used purely for residual corrections ($\le 0.9066\text{ cm}$, well within the $2.0\text{ cm}$ budget).
+    - Zero IK during active reload animations (`isReloading = true`); left hand smoothly traces author magazine/bolt keyframes.
+    - Left hand clearly visible in first-person hip view across all 5 weapons without clipping iron sights or optical scopes in ADS.
+  - **Full Automated Motion Test Suite Results ([scripts/test-phase3-motion.mjs](file:///d:/Games/FPS/scripts/test-phase3-motion.mjs))**:
+    - All 8 conditions passed: `sway` (PASS), `recoil` (PASS), `sprint` (PASS), `crouch` (PASS), `jump_landing` (PASS), `weapon_swap` (PASS, max IK $0.9066\text{ cm}$), `inspect` (PASS), `full_auto` (PASS).
+  - **25 First-Person Evidence Screenshots ([docs/screenshots/phase3/](file:///d:/Games/FPS/docs/screenshots/phase3/))**:
+    - Captured across 5 weapons $\times$ 5 poses (`hip`, `ads`, `mid_reload`, `equip`, `sprint`) with 100% synchronized HUD action state text (`READY`, `AIMING (ADS)`, `RELOADING...`, `EQUIPPING...`, `SPRINTING`).
+  - **Verification Suite Clean Pass**:
+    - `pnpm verify`: 0 lint errors/warnings, 0 typecheck errors, 5/5 purity tests passing, 104/104 vitest tests passing, production bundle built in 408ms.
+    - Playwright multi-browser E2E suite: 70/70 passing across Chromium and Firefox.
+
 ## Next 3 steps
-1. **User Sign-Off**: User reviews empirical benchmarks, bundle audit, and hand socket screenshots.
-2. **Phase 4 Kickoff (Part B)**: Implement FxEventQueue, hit markers, audio, tracers, impacts and decals, camera recoil.
-3. **Phase 4 Explosives & Physics (Part A)**: Implement grenades, Rapier physics, particle sparks, and smoke.
+1. **User Phase 3 Gate Sign-Off**: User reviews Phase 3 Gate Report, empirical motion verification, and 25 first-person screenshots.
+2. **Phase 4 Visual & Audio Juice (Part A & B)**: Implement FxEventQueue, procedural camera recoil kick, muzzle flash lights, shell casing ejections, and impact decals.
+3. **Phase 4 Explosives & Physics (Part C)**: Implement grenade projectile physics (Rapier), bouncy fuse simulation, and explosion radius damage.
 
 ## Perf log
 | date | scene | device | FPS | draw calls | tris | notes |
@@ -356,6 +375,7 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
 | 2026-10-15 | Arena + Real AK47 Slice + PSX Arms + 3 Dummies | Real Chrome (Hardware Intel GPU, WebGPU) | 60.3 | 110 | 6,006 | True hardware benchmark: 60.3 FPS (WebGPU), 60.2 FPS (WebGL2) |
 | 2026-10-15 | Arena + All 5 Real Weapons (Vsync-Locked 30s) | Real Chrome (D3D11 ANGLE, DevTools Closed) | 60.0 | 2 | 2,900-3,561 | 30s rAF intervals: mean 16.66-16.68 ms, p95 16.9-17.0 ms, frames >20ms <= 0.11% |
 | 2026-10-15 | Arena + All 5 Real Weapons (Uncapped) | Real Chrome (D3D11 ANGLE, DevTools Closed) | 449-535 | 2 | 2,900-3,561 | Uncapped throughput: AK 449.6, Pistol 529.5, SMG 523.6, Shotgun 534.9, Sniper 506.5 FPS |
+| 2026-10-16 | Arena + All 5 Real Weapons (Rigid IK Suite) | Chromium + Firefox (Hardware GPU + SWGL) | 60.0 | 2 | 2,900-3,561 | Phase 3 Final Gate: 70/70 E2E passing, 100% bone rigidity, 0 mm elbow separation |
 
 
 
