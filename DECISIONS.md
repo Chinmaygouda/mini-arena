@@ -667,7 +667,45 @@ Phase 4 requires a complete grenade system (Frag, Flash, Smoke) and combat visua
 ### Acceptance & Verification Results
 - **Vitest Unit Tests**: 11 unit tests in `packages/shared/src/grenades/grenades.test.ts` (115/115 test suite passing).
 - **Playwright E2E**: 6/6 tests passing across Chromium and Firefox in `tests/e2e/grenades.spec.ts`.
-- **Performance**: Sustained **60.0 FPS avg / 59.5 FPS 1% low** under heavy detonation and continuous full-auto fire.
 - **Evidence**: 12 screenshots captured in `docs/screenshots/phase4/` validating throw arc, bounce, scorch decals, flash whiteout, smoke occlusion, and shell casing ejections.
+
+---
+
+## ADR 020: Phase 5 Modular Arena Maps (Warehouse, Plaza, Container Yard) & PBR Art Pipeline
+
+**Date**: 2026-10-16  
+**Status**: Accepted
+
+### Context
+Phase 5 requires three diverse competitive arena maps (Warehouse, Plaza, Container Yard) supporting 4-player tactical combat (2v2 TDM), verified collision proxy geometry in Rapier 3D, PBR materials, lighting presets, zero-leak hot-switching, and automated map validation.
+
+### Architectural Decisions
+
+1. **Deterministic Map Specifications in `packages/shared/src/maps/`**:
+   - `Warehouse`: 40m × 40m tight indoor industrial layout with central elevated catwalk, cargo crate clusters, and two flanking lanes.
+   - `Plaza`: 50m × 50m daylight Mediterranean courtyard featuring a central stone fountain/monument, classical perimeter colonnade, and raised West terrace.
+   - `Container Yard`: 60m × 40m cargo terminal with multi-tier stacked shipping containers, narrow chokepoint alleys, and elevated crane catwalk sniper lane.
+   - Symmetrical 4 team spawns per map (2 Alpha, 2 Bravo) with min spawn distance $\ge 25\text{ m}$.
+   - Surface types (`concrete`, `metal`, `wood`, `stone`) driving both visual materials, bullet impact VFX, and footstep sound effects.
+
+2. **Automated Validation & 2D Grid Reachability (`validation.ts`)**:
+   - Validates spawn count ($\ge 4$), team distribution, perimeter wall clearance ($\ge 1\text{ m}$), and collision non-intersection.
+   - 2D grid BFS flood fill verifying unobstructed floor connectivity between opposing team spawns, preventing player traps and impassable barriers.
+
+3. **Client `MapLoader` & Procedural PBR Textures (`packages/client/src/maps/`)**:
+   - Zero-external-network PBR materials using procedural canvas normal and noise textures (concrete, stone, corrugated steel, crate wood planks) keeping client bundle strictly under the 25 MB budget.
+   - Rapier kinematic colliders generated for all static boxes and ramps.
+   - Smooth stair ramp physics proxy: Renders individual visual steps while generating a single clean angled ramp collider, preventing jagged kinematic character controller collisions.
+   - Lifecycle management (`unloadCurrentMap`): Disposes Three.js geometries, procedural textures, materials, and removes Rapier colliders and rigid bodies without leaks.
+
+### Acceptance & Verification Results
+- **Vitest Unit Tests**: 6/6 tests passing in `packages/shared/src/maps/maps.test.ts`.
+- **Playwright E2E**: 8/8 tests passing in `tests/e2e/maps.spec.ts` across Chromium and Firefox.
+- **Draw Calls**: **6 to 18 calls/frame** (Budget: $\le 250$).
+- **Triangles**: **10,421 triangles** (Budget: $\le 120\text{k}$ Low / $\le 300\text{k}$ High).
+- **Load Time**: 340ms to 1085ms (Budget: $\le 5,000\text{ms}$).
+- **10x Load/Unload Leak Test**: PASSED (31 map transitions; initial bodies 25 == final bodies 25, initial colliders 26 == final colliders 26).
+- **Visual Evidence**: 6 screenshots captured in `docs/screenshots/maps/` (first-person and top-down tactical overview for all 3 maps).
+
 
 

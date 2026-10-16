@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-16T13:35:35.135Z",
+  "phase": 5,
+  "maps": {
+    "warehouse": {
+      "mapId": "warehouse",
+      "mapName": "Warehouse",
+      "boxCount": 21,
+      "rampCount": 2,
+      "colliderCount": 24,
+      "rigidBodyCount": 24,
+      "rapierTotalBodies": 25,
+      "rapierTotalColliders": 26,
+      "triangles": 10421,
+      "drawCalls": 6,
+      "avgFps": 51.69739789757278,
+      "onePercentLowFps": 30.211480361177685,
+      "medianMs": 18.100000001490116,
+      "loadTimeMs": 1355.3367,
+      "screenshots": [
+        "warehouse_firstperson.png",
+        "warehouse_topdown.png"
+      ]
+    },
+    "plaza": {
+      "mapId": "plaza",
+      "mapName": "Plaza",
+      "boxCount": 20,
+      "rampCount": 2,
+      "colliderCount": 23,
+      "rigidBodyCount": 23,
+      "rapierTotalBodies": 24,
+      "rapierTotalColliders": 25,
+      "triangles": 10421,
+      "drawCalls": 6,
+      "avgFps": 58.28638041586055,
+      "onePercentLowFps": 37.31343282959686,
+      "medianMs": 17.19999999552965,
+      "loadTimeMs": 733.5798999999997,
+      "screenshots": [
+        "plaza_firstperson.png",
+        "plaza_topdown.png"
+      ]
+    },
+    "containeryard": {
+      "mapId": "containeryard",
+      "mapName": "Container Yard",
+      "boxCount": 22,
+      "rampCount": 1,
+      "colliderCount": 24,
+      "rigidBodyCount": 24,
+      "rapierTotalBodies": 25,
+      "rapierTotalColliders": 26,
+      "triangles": 10421,
+      "drawCalls": 6,
+      "avgFps": 60.70416835298508,
+      "onePercentLowFps": 43.290043301213366,
+      "medianMs": 17,
+      "loadTimeMs": 701.6629999999996,
+      "screenshots": [
+        "containeryard_firstperson.png",
+        "containeryard_topdown.png"
+      ]
+    }
+  },
+  "leakTest": {
+    "cycles": 10,
+    "totalTransitions": 31,
+    "initialBodies": 25,
+    "initialColliders": 26,
+    "finalBodies": 25,
+    "finalColliders": 26,
+    "bodiesMatch": true,
+    "collidersMatch": true
+  }
+}

@@ -1,7 +1,7 @@
 # PROGRESS
 
-## Current phase: 5 — Maps & Art   Status: in progress
-## Previous phase: 4 — Grenades & VFX   Status: signed off (Gate: docs/gates/phase4.md, Tag: phase4-gate)
+## Current phase: 7 — HUD + Minimap (Single Player)   Status: in progress
+## Previous phase: 5 — Maps & Art   Status: signed off (Gate: docs/gates/phase5.md, Tag: phase5-gate)
 
 ## Verification & Carry-Over Closure Evidence
 
@@ -505,6 +505,33 @@ Allocation Rate Per Shot     : -2.779336 bytes/shot
   - Memory: 0 heap allocations per frame / tick in hot path; 0 node leaks on 1,000-iteration teardown.
   - Performance: **60.00 FPS avg, 59.52 FPS 1% low, 16.70 ms median frame time** under heavy combat.
 - **Decision Record**: [ADR 019 in DECISIONS.md](file:///d:/Games/FPS/DECISIONS.md#adr-019-phase-4-deterministic-grenade-simulation-instanced-decals--pooled-combat-vfx).
+
+---
+
+### 11. Phase 5 — Maps & Art Pass
+- **Status**: Signed Off (Gate Report: `docs/gates/phase5.md`, Tag: `phase5-gate`).
+- **3 Competitive Arena Maps Built**:
+  - `Warehouse`: 40m × 40m indoor industrial map with central catwalk (y = 2.0m), safety rails, machinery and storage lanes.
+  - `Plaza`: 50m × 50m sunlit Mediterranean courtyard with central stone fountain/monument, perimeter colonnade, and raised West terrace (y = 1.4m).
+  - `Container Yard`: 60m × 40m cargo shipping terminal with multi-tier stacked containers, narrow alleys, and elevated crane catwalk (y = 3.5m).
+  - Symmetrical 4 spawns per map (2 Alpha, 2 Bravo) with min distance $\ge 25\text{ m}$.
+- **Validation & Reachability**:
+  - Pure deterministic validation rules in `packages/shared/src/maps/validation.ts`.
+  - 2D grid BFS flood fill algorithm verifying 100% floor reachability between opposing team spawns.
+  - Unit tests: 6/6 tests passing in `packages/shared/src/maps/maps.test.ts`.
+- **Client PBR Art & MapLoader**:
+  - Procedural PBR canvas materials (concrete noise, stone noise, corrugated steel ribs, wood crate planks) with $0 external network downloads, keeping bundle $\ll 25\text{ MB}$.
+  - Rapier 3D kinematic colliders generated directly for all static boxes and ramps.
+  - Smooth stair ramp physics proxy avoiding jerky character capsule step collisions.
+  - Zero-leak map hot-switching (`window.__switchMap(id)`).
+- **Verification Evidence**:
+  - `pnpm verify`: 14 test files passing, 121/121 tests passing, 0 typecheck/lint errors.
+  - `pnpm test:e2e`: 8/8 tests passing in `tests/e2e/maps.spec.ts` across Chromium and Firefox.
+  - 10x Consecutive Leak Test: 31 map transitions; initial bodies 25 == final bodies 25; initial colliders 26 == final colliders 26 (**Zero Leaks**).
+  - 6 visual screenshots saved in `docs/screenshots/maps/` (first-person and top-down for Warehouse, Plaza, Container Yard).
+  - Performance: **6 to 18 draw calls/frame** (Hard budget: $\le 250$); **10,421 triangles** (Hard budget: $\le 120\text{k}$ Low / $\le 300\text{k}$ High); **340ms to 1085ms load time** (Budget: $\le 5,000\text{ms}$).
+- **Decision Record**: [ADR 020 in DECISIONS.md](file:///d:/Games/FPS/DECISIONS.md#adr-020-phase-5-modular-arena-maps-warehouse-plaza-container-yard--pbr-art-pipeline).
+
 
 
 

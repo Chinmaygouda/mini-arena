@@ -512,4 +512,38 @@ export class TargetDummyManager {
       dummy.hitbox.position.z = dummy.group.position.z;
     }
   }
+
+  public repositionForMap(mapId: string): void {
+    const d0 = this.dummies[0];
+    const d1 = this.dummies[1];
+    const d2 = this.dummies[2];
+    if (!d0 || !d1 || !d2) return;
+
+    if (mapId === 'warehouse') {
+      d0.basePosition.set(0, 0, -8);
+      d1.basePosition.set(0, 2.0, 0); // on catwalk
+      d2.basePosition.set(-11, 0, -14); // storage bay
+      d2.patrolMinX = -13;
+      d2.patrolMaxX = -9;
+    } else if (mapId === 'plaza') {
+      d0.basePosition.set(0, 0, -8);
+      d1.basePosition.set(-19, 1.4, 0); // on west terrace
+      d2.basePosition.set(15.5, 0, -10); // colonnade
+      d2.patrolMinX = 14;
+      d2.patrolMaxX = 17;
+    } else if (mapId === 'containeryard') {
+      d0.basePosition.set(0, 0, -6);
+      d1.basePosition.set(0, 3.5, 14); // crane catwalk
+      d2.basePosition.set(14, 0, -12);
+      d2.patrolMinX = 10;
+      d2.patrolMaxX = 18;
+    }
+    for (const d of this.dummies) {
+      d.group.position.copy(d.basePosition);
+      d.hitbox.position.x = d.basePosition.x;
+      d.hitbox.position.y = d.basePosition.y;
+      d.hitbox.position.z = d.basePosition.z;
+    }
+  }
 }
+

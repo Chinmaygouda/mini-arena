@@ -12,6 +12,7 @@ export * from './rng';
 export * from './weapons';
 export * from './grenades';
 export * from './vitals';
+export * from './maps';
 
 /**
  * Pure deterministic clamping helper.

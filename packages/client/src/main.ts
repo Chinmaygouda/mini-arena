@@ -40,6 +40,8 @@ import {
   stepPlayerVitals,
   PlayerVitalsState,
   GRENADE_DEFS,
+  getMapSpec,
+  MapSpec,
 } from '@mini-arena/shared';
 import { initPhysics, PhysicsEngine } from './physics';
 import { InputManager } from './input';
@@ -51,6 +53,7 @@ import { DecalManager } from './vfx/decalManager';
 import { CombatVfxManager } from './vfx/combatVfxManager';
 import { RapierGrenadeWorldAdapter } from './vfx/grenadeWorldAdapter';
 import { GrenadeClientManager } from './vfx/grenadeClientManager';
+import { MapLoader, LoadedMapSession } from './maps/mapLoader';
 
 declare global {
   interface Window {
@@ -71,6 +74,10 @@ declare global {
     __combatVfx?: CombatVfxManager;
     __grenadeManager?: GrenadeClientManager;
     __playerVitals?: PlayerVitalsState;
+    __mapLoader?: MapLoader;
+    __mapSession?: LoadedMapSession;
+    __mapSpec?: MapSpec;
+    __switchMap?: (id: string) => void;
     THREE?: typeof THREE;
   }
 }
@@ -190,25 +197,20 @@ async function initApp(): Promise<void> {
     (window as unknown as { THREE: unknown }).THREE = THREE;
   }
 
-  // Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-  scene.add(ambientLight);
-
-  const sunLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
-  sunLight.position.set(15, 25, 10);
-  scene.add(sunLight);
-
-  const bounceLight = new THREE.DirectionalLight(0xf43f5e, 0.4);
-  bounceLight.position.set(-15, 10, -10);
-  scene.add(bounceLight);
-
-  // Build the greybox arena with geometry + Rapier colliders
-  buildGreyboxArena(scene, physics.world);
+  // Modular Map Loading (Phase 5)
+  const mapParam = url.searchParams.get('map') || 'warehouse';
+  let currentMapSpec = getMapSpec(mapParam);
+  const mapLoader = new MapLoader(scene, physics.world);
+  let mapSession = mapLoader.loadMap(currentMapSpec);
 
   // Target dummies in the arena
   const dummies = new TargetDummyManager(scene);
+  dummies.repositionForMap(currentMapSpec.id);
   if (isDebug) {
     window.__dummies = dummies;
+    window.__mapLoader = mapLoader;
+    window.__mapSession = mapSession;
+    window.__mapSpec = currentMapSpec;
   }
 
   // Viewmodel (box placeholder with muzzle/tracers)
@@ -265,11 +267,42 @@ async function initApp(): Promise<void> {
   const hudGrenadeCount = document.getElementById('hud-grenade-count');
   const damageVignette = document.getElementById('damage-vignette');
 
-  // Start player facing arena
-  let currentState: PlayerSimState = createDefaultPlayerState(0, 0, 12);
+  // Start player facing arena at map spawn
+  const initialSpawn = currentMapSpec.spawns[0] ?? { pos: { x: 0, y: 0, z: 12 }, yaw: 0 };
+  let currentState: PlayerSimState = createDefaultPlayerState(
+    initialSpawn.pos.x,
+    initialSpawn.pos.y,
+    initialSpawn.pos.z,
+  );
+  currentState.yaw = (initialSpawn.yaw * Math.PI) / 180;
   let previousState: PlayerSimState = { ...currentState };
+  camera.rotation.y = currentState.yaw;
   if (isDebug) {
     window.__playerState = currentState;
+  }
+
+  // Live map switcher
+  const switchMap = (id: string) => {
+    currentMapSpec = getMapSpec(id);
+    mapSession = mapLoader.loadMap(currentMapSpec);
+    dummies.repositionForMap(currentMapSpec.id);
+    const sp = currentMapSpec.spawns[0] ?? { pos: { x: 0, y: 0, z: 12 }, yaw: 0 };
+    currentState.x = sp.pos.x;
+    currentState.y = sp.pos.y;
+    currentState.z = sp.pos.z;
+    currentState.vx = 0;
+    currentState.vy = 0;
+    currentState.vz = 0;
+    currentState.yaw = (sp.yaw * Math.PI) / 180;
+    previousState = { ...currentState };
+    camera.rotation.y = currentState.yaw;
+    if (isDebug) {
+      window.__mapSession = mapSession;
+      window.__mapSpec = currentMapSpec;
+    }
+  };
+  if (isDebug) {
+    window.__switchMap = switchMap;
   }
 
   let currentEyeHeight = PLAYER_EYE_HEIGHT_STAND;
