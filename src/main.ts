@@ -34,7 +34,7 @@ class FPSApp {
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 300);
 
-    // Dedicated Viewmodel Lighting Rig (Ensures weapons and hands are gorgeously illuminated)
+    // Dedicated Viewmodel Lighting Rig (Ensures weapons, arms, and reflex sight are clearly illuminated)
     const vmKeyLight = new THREE.DirectionalLight(0xfffaed, 1.4);
     vmKeyLight.position.set(0.6, 1.0, 0.8);
     this.camera.add(vmKeyLight);
@@ -42,6 +42,13 @@ class FPSApp {
     const vmRimLight = new THREE.DirectionalLight(0x88ccff, 0.7);
     vmRimLight.position.set(-0.8, -0.3, 0.4);
     this.camera.add(vmRimLight);
+
+    const vmHemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444d56, 0.95);
+    this.camera.add(vmHemisphereLight);
+
+    const vmFrontFill = new THREE.DirectionalLight(0xffffff, 0.6);
+    vmFrontFill.position.set(-0.5, 0.5, -0.6);
+    this.camera.add(vmFrontFill);
 
     this.scene.add(this.camera);
 

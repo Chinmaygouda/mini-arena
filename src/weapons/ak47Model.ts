@@ -331,27 +331,110 @@ export function createAK47Model(): AK47Components {
   rightHand.rotation.set(0.42, 0, 0);
   rightArmGroup.add(rightHand);
 
-  const rightForearm = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.054, 0.32, 8), sleeveMat);
-  rightForearm.position.set(0.08, -0.22, 0.24);
+  const rightForearm = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.054, 0.36, 10), sleeveMat);
+  rightForearm.position.set(0.09, -0.24, 0.26);
   rightForearm.rotation.set(-0.8, 0.2, -0.4);
   rightArmGroup.add(rightForearm);
   gunMeshGroup.add(rightArmGroup);
 
-  // Left Arm (Support Hand on Wooden Handguard / Reload Actor)
+  // Left Arm (Complete, Seamless Anatomical Support Arm & Tactical Glove)
   const leftArmGroup = new THREE.Group();
   leftArmGroup.position.set(0, 0, 0);
 
   const leftHandGroup = new THREE.Group();
-  const leftHand = new THREE.Mesh(new THREE.BoxGeometry(0.058, 0.065, 0.08), gloveMat);
-  leftHand.position.set(0, -0.02, -0.27);
-  leftHand.rotation.set(0.12, 0.35, -0.25);
-  leftHandGroup.add(leftHand);
   leftArmGroup.add(leftHandGroup);
 
-  const leftForearm = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.054, 0.34, 8), sleeveMat);
-  leftForearm.position.set(-0.11, -0.18, -0.14);
-  leftForearm.rotation.set(-0.6, -0.35, 0.5);
+  // Wrist Anchor point (where forearm seamlessly joins the hand)
+  const wristPos = new THREE.Vector3(-0.045, -0.065, -0.22);
+  const armOrigin = new THREE.Vector3(-0.24, -0.36, 0.10); // Extends completely off-screen
+
+  // A. Continuous Forearm Sleeve - Mathematically spanned from armOrigin directly to wristPos (ZERO GAP!)
+  const armVector = wristPos.clone().sub(armOrigin);
+  const armLength = armVector.length();
+  const armMidpoint = armOrigin.clone().add(armVector.clone().multiplyScalar(0.5));
+
+  const leftForearm = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.048, 0.062, armLength, 12),
+    sleeveMat
+  );
+  leftForearm.position.copy(armMidpoint);
+  leftForearm.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), armVector.clone().normalize());
   leftArmGroup.add(leftForearm);
+
+  // Forearm Fold / Wrist transition collar
+  const sleeveCuffGeo = new THREE.CylinderGeometry(0.050, 0.052, 0.045, 12);
+  const sleeveCuff = new THREE.Mesh(sleeveCuffGeo, sleeveMat);
+  sleeveCuff.position.copy(wristPos);
+  sleeveCuff.quaternion.copy(leftForearm.quaternion);
+  leftArmGroup.add(sleeveCuff);
+
+  // B. Tactical Watch & Glove Cuff
+  const strapMat = new THREE.MeshStandardMaterial({ color: 0x14181c, roughness: 0.85 });
+  const watchMat = new THREE.MeshStandardMaterial({ color: 0x2e3640, metalness: 0.8, roughness: 0.2 });
+  const watchGlassMat = new THREE.MeshBasicMaterial({ color: 0x00ff88 });
+
+  const watchStrap = new THREE.Mesh(new THREE.BoxGeometry(0.068, 0.060, 0.022), strapMat);
+  watchStrap.position.set(-0.046, -0.068, -0.218);
+  watchStrap.quaternion.copy(leftForearm.quaternion);
+  leftArmGroup.add(watchStrap);
+
+  const watchBody = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.008, 12), watchMat);
+  watchBody.rotation.x = Math.PI / 2;
+  watchBody.position.set(-0.066, -0.058, -0.218);
+  leftArmGroup.add(watchBody);
+
+  const watchFace = new THREE.Mesh(new THREE.CircleGeometry(0.009, 12), watchGlassMat);
+  watchFace.position.set(-0.066, -0.058, -0.223);
+  leftArmGroup.add(watchFace);
+
+  // C. Tactical Glove Palm (Seamless connection to wrist and lower wooden handguard)
+  const palm = new THREE.Mesh(new THREE.BoxGeometry(0.062, 0.038, 0.088), gloveMat);
+  palm.position.set(-0.015, -0.034, -0.265);
+  palm.rotation.set(0.12, 0.32, -0.24);
+  leftHandGroup.add(palm);
+
+  // Reinforced Grip Pad under the palm
+  const gripPad = new THREE.Mesh(
+    new THREE.BoxGeometry(0.056, 0.010, 0.080),
+    new THREE.MeshStandardMaterial({ color: 0x181c20, roughness: 0.9 })
+  );
+  gripPad.position.set(-0.012, -0.022, -0.265);
+  gripPad.rotation.set(0.12, 0.32, -0.24);
+  leftHandGroup.add(gripPad);
+
+  // D. Fingers Wrapping Up Around the Wooden Handguard
+  // Lower finger segments (wrapping along the right side of the wood)
+  const fingersLower = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.060, 0.082), gloveMat);
+  fingersLower.position.set(0.024, -0.008, -0.265);
+  fingersLower.rotation.set(0.08, 0.15, -0.10);
+  leftHandGroup.add(fingersLower);
+
+  // Upper finger tips (curling comfortably over the top/side)
+  const fingerTips = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.018, 0.078), gloveMat);
+  fingerTips.position.set(0.018, 0.026, -0.265);
+  fingerTips.rotation.set(0.08, 0.15, 0.25);
+  leftHandGroup.add(fingerTips);
+
+  // Molded Tactical Knuckle Armor
+  const knuckleArmor = new THREE.Mesh(
+    new THREE.BoxGeometry(0.024, 0.032, 0.080),
+    new THREE.MeshStandardMaterial({ color: 0x1f242a, roughness: 0.35, metalness: 0.4 })
+  );
+  knuckleArmor.position.set(0.028, -0.010, -0.265);
+  knuckleArmor.rotation.set(0.08, 0.15, -0.10);
+  leftHandGroup.add(knuckleArmor);
+
+  // E. Thumb Rest (Resting comfortably along the left side of the handguard)
+  const thumbBase = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.026, 0.042), gloveMat);
+  thumbBase.position.set(-0.028, -0.018, -0.24);
+  thumbBase.rotation.set(-0.15, 0.28, -0.30);
+  leftHandGroup.add(thumbBase);
+
+  const thumbTip = new THREE.Mesh(new THREE.BoxGeometry(0.020, 0.020, 0.052), gloveMat);
+  thumbTip.position.set(-0.028, 0.006, -0.27);
+  thumbTip.rotation.set(0.12, 0.20, -0.18);
+  leftHandGroup.add(thumbTip);
+
   gunMeshGroup.add(leftArmGroup);
 
   // 10. Muzzle Flash FX Group
