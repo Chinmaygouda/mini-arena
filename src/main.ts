@@ -8,6 +8,7 @@ import { WeaponManager } from './weapons/weaponManager';
 import { TargetManager } from './environment/targets';
 import { createShootingRange } from './environment/shootingRange';
 import { FPSHUD } from './ui/fpsHUD';
+import { BUILD_STAMP } from './buildStamp';
 
 class FPSApp {
   private scene: THREE.Scene;
@@ -24,6 +25,9 @@ class FPSApp {
   private activeTracers: { mesh: THREE.Mesh; life: number }[] = [];
 
   constructor() {
+    // Set page title with build stamp
+    document.title = `RANGE [${BUILD_STAMP}]`;
+
     const appEl = document.querySelector<HTMLDivElement>('#app')!;
     appEl.innerHTML = '<canvas id="game-canvas"></canvas>';
     const canvas = document.querySelector<HTMLCanvasElement>('#game-canvas')!;

@@ -4,6 +4,7 @@
 import type { WeaponState } from '../weapons/weaponManager';
 import type { WeaponDef } from '../weapons/weaponTypes';
 import { sound } from '../audio/soundManager';
+import { BUILD_STAMP } from '../buildStamp';
 
 export class FPSHUD {
   private container: HTMLDivElement;
@@ -33,6 +34,29 @@ export class FPSHUD {
       z-index: 100;
     `;
     document.body.appendChild(this.container);
+
+    // 0. Build Stamp in HUD Corner
+    const stampEl = document.createElement('div');
+    stampEl.id = 'hud-build-stamp';
+    stampEl.style.cssText = `
+      position: absolute;
+      top: 14px;
+      left: 18px;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(0, 255, 136, 0.85);
+      background: rgba(10, 16, 22, 0.65);
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      border-radius: 6px;
+      padding: 4px 10px;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      pointer-events: none;
+    `;
+    stampEl.textContent = BUILD_STAMP;
+    this.container.appendChild(stampEl);
 
     // 1. Dynamic Crosshair
     this.crosshair = document.createElement('div');
