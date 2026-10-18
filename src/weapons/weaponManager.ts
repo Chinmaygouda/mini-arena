@@ -383,12 +383,15 @@ export class WeaponManager {
     sound.playEquip(id);
 
     this.state.currentWeaponId = id;
+    const def = WEAPON_REGISTRY[id];
+    if (this.ammoCounts[id].clip > def.magCapacity) {
+      this.ammoCounts[id].clip = def.magCapacity;
+    }
     this.state.ammoInClip = this.ammoCounts[id].clip;
     this.state.reserveAmmo = this.ammoCounts[id].reserve;
     this.state.isScoped = false;
     this.switchWeight = 1.0;
     onWeaponEquip(this.schedulerState);
-    const def = WEAPON_REGISTRY[id];
     this.schedulerState.fireMode = def.fireMode;
     this.schedulerState.fireInterval = def.fireRate;
     this.schedulerState.cycleTime = def.fireRate;
@@ -497,7 +500,18 @@ export class WeaponManager {
   public startReload() {
     const cur = this.currentDef;
     const ammo = this.ammoCounts[this.state.currentWeaponId];
-    if (this.state.isReloading || ammo.clip >= cur.magCapacity) {
+    if (this.state.isReloading) {
+      return;
+    }
+
+    // Safety clamp in case ammo exceeded capacity
+    if (ammo.clip > cur.magCapacity) {
+      ammo.clip = cur.magCapacity;
+      this.state.ammoInClip = cur.magCapacity;
+      this.schedulerState.ammoInClip = cur.magCapacity;
+    }
+
+    if (ammo.clip >= cur.magCapacity) {
       return;
     }
 
@@ -505,14 +519,27 @@ export class WeaponManager {
       return;
     }
 
+    // Cancel any active post-shot cycle timers immediately
+    this.sniperCycleTimer = 0;
+    this.sniperCycleStage = 0;
+    this.shotgunCycleTimer = 0;
+    this.shotgunCycleStage = 0;
+
     this.reloadWasEmpty = (ammo.clip === 0);
     this.state.isReloading = true;
+    this.state.reloadProgress = 0;
+    this.schedulerState.isReloading = true;
     this.state.isScoped = false;
     this.state.isFiring = false;
     this.adsWeight = 0;
     this.reloadDuration = cur.reloadDuration;
     this.reloadTimer = 0;
     this.reloadStage = 0;
+
+    // Immediately restore viewmodel visibility if sniper optic was active
+    if (cur.isSniperScope) {
+      this.sniper.root.visible = true;
+    }
 
     this.notifyState();
   }
@@ -717,44 +744,51 @@ export class WeaponManager {
     }
 
     // Post-fire Action Cycles (driven by frame delta, zero setTimeout)
-    if (this.shotgunCycleTimer > 0) {
-      this.shotgunCycleTimer -= delta;
-      if (this.shotgunCycleTimer <= 0) {
-        if (this.shotgunCycleStage === 1) {
-          this.shotgunCycleStage = 2;
-          this.shotgunCycleTimer = 0.14;
-          this.shotgun.pumpGroup.position.z = -0.19;
-          this.shotgun.updateSupportArm?.(-0.19);
-          sound.playShotgunPumpBack();
-        } else if (this.shotgunCycleStage === 2) {
-          this.shotgunCycleStage = 0;
-          this.shotgun.pumpGroup.position.z = -0.26;
-          this.shotgun.updateSupportArm?.(-0.26);
-          sound.playShotgunPumpForward();
+    if (this.state.isReloading) {
+      this.shotgunCycleTimer = 0;
+      this.shotgunCycleStage = 0;
+      this.sniperCycleTimer = 0;
+      this.sniperCycleStage = 0;
+    } else {
+      if (this.shotgunCycleTimer > 0) {
+        this.shotgunCycleTimer -= delta;
+        if (this.shotgunCycleTimer <= 0) {
+          if (this.shotgunCycleStage === 1) {
+            this.shotgunCycleStage = 2;
+            this.shotgunCycleTimer = 0.14;
+            this.shotgun.pumpGroup.position.z = -0.19;
+            this.shotgun.updateSupportArm?.(-0.19);
+            sound.playShotgunPumpBack();
+          } else if (this.shotgunCycleStage === 2) {
+            this.shotgunCycleStage = 0;
+            this.shotgun.pumpGroup.position.z = -0.26;
+            this.shotgun.updateSupportArm?.(-0.26);
+            sound.playShotgunPumpForward();
+          }
         }
       }
-    }
 
-    if (this.state.currentWeaponId === 'shotgun') {
-      this.shotgun.updateSupportArm?.();
-    }
+      if (this.state.currentWeaponId === 'shotgun') {
+        this.shotgun.updateSupportArm?.();
+      }
 
-    if (this.sniperCycleTimer > 0) {
-      this.sniperCycleTimer -= delta;
-      if (this.sniperCycleTimer <= 0) {
-        if (this.sniperCycleStage === 1) {
-          this.sniperCycleStage = 2;
-          this.sniperCycleTimer = 0.24;
-          this.sniper.boltCarrierGroup.rotation.z = -0.45;
-          this.sniper.boltCarrierGroup.position.z = 0.08;
-          sound.playSniperBoltUnlock();
-          sound.playSniperBoltPull();
-        } else if (this.sniperCycleStage === 2) {
-          this.sniperCycleStage = 0;
-          this.sniper.boltCarrierGroup.position.z = 0.01;
-          this.sniper.boltCarrierGroup.rotation.z = 0;
-          sound.playSniperBoltPush();
-          sound.playSniperBoltLock();
+      if (this.sniperCycleTimer > 0) {
+        this.sniperCycleTimer -= delta;
+        if (this.sniperCycleTimer <= 0) {
+          if (this.sniperCycleStage === 1) {
+            this.sniperCycleStage = 2;
+            this.sniperCycleTimer = 0.24;
+            this.sniper.boltCarrierGroup.rotation.z = -0.45;
+            this.sniper.boltCarrierGroup.position.z = 0.08;
+            sound.playSniperBoltUnlock();
+            sound.playSniperBoltPull();
+          } else if (this.sniperCycleStage === 2) {
+            this.sniperCycleStage = 0;
+            this.sniper.boltCarrierGroup.position.z = 0.01;
+            this.sniper.boltCarrierGroup.rotation.z = 0;
+            sound.playSniperBoltPush();
+            sound.playSniperBoltLock();
+          }
         }
       }
     }

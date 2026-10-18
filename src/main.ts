@@ -265,6 +265,14 @@ class FPSApp {
       this.switchMap(mapId);
     };
 
+    // HUD Tactical Reload & Weapon Select Linkages
+    this.hud.onReload = () => {
+      this.weaponManager.startReload();
+    };
+    this.hud.onWeaponSelect = (weaponId: WeaponId) => {
+      this.weaponManager.switchWeapon(weaponId);
+    };
+
     // Notify main when modal opens/closes so we can block input.
     this.hud.onModalOpen = () => {
       this.inputBlocked = true;
@@ -358,7 +366,7 @@ class FPSApp {
     const onKeyDown = (e: KeyboardEvent) => {
       window.__listenerCounts.keydown++;
       if (this.inputBlocked) return;
-      if (e.code === 'KeyR') {
+      if (e.code === 'KeyR' || (e.key && e.key.toLowerCase() === 'r')) {
         this.weaponManager.startReload();
       } else if (e.code === 'Digit1') {
         this.weaponManager.switchWeapon('ak47');

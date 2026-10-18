@@ -3,7 +3,7 @@
 // hotbar for 5 weapons, telescopic sniper scope overlay, and map selection modal.
 
 import type { WeaponState } from '../weapons/weaponManager';
-import type { WeaponDef } from '../weapons/weaponTypes';
+import type { WeaponDef, WeaponId } from '../weapons/weaponTypes';
 import { BUILD_STAMP } from '../buildStamp';
 import { MAP_INFO, type MapId } from '../environment/blueprintMapLoader';
 
@@ -30,6 +30,8 @@ export class FPSHUD {
   public onMapSelect?: (mapId: MapId) => void;
   public onModalOpen?: () => void;
   public onModalClose?: () => void;
+  public onReload?: () => void;
+  public onWeaponSelect?: (weaponId: WeaponId) => void;
 
   constructor() {
     this.container = document.createElement('div');
@@ -241,7 +243,15 @@ export class FPSHUD {
       color: #ffffff;
       min-width: 260px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+      pointer-events: auto;
     `;
+    this.ammoCard.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target && (target.id === 'hud-reload-btn' || target.closest('#hud-reload-btn') || target.classList.contains('hud-reload-action') || target.closest('.hud-reload-action'))) {
+        e.stopPropagation();
+        this.onReload?.();
+      }
+    });
     this.container.appendChild(this.ammoCard);
 
     // 4. Weapon Selection Hotbar (Bottom-Center)
@@ -258,7 +268,18 @@ export class FPSHUD {
       backdrop-filter: blur(12px);
       border-radius: 14px;
       padding: 8px 12px;
+      pointer-events: auto;
     `;
+    this.hotbar.addEventListener('click', (e) => {
+      const target = (e.target as HTMLElement).closest('[data-weapon-id]') as HTMLElement;
+      if (target) {
+        const wid = target.getAttribute('data-weapon-id') as WeaponId;
+        if (wid && this.onWeaponSelect) {
+          e.stopPropagation();
+          this.onWeaponSelect(wid);
+        }
+      }
+    });
     this.container.appendChild(this.hotbar);
 
     // 4.1 Out-Of-Bounds Tactical Alert Banner (Center Screen)
@@ -529,14 +550,39 @@ export class FPSHUD {
         <div style="width: ${pct}%; height: 100%; background: ${barColor}; transition: width 0.1s ease-out, background 0.2s;"></div>
       </div>
 
-      ${
-        state.isReloading
-          ? `<div style="display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #ffaa00;">
-              <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#ffaa00;"></span>
-              RELOADING (${Math.round(state.reloadProgress * 100)}%)
-            </div>`
-          : `<div style="font-size: 11px; color: rgba(255,255,255,0.4);">PRESS [R] TO RELOAD</div>`
-      }
+      <!-- Interactive Tactical Reload Button -->
+      <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+        <button id="hud-reload-btn" class="hud-reload-action" style="
+          background: ${state.isReloading ? 'rgba(255,170,0,0.22)' : state.ammoInClip === 0 ? 'rgba(255,59,48,0.28)' : state.ammoInClip >= def.magCapacity ? 'rgba(255,255,255,0.06)' : 'rgba(0,255,136,0.18)'};
+          border: 1px solid ${state.isReloading ? '#ffaa00' : state.ammoInClip === 0 ? '#ff3b30' : state.ammoInClip >= def.magCapacity ? 'rgba(255,255,255,0.15)' : 'rgba(0,255,136,0.45)'};
+          color: ${state.isReloading ? '#ffaa00' : state.ammoInClip === 0 ? '#ff6677' : state.ammoInClip >= def.magCapacity ? 'rgba(255,255,255,0.5)' : '#00ff88'};
+          padding: 6px 14px;
+          border-radius: 8px;
+          font-family: inherit;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.8px;
+          text-transform: uppercase;
+          cursor: ${state.isReloading ? 'default' : 'pointer'};
+          pointer-events: auto;
+          transition: all 0.15s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: ${state.isReloading ? '0 0 12px rgba(255,170,0,0.3)' : state.ammoInClip === 0 ? '0 0 14px rgba(255,59,48,0.4)' : '0 0 10px rgba(0,255,136,0.15)'};
+        ">
+          ${
+            state.isReloading
+              ? `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#ffaa00;"></span> RELOADING (${Math.round(state.reloadProgress * 100)}%)`
+              : state.ammoInClip === 0
+              ? `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff3b30;"></span> [R] RELOAD NOW`
+              : state.ammoInClip >= def.magCapacity
+              ? `FULL [R]`
+              : `[R] RELOAD`
+          }
+        </button>
+        <span style="font-size: 10px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', Consolas, monospace;">PRESS [R]</span>
+      </div>
     `;
 
     // 3. Hotbar: 5 Weapons
@@ -553,10 +599,10 @@ export class FPSHUD {
       .map((slot) => {
         const isSel = active === slot.id;
         return `
-          <div style="padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; display:flex; align-items:center; gap:5px; ${
+          <div data-weapon-id="${slot.id}" style="padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; display:flex; align-items:center; gap:5px; cursor: pointer; pointer-events: auto; user-select: none; transition: all 0.15s ease; ${
             isSel
-              ? 'background: #00ff88; color: #000; box-shadow: 0 0 16px rgba(0,255,136,0.4);'
-              : 'color: rgba(255,255,255,0.6);'
+              ? 'background: #00ff88; color: #000; box-shadow: 0 0 16px rgba(0,255,136,0.4); transform: translateY(-1px);'
+              : 'color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.04);'
           }">
             <span style="font-size:10px;opacity:0.7;">[${slot.key}]</span> ${slot.label}
           </div>
