@@ -368,6 +368,8 @@ export class TargetManager {
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
     const sprite = new THREE.Sprite(spriteMat);
+    sprite.raycast = () => {}; // Disable raycasting on floating text to prevent matrixWorld null crashes
+    sprite.userData = { ignoreRaycast: true };
     sprite.scale.set(0.9, 0.35, 1);
     sprite.position.copy(pos).add(new THREE.Vector3((Math.random() - 0.5) * 0.2, 0.2, 0));
 

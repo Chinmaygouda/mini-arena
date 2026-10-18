@@ -16,6 +16,13 @@ import type { ShotgunComponents } from './shotgunModel';
 import { createSniperModel } from './sniperModel';
 import type { SniperComponents } from './sniperModel';
 import { sound } from '../audio/soundManager';
+import {
+  type FireSchedulerState,
+  stepFireScheduler,
+  onTriggerPress,
+  onTriggerRelease,
+  onWeaponEquip,
+} from './fireScheduler';
 
 interface ShellCasing {
   mesh: THREE.Mesh;
@@ -61,8 +68,8 @@ export class WeaponManager {
   private inspectTimer = 0; // > 0 when inspecting weapon (V key)
 
   private lastFireTime = 0;
-  private fireAccumulator = 0;
-  private isTriggerPulled = false;
+  private schedulerState: FireSchedulerState;
+  private lastDelta = 0;
   private reloadTimer = 0;
   private reloadDuration = 0;
   private reloadStage = 0;
@@ -138,6 +145,24 @@ export class WeaponManager {
       metalness: 0.95,
       roughness: 0.2,
     });
+
+    this.schedulerState = {
+      simTime: 0,
+      nextShotTime: 0,
+      triggerHeld: false,
+      triggerJustPressed: false,
+      ammoInClip: this.ammoCounts.ak47.clip,
+      isReloading: false,
+      isSwapping: false,
+      isSprinting: false,
+      fireMode: WEAPON_REGISTRY.ak47.fireMode,
+      fireInterval: WEAPON_REGISTRY.ak47.fireRate,
+      cycleTime: WEAPON_REGISTRY.ak47.fireRate,
+    };
+
+    if (typeof window !== 'undefined') {
+      (window as any).__weaponManager = this;
+    }
   }
 
   public get currentDef(): WeaponDef {
@@ -152,9 +177,13 @@ export class WeaponManager {
     this.state.ammoInClip = this.ammoCounts[id].clip;
     this.state.reserveAmmo = this.ammoCounts[id].reserve;
     this.state.isScoped = false;
-    this.adsWeight = 0;
     this.switchWeight = 1.0;
-    this.fireAccumulator = 0;
+    onWeaponEquip(this.schedulerState);
+    const def = WEAPON_REGISTRY[id];
+    this.schedulerState.fireMode = def.fireMode;
+    this.schedulerState.fireInterval = def.fireRate;
+    this.schedulerState.cycleTime = def.fireRate;
+    this.schedulerState.ammoInClip = this.ammoCounts[id].clip;
 
     this.state.isReloading = false;
     this.reloadTimer = 0;
@@ -203,9 +232,14 @@ export class WeaponManager {
    * Prevents accumulated fireAccumulator / stuck trigger from carrying over.
    */
   public resetForMapLoad() {
-    this.isTriggerPulled = false;
-    this.fireAccumulator = 0;
     this.lastFireTime = 0;
+    this.schedulerState.simTime = 0;
+    this.schedulerState.nextShotTime = 0;
+    this.schedulerState.triggerHeld = false;
+    this.schedulerState.triggerJustPressed = false;
+    this.schedulerState.isReloading = false;
+    this.schedulerState.isSwapping = false;
+    this.schedulerState.isSprinting = false;
     this.state.isFiring = false;
     this.state.isReloading = false;
     this.state.isScoped = false;
@@ -233,10 +267,11 @@ export class WeaponManager {
   }
 
   public setTrigger(isPressed: boolean) {
-    this.isTriggerPulled = isPressed;
-    if (!isPressed) {
+    if (isPressed) {
+      onTriggerPress(this.schedulerState);
+    } else {
+      onTriggerRelease(this.schedulerState);
       this.state.isFiring = false;
-      this.fireAccumulator = 0;
     }
   }
 
@@ -304,7 +339,6 @@ export class WeaponManager {
 
   private executeShot() {
     const cur = this.currentDef;
-    const now = performance.now() / 1000;
     const ammo = this.ammoCounts[this.state.currentWeaponId];
 
     if (ammo.clip <= 0) {
@@ -313,10 +347,24 @@ export class WeaponManager {
       return;
     }
 
-    this.lastFireTime = now;
+    this.lastFireTime = this.schedulerState.simTime;
     ammo.clip -= 1;
     this.state.ammoInClip = ammo.clip;
+    this.schedulerState.ammoInClip = ammo.clip;
     this.state.isFiring = true;
+
+    // Diagnostic telemetry hook
+    if (typeof window !== 'undefined') {
+      const g = window as any;
+      g.__shotTelemetry = g.__shotTelemetry || [];
+      g.__shotTelemetry.push({
+        t: performance.now(),
+        simTime: this.schedulerState.simTime,
+        ammo: ammo.clip,
+        weapon: this.state.currentWeaponId,
+        delta: this.lastDelta || 0
+      });
+    }
 
     // Recoil Impulses
     const adsDamp = this.state.isScoped ? 0.5 : 1.0;
@@ -421,24 +469,23 @@ export class WeaponManager {
   }
 
   public update(delta: number, mouseDelta: { x: number; y: number }, isMoving: boolean, isSprinting: boolean) {
+    this.lastDelta = delta;
     this.state.isMoving = isMoving;
     this.state.isSprinting = isSprinting;
 
     const cur = this.currentDef;
-    const now = performance.now() / 1000;
+    // 1. Firing Cadence via Single Simple Fire Scheduler
+    this.schedulerState.ammoInClip = this.ammoCounts[this.state.currentWeaponId].clip;
+    this.schedulerState.isReloading = this.state.isReloading;
+    this.schedulerState.isSwapping = this.switchWeight > 0.05;
+    this.schedulerState.isSprinting = isSprinting;
+    this.schedulerState.fireMode = cur.fireMode;
+    this.schedulerState.fireInterval = cur.fireRate;
+    this.schedulerState.cycleTime = cur.fireRate;
 
-    // 1. Firing Cadence
-    if (this.isTriggerPulled && !this.state.isReloading && !isSprinting) {
-      if (cur.fireMode === 'auto') {
-        this.fireAccumulator += delta;
-        if (this.fireAccumulator >= cur.fireRate) {
-          this.executeShot();
-          this.fireAccumulator -= cur.fireRate;
-        }
-      } else if (now - this.lastFireTime >= cur.fireRate && !this.state.isFiring) {
-        this.executeShot();
-      }
-    }
+    stepFireScheduler(this.schedulerState, delta, () => {
+      this.executeShot();
+    });
 
     // 2. Physics Decay (Recoil, Sway, Muzzle Flash)
     const recSpeed = cur.recoilRecoverySpeed;
@@ -448,7 +495,7 @@ export class WeaponManager {
     this.recoil.rollZ = THREE.MathUtils.lerp(this.recoil.rollZ, 0, delta * recSpeed);
 
     // Muzzle Flash Decay
-    if (now - this.lastFireTime > 0.045) {
+    if (this.schedulerState.simTime - this.lastFireTime > 0.045) {
       this.ak47.muzzleFlashGroup.visible = false;
       this.ak47.muzzleLight.intensity = 0;
       this.pistol.muzzleFlashGroup.visible = false;
@@ -668,6 +715,9 @@ export class WeaponManager {
         const curAmmo = this.ammoCounts[this.state.currentWeaponId];
         curAmmo.clip = cur.magCapacity;
         this.state.ammoInClip = cur.magCapacity;
+        this.schedulerState.ammoInClip = cur.magCapacity;
+        this.schedulerState.isReloading = false;
+        this.schedulerState.nextShotTime = this.schedulerState.simTime;
 
         // Reset positions
         this.ak47.magazineGroup.position.set(0, -0.04, -0.06);

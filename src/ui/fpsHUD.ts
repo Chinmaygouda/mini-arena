@@ -337,6 +337,14 @@ export class FPSHUD {
     }
   }
 
+  public closeMapModal() {
+    if (this.isMapModalOpen) {
+      this.isMapModalOpen = false;
+      this.mapModal.style.display = 'none';
+      this.onModalClose?.();
+    }
+  }
+
   private renderMapModal() {
     const maps: MapId[] = ['range', 'foundry', 'culdesac', 'dustline', 'overpass'];
     this.mapModal.innerHTML = `
@@ -373,15 +381,15 @@ export class FPSHUD {
     `;
 
     this.mapModal.querySelector('#close-map-modal')?.addEventListener('click', () => {
-      this.toggleMapModal();
+      this.closeMapModal();
     });
 
     this.mapModal.querySelectorAll('button[data-map-id]').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const target = (e.currentTarget as HTMLElement).getAttribute('data-map-id') as MapId;
         if (target && this.onMapSelect) {
+          this.closeMapModal();
           this.onMapSelect(target);
-          this.toggleMapModal();
         }
       });
     });

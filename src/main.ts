@@ -122,6 +122,8 @@ class FPSApp {
     const initialMap = (new URLSearchParams(window.location.search).get('map') as MapId) || 'range';
     this.switchMap(initialMap);
 
+    (window as any).__fpsApp = this;
+
     this.animate();
   }
 
