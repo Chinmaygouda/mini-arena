@@ -9,12 +9,12 @@
       96,
       96
     ],
-    "symmetry": "A compact 96m x 96m playable footprint with four clearly defined street axes, a central park, and balanced spawn edges. Maple House is the first detailed building; unfinished structures remain neutral blockouts.",
+    "symmetry": "A compact 96m x 96m playable footprint with four clearly defined street axes, a central park, and balanced spawn edges. Maple House is the first detailed building; unfinished structures remain neutral blockouts until runtime review.",
     "version": 2
   },
   "rules": [
     "Stylized low-poly suburban tactical environment within a 96m x 96m playable footprint; ground imagery is tightly cropped to reduce the empty outer apron.",
-    "Maple House is the first approved architectural prototype with a pitched roof, porch canopy, facade trim, framed windows, usable two-floor interior, and balcony.",
+    "Maple House is the first architectural prototype with a pitched roof, porch canopy, facade trim, framed windows, usable two-floor interior, and balcony; it still requires runtime visual and traversal approval.",
     "Unfinished houses, apartment blocks, and the market are neutral blockouts while they await individual construction and approval.",
     "Keep the central park, market lane, bus stop, parking, and side routes traversable; don't shrink full-size props into roadway space.",
     "Team spawn markers remain at opposite ends; they are layout markers, not a networked multiplayer implementation."
@@ -108,7 +108,7 @@
   "buildings": [
     {
       "id": "home_south_west",
-      "name": "Maple House — Approved Prototype",
+      "name": "Maple House — Prototype",
       "center": [
         -25,
         0,
