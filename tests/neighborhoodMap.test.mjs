@@ -61,6 +61,7 @@ test('Neighborhood has the core set dressing requested for the map', () => {
   assert.ok([...ids].some((id) => id.includes('parking_car_')), 'parking');
   assert.ok([...ids].some((id) => id.includes('playground') || id === 'play_platform'), 'playground');
   assert.ok(map.nature?.trees?.length >= 12, 'trees');
+  assert.ok(map.nature.trees.every((tree) => tree.style === 'conifer'), 'neighborhood trees use the low-poly conifer style');
   assert.ok(map.perchedBirds?.length >= 6, 'ground/perched birds');
 });
 
