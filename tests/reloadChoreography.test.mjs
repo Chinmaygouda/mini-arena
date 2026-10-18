@@ -273,3 +273,111 @@ test('Subgroups reset cleanly on weapon swap during reload', () => {
   assert.equal(wm.shotgun.leftHandGroup.position.y, 0);
   assert.equal(wm.shotgun.leftHandGroup.position.z, 0);
 });
+
+test('AK-47 Empty Reload: workspace tilt, rock-and-lock mag, bolt rack, return to forend', () => {
+  const wm = createTestWeaponManager();
+  wm.switchWeapon('ak47');
+  const def = WEAPON_REGISTRY.ak47;
+  const ak = wm.ak47;
+
+  wm.setAmmo(0);
+  wm.startReload();
+  assert.equal(wm.state.isReloading, true);
+
+  // Phase 1: Left arm leaves wooden handguard toward magwell
+  stepTime(wm, def.reloadDuration * 0.20);
+  assert.ok(ak.leftArmGroup.position.z > 0.05, 'Left arm must move toward magwell');
+
+  // Phase 2: Mag rocks out and drops
+  stepTime(wm, def.reloadDuration * 0.20); // ~0.40
+  assert.ok(ak.magazineGroup.position.y < -0.04, 'Curved banana mag must drop from receiver');
+
+  // Phase 3: Fresh mag rocks in, bolt racks
+  stepTime(wm, def.reloadDuration * 0.35); // ~0.75
+  assert.ok(ak.boltCarrierGroup.position.z > 0.02, 'Bolt carrier must rack on empty AK reload');
+
+  // Complete reload
+  stepTime(wm, def.reloadDuration * 0.35);
+  assert.equal(wm.state.isReloading, false);
+  assert.equal(wm.state.ammoInClip, def.magCapacity);
+  assert.equal(ak.boltCarrierGroup.position.z, 0.02);
+  assert.equal(ak.leftArmGroup.position.x, 0);
+  assert.equal(ak.leftArmGroup.position.y, 0);
+  assert.equal(ak.leftArmGroup.position.z, 0);
+});
+
+test('AK-47 Tactical Reload: bolt carrier stays in battery, no bolt rack action', () => {
+  const wm = createTestWeaponManager();
+  wm.switchWeapon('ak47');
+  const def = WEAPON_REGISTRY.ak47;
+  const ak = wm.ak47;
+
+  wm.setAmmo(15);
+  wm.startReload();
+
+  // Bolt carrier must never rack during tactical reload
+  stepTime(wm, def.reloadDuration * 0.75);
+  assert.equal(ak.boltCarrierGroup.position.z, 0.02, 'Bolt must stay in battery during tactical AK reload');
+
+  stepTime(wm, def.reloadDuration * 0.35);
+  assert.equal(wm.state.isReloading, false);
+  assert.equal(wm.state.ammoInClip, def.magCapacity);
+});
+
+test('AW-50 Sniper Empty Reload: bolt unlock/pull, box mag drop/seat, bolt push/lock, return to forend', () => {
+  const wm = createTestWeaponManager();
+  wm.switchWeapon('sniper');
+  const def = WEAPON_REGISTRY.sniper;
+  const sniper = wm.sniper;
+
+  wm.setAmmo(0);
+  wm.startReload();
+  assert.equal(wm.state.isReloading, true);
+
+  // Phase 1: Bolt unlock & pull
+  stepTime(wm, def.reloadDuration * 0.20);
+  assert.ok(sniper.boltCarrierGroup.rotation.z < -0.20, 'Bolt must rotate to unlock');
+  assert.ok(sniper.boltCarrierGroup.position.z > 0.03, 'Bolt must pull back');
+  assert.ok(sniper.leftArmGroup.position.z > 0.05, 'Left arm must slide back from forend');
+
+  // Phase 2: Mag extract
+  stepTime(wm, def.reloadDuration * 0.20); // ~0.40
+  assert.ok(sniper.magazineGroup.position.y < -0.15, 'Box mag must extract downward');
+
+  // Phase 3: Mag insert & bolt push/lock
+  stepTime(wm, def.reloadDuration * 0.35); // ~0.75
+  assert.equal(sniper.magazineGroup.position.y, -0.08, 'Fresh 5-round box mag must be seated');
+
+  // Complete reload
+  stepTime(wm, def.reloadDuration * 0.35);
+  assert.equal(wm.state.isReloading, false);
+  assert.equal(wm.state.ammoInClip, def.magCapacity);
+  assert.equal(sniper.boltCarrierGroup.position.z, 0.01);
+  assert.equal(sniper.boltCarrierGroup.rotation.z, 0);
+  assert.equal(sniper.leftArmGroup.position.x, 0);
+  assert.equal(sniper.leftArmGroup.position.y, 0);
+  assert.equal(sniper.leftArmGroup.position.z, 0);
+});
+
+test('AW-50 Sniper Tactical Reload: bolt remains in battery, box mag swap only', () => {
+  const wm = createTestWeaponManager();
+  wm.switchWeapon('sniper');
+  const def = WEAPON_REGISTRY.sniper;
+  const sniper = wm.sniper;
+
+  wm.setAmmo(3);
+  wm.startReload();
+
+  // Bolt must never cycle during tactical reload
+  stepTime(wm, def.reloadDuration * 0.20);
+  assert.equal(sniper.boltCarrierGroup.rotation.z, 0, 'Bolt must stay in battery during tactical reload');
+  assert.equal(sniper.boltCarrierGroup.position.z, 0.01);
+
+  stepTime(wm, def.reloadDuration * 0.60);
+  assert.equal(sniper.boltCarrierGroup.rotation.z, 0);
+  assert.equal(sniper.boltCarrierGroup.position.z, 0.01);
+
+  stepTime(wm, def.reloadDuration * 0.30);
+  assert.equal(wm.state.isReloading, false);
+  assert.equal(wm.state.ammoInClip, def.magCapacity);
+});

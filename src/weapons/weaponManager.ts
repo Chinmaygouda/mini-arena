@@ -914,41 +914,95 @@ export class WeaponManager {
       this.state.reloadProgress = progress;
 
       if (this.state.currentWeaponId === 'ak47') {
-        if (progress < 0.22) {
-          const p = progress / 0.22;
+        // AK-47 Vanguard: Workspace tilt right, support hand release to magwell,
+        // rock-and-lock 30-round curved banana mag swap, charging handle rack if empty, return to foregrip.
+        if (progress < 0.20) {
+          const p = progress / 0.20;
           const ease = p * p * (3 - 2 * p);
           reloadPosY = -0.09 * ease;
           reloadRotX = 0.24 * ease;
           reloadRotZ = -0.48 * ease;
+          // Support hand leaves front wooden handguard toward mag release latch
+          this.ak47.leftArmGroup.position.set(0.015 * ease, -0.025 * ease, 0.16 * ease);
+          this.ak47.leftArmGroup.rotation.set(0.12 * ease, -0.15 * ease, 0.20 * ease);
         } else if (progress < 0.44) {
           if (this.reloadStage === 0) {
             this.reloadStage = 1;
             sound.playAKMagOut();
           }
-          const p = (progress - 0.22) / 0.22;
+          const p = (progress - 0.20) / 0.24;
           reloadPosY = -0.09;
           reloadRotX = 0.24;
           reloadRotZ = -0.48;
-          this.ak47.magazineGroup.position.y = -0.04 - p * 0.48;
+          // Empty magazine rocks forward and drops out of magwell
+          const d = Math.pow(p, 1.5) * 0.48;
+          this.ak47.magazineGroup.position.y = -0.04 - d * Math.cos(0.25);
+          this.ak47.magazineGroup.position.z = -0.06 - d * Math.sin(0.25);
+          this.ak47.magazineGroup.rotation.x = -p * 0.35;
+          this.ak47.leftArmGroup.position.set(0.015, -0.025 - d * 0.55, 0.16);
         } else if (progress < 0.68) {
+          // Fresh magazine rises from tactical rig and rocks into receiver
           const p = (progress - 0.44) / 0.24;
           const ease = p * p * (3 - 2 * p);
+          const d = (1 - ease) * 0.42;
           reloadPosY = -0.09;
           reloadRotX = 0.24;
           reloadRotZ = -0.48;
-          this.ak47.magazineGroup.position.y = THREE.MathUtils.lerp(-0.42, -0.04, ease);
+          this.ak47.magazineGroup.position.y = -0.04 - d * Math.cos(0.25);
+          this.ak47.magazineGroup.position.z = -0.06 - d * Math.sin(0.25);
+          this.ak47.magazineGroup.rotation.x = -(1 - ease) * 0.35;
+
+          this.ak47.leftArmGroup.position.set(
+            0.015,
+            THREE.MathUtils.lerp(-0.26, -0.03, ease),
+            THREE.MathUtils.lerp(0.05, 0.15, ease)
+          );
+          this.ak47.leftArmGroup.rotation.set(
+            THREE.MathUtils.lerp(-0.15, 0.10, ease),
+            -0.15 * (1 - ease),
+            0.20 * ease
+          );
+
           if (progress >= 0.62 && this.reloadStage === 1) {
             this.reloadStage = 2;
             sound.playAKMagIn();
-            this.recoil.kickZ += 0.02;
+            this.recoil.kickZ += 0.024;
+            reloadPosY += 0.012;
+            this.ak47.magazineGroup.rotation.set(0, 0, 0);
           }
         } else if (progress < 0.85) {
-          if (progress >= 0.74 && this.reloadStage === 2) {
-            this.reloadStage = 3;
-            if (this.reloadWasEmpty) {
-              sound.playAKBoltRack();
+          this.ak47.magazineGroup.position.set(0, -0.04, -0.06);
+          this.ak47.magazineGroup.rotation.set(0, 0, 0);
+          if (this.reloadWasEmpty) {
+            // Charging handle rack on empty reload
+            const p = (progress - 0.68) / 0.17;
+            if (p < 0.55) {
+              const u = p / 0.55;
+              this.ak47.boltCarrierGroup.position.z = 0.02 + u * 0.055;
+              this.ak47.leftArmGroup.position.set(0.035 * u, 0.04 * u, 0.22 * (1 - u));
+            } else {
+              if (progress >= 0.76 && this.reloadStage === 2) {
+                this.reloadStage = 3;
+                sound.playAKBoltRack();
+                this.ak47.boltCarrierGroup.position.z = 0.02;
+                this.recoil.kickZ += 0.018;
+              }
             }
+          } else {
+            const p = (progress - 0.68) / 0.17;
+            this.ak47.leftArmGroup.position.set(0.015 * (1 - p), -0.03 * (1 - p), 0.15 * (1 - p));
           }
+        } else {
+          // Return to lower wooden handguard
+          const p = (progress - 0.85) / 0.15;
+          const ease = p * p * (3 - 2 * p);
+          reloadPosY = -0.09 * (1 - ease);
+          reloadRotX = 0.24 * (1 - ease);
+          reloadRotZ = -0.48 * (1 - ease);
+          this.ak47.magazineGroup.position.set(0, -0.04, -0.06);
+          this.ak47.boltCarrierGroup.position.z = 0.02;
+          this.ak47.leftArmGroup.position.set(0.015 * (1 - ease), -0.03 * (1 - ease), 0.15 * (1 - ease));
+          this.ak47.leftArmGroup.rotation.set(0.10 * (1 - ease), 0, 0.20 * (1 - ease));
         }
       } else if (this.state.currentWeaponId === 'shotgun') {
         // Authentic Shotgun Shell-by-Shell Feed and Racking with Mid-Reload Interrupt
@@ -1095,42 +1149,112 @@ export class WeaponManager {
           }
         }
       } else if (this.state.currentWeaponId === 'sniper') {
-        // AW-50 Bolt Unlock, Pull, Box Mag Out/In, Bolt Push, Battery Lock
-        if (progress < 0.35) {
-          const p = progress / 0.35;
-          reloadPosY = -0.10 * p;
-          reloadRotX = 0.20 * p;
-        } else if (progress < 0.75) {
-          reloadPosY = -0.10;
-          reloadRotX = 0.20;
+        // AW-50 Heavy Sniper: Deliberate workspace tilt, bolt cycle (if empty),
+        // support hand magazine strip and insert, and smooth return to forend.
+        if (progress < 0.18) {
+          const p = progress / 0.18;
+          const ease = p * p * (3 - 2 * p);
+          reloadPosY = -0.08 * ease;
+          reloadRotX = 0.18 * ease;
+          reloadRotZ = 0.10 * ease;
+          // Left hand slides back from forend toward heavy box magazine
+          this.sniper.leftArmGroup.position.set(0.012 * ease, -0.035 * ease, 0.18 * ease);
+          this.sniper.leftArmGroup.rotation.set(0.08 * ease, 0.10 * ease, -0.12 * ease);
+        } else if (progress < 0.82) {
+          reloadPosY = -0.08;
+          reloadRotX = 0.18;
+          reloadRotZ = 0.10;
         } else {
-          reloadPosY = -0.10 * (1 - (progress - 0.75) / 0.25);
+          const p = (progress - 0.82) / 0.18;
+          const ease = p * p * (3 - 2 * p);
+          reloadPosY = -0.08 * (1 - ease);
+          reloadRotX = 0.18 * (1 - ease);
+          reloadRotZ = 0.10 * (1 - ease);
+          this.sniper.leftArmGroup.position.set(0.012 * (1 - ease), -0.035 * (1 - ease), 0.18 * (1 - ease));
+          this.sniper.leftArmGroup.rotation.set(0.08 * (1 - ease), 0.10 * (1 - ease), -0.12 * (1 - ease));
         }
 
-        if (progress >= 0.08 && this.reloadStage === 0) {
-          this.reloadStage = 1;
-          this.sniper.boltCarrierGroup.rotation.z = -0.45;
-          sound.playSniperBoltUnlock();
-        } else if (progress >= 0.16 && this.reloadStage === 1) {
-          this.reloadStage = 2;
-          this.sniper.boltCarrierGroup.position.z = 0.08;
-          sound.playSniperBoltPull();
-        } else if (progress >= 0.32 && this.reloadStage === 2) {
-          this.reloadStage = 3;
-          this.sniper.magazineGroup.position.y = -0.38;
-          sound.playSniperMagOut();
-        } else if (progress >= 0.65 && this.reloadStage === 3) {
-          this.reloadStage = 4;
-          this.sniper.magazineGroup.position.y = -0.08;
-          sound.playSniperMagIn();
-        } else if (progress >= 0.80 && this.reloadStage === 4) {
-          this.reloadStage = 5;
-          this.sniper.boltCarrierGroup.position.z = 0.01;
-          sound.playSniperBoltPush();
-        } else if (progress >= 0.90 && this.reloadStage === 5) {
-          this.reloadStage = 6;
-          this.sniper.boltCarrierGroup.rotation.z = 0;
-          sound.playSniperBoltLock();
+        // Bolt handling (if empty reload)
+        if (this.reloadWasEmpty) {
+          if (progress < 0.10) {
+            const p = progress / 0.10;
+            const ease = p * p * (3 - 2 * p);
+            this.sniper.boltCarrierGroup.rotation.z = -0.45 * ease;
+          } else if (progress < 0.20) {
+            this.sniper.boltCarrierGroup.rotation.z = -0.45;
+            const p = (progress - 0.10) / 0.10;
+            const ease = p * p * (3 - 2 * p);
+            this.sniper.boltCarrierGroup.position.z = 0.01 + 0.07 * ease;
+          } else if (progress < 0.76) {
+            this.sniper.boltCarrierGroup.rotation.z = -0.45;
+            this.sniper.boltCarrierGroup.position.z = 0.08;
+          } else if (progress < 0.85) {
+            const p = (progress - 0.76) / 0.09;
+            const ease = p * p * (3 - 2 * p);
+            this.sniper.boltCarrierGroup.position.z = 0.08 - 0.07 * ease;
+            this.sniper.boltCarrierGroup.rotation.z = -0.45;
+          } else if (progress < 0.94) {
+            this.sniper.boltCarrierGroup.position.z = 0.01;
+            const p = (progress - 0.85) / 0.09;
+            const ease = p * p * (3 - 2 * p);
+            this.sniper.boltCarrierGroup.rotation.z = -0.45 * (1 - ease);
+          } else {
+            this.sniper.boltCarrierGroup.position.z = 0.01;
+            this.sniper.boltCarrierGroup.rotation.z = 0;
+          }
+
+          if (progress >= 0.08 && this.reloadStage === 0) {
+            this.reloadStage = 1;
+            sound.playSniperBoltUnlock();
+          } else if (progress >= 0.16 && this.reloadStage === 1) {
+            this.reloadStage = 2;
+            sound.playSniperBoltPull();
+          }
+        } else {
+          this.sniper.boltCarrierGroup.position.set(0.028, 0.032, 0.01);
+          this.sniper.boltCarrierGroup.rotation.set(0, 0, 0);
+          if (this.reloadStage === 0) {
+            this.reloadStage = 2; // skip bolt unlock/pull for tactical
+          }
+        }
+
+        // Magazine extract & insert (progress 0.20 to 0.72)
+        if (progress >= 0.20 && progress < 0.44) {
+          const p = (progress - 0.20) / 0.24;
+          const d = Math.pow(p, 1.4) * 0.38;
+          this.sniper.magazineGroup.position.y = -0.08 - d;
+          this.sniper.leftArmGroup.position.set(0.012, -0.035 - d * 0.70, 0.18);
+          if (progress >= 0.32 && this.reloadStage === 2) {
+            this.reloadStage = 3;
+            sound.playSniperMagOut();
+          }
+        } else if (progress >= 0.44 && progress < 0.72) {
+          const p = (progress - 0.44) / 0.28;
+          const ease = p * p * (3 - 2 * p);
+          const d = (1 - ease) * 0.38;
+          this.sniper.magazineGroup.position.y = -0.08 - d;
+          this.sniper.leftArmGroup.position.set(
+            0.012,
+            -0.035 - d * 0.70,
+            0.18
+          );
+          if (progress >= 0.65 && this.reloadStage === 3) {
+            this.reloadStage = 4;
+            sound.playSniperMagIn();
+            this.recoil.kickZ += 0.018;
+          }
+        } else if (progress >= 0.72) {
+          this.sniper.magazineGroup.position.set(0, -0.08, -0.06);
+          if (this.reloadWasEmpty) {
+            if (progress >= 0.80 && this.reloadStage === 4) {
+              this.reloadStage = 5;
+              sound.playSniperBoltPush();
+            } else if (progress >= 0.90 && this.reloadStage === 5) {
+              this.reloadStage = 6;
+              sound.playSniperBoltLock();
+              this.recoil.kickZ += 0.012;
+            }
+          }
         }
       } else if (this.state.currentWeaponId === 'pistol') {
         // M9 Combat Pistol: Deliberate workspace tilt, natural grip slant ejection,
