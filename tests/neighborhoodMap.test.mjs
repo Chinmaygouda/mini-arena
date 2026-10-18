@@ -12,8 +12,8 @@ const map = JSON.parse(read('public/maps/neighborhood.json'));
 test('Neighborhood map declares a playable 4v4 low-poly arena', () => {
   assert.equal(map.meta.name, 'Neighborhood District');
   assert.equal(map.meta.theme, 'neighborhood');
-  assert.deepEqual(map.meta.size, [96, 96]);
-  assert.match(map.meta.mode, /4v4/i);
+  assert.deepEqual(map.meta.size, [92, 92]);
+  assert.match(map.meta.mode, /2v2/i);
 });
 
 test('Buildings are within map bounds and contain usable floors', () => {
@@ -23,8 +23,8 @@ test('Buildings are within map bounds and contain usable floors', () => {
     assert.ok(building.floors.length >= 1, `${building.id} has at least one floor`);
     const [x, , z] = building.center;
     const [width, depth] = building.size;
-    assert.ok(x - width / 2 >= -48 && x + width / 2 <= 48, `${building.id} fits X bounds`);
-    assert.ok(z - depth / 2 >= -48 && z + depth / 2 <= 48, `${building.id} fits Z bounds`);
+    assert.ok(x - width / 2 >= -46 && x + width / 2 <= 46, `${building.id} fits X bounds`);
+    assert.ok(z - depth / 2 >= -46 && z + depth / 2 <= 46, `${building.id} fits Z bounds`);
     for (const floor of building.floors) {
       assert.ok(floor.height >= 2.6, `${building.id} floor clear height`);
       for (const wall of floor.walls || []) {
@@ -47,6 +47,17 @@ test('Maple House is the first detailed prototype; all other structures remain b
   assert.equal(maple.blockout, undefined, 'the first prototype is a real building');
   assert.equal(maple.roof.type, 'pitched', 'the first prototype uses a pitched roof');
   assert.equal(maple.floors.length, 2, 'the prototype has two floors');
+  assert.deepEqual(maple.size, [12, 12], 'Maple House has a roomier 12m x 12m footprint');
+  assert.equal(maple.floors[0].height, 3, 'ground floor has extra headroom');
+  assert.equal(maple.floors[1].floorY, 3.2, 'upper floor aligns with the ground-floor slab');
+  assert.ok(maple.floors.every((floor) => (floor.interiorWalls || []).length === 0),
+    'both floors use open-plan circulation');
+  const stair = maple.floors[0].stairs[0];
+  assert.ok(stair.width >= 1.6 && stair.stepCount === 16 && stair.targetFloorY === 3.2,
+    'stair run is wider and lands on the upper floor');
+  assert.ok(maple.floors.every((floor) => floor.walls.flatMap((wall) => wall.windows)
+    .every((window) => window.hasPlayerBlocker === false && window.sillHeight <= 0.6)),
+    'house windows are configured for jump-through traversal');
 
   const unfinished = map.buildings.filter((building) => building.id !== 'home_south_west');
   assert.equal(unfinished.length, 6);
@@ -64,6 +75,30 @@ test('Maple House is the first detailed prototype; all other structures remain b
     .every((box) => box.collision === false), 'decorative trim must not add collision blockers');
 });
 
+test('Maple House balcony has a deliberate center opening for jumping off the terrace', () => {
+  const boxes = new Map(map.boxes.map((box) => [box.id, box]));
+  const deck = boxes.get('home_south_west_balcony_deck');
+  const left = boxes.get('home_south_west_balcony_rail_outer_l');
+  const right = boxes.get('home_south_west_balcony_rail_outer_r');
+  assert.ok(deck && left && right, 'balcony deck and split outer rails exist');
+  assert.ok(deck.size[0] >= 4.2 && deck.size[2] >= 2.2, 'terrace is spacious');
+  const leftInner = left.center[0] + left.size[0] / 2;
+  const rightInner = right.center[0] - right.size[0] / 2;
+  assert.ok(rightInner - leftInner >= 1.8, 'the player can pass through the central jump-out gap');
+});
+
+test('2v2 bounds and perimeter blockers use the smaller playable footprint', () => {
+  assert.deepEqual(map.meta.size, [92, 92]);
+  assert.ok(map.invisiblePerimeters.every((p) =>
+    p.minX >= -46 && p.maxX <= 46 && p.minZ >= -46 && p.maxZ <= 46));
+  for (const box of map.boxes) {
+    assert.ok(box.center[0] - box.size[0] / 2 >= -46 - 0.01, `${box.id} left bound`);
+    assert.ok(box.center[0] + box.size[0] / 2 <= 46 + 0.01, `${box.id} right bound`);
+    assert.ok(box.center[2] - box.size[2] / 2 >= -46 - 0.01, `${box.id} back bound`);
+    assert.ok(box.center[2] + box.size[2] / 2 <= 46 + 0.01, `${box.id} front bound`);
+  }
+});
+
 test('Map box identifiers are unique and team spawn markers exist at opposite ends', () => {
   const ids = map.boxes.map((box) => box.id);
   assert.equal(new Set(ids).size, ids.length, 'box ids must be unique');
@@ -73,8 +108,8 @@ test('Map box identifiers are unique and team spawn markers exist at opposite en
   const a = map.boxes.find((box) => box.id === 'spawn_A_flagpole_1');
   const b = map.boxes.find((box) => box.id === 'spawn_B_flagpole_1');
   assert.ok(a.center[2] < -35 && b.center[2] > 35, 'team markers must be at opposite ends');
-  assert.equal(map.teamSpawns.teamA.length, 4, 'Team A has four reserved player slots');
-  assert.equal(map.teamSpawns.teamB.length, 4, 'Team B has four reserved player slots');
+  assert.equal(map.teamSpawns.teamA.length, 2, 'Team A has two reserved player slots for 2v2');
+  assert.equal(map.teamSpawns.teamB.length, 2, 'Team B has two reserved player slots for 2v2');
 });
 
 test('Neighborhood has the core set dressing requested for the map', () => {
@@ -90,6 +125,7 @@ test('Neighborhood has the core set dressing requested for the map', () => {
 
 test('Neighborhood is registered in the loader, map selector, atmosphere, and bird hit handling', () => {
   const loader = read('src/environment/blueprintMapLoader.ts');
+  const controls = read('src/player/firstPersonControls.ts');
   const hud = read('src/ui/fpsHUD.ts');
   const atmosphere = read('src/environment/atmosphereManager.ts');
   const targets = read('src/environment/targets.ts');
@@ -101,10 +137,16 @@ test('Neighborhood is registered in the loader, map selector, atmosphere, and bi
   assert.match(loader, /unfinishedStandaloneBoxIds/);
   assert.match(loader, /market_sign_panel/);
   assert.match(loader, /bldg\.roof\.type === 'pitched'/);
-  assert.match(loader, /const outerRoadAxis = mapWorldSpan \* 0\.34375/);
-  assert.match(loader, /const innerRoadAxis = mapWorldSpan \/ 6/);
+  assert.match(loader, /const outerRoadAxis = 33/);
+  assert.match(loader, /const innerRoadAxis = 16/);
   assert.match(loader, /const isPitchedRoofCeiling/);
   assert.match(loader, /box\.collision !== false/);
+  assert.match(loader, /op\.hasPlayerBlocker !== false/);
+  assert.match(loader, /stepCount: count/);
+  assert.match(loader, /sideClearance = 0\.35/);
+  assert.match(controls, /stepRise\?: number/);
+  assert.match(controls, /Math\.floor\(progress \+ 0\.5\)/);
+  assert.match(controls, /if \(c\.ramp\) continue/);
   assert.match(hud, /'neighborhood'\]/);
   assert.match(atmosphere, /mapId === 'neighborhood'\s*\?\s*'suburban'/);
   assert.match(targets, /targetType: 'bird'/);
