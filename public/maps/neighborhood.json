@@ -1,0 +1,6181 @@
+{
+  "meta": {
+    "name": "Neighborhood District",
+    "mode": "4v4-ready tactical neighborhood layout",
+    "theme": "neighborhood",
+    "units": "meters",
+    "axes": "x east, z north, y up, origin at map center",
+    "size": [
+      96,
+      96
+    ],
+    "symmetry": "Major combat routes, house placement, and team spawn edges are arranged around the central park for reasonable 4v4 fairness.",
+    "version": 1
+  },
+  "rules": [
+    "Stylized low-poly suburban neighborhood designed for the existing first-person movement and collision system.",
+    "Team A starts at the south edge; Team B marker is at the north edge. These are layout/spawn markers, not networked multiplayer implementation.",
+    "Two-story houses have enterable ground and upper floors; the two apartment blocks have three floors and stair-accessible rooftop terraces.",
+    "Keep the central park, bus/market lanes, and two side routes traversable; buildings, parked vehicles, fences, and props intentionally provide tactical cover.",
+    "Map bounds are +/-48m; invisible boundary colliders prevent leaving the neighborhood."
+  ],
+  "zones": [
+    {
+      "id": "spawnA",
+      "name": "Team A Spawn",
+      "min": [
+        -7,
+        -46
+      ],
+      "max": [
+        7,
+        -38
+      ]
+    },
+    {
+      "id": "spawnB",
+      "name": "Team B Spawn",
+      "min": [
+        -7,
+        38
+      ],
+      "max": [
+        7,
+        46
+      ]
+    },
+    {
+      "id": "park",
+      "name": "Central Park",
+      "min": [
+        -12,
+        -12
+      ],
+      "max": [
+        12,
+        12
+      ]
+    },
+    {
+      "id": "westHomes",
+      "name": "West Homes",
+      "min": [
+        -31,
+        -32
+      ],
+      "max": [
+        -19,
+        32
+      ]
+    },
+    {
+      "id": "eastHomes",
+      "name": "East Homes",
+      "min": [
+        19,
+        -32
+      ],
+      "max": [
+        31,
+        32
+      ]
+    },
+    {
+      "id": "market",
+      "name": "Corner Market",
+      "min": [
+        -47,
+        -7
+      ],
+      "max": [
+        -35,
+        7
+      ]
+    },
+    {
+      "id": "bus",
+      "name": "Bus Stop and Parking",
+      "min": [
+        35,
+        -32
+      ],
+      "max": [
+        47,
+        14
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": "home_south_west",
+      "name": "Maple House",
+      "center": [
+        -25,
+        0,
+        -25.5
+      ],
+      "size": [
+        10,
+        10
+      ],
+      "wallColor": "#d9ba7b",
+      "trimColor": "#a76943",
+      "floorColor": "#8a7660",
+      "floors": [
+        {
+          "floorIndex": 0,
+          "floorY": 0,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 1.8,
+                  "height": 2.35
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0.2,
+                -4.5
+              ],
+              "end": [
+                0.2,
+                4.5
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.35,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [
+            {
+              "id": "stair_0",
+              "start": [
+                -3.1,
+                -4
+              ],
+              "direction": "+Z",
+              "width": 1.2,
+              "stepRise": 0.2,
+              "treadDepth": 0.28,
+              "stepCount": 15,
+              "targetFloorY": 3
+            }
+          ],
+          "props": [
+            {
+              "id": "living_table_0",
+              "kind": "table",
+              "pos": [
+                1.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.6,
+                0.75,
+                0.8
+              ],
+              "color": "#806044"
+            },
+            {
+              "id": "sofa_0",
+              "kind": "bench",
+              "pos": [
+                -1.3,
+                0,
+                -2
+              ],
+              "size": [
+                2.2,
+                0.65,
+                0.8
+              ],
+              "color": "#52706a"
+            },
+            {
+              "id": "kitchen_counter_0",
+              "kind": "counter",
+              "pos": [
+                3.2,
+                0,
+                -2.5
+              ],
+              "size": [
+                1.3,
+                1,
+                2
+              ],
+              "color": "#a58f72"
+            }
+          ],
+          "lights": [
+            {
+              "id": "light_0",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe4b7",
+              "intensity": 0.65,
+              "range": 8
+            }
+          ]
+        },
+        {
+          "floorIndex": 1,
+          "floorY": 3,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 1.7,
+                  "height": 2.25
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0.2,
+                -4.5
+              ],
+              "end": [
+                0.2,
+                4.5
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.35,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [],
+          "props": [
+            {
+              "id": "bed_1",
+              "kind": "table",
+              "pos": [
+                1.5,
+                0,
+                -2.4
+              ],
+              "size": [
+                2,
+                0.45,
+                1.6
+              ],
+              "color": "#9a775f"
+            },
+            {
+              "id": "desk_1",
+              "kind": "table",
+              "pos": [
+                -1.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.4,
+                0.8,
+                0.7
+              ],
+              "color": "#74543b"
+            }
+          ],
+          "lights": [
+            {
+              "id": "light_1",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe4b7",
+              "intensity": 0.65,
+              "range": 8
+            }
+          ]
+        }
+      ],
+      "roof": {
+        "type": "flat_parapet",
+        "parapetHeight": 0.65,
+        "parapetThickness": 0.18,
+        "accessFromStairs": false
+      }
+    },
+    {
+      "id": "home_south_east",
+      "name": "Cedar House",
+      "center": [
+        25,
+        0,
+        -25.5
+      ],
+      "size": [
+        10,
+        10
+      ],
+      "wallColor": "#d6d1a8",
+      "trimColor": "#688b64",
+      "floorColor": "#91836b",
+      "floors": [
+        {
+          "floorIndex": 0,
+          "floorY": 0,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 1.8,
+                  "height": 2.35
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0.2,
+                -4.5
+              ],
+              "end": [
+                0.2,
+                4.5
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.35,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [
+            {
+              "id": "stair_0",
+              "start": [
+                -3.1,
+                -4
+              ],
+              "direction": "+Z",
+              "width": 1.2,
+              "stepRise": 0.2,
+              "treadDepth": 0.28,
+              "stepCount": 15,
+              "targetFloorY": 3
+            }
+          ],
+          "props": [
+            {
+              "id": "living_table_0",
+              "kind": "table",
+              "pos": [
+                1.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.6,
+                0.75,
+                0.8
+              ],
+              "color": "#806044"
+            },
+            {
+              "id": "sofa_0",
+              "kind": "bench",
+              "pos": [
+                -1.3,
+                0,
+                -2
+              ],
+              "size": [
+                2.2,
+                0.65,
+                0.8
+              ],
+              "color": "#52706a"
+            },
+            {
+              "id": "kitchen_counter_0",
+              "kind": "counter",
+              "pos": [
+                3.2,
+                0,
+                -2.5
+              ],
+              "size": [
+                1.3,
+                1,
+                2
+              ],
+              "color": "#a58f72"
+            }
+          ],
+          "lights": [
+            {
+              "id": "light_0",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe4b7",
+              "intensity": 0.65,
+              "range": 8
+            }
+          ]
+        },
+        {
+          "floorIndex": 1,
+          "floorY": 3,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 1.7,
+                  "height": 2.25
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0.2,
+                -4.5
+              ],
+              "end": [
+                0.2,
+                4.5
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.35,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [],
+          "props": [
+            {
+              "id": "bed_1",
+              "kind": "table",
+              "pos": [
+                1.5,
+                0,
+                -2.4
+              ],
+              "size": [
+                2,
+                0.45,
+                1.6
+              ],
+              "color": "#9a775f"
+            },
+            {
+              "id": "desk_1",
+              "kind": "table",
+              "pos": [
+                -1.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.4,
+                0.8,
+                0.7
+              ],
+              "color": "#74543b"
+            }
+          ],
+          "lights": [
+            {
+              "id": "light_1",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe4b7",
+              "intensity": 0.65,
+              "range": 8
+            }
+          ]
+        }
+      ],
+      "roof": {
+        "type": "flat_parapet",
+        "parapetHeight": 0.65,
+        "parapetThickness": 0.18,
+        "accessFromStairs": false
+      }
+    },
+    {
+      "id": "home_north_west",
+      "name": "Willow House",
+      "center": [
+        -25,
+        0,
+        25.5
+      ],
+      "size": [
+        10,
+        10
+      ],
+      "wallColor": "#d7ad91",
+      "trimColor": "#a65f4b",
+      "floorColor": "#857667",
+      "floors": [
+        {
+          "floorIndex": 0,
+          "floorY": 0,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 1.8,
+                  "height": 2.35
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0.2,
+                -4.5
+              ],
+              "end": [
+                0.2,
+                4.5
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.35,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [
+            {
+              "id": "stair_0",
+              "start": [
+                -3.1,
+                -4
+              ],
+              "direction": "+Z",
+              "width": 1.2,
+              "stepRise": 0.2,
+              "treadDepth": 0.28,
+              "stepCount": 15,
+              "targetFloorY": 3
+            }
+          ],
+          "props": [
+            {
+              "id": "living_table_0",
+              "kind": "table",
+              "pos": [
+                1.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.6,
+                0.75,
+                0.8
+              ],
+              "color": "#806044"
+            },
+            {
+              "id": "sofa_0",
+              "kind": "bench",
+              "pos": [
+                -1.3,
+                0,
+                -2
+              ],
+              "size": [
+                2.2,
+                0.65,
+                0.8
+              ],
+              "color": "#52706a"
+            },
+            {
+              "id": "kitchen_counter_0",
+              "kind": "counter",
+              "pos": [
+                3.2,
+                0,
+                -2.5
+              ],
+              "size": [
+                1.3,
+                1,
+                2
+              ],
+              "color": "#a58f72"
+            }
+          ],
+          "lights": [
+            {
+              "id": "light_0",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe4b7",
+              "intensity": 0.65,
+              "range": 8
+            }
+          ]
+        },
+        {
+          "floorIndex": 1,
+          "floorY": 3,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 1.7,
+                  "height": 2.25
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0.2,
+                -4.5
+              ],
+              "end": [
+                0.2,
+                4.5
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.35,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [],
+          "props": [
+            {
+              "id": "bed_1",
+              "kind": "table",
+              "pos": [
+                1.5,
+                0,
+                -2.4
+              ],
+              "size": [
+                2,
+                0.45,
+                1.6
+              ],
+              "color": "#9a775f"
+            },
+            {
+              "id": "desk_1",
+              "kind": "table",
+              "pos": [
+                -1.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.4,
+                0.8,
+                0.7
+              ],
+              "color": "#74543b"
+            }
+          ],
+          "lights": [
+            {
+              "id": "light_1",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe4b7",
+              "intensity": 0.65,
+              "range": 8
+            }
+          ]
+        }
+      ],
+      "roof": {
+        "type": "flat_parapet",
+        "parapetHeight": 0.65,
+        "parapetThickness": 0.18,
+        "accessFromStairs": false
+      }
+    },
+    {
+      "id": "home_north_east",
+      "name": "Pine House",
+      "center": [
+        25,
+        0,
+        25.5
+      ],
+      "size": [
+        10,
+        10
+      ],
+      "wallColor": "#c6c7b3",
+      "trimColor": "#617c98",
+      "floorColor": "#8e8879",
+      "floors": [
+        {
+          "floorIndex": 0,
+          "floorY": 0,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 1.8,
+                  "height": 2.35
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1.05,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0.2,
+                -4.5
+              ],
+              "end": [
+                0.2,
+                4.5
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.35,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [
+            {
+              "id": "stair_0",
+              "start": [
+                -3.1,
+                -4
+              ],
+              "direction": "+Z",
+              "width": 1.2,
+              "stepRise": 0.2,
+              "treadDepth": 0.28,
+              "stepCount": 15,
+              "targetFloorY": 3
+            }
+          ],
+          "props": [
+            {
+              "id": "living_table_0",
+              "kind": "table",
+              "pos": [
+                1.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.6,
+                0.75,
+                0.8
+              ],
+              "color": "#806044"
+            },
+            {
+              "id": "sofa_0",
+              "kind": "bench",
+              "pos": [
+                -1.3,
+                0,
+                -2
+              ],
+              "size": [
+                2.2,
+                0.65,
+                0.8
+              ],
+              "color": "#52706a"
+            },
+            {
+              "id": "kitchen_counter_0",
+              "kind": "counter",
+              "pos": [
+                3.2,
+                0,
+                -2.5
+              ],
+              "size": [
+                1.3,
+                1,
+                2
+              ],
+              "color": "#a58f72"
+            }
+          ],
+          "lights": [
+            {
+              "id": "light_0",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe4b7",
+              "intensity": 0.65,
+              "range": 8
+            }
+          ]
+        },
+        {
+          "floorIndex": 1,
+          "floorY": 3,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 1.7,
+                  "height": 2.25
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.2,
+                  "width": 1.15,
+                  "sillHeight": 1,
+                  "height": 1.1,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0.2,
+                -4.5
+              ],
+              "end": [
+                0.2,
+                4.5
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.35,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [],
+          "props": [
+            {
+              "id": "bed_1",
+              "kind": "table",
+              "pos": [
+                1.5,
+                0,
+                -2.4
+              ],
+              "size": [
+                2,
+                0.45,
+                1.6
+              ],
+              "color": "#9a775f"
+            },
+            {
+              "id": "desk_1",
+              "kind": "table",
+              "pos": [
+                -1.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.4,
+                0.8,
+                0.7
+              ],
+              "color": "#74543b"
+            }
+          ],
+          "lights": [
+            {
+              "id": "light_1",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe4b7",
+              "intensity": 0.65,
+              "range": 8
+            }
+          ]
+        }
+      ],
+      "roof": {
+        "type": "flat_parapet",
+        "parapetHeight": 0.65,
+        "parapetThickness": 0.18,
+        "accessFromStairs": false
+      }
+    },
+    {
+      "id": "apartment_west",
+      "name": "Oak Court Apartments",
+      "center": [
+        -25,
+        0,
+        0
+      ],
+      "size": [
+        12,
+        14
+      ],
+      "wallColor": "#c7b8a0",
+      "trimColor": "#5e7f89",
+      "floorColor": "#928b7c",
+      "floors": [
+        {
+          "floorIndex": 0,
+          "floorY": 0,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 2,
+                  "height": 2.35
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0,
+                -6.2
+              ],
+              "end": [
+                0,
+                6.2
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.5,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [
+            {
+              "id": "apt_stair_0",
+              "start": [
+                -3.9,
+                -5.3
+              ],
+              "direction": "+Z",
+              "width": 1.3,
+              "stepRise": 0.2,
+              "treadDepth": 0.28,
+              "stepCount": 15,
+              "targetFloorY": 3
+            }
+          ],
+          "props": [
+            {
+              "id": "apt_lobby_counter",
+              "kind": "counter",
+              "pos": [
+                3.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.2,
+                1,
+                2.8
+              ],
+              "color": "#66818a"
+            },
+            {
+              "id": "apt_lobby_bench",
+              "kind": "bench",
+              "pos": [
+                -1.8,
+                0,
+                2.8
+              ],
+              "size": [
+                2,
+                0.55,
+                0.6
+              ],
+              "color": "#725640"
+            },
+            {
+              "id": "apt_lobby_crate",
+              "kind": "crate",
+              "pos": [
+                -2.6,
+                0,
+                -2.7
+              ],
+              "size": [
+                0.8,
+                0.8,
+                0.8
+              ],
+              "color": "#a37a4e"
+            }
+          ],
+          "lights": [
+            {
+              "id": "apt_light_0",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe8c5",
+              "intensity": 0.8,
+              "range": 10
+            }
+          ]
+        },
+        {
+          "floorIndex": 1,
+          "floorY": 3,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0,
+                -6.2
+              ],
+              "end": [
+                0,
+                6.2
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.5,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [
+            {
+              "id": "apt_stair_1",
+              "start": [
+                3.9,
+                5.3
+              ],
+              "direction": "-Z",
+              "width": 1.3,
+              "stepRise": 0.2,
+              "treadDepth": 0.28,
+              "stepCount": 15,
+              "targetFloorY": 6
+            }
+          ],
+          "props": [
+            {
+              "id": "apt_table_1",
+              "kind": "table",
+              "pos": [
+                2.6,
+                0,
+                -2.2
+              ],
+              "size": [
+                1.8,
+                0.8,
+                0.9
+              ],
+              "color": "#785942"
+            },
+            {
+              "id": "apt_bench_1",
+              "kind": "bench",
+              "pos": [
+                -2,
+                0,
+                2.6
+              ],
+              "size": [
+                1.8,
+                0.55,
+                0.5
+              ],
+              "color": "#697e82"
+            }
+          ],
+          "lights": [
+            {
+              "id": "apt_light_1",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe8c5",
+              "intensity": 0.8,
+              "range": 10
+            }
+          ]
+        },
+        {
+          "floorIndex": 2,
+          "floorY": 6,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0,
+                -6.2
+              ],
+              "end": [
+                0,
+                6.2
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.5,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [],
+          "props": [
+            {
+              "id": "apt_table_2",
+              "kind": "table",
+              "pos": [
+                2.6,
+                0,
+                -2.2
+              ],
+              "size": [
+                1.8,
+                0.8,
+                0.9
+              ],
+              "color": "#785942"
+            },
+            {
+              "id": "apt_bench_2",
+              "kind": "bench",
+              "pos": [
+                -2,
+                0,
+                2.6
+              ],
+              "size": [
+                1.8,
+                0.55,
+                0.5
+              ],
+              "color": "#697e82"
+            }
+          ],
+          "lights": [
+            {
+              "id": "apt_light_2",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe8c5",
+              "intensity": 0.8,
+              "range": 10
+            }
+          ]
+        }
+      ],
+      "roof": {
+        "type": "flat_parapet",
+        "parapetHeight": 0.95,
+        "parapetThickness": 0.22,
+        "accessFromStairs": true,
+        "stairExitHole": {
+          "x": 3.9,
+          "z": 2,
+          "width": 1.8,
+          "length": 2
+        }
+      }
+    },
+    {
+      "id": "apartment_east",
+      "name": "Maple Court Apartments",
+      "center": [
+        25,
+        0,
+        0
+      ],
+      "size": [
+        12,
+        14
+      ],
+      "wallColor": "#c6c9b7",
+      "trimColor": "#a87555",
+      "floorColor": "#898a83",
+      "floors": [
+        {
+          "floorIndex": 0,
+          "floorY": 0,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 2,
+                  "height": 2.35
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0,
+                -6.2
+              ],
+              "end": [
+                0,
+                6.2
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.5,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [
+            {
+              "id": "apt_stair_0",
+              "start": [
+                -3.9,
+                -5.3
+              ],
+              "direction": "+Z",
+              "width": 1.3,
+              "stepRise": 0.2,
+              "treadDepth": 0.28,
+              "stepCount": 15,
+              "targetFloorY": 3
+            }
+          ],
+          "props": [
+            {
+              "id": "apt_lobby_counter",
+              "kind": "counter",
+              "pos": [
+                3.8,
+                0,
+                2.2
+              ],
+              "size": [
+                1.2,
+                1,
+                2.8
+              ],
+              "color": "#66818a"
+            },
+            {
+              "id": "apt_lobby_bench",
+              "kind": "bench",
+              "pos": [
+                -1.8,
+                0,
+                2.8
+              ],
+              "size": [
+                2,
+                0.55,
+                0.6
+              ],
+              "color": "#725640"
+            },
+            {
+              "id": "apt_lobby_crate",
+              "kind": "crate",
+              "pos": [
+                -2.6,
+                0,
+                -2.7
+              ],
+              "size": [
+                0.8,
+                0.8,
+                0.8
+              ],
+              "color": "#a37a4e"
+            }
+          ],
+          "lights": [
+            {
+              "id": "apt_light_0",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe8c5",
+              "intensity": 0.8,
+              "range": 10
+            }
+          ]
+        },
+        {
+          "floorIndex": 1,
+          "floorY": 3,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0,
+                -6.2
+              ],
+              "end": [
+                0,
+                6.2
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.5,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [
+            {
+              "id": "apt_stair_1",
+              "start": [
+                3.9,
+                5.3
+              ],
+              "direction": "-Z",
+              "width": 1.3,
+              "stepRise": 0.2,
+              "treadDepth": 0.28,
+              "stepCount": 15,
+              "targetFloorY": 6
+            }
+          ],
+          "props": [
+            {
+              "id": "apt_table_1",
+              "kind": "table",
+              "pos": [
+                2.6,
+                0,
+                -2.2
+              ],
+              "size": [
+                1.8,
+                0.8,
+                0.9
+              ],
+              "color": "#785942"
+            },
+            {
+              "id": "apt_bench_1",
+              "kind": "bench",
+              "pos": [
+                -2,
+                0,
+                2.6
+              ],
+              "size": [
+                1.8,
+                0.55,
+                0.5
+              ],
+              "color": "#697e82"
+            }
+          ],
+          "lights": [
+            {
+              "id": "apt_light_1",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe8c5",
+              "intensity": 0.8,
+              "range": 10
+            }
+          ]
+        },
+        {
+          "floorIndex": 2,
+          "floorY": 6,
+          "height": 2.8,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 3.7,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "east",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4.5,
+                  "width": 1.35,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0,
+                -6.2
+              ],
+              "end": [
+                0,
+                6.2
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.5,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "stairs": [],
+          "props": [
+            {
+              "id": "apt_table_2",
+              "kind": "table",
+              "pos": [
+                2.6,
+                0,
+                -2.2
+              ],
+              "size": [
+                1.8,
+                0.8,
+                0.9
+              ],
+              "color": "#785942"
+            },
+            {
+              "id": "apt_bench_2",
+              "kind": "bench",
+              "pos": [
+                -2,
+                0,
+                2.6
+              ],
+              "size": [
+                1.8,
+                0.55,
+                0.5
+              ],
+              "color": "#697e82"
+            }
+          ],
+          "lights": [
+            {
+              "id": "apt_light_2",
+              "pos": [
+                0,
+                2.55,
+                0
+              ],
+              "color": "#ffe8c5",
+              "intensity": 0.8,
+              "range": 10
+            }
+          ]
+        }
+      ],
+      "roof": {
+        "type": "flat_parapet",
+        "parapetHeight": 0.95,
+        "parapetThickness": 0.22,
+        "accessFromStairs": true,
+        "stairExitHole": {
+          "x": -3.9,
+          "z": -2,
+          "width": 1.8,
+          "length": 2
+        }
+      }
+    },
+    {
+      "id": "corner_market",
+      "name": "Corner Market",
+      "center": [
+        -41,
+        0,
+        0
+      ],
+      "size": [
+        9,
+        12
+      ],
+      "wallColor": "#d6bd8a",
+      "trimColor": "#bd6b42",
+      "floorColor": "#8a7a65",
+      "floors": [
+        {
+          "floorIndex": 0,
+          "floorY": 0,
+          "height": 3,
+          "slabThickness": 0.2,
+          "wallThickness": 0.25,
+          "walls": [
+            {
+              "side": "east",
+              "doors": [
+                {
+                  "offset": 0,
+                  "width": 1.8,
+                  "height": 2.35
+                }
+              ],
+              "windows": [
+                {
+                  "offset": -4,
+                  "width": 1.1,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4,
+                  "width": 1.1,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "east",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "west",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -4,
+                  "width": 1.1,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 4,
+                  "width": 1.1,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "west",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "north",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -2.6,
+                  "width": 1.1,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 2.6,
+                  "width": 1.1,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "north",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            },
+            {
+              "side": "south",
+              "doors": [],
+              "windows": [
+                {
+                  "offset": -2.6,
+                  "width": 1.1,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                },
+                {
+                  "offset": 2.6,
+                  "width": 1.1,
+                  "sillHeight": 1,
+                  "height": 1.2,
+                  "wallSide": "south",
+                  "hasPlayerBlocker": true
+                }
+              ]
+            }
+          ],
+          "interiorWalls": [
+            {
+              "start": [
+                0,
+                -5.3
+              ],
+              "end": [
+                0,
+                5.3
+              ],
+              "doorways": [
+                {
+                  "offset": 0,
+                  "width": 1.35,
+                  "height": 2.25
+                }
+              ]
+            }
+          ],
+          "props": [
+            {
+              "id": "market_counter",
+              "kind": "counter",
+              "pos": [
+                1.8,
+                0,
+                -1.4
+              ],
+              "size": [
+                1.4,
+                1,
+                4
+              ],
+              "color": "#9b6d46"
+            },
+            {
+              "id": "market_shelf",
+              "kind": "shelf",
+              "pos": [
+                -2.8,
+                0,
+                2.8
+              ],
+              "size": [
+                1,
+                1.8,
+                2.2
+              ],
+              "color": "#6f5643"
+            },
+            {
+              "id": "market_crates",
+              "kind": "crate",
+              "pos": [
+                -2.8,
+                0,
+                -2.5
+              ],
+              "size": [
+                1,
+                0.8,
+                1.2
+              ],
+              "color": "#ac854d"
+            }
+          ],
+          "lights": [
+            {
+              "id": "market_ceiling",
+              "pos": [
+                0,
+                2.7,
+                0
+              ],
+              "color": "#ffe2a8",
+              "intensity": 1,
+              "range": 10
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "boxes": [
+    {
+      "id": "spawn_A_flagpole_1",
+      "kind": "prop",
+      "center": [
+        -2,
+        1.5,
+        -42
+      ],
+      "size": [
+        0.09,
+        3,
+        0.09
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "spawn_A_flag_1",
+      "kind": "prop",
+      "center": [
+        -1.5,
+        2.35,
+        -42
+      ],
+      "size": [
+        1,
+        0.6,
+        0.08
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "spawn_A_flagpole_2",
+      "kind": "prop",
+      "center": [
+        2,
+        1.5,
+        -42
+      ],
+      "size": [
+        0.09,
+        3,
+        0.09
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "spawn_A_flag_2",
+      "kind": "prop",
+      "center": [
+        2.5,
+        2.35,
+        -42
+      ],
+      "size": [
+        1,
+        0.6,
+        0.08
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "spawn_B_flagpole_1",
+      "kind": "prop",
+      "center": [
+        -2,
+        1.5,
+        42
+      ],
+      "size": [
+        0.09,
+        3,
+        0.09
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "spawn_B_flag_1",
+      "kind": "prop",
+      "center": [
+        -1.5,
+        2.35,
+        42
+      ],
+      "size": [
+        1,
+        0.6,
+        0.08
+      ],
+      "color": "#be6252"
+    },
+    {
+      "id": "spawn_B_flagpole_2",
+      "kind": "prop",
+      "center": [
+        2,
+        1.5,
+        42
+      ],
+      "size": [
+        0.09,
+        3,
+        0.09
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "spawn_B_flag_2",
+      "kind": "prop",
+      "center": [
+        2.5,
+        2.35,
+        42
+      ],
+      "size": [
+        1,
+        0.6,
+        0.08
+      ],
+      "color": "#be6252"
+    },
+    {
+      "id": "home_south_west_fence_w",
+      "kind": "fence",
+      "center": [
+        -30.8,
+        0.55,
+        -25.5
+      ],
+      "size": [
+        0.12,
+        1.1,
+        9.8
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_west_fence_e",
+      "kind": "fence",
+      "center": [
+        -19.2,
+        0.55,
+        -25.5
+      ],
+      "size": [
+        0.12,
+        1.1,
+        9.8
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_west_fence_back",
+      "kind": "fence",
+      "center": [
+        -25,
+        0.55,
+        -31.3
+      ],
+      "size": [
+        11.6,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_west_fence_front_l",
+      "kind": "fence",
+      "center": [
+        -28.7,
+        0.55,
+        -19.7
+      ],
+      "size": [
+        4.2,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_west_fence_front_r",
+      "kind": "fence",
+      "center": [
+        -21.3,
+        0.55,
+        -19.7
+      ],
+      "size": [
+        4.2,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_west_planter_1",
+      "kind": "prop",
+      "center": [
+        -29.1,
+        0.28,
+        -22.2
+      ],
+      "size": [
+        1.1,
+        0.56,
+        0.9
+      ],
+      "color": "#4b7545"
+    },
+    {
+      "id": "home_south_west_planter_2",
+      "kind": "prop",
+      "center": [
+        -20.9,
+        0.28,
+        -22.2
+      ],
+      "size": [
+        1.1,
+        0.56,
+        0.9
+      ],
+      "color": "#6f9654"
+    },
+    {
+      "id": "home_south_east_fence_w",
+      "kind": "fence",
+      "center": [
+        19.2,
+        0.55,
+        -25.5
+      ],
+      "size": [
+        0.12,
+        1.1,
+        9.8
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_east_fence_e",
+      "kind": "fence",
+      "center": [
+        30.8,
+        0.55,
+        -25.5
+      ],
+      "size": [
+        0.12,
+        1.1,
+        9.8
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_east_fence_back",
+      "kind": "fence",
+      "center": [
+        25,
+        0.55,
+        -31.3
+      ],
+      "size": [
+        11.6,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_east_fence_front_l",
+      "kind": "fence",
+      "center": [
+        21.3,
+        0.55,
+        -19.7
+      ],
+      "size": [
+        4.2,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_east_fence_front_r",
+      "kind": "fence",
+      "center": [
+        28.7,
+        0.55,
+        -19.7
+      ],
+      "size": [
+        4.2,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_east_planter_1",
+      "kind": "prop",
+      "center": [
+        20.9,
+        0.28,
+        -22.2
+      ],
+      "size": [
+        1.1,
+        0.56,
+        0.9
+      ],
+      "color": "#4b7545"
+    },
+    {
+      "id": "home_south_east_planter_2",
+      "kind": "prop",
+      "center": [
+        29.1,
+        0.28,
+        -22.2
+      ],
+      "size": [
+        1.1,
+        0.56,
+        0.9
+      ],
+      "color": "#6f9654"
+    },
+    {
+      "id": "home_north_west_fence_w",
+      "kind": "fence",
+      "center": [
+        -30.8,
+        0.55,
+        25.5
+      ],
+      "size": [
+        0.12,
+        1.1,
+        9.8
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_west_fence_e",
+      "kind": "fence",
+      "center": [
+        -19.2,
+        0.55,
+        25.5
+      ],
+      "size": [
+        0.12,
+        1.1,
+        9.8
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_west_fence_back",
+      "kind": "fence",
+      "center": [
+        -25,
+        0.55,
+        31.3
+      ],
+      "size": [
+        11.6,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_west_fence_front_l",
+      "kind": "fence",
+      "center": [
+        -28.7,
+        0.55,
+        19.7
+      ],
+      "size": [
+        4.2,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_west_fence_front_r",
+      "kind": "fence",
+      "center": [
+        -21.3,
+        0.55,
+        19.7
+      ],
+      "size": [
+        4.2,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_west_planter_1",
+      "kind": "prop",
+      "center": [
+        -29.1,
+        0.28,
+        22.2
+      ],
+      "size": [
+        1.1,
+        0.56,
+        0.9
+      ],
+      "color": "#4b7545"
+    },
+    {
+      "id": "home_north_west_planter_2",
+      "kind": "prop",
+      "center": [
+        -20.9,
+        0.28,
+        22.2
+      ],
+      "size": [
+        1.1,
+        0.56,
+        0.9
+      ],
+      "color": "#6f9654"
+    },
+    {
+      "id": "home_north_east_fence_w",
+      "kind": "fence",
+      "center": [
+        19.2,
+        0.55,
+        25.5
+      ],
+      "size": [
+        0.12,
+        1.1,
+        9.8
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_east_fence_e",
+      "kind": "fence",
+      "center": [
+        30.8,
+        0.55,
+        25.5
+      ],
+      "size": [
+        0.12,
+        1.1,
+        9.8
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_east_fence_back",
+      "kind": "fence",
+      "center": [
+        25,
+        0.55,
+        31.3
+      ],
+      "size": [
+        11.6,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_east_fence_front_l",
+      "kind": "fence",
+      "center": [
+        21.3,
+        0.55,
+        19.7
+      ],
+      "size": [
+        4.2,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_east_fence_front_r",
+      "kind": "fence",
+      "center": [
+        28.7,
+        0.55,
+        19.7
+      ],
+      "size": [
+        4.2,
+        1.1,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_east_planter_1",
+      "kind": "prop",
+      "center": [
+        20.9,
+        0.28,
+        22.2
+      ],
+      "size": [
+        1.1,
+        0.56,
+        0.9
+      ],
+      "color": "#4b7545"
+    },
+    {
+      "id": "home_north_east_planter_2",
+      "kind": "prop",
+      "center": [
+        29.1,
+        0.28,
+        22.2
+      ],
+      "size": [
+        1.1,
+        0.56,
+        0.9
+      ],
+      "color": "#6f9654"
+    },
+    {
+      "id": "home_south_west_porch",
+      "kind": "platform",
+      "center": [
+        -25,
+        0.1,
+        -20
+      ],
+      "size": [
+        3.2,
+        0.2,
+        1.7
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_south_west_porch_step_0",
+      "kind": "stairs",
+      "center": [
+        -25,
+        0.07,
+        -19.25
+      ],
+      "size": [
+        1.8,
+        0.14,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_south_west_porch_step_1",
+      "kind": "stairs",
+      "center": [
+        -25,
+        0.15000000000000002,
+        -18.91
+      ],
+      "size": [
+        1.8,
+        0.16,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_south_west_porch_step_2",
+      "kind": "stairs",
+      "center": [
+        -25,
+        0.23,
+        -18.57
+      ],
+      "size": [
+        1.8,
+        0.18000000000000002,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_south_west_balcony_deck",
+      "kind": "platform",
+      "center": [
+        -25,
+        3.05,
+        -20.05
+      ],
+      "size": [
+        3,
+        0.12,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_west_balcony_rail_outer",
+      "kind": "fence",
+      "center": [
+        -25,
+        3.55,
+        -19.4
+      ],
+      "size": [
+        3,
+        0.88,
+        0.1
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_west_balcony_rail_l",
+      "kind": "fence",
+      "center": [
+        -26.45,
+        3.55,
+        -20.05
+      ],
+      "size": [
+        0.1,
+        0.88,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_west_balcony_rail_r",
+      "kind": "fence",
+      "center": [
+        -23.55,
+        3.55,
+        -20.05
+      ],
+      "size": [
+        0.1,
+        0.88,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_east_porch",
+      "kind": "platform",
+      "center": [
+        25,
+        0.1,
+        -20
+      ],
+      "size": [
+        3.2,
+        0.2,
+        1.7
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_south_east_porch_step_0",
+      "kind": "stairs",
+      "center": [
+        25,
+        0.07,
+        -19.25
+      ],
+      "size": [
+        1.8,
+        0.14,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_south_east_porch_step_1",
+      "kind": "stairs",
+      "center": [
+        25,
+        0.15000000000000002,
+        -18.91
+      ],
+      "size": [
+        1.8,
+        0.16,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_south_east_porch_step_2",
+      "kind": "stairs",
+      "center": [
+        25,
+        0.23,
+        -18.57
+      ],
+      "size": [
+        1.8,
+        0.18000000000000002,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_south_east_balcony_deck",
+      "kind": "platform",
+      "center": [
+        25,
+        3.05,
+        -20.05
+      ],
+      "size": [
+        3,
+        0.12,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_east_balcony_rail_outer",
+      "kind": "fence",
+      "center": [
+        25,
+        3.55,
+        -19.4
+      ],
+      "size": [
+        3,
+        0.88,
+        0.1
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_east_balcony_rail_l",
+      "kind": "fence",
+      "center": [
+        23.55,
+        3.55,
+        -20.05
+      ],
+      "size": [
+        0.1,
+        0.88,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_south_east_balcony_rail_r",
+      "kind": "fence",
+      "center": [
+        26.45,
+        3.55,
+        -20.05
+      ],
+      "size": [
+        0.1,
+        0.88,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_west_porch",
+      "kind": "platform",
+      "center": [
+        -25,
+        0.1,
+        20
+      ],
+      "size": [
+        3.2,
+        0.2,
+        1.7
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_north_west_porch_step_0",
+      "kind": "stairs",
+      "center": [
+        -25,
+        0.07,
+        19.25
+      ],
+      "size": [
+        1.8,
+        0.14,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_north_west_porch_step_1",
+      "kind": "stairs",
+      "center": [
+        -25,
+        0.15000000000000002,
+        18.91
+      ],
+      "size": [
+        1.8,
+        0.16,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_north_west_porch_step_2",
+      "kind": "stairs",
+      "center": [
+        -25,
+        0.23,
+        18.57
+      ],
+      "size": [
+        1.8,
+        0.18000000000000002,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_north_west_balcony_deck",
+      "kind": "platform",
+      "center": [
+        -25,
+        3.05,
+        20.05
+      ],
+      "size": [
+        3,
+        0.12,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_west_balcony_rail_outer",
+      "kind": "fence",
+      "center": [
+        -25,
+        3.55,
+        19.4
+      ],
+      "size": [
+        3,
+        0.88,
+        0.1
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_west_balcony_rail_l",
+      "kind": "fence",
+      "center": [
+        -26.45,
+        3.55,
+        20.05
+      ],
+      "size": [
+        0.1,
+        0.88,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_west_balcony_rail_r",
+      "kind": "fence",
+      "center": [
+        -23.55,
+        3.55,
+        20.05
+      ],
+      "size": [
+        0.1,
+        0.88,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_east_porch",
+      "kind": "platform",
+      "center": [
+        25,
+        0.1,
+        20
+      ],
+      "size": [
+        3.2,
+        0.2,
+        1.7
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_north_east_porch_step_0",
+      "kind": "stairs",
+      "center": [
+        25,
+        0.07,
+        19.25
+      ],
+      "size": [
+        1.8,
+        0.14,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_north_east_porch_step_1",
+      "kind": "stairs",
+      "center": [
+        25,
+        0.15000000000000002,
+        18.91
+      ],
+      "size": [
+        1.8,
+        0.16,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_north_east_porch_step_2",
+      "kind": "stairs",
+      "center": [
+        25,
+        0.23,
+        18.57
+      ],
+      "size": [
+        1.8,
+        0.18000000000000002,
+        0.42
+      ],
+      "color": "#b9b8ae"
+    },
+    {
+      "id": "home_north_east_balcony_deck",
+      "kind": "platform",
+      "center": [
+        25,
+        3.05,
+        20.05
+      ],
+      "size": [
+        3,
+        0.12,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_east_balcony_rail_outer",
+      "kind": "fence",
+      "center": [
+        25,
+        3.55,
+        19.4
+      ],
+      "size": [
+        3,
+        0.88,
+        0.1
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_east_balcony_rail_l",
+      "kind": "fence",
+      "center": [
+        23.55,
+        3.55,
+        20.05
+      ],
+      "size": [
+        0.1,
+        0.88,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "home_north_east_balcony_rail_r",
+      "kind": "fence",
+      "center": [
+        26.45,
+        3.55,
+        20.05
+      ],
+      "size": [
+        0.1,
+        0.88,
+        1.4
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "market_sign_panel",
+      "kind": "prop",
+      "center": [
+        -41,
+        3.45,
+        6.18
+      ],
+      "size": [
+        4.7,
+        0.55,
+        0.18
+      ],
+      "color": "#4b654d"
+    },
+    {
+      "id": "market_awning",
+      "kind": "prop",
+      "center": [
+        -37.4,
+        2.35,
+        0
+      ],
+      "size": [
+        0.9,
+        0.12,
+        3.6
+      ],
+      "color": "#c95043"
+    },
+    {
+      "id": "bus_body",
+      "kind": "vehicle",
+      "center": [
+        41,
+        1.45,
+        3.6
+      ],
+      "size": [
+        2.35,
+        2.8,
+        7
+      ],
+      "color": "#4e86b5"
+    },
+    {
+      "id": "bus_roof",
+      "kind": "vehicle",
+      "center": [
+        41,
+        2.92,
+        3.6
+      ],
+      "size": [
+        2.15,
+        0.18,
+        6.6
+      ],
+      "color": "#e0d9b9"
+    },
+    {
+      "id": "bus_front_window",
+      "kind": "glass",
+      "center": [
+        41,
+        2.15,
+        7.17
+      ],
+      "size": [
+        2,
+        0.95,
+        0.08
+      ],
+      "color": "#1e3543"
+    },
+    {
+      "id": "bus_side_windows_1",
+      "kind": "glass",
+      "center": [
+        39.78,
+        2.15,
+        1.3
+      ],
+      "size": [
+        0.08,
+        0.8,
+        1.35
+      ],
+      "color": "#9fc9d4"
+    },
+    {
+      "id": "bus_side_windows_2",
+      "kind": "glass",
+      "center": [
+        39.78,
+        2.15,
+        3
+      ],
+      "size": [
+        0.08,
+        0.8,
+        1.35
+      ],
+      "color": "#9fc9d4"
+    },
+    {
+      "id": "bus_side_windows_3",
+      "kind": "glass",
+      "center": [
+        39.78,
+        2.15,
+        4.7
+      ],
+      "size": [
+        0.08,
+        0.8,
+        1.35
+      ],
+      "color": "#9fc9d4"
+    },
+    {
+      "id": "bus_side_windows_4",
+      "kind": "glass",
+      "center": [
+        39.78,
+        2.15,
+        6
+      ],
+      "size": [
+        0.08,
+        0.8,
+        0.85
+      ],
+      "color": "#9fc9d4"
+    },
+    {
+      "id": "bus_bumper_front",
+      "kind": "vehicle",
+      "center": [
+        41,
+        0.52,
+        7.22
+      ],
+      "size": [
+        2.5,
+        0.22,
+        0.18
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_bumper_back",
+      "kind": "vehicle",
+      "center": [
+        41,
+        0.52,
+        0
+      ],
+      "size": [
+        2.5,
+        0.22,
+        0.18
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_wheel_39.65_1",
+      "kind": "vehicle",
+      "center": [
+        39.65,
+        0.45,
+        1
+      ],
+      "size": [
+        0.23,
+        0.75,
+        0.95
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_wheel_39.65_6.1",
+      "kind": "vehicle",
+      "center": [
+        39.65,
+        0.45,
+        6.1
+      ],
+      "size": [
+        0.23,
+        0.75,
+        0.95
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_wheel_42.35_1",
+      "kind": "vehicle",
+      "center": [
+        42.35,
+        0.45,
+        1
+      ],
+      "size": [
+        0.23,
+        0.75,
+        0.95
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_wheel_42.35_6.1",
+      "kind": "vehicle",
+      "center": [
+        42.35,
+        0.45,
+        6.1
+      ],
+      "size": [
+        0.23,
+        0.75,
+        0.95
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_stop_roof",
+      "kind": "prop",
+      "center": [
+        40,
+        2.9,
+        12
+      ],
+      "size": [
+        4.6,
+        0.22,
+        2.6
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "bus_stop_pillar_38_11",
+      "kind": "prop",
+      "center": [
+        38,
+        1.45,
+        11
+      ],
+      "size": [
+        0.12,
+        2.9,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_stop_pillar_38_13",
+      "kind": "prop",
+      "center": [
+        38,
+        1.45,
+        13
+      ],
+      "size": [
+        0.12,
+        2.9,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_stop_pillar_42_11",
+      "kind": "prop",
+      "center": [
+        42,
+        1.45,
+        11
+      ],
+      "size": [
+        0.12,
+        2.9,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_stop_pillar_42_13",
+      "kind": "prop",
+      "center": [
+        42,
+        1.45,
+        13
+      ],
+      "size": [
+        0.12,
+        2.9,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_stop_bench_seat",
+      "kind": "bench",
+      "center": [
+        40,
+        0.6,
+        12.2
+      ],
+      "size": [
+        2.2,
+        0.15,
+        0.5
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "bus_stop_bench_back",
+      "kind": "bench",
+      "center": [
+        40,
+        1,
+        12.43
+      ],
+      "size": [
+        2.2,
+        0.7,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "bus_stop_sign_post",
+      "kind": "prop",
+      "center": [
+        43.2,
+        1.5,
+        14.8
+      ],
+      "size": [
+        0.08,
+        3,
+        0.08
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "bus_stop_sign",
+      "kind": "prop",
+      "center": [
+        43.2,
+        2.55,
+        14.8
+      ],
+      "size": [
+        0.75,
+        0.8,
+        0.1
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "parking_car_1_body",
+      "kind": "vehicle",
+      "center": [
+        37,
+        0.72,
+        -24.2
+      ],
+      "size": [
+        2,
+        1.15,
+        4.1
+      ],
+      "color": "#b84e43"
+    },
+    {
+      "id": "parking_car_1_cabin",
+      "kind": "vehicle",
+      "center": [
+        37,
+        1.4,
+        -24.2
+      ],
+      "size": [
+        1.65,
+        0.55,
+        2
+      ],
+      "color": "#8caeb8"
+    },
+    {
+      "id": "parking_car_1_hood",
+      "kind": "vehicle",
+      "center": [
+        37,
+        1.1,
+        -25.55
+      ],
+      "size": [
+        1.85,
+        0.28,
+        1.2
+      ],
+      "color": "#b84e43"
+    },
+    {
+      "id": "parking_car_1_wheel_-25.55_-0.95",
+      "kind": "vehicle",
+      "center": [
+        36.05,
+        0.35,
+        -25.55
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_1_wheel_-25.55_0.95",
+      "kind": "vehicle",
+      "center": [
+        37.95,
+        0.35,
+        -25.55
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_1_wheel_-22.85_-0.95",
+      "kind": "vehicle",
+      "center": [
+        36.05,
+        0.35,
+        -22.85
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_1_wheel_-22.85_0.95",
+      "kind": "vehicle",
+      "center": [
+        37.95,
+        0.35,
+        -22.85
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_2_body",
+      "kind": "vehicle",
+      "center": [
+        41,
+        0.72,
+        -24.2
+      ],
+      "size": [
+        2,
+        1.15,
+        4.1
+      ],
+      "color": "#d8d9d4"
+    },
+    {
+      "id": "parking_car_2_cabin",
+      "kind": "vehicle",
+      "center": [
+        41,
+        1.4,
+        -24.2
+      ],
+      "size": [
+        1.65,
+        0.55,
+        2
+      ],
+      "color": "#8caeb8"
+    },
+    {
+      "id": "parking_car_2_hood",
+      "kind": "vehicle",
+      "center": [
+        41,
+        1.1,
+        -25.55
+      ],
+      "size": [
+        1.85,
+        0.28,
+        1.2
+      ],
+      "color": "#d8d9d4"
+    },
+    {
+      "id": "parking_car_2_wheel_-25.55_-0.95",
+      "kind": "vehicle",
+      "center": [
+        40.05,
+        0.35,
+        -25.55
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_2_wheel_-25.55_0.95",
+      "kind": "vehicle",
+      "center": [
+        41.95,
+        0.35,
+        -25.55
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_2_wheel_-22.85_-0.95",
+      "kind": "vehicle",
+      "center": [
+        40.05,
+        0.35,
+        -22.85
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_2_wheel_-22.85_0.95",
+      "kind": "vehicle",
+      "center": [
+        41.95,
+        0.35,
+        -22.85
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_3_body",
+      "kind": "vehicle",
+      "center": [
+        45,
+        0.72,
+        -24.2
+      ],
+      "size": [
+        2,
+        1.15,
+        4.1
+      ],
+      "color": "#d5b44e"
+    },
+    {
+      "id": "parking_car_3_cabin",
+      "kind": "vehicle",
+      "center": [
+        45,
+        1.4,
+        -24.2
+      ],
+      "size": [
+        1.65,
+        0.55,
+        2
+      ],
+      "color": "#8caeb8"
+    },
+    {
+      "id": "parking_car_3_hood",
+      "kind": "vehicle",
+      "center": [
+        45,
+        1.1,
+        -25.55
+      ],
+      "size": [
+        1.85,
+        0.28,
+        1.2
+      ],
+      "color": "#d5b44e"
+    },
+    {
+      "id": "parking_car_3_wheel_-25.55_-0.95",
+      "kind": "vehicle",
+      "center": [
+        44.05,
+        0.35,
+        -25.55
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_3_wheel_-25.55_0.95",
+      "kind": "vehicle",
+      "center": [
+        45.95,
+        0.35,
+        -25.55
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_3_wheel_-22.85_-0.95",
+      "kind": "vehicle",
+      "center": [
+        44.05,
+        0.35,
+        -22.85
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "parking_car_3_wheel_-22.85_0.95",
+      "kind": "vehicle",
+      "center": [
+        45.95,
+        0.35,
+        -22.85
+      ],
+      "size": [
+        0.28,
+        0.55,
+        0.65
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "park_bench_1_seat",
+      "kind": "bench",
+      "center": [
+        -6,
+        0.58,
+        -5
+      ],
+      "size": [
+        2,
+        0.16,
+        0.52
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "park_bench_1_back",
+      "kind": "bench",
+      "center": [
+        -6,
+        0.98,
+        -5.22
+      ],
+      "size": [
+        2,
+        0.68,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "park_bench_1_leg_l",
+      "kind": "bench",
+      "center": [
+        -6.7,
+        0.3,
+        -5
+      ],
+      "size": [
+        0.12,
+        0.6,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "park_bench_1_leg_r",
+      "kind": "bench",
+      "center": [
+        -5.3,
+        0.3,
+        -5
+      ],
+      "size": [
+        0.12,
+        0.6,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "park_bench_2_seat",
+      "kind": "bench",
+      "center": [
+        6,
+        0.58,
+        -5
+      ],
+      "size": [
+        2,
+        0.16,
+        0.52
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "park_bench_2_back",
+      "kind": "bench",
+      "center": [
+        6,
+        0.98,
+        -5.22
+      ],
+      "size": [
+        2,
+        0.68,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "park_bench_2_leg_l",
+      "kind": "bench",
+      "center": [
+        5.3,
+        0.3,
+        -5
+      ],
+      "size": [
+        0.12,
+        0.6,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "park_bench_2_leg_r",
+      "kind": "bench",
+      "center": [
+        6.7,
+        0.3,
+        -5
+      ],
+      "size": [
+        0.12,
+        0.6,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "park_bench_3_seat",
+      "kind": "bench",
+      "center": [
+        -6,
+        0.58,
+        5
+      ],
+      "size": [
+        2,
+        0.16,
+        0.52
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "park_bench_3_back",
+      "kind": "bench",
+      "center": [
+        -6,
+        0.98,
+        4.78
+      ],
+      "size": [
+        2,
+        0.68,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "park_bench_3_leg_l",
+      "kind": "bench",
+      "center": [
+        -6.7,
+        0.3,
+        5
+      ],
+      "size": [
+        0.12,
+        0.6,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "park_bench_3_leg_r",
+      "kind": "bench",
+      "center": [
+        -5.3,
+        0.3,
+        5
+      ],
+      "size": [
+        0.12,
+        0.6,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "park_bench_4_seat",
+      "kind": "bench",
+      "center": [
+        6,
+        0.58,
+        5
+      ],
+      "size": [
+        2,
+        0.16,
+        0.52
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "park_bench_4_back",
+      "kind": "bench",
+      "center": [
+        6,
+        0.98,
+        4.78
+      ],
+      "size": [
+        2,
+        0.68,
+        0.12
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "park_bench_4_leg_l",
+      "kind": "bench",
+      "center": [
+        5.3,
+        0.3,
+        5
+      ],
+      "size": [
+        0.12,
+        0.6,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "park_bench_4_leg_r",
+      "kind": "bench",
+      "center": [
+        6.7,
+        0.3,
+        5
+      ],
+      "size": [
+        0.12,
+        0.6,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "play_platform",
+      "kind": "playground",
+      "center": [
+        0,
+        1.35,
+        0
+      ],
+      "size": [
+        4,
+        0.35,
+        3.2
+      ],
+      "color": "#d1a85b"
+    },
+    {
+      "id": "play_support_1",
+      "kind": "playground",
+      "center": [
+        -1.55,
+        0.85,
+        0
+      ],
+      "size": [
+        0.25,
+        1.7,
+        0.25
+      ],
+      "color": "#d65f52"
+    },
+    {
+      "id": "play_support_2",
+      "kind": "playground",
+      "center": [
+        1.55,
+        0.85,
+        0
+      ],
+      "size": [
+        0.25,
+        1.7,
+        0.25
+      ],
+      "color": "#d65f52"
+    },
+    {
+      "id": "play_roof",
+      "kind": "playground",
+      "center": [
+        0,
+        2.35,
+        0
+      ],
+      "size": [
+        4.1,
+        0.18,
+        3.4
+      ],
+      "color": "#4c83b2"
+    },
+    {
+      "id": "play_ladder_step_0",
+      "kind": "playground",
+      "center": [
+        -2.25,
+        0.25,
+        0
+      ],
+      "size": [
+        0.75,
+        0.12,
+        0.14
+      ],
+      "color": "#f0c85a"
+    },
+    {
+      "id": "play_ladder_step_1",
+      "kind": "playground",
+      "center": [
+        -2.25,
+        0.48,
+        0
+      ],
+      "size": [
+        0.75,
+        0.12,
+        0.14
+      ],
+      "color": "#f0c85a"
+    },
+    {
+      "id": "play_ladder_step_2",
+      "kind": "playground",
+      "center": [
+        -2.25,
+        0.71,
+        0
+      ],
+      "size": [
+        0.75,
+        0.12,
+        0.14
+      ],
+      "color": "#f0c85a"
+    },
+    {
+      "id": "play_ladder_step_3",
+      "kind": "playground",
+      "center": [
+        -2.25,
+        0.9400000000000001,
+        0
+      ],
+      "size": [
+        0.75,
+        0.12,
+        0.14
+      ],
+      "color": "#f0c85a"
+    },
+    {
+      "id": "play_ladder_step_4",
+      "kind": "playground",
+      "center": [
+        -2.25,
+        1.17,
+        0
+      ],
+      "size": [
+        0.75,
+        0.12,
+        0.14
+      ],
+      "color": "#f0c85a"
+    },
+    {
+      "id": "slide_landing",
+      "kind": "playground",
+      "center": [
+        2.25,
+        0.75,
+        0
+      ],
+      "size": [
+        0.55,
+        0.18,
+        0.8
+      ],
+      "color": "#d65f52"
+    },
+    {
+      "id": "swing_top_bar",
+      "kind": "playground",
+      "center": [
+        0,
+        2.3,
+        4.2
+      ],
+      "size": [
+        4.4,
+        0.13,
+        0.13
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "swing_frame_-2_left",
+      "kind": "playground",
+      "center": [
+        -2,
+        1.15,
+        3.8
+      ],
+      "size": [
+        0.13,
+        2.3,
+        0.13
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "swing_frame_-2_right",
+      "kind": "playground",
+      "center": [
+        -2,
+        1.15,
+        4.6
+      ],
+      "size": [
+        0.13,
+        2.3,
+        0.13
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "swing_frame_2_left",
+      "kind": "playground",
+      "center": [
+        2,
+        1.15,
+        3.8
+      ],
+      "size": [
+        0.13,
+        2.3,
+        0.13
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "swing_frame_2_right",
+      "kind": "playground",
+      "center": [
+        2,
+        1.15,
+        4.6
+      ],
+      "size": [
+        0.13,
+        2.3,
+        0.13
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "swing_rope_1_a",
+      "kind": "playground",
+      "center": [
+        -1,
+        1.65,
+        4
+      ],
+      "size": [
+        0.04,
+        1.3,
+        0.04
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "swing_rope_1_b",
+      "kind": "playground",
+      "center": [
+        -1,
+        1.65,
+        4.4
+      ],
+      "size": [
+        0.04,
+        1.3,
+        0.04
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "swing_seat_1",
+      "kind": "playground",
+      "center": [
+        -1,
+        0.95,
+        4.2
+      ],
+      "size": [
+        0.75,
+        0.12,
+        0.48
+      ],
+      "color": "#be6252"
+    },
+    {
+      "id": "swing_rope_2_a",
+      "kind": "playground",
+      "center": [
+        1,
+        1.65,
+        4
+      ],
+      "size": [
+        0.04,
+        1.3,
+        0.04
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "swing_rope_2_b",
+      "kind": "playground",
+      "center": [
+        1,
+        1.65,
+        4.4
+      ],
+      "size": [
+        0.04,
+        1.3,
+        0.04
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "swing_seat_2",
+      "kind": "playground",
+      "center": [
+        1,
+        0.95,
+        4.2
+      ],
+      "size": [
+        0.75,
+        0.12,
+        0.48
+      ],
+      "color": "#be6252"
+    },
+    {
+      "id": "picnic_table_top",
+      "kind": "table",
+      "center": [
+        0,
+        0.95,
+        -7.6
+      ],
+      "size": [
+        2.2,
+        0.16,
+        1.1
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "picnic_table_leg_-0.8",
+      "kind": "table",
+      "center": [
+        -0.8,
+        0.5,
+        -7.6
+      ],
+      "size": [
+        0.14,
+        0.9,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "picnic_table_leg_0.8",
+      "kind": "table",
+      "center": [
+        0.8,
+        0.5,
+        -7.6
+      ],
+      "size": [
+        0.14,
+        0.9,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "picnic_bench_left",
+      "kind": "bench",
+      "center": [
+        -1.8,
+        0.56,
+        -7.6
+      ],
+      "size": [
+        1.6,
+        0.14,
+        0.42
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "picnic_bench_right",
+      "kind": "bench",
+      "center": [
+        1.8,
+        0.56,
+        -7.6
+      ],
+      "size": [
+        1.6,
+        0.14,
+        0.42
+      ],
+      "color": "#8f6344"
+    },
+    {
+      "id": "streetlight_1_pole",
+      "kind": "streetlight",
+      "center": [
+        -14,
+        2.2,
+        -31
+      ],
+      "size": [
+        0.14,
+        4.4,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_1_arm",
+      "kind": "streetlight",
+      "center": [
+        -13.52,
+        4.1,
+        -31
+      ],
+      "size": [
+        1,
+        0.1,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_1_lamp",
+      "kind": "streetlight",
+      "center": [
+        -13.1,
+        4,
+        -31
+      ],
+      "size": [
+        0.36,
+        0.18,
+        0.3
+      ],
+      "color": "#ffeab0"
+    },
+    {
+      "id": "streetlight_2_pole",
+      "kind": "streetlight",
+      "center": [
+        14,
+        2.2,
+        -31
+      ],
+      "size": [
+        0.14,
+        4.4,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_2_arm",
+      "kind": "streetlight",
+      "center": [
+        13.52,
+        4.1,
+        -31
+      ],
+      "size": [
+        1,
+        0.1,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_2_lamp",
+      "kind": "streetlight",
+      "center": [
+        13.1,
+        4,
+        -31
+      ],
+      "size": [
+        0.36,
+        0.18,
+        0.3
+      ],
+      "color": "#ffeab0"
+    },
+    {
+      "id": "streetlight_3_pole",
+      "kind": "streetlight",
+      "center": [
+        -14,
+        2.2,
+        31
+      ],
+      "size": [
+        0.14,
+        4.4,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_3_arm",
+      "kind": "streetlight",
+      "center": [
+        -13.52,
+        4.1,
+        31
+      ],
+      "size": [
+        1,
+        0.1,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_3_lamp",
+      "kind": "streetlight",
+      "center": [
+        -13.1,
+        4,
+        31
+      ],
+      "size": [
+        0.36,
+        0.18,
+        0.3
+      ],
+      "color": "#ffeab0"
+    },
+    {
+      "id": "streetlight_4_pole",
+      "kind": "streetlight",
+      "center": [
+        14,
+        2.2,
+        31
+      ],
+      "size": [
+        0.14,
+        4.4,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_4_arm",
+      "kind": "streetlight",
+      "center": [
+        13.52,
+        4.1,
+        31
+      ],
+      "size": [
+        1,
+        0.1,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_4_lamp",
+      "kind": "streetlight",
+      "center": [
+        13.1,
+        4,
+        31
+      ],
+      "size": [
+        0.36,
+        0.18,
+        0.3
+      ],
+      "color": "#ffeab0"
+    },
+    {
+      "id": "streetlight_5_pole",
+      "kind": "streetlight",
+      "center": [
+        -37,
+        2.2,
+        -15
+      ],
+      "size": [
+        0.14,
+        4.4,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_5_arm",
+      "kind": "streetlight",
+      "center": [
+        -36.52,
+        4.1,
+        -15
+      ],
+      "size": [
+        1,
+        0.1,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_5_lamp",
+      "kind": "streetlight",
+      "center": [
+        -36.1,
+        4,
+        -15
+      ],
+      "size": [
+        0.36,
+        0.18,
+        0.3
+      ],
+      "color": "#ffeab0"
+    },
+    {
+      "id": "streetlight_6_pole",
+      "kind": "streetlight",
+      "center": [
+        37,
+        2.2,
+        15
+      ],
+      "size": [
+        0.14,
+        4.4,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_6_arm",
+      "kind": "streetlight",
+      "center": [
+        36.52,
+        4.1,
+        15
+      ],
+      "size": [
+        1,
+        0.1,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_6_lamp",
+      "kind": "streetlight",
+      "center": [
+        36.1,
+        4,
+        15
+      ],
+      "size": [
+        0.36,
+        0.18,
+        0.3
+      ],
+      "color": "#ffeab0"
+    },
+    {
+      "id": "streetlight_7_pole",
+      "kind": "streetlight",
+      "center": [
+        -14,
+        2.2,
+        14
+      ],
+      "size": [
+        0.14,
+        4.4,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_7_arm",
+      "kind": "streetlight",
+      "center": [
+        -13.52,
+        4.1,
+        14
+      ],
+      "size": [
+        1,
+        0.1,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_7_lamp",
+      "kind": "streetlight",
+      "center": [
+        -13.1,
+        4,
+        14
+      ],
+      "size": [
+        0.36,
+        0.18,
+        0.3
+      ],
+      "color": "#ffeab0"
+    },
+    {
+      "id": "streetlight_8_pole",
+      "kind": "streetlight",
+      "center": [
+        14,
+        2.2,
+        -14
+      ],
+      "size": [
+        0.14,
+        4.4,
+        0.14
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_8_arm",
+      "kind": "streetlight",
+      "center": [
+        13.52,
+        4.1,
+        -14
+      ],
+      "size": [
+        1,
+        0.1,
+        0.12
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "streetlight_8_lamp",
+      "kind": "streetlight",
+      "center": [
+        13.1,
+        4,
+        -14
+      ],
+      "size": [
+        0.36,
+        0.18,
+        0.3
+      ],
+      "color": "#ffeab0"
+    },
+    {
+      "id": "mailbox_1_post",
+      "kind": "prop",
+      "center": [
+        -14,
+        0.75,
+        -22
+      ],
+      "size": [
+        0.1,
+        1.5,
+        0.1
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "mailbox_1_body",
+      "kind": "prop",
+      "center": [
+        -14,
+        1.3,
+        -22
+      ],
+      "size": [
+        0.55,
+        0.45,
+        0.55
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "trash_bin_1",
+      "kind": "prop",
+      "center": [
+        -12.8,
+        0.55,
+        -22
+      ],
+      "size": [
+        0.65,
+        1.1,
+        0.65
+      ],
+      "color": "#4b7545"
+    },
+    {
+      "id": "mailbox_2_post",
+      "kind": "prop",
+      "center": [
+        14,
+        0.75,
+        22
+      ],
+      "size": [
+        0.1,
+        1.5,
+        0.1
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "mailbox_2_body",
+      "kind": "prop",
+      "center": [
+        14,
+        1.3,
+        22
+      ],
+      "size": [
+        0.55,
+        0.45,
+        0.55
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "trash_bin_2",
+      "kind": "prop",
+      "center": [
+        12.8,
+        0.55,
+        22
+      ],
+      "size": [
+        0.65,
+        1.1,
+        0.65
+      ],
+      "color": "#4b7545"
+    },
+    {
+      "id": "mailbox_3_post",
+      "kind": "prop",
+      "center": [
+        -35,
+        0.75,
+        15
+      ],
+      "size": [
+        0.1,
+        1.5,
+        0.1
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "mailbox_3_body",
+      "kind": "prop",
+      "center": [
+        -35,
+        1.3,
+        15
+      ],
+      "size": [
+        0.55,
+        0.45,
+        0.55
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "trash_bin_3",
+      "kind": "prop",
+      "center": [
+        -33.8,
+        0.55,
+        15
+      ],
+      "size": [
+        0.65,
+        1.1,
+        0.65
+      ],
+      "color": "#4b7545"
+    },
+    {
+      "id": "mailbox_4_post",
+      "kind": "prop",
+      "center": [
+        35,
+        0.75,
+        -15
+      ],
+      "size": [
+        0.1,
+        1.5,
+        0.1
+      ],
+      "color": "#343a40"
+    },
+    {
+      "id": "mailbox_4_body",
+      "kind": "prop",
+      "center": [
+        35,
+        1.3,
+        -15
+      ],
+      "size": [
+        0.55,
+        0.45,
+        0.55
+      ],
+      "color": "#4b80aa"
+    },
+    {
+      "id": "trash_bin_4",
+      "kind": "prop",
+      "center": [
+        33.8,
+        0.55,
+        -15
+      ],
+      "size": [
+        0.65,
+        1.1,
+        0.65
+      ],
+      "color": "#4b7545"
+    }
+  ],
+  "nature": {
+    "trees": [
+      {
+        "pos": [
+          -11,
+          0,
+          -11
+        ],
+        "scale": 0.72
+      },
+      {
+        "pos": [
+          11,
+          0,
+          -11
+        ],
+        "scale": 0.72
+      },
+      {
+        "pos": [
+          -11,
+          0,
+          11
+        ],
+        "scale": 0.72
+      },
+      {
+        "pos": [
+          11,
+          0,
+          11
+        ],
+        "scale": 0.72
+      },
+      {
+        "pos": [
+          -34,
+          0,
+          -18
+        ],
+        "scale": 0.95
+      },
+      {
+        "pos": [
+          -34,
+          0,
+          18
+        ],
+        "scale": 0.9
+      },
+      {
+        "pos": [
+          34,
+          0,
+          -18
+        ],
+        "scale": 0.95
+      },
+      {
+        "pos": [
+          34,
+          0,
+          18
+        ],
+        "scale": 0.9
+      },
+      {
+        "pos": [
+          -36,
+          0,
+          -31
+        ],
+        "scale": 0.85
+      },
+      {
+        "pos": [
+          36,
+          0,
+          -31
+        ],
+        "scale": 0.85
+      },
+      {
+        "pos": [
+          -36,
+          0,
+          31
+        ],
+        "scale": 0.85
+      },
+      {
+        "pos": [
+          36,
+          0,
+          31
+        ],
+        "scale": 0.85
+      },
+      {
+        "pos": [
+          -12,
+          0,
+          -35
+        ],
+        "scale": 0.75
+      },
+      {
+        "pos": [
+          12,
+          0,
+          -35
+        ],
+        "scale": 0.75
+      },
+      {
+        "pos": [
+          -12,
+          0,
+          35
+        ],
+        "scale": 0.75
+      },
+      {
+        "pos": [
+          12,
+          0,
+          35
+        ],
+        "scale": 0.75
+      },
+      {
+        "pos": [
+          -44,
+          0,
+          -12
+        ],
+        "scale": 0.7
+      },
+      {
+        "pos": [
+          44,
+          0,
+          12
+        ],
+        "scale": 0.7
+      }
+    ],
+    "rocks": [
+      {
+        "pos": [
+          -8,
+          0,
+          -8
+        ],
+        "size": [
+          0.8,
+          0.45,
+          0.65
+        ],
+        "color": "#8d9780"
+      },
+      {
+        "pos": [
+          8,
+          0,
+          8
+        ],
+        "size": [
+          0.75,
+          0.4,
+          0.7
+        ],
+        "color": "#9aa28c"
+      },
+      {
+        "pos": [
+          -35,
+          0,
+          24
+        ],
+        "size": [
+          0.8,
+          0.45,
+          0.7
+        ],
+        "color": "#8d9780"
+      },
+      {
+        "pos": [
+          35,
+          0,
+          -24
+        ],
+        "size": [
+          0.8,
+          0.45,
+          0.7
+        ],
+        "color": "#9aa28c"
+      }
+    ]
+  },
+  "perchedBirds": [
+    {
+      "id": "park_bird_w",
+      "pos": [
+        -8,
+        0.05,
+        2
+      ],
+      "scale": 0.9,
+      "color": "#4e6874"
+    },
+    {
+      "id": "park_bird_e",
+      "pos": [
+        8,
+        0.05,
+        -2
+      ],
+      "scale": 0.85,
+      "color": "#a9b2b4"
+    },
+    {
+      "id": "market_bird",
+      "pos": [
+        -38.5,
+        0.05,
+        5.8
+      ],
+      "scale": 0.8,
+      "color": "#5d6870"
+    },
+    {
+      "id": "busstop_bird",
+      "pos": [
+        43.4,
+        0.05,
+        10
+      ],
+      "scale": 0.8,
+      "color": "#9b9d9b"
+    },
+    {
+      "id": "garden_bird_1",
+      "pos": [
+        -34.1,
+        0.05,
+        -17
+      ],
+      "scale": 0.78,
+      "color": "#536a67"
+    },
+    {
+      "id": "garden_bird_2",
+      "pos": [
+        34.1,
+        0.05,
+        17
+      ],
+      "scale": 0.78,
+      "color": "#b7b9a6"
+    },
+    {
+      "id": "picnic_bird",
+      "pos": [
+        -2.7,
+        0.05,
+        -8.2
+      ],
+      "scale": 0.85,
+      "color": "#69787f"
+    },
+    {
+      "id": "apartment_bird",
+      "pos": [
+        -19.5,
+        0.05,
+        5.5
+      ],
+      "scale": 0.75,
+      "color": "#7e8b8d"
+    }
+  ],
+  "invisiblePerimeters": [
+    {
+      "minX": -48,
+      "maxX": -47.5,
+      "minY": 0,
+      "maxY": 8,
+      "minZ": -48,
+      "maxZ": 48
+    },
+    {
+      "minX": 47.5,
+      "maxX": 48,
+      "minY": 0,
+      "maxY": 8,
+      "minZ": -48,
+      "maxZ": 48
+    },
+    {
+      "minX": -48,
+      "maxX": 48,
+      "minY": 0,
+      "maxY": 8,
+      "minZ": -48,
+      "maxZ": -47.5
+    },
+    {
+      "minX": -48,
+      "maxX": 48,
+      "minY": 0,
+      "maxY": 8,
+      "minZ": 47.5,
+      "maxZ": 48
+    }
+  ]
+}
