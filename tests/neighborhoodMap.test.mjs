@@ -98,6 +98,8 @@ test('Neighborhood is registered in the loader, map selector, atmosphere, and bi
   assert.match(loader, /neighborhood:\s*\{\s*name:\s*'Neighborhood District',\s*file:\s*'\/maps\/neighborhood\.json'/);
   assert.match(loader, /private expandPerchedBird/);
   assert.match(loader, /private expandBlockoutBuilding/);
+  assert.match(loader, /unfinishedStandaloneBoxIds/);
+  assert.match(loader, /market_sign_panel/);
   assert.match(loader, /bldg\.roof\.type === 'pitched'/);
   assert.match(loader, /const outerRoadAxis = mapWorldSpan \* 0\.34375/);
   assert.match(loader, /const innerRoadAxis = mapWorldSpan \/ 6/);
