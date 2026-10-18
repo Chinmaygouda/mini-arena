@@ -311,8 +311,9 @@ export class AtmosphereManager {
     // 7. Instanced Birds (Flocking, Perching, and Scattering on Gunshots)
     this.createBirdFlock(group, resolvedTheme, cfg);
 
-    // 8. Instanced Wind Grass
-    this.createWindGrass(group, resolvedTheme);
+    // 8. Grass: keep the neighborhood's roads and building interiors clear; populate only its park lawn.
+    if (mapId === 'neighborhood') this.createNeighborhoodParkGrass(group);
+    else this.createWindGrass(group, resolvedTheme);
 
     // 9. Scene Fog
     this.scene.fog = new THREE.Fog(cfg.fogColor, cfg.fogNear, cfg.fogFar);
@@ -686,6 +687,52 @@ export class AtmosphereManager {
     }
     this.grassMesh.instanceMatrix.needsUpdate = true;
     parent.add(this.grassMesh);
+  }
+
+  /**
+   * Small, instanced grass clusters restricted to the central park lawn.
+   * Unlike the generic arena scatter, this never populates building interiors or road lanes.
+   */
+  private createNeighborhoodParkGrass(parent: THREE.Group) {
+    const count = Math.min(this.grassCount, 700);
+    const grassGeom = new THREE.BufferGeometry();
+    const verts = new Float32Array([
+      -0.16, 0, 0, 0.16, 0, 0, 0.12, 0.52, 0,
+      -0.16, 0, 0, 0.12, 0.52, 0, -0.12, 0.52, 0,
+      0, 0, -0.16, 0, 0, 0.16, 0, 0.52, 0.12,
+      0, 0, -0.16, 0, 0.52, 0.12, 0, 0.52, -0.12,
+    ]);
+    grassGeom.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+    grassGeom.computeVertexNormals();
+    const grassMat = new THREE.MeshLambertMaterial({
+      color: 0x88a95b,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.92,
+    });
+    const mesh = new THREE.InstancedMesh(grassGeom, grassMat, count);
+    mesh.name = 'neighborhood-park-grass';
+    mesh.layers.set(FX_NON_RAYCAST_LAYER);
+    mesh.userData.ignoreRaycast = true;
+
+    const dummy = new THREE.Object3D();
+    let placed = 0;
+    let attempts = 0;
+    while (placed < count && attempts < count * 8) {
+      attempts++;
+      const x = -10.1 + Math.random() * 20.2;
+      const z = -10.1 + Math.random() * 20.2;
+      // Leave the pale north/south and east/west park paths clear.
+      if (Math.abs(x) < 0.85 || Math.abs(z) < 0.85) continue;
+      dummy.position.set(x, 0.015, z);
+      dummy.scale.set(0.55 + Math.random() * 0.5, 0.45 + Math.random() * 0.55, 0.55 + Math.random() * 0.5);
+      dummy.rotation.y = Math.random() * Math.PI;
+      dummy.updateMatrix();
+      mesh.setMatrixAt(placed++, dummy.matrix);
+    }
+    mesh.count = placed;
+    mesh.instanceMatrix.needsUpdate = true;
+    parent.add(mesh);
   }
 
   /**
