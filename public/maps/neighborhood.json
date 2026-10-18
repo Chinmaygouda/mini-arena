@@ -3143,21 +3143,6 @@
       "color": "#be6252"
     },
     {
-      "id": "home_south_west_fence_w",
-      "kind": "fence",
-      "center": [
-        -30.8,
-        0.55,
-        -25.5
-      ],
-      "size": [
-        0.12,
-        1.1,
-        9.8
-      ],
-      "color": "#8f6344"
-    },
-    {
       "id": "home_south_west_fence_e",
       "kind": "fence",
       "center": [
@@ -3169,21 +3154,6 @@
         0.12,
         1.1,
         9.8
-      ],
-      "color": "#8f6344"
-    },
-    {
-      "id": "home_south_west_fence_back",
-      "kind": "fence",
-      "center": [
-        -25,
-        0.55,
-        -31.3
-      ],
-      "size": [
-        11.6,
-        1.1,
-        0.12
       ],
       "color": "#8f6344"
     },
@@ -3263,36 +3233,6 @@
       "color": "#8f6344"
     },
     {
-      "id": "home_south_east_fence_e",
-      "kind": "fence",
-      "center": [
-        30.8,
-        0.55,
-        -25.5
-      ],
-      "size": [
-        0.12,
-        1.1,
-        9.8
-      ],
-      "color": "#8f6344"
-    },
-    {
-      "id": "home_south_east_fence_back",
-      "kind": "fence",
-      "center": [
-        25,
-        0.55,
-        -31.3
-      ],
-      "size": [
-        11.6,
-        1.1,
-        0.12
-      ],
-      "color": "#8f6344"
-    },
-    {
       "id": "home_south_east_fence_front_l",
       "kind": "fence",
       "center": [
@@ -3353,21 +3293,6 @@
       "color": "#6f9654"
     },
     {
-      "id": "home_north_west_fence_w",
-      "kind": "fence",
-      "center": [
-        -30.8,
-        0.55,
-        25.5
-      ],
-      "size": [
-        0.12,
-        1.1,
-        9.8
-      ],
-      "color": "#8f6344"
-    },
-    {
       "id": "home_north_west_fence_e",
       "kind": "fence",
       "center": [
@@ -3379,21 +3304,6 @@
         0.12,
         1.1,
         9.8
-      ],
-      "color": "#8f6344"
-    },
-    {
-      "id": "home_north_west_fence_back",
-      "kind": "fence",
-      "center": [
-        -25,
-        0.55,
-        31.3
-      ],
-      "size": [
-        11.6,
-        1.1,
-        0.12
       ],
       "color": "#8f6344"
     },
@@ -3469,36 +3379,6 @@
         0.12,
         1.1,
         9.8
-      ],
-      "color": "#8f6344"
-    },
-    {
-      "id": "home_north_east_fence_e",
-      "kind": "fence",
-      "center": [
-        30.8,
-        0.55,
-        25.5
-      ],
-      "size": [
-        0.12,
-        1.1,
-        9.8
-      ],
-      "color": "#8f6344"
-    },
-    {
-      "id": "home_north_east_fence_back",
-      "kind": "fence",
-      "center": [
-        25,
-        0.55,
-        31.3
-      ],
-      "size": [
-        11.6,
-        1.1,
-        0.12
       ],
       "color": "#8f6344"
     },
