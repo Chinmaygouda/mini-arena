@@ -79,6 +79,7 @@ export class BlueprintMapLoader {
   private currentMapGroup: THREE.Group | null = null;
   private currentLightsGroup: THREE.Group | null = null;
   public currentMapId: MapId = 'range';
+  public isLoading: boolean = false;
 
   constructor(scene: THREE.Scene) {
     this.scene = scene;
@@ -114,6 +115,7 @@ export class BlueprintMapLoader {
     mapId: MapId,
     targetManager?: TargetManager
   ): Promise<LoadedMapResult> {
+    this.isLoading = true;
     this.clearCurrentMap();
     this.currentMapId = mapId;
 
@@ -290,6 +292,30 @@ export class BlueprintMapLoader {
     this.currentMapGroup = mapGroup;
     this.currentLightsGroup = lightsGroup;
 
+    // ── Debug: Collider Wireframes (?debug=1&colliders=1) ─────────────────
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('debug') === '1' && params.get('colliders') === '1') {
+      const solidMat  = new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true, opacity: 0.6, transparent: true });
+      const walkMat   = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true, opacity: 0.6, transparent: true });
+      colliders.forEach(c => {
+        const w = c.maxX - c.minX;
+        const h = c.maxY - c.minY;
+        const d = c.maxZ - c.minZ;
+        const geom = new THREE.BoxGeometry(w, h, d);
+        const mat = c.isWalkable ? walkMat : solidMat;
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.position.set(c.minX + w / 2, c.minY + h / 2, c.minZ + d / 2);
+        mapGroup.add(mesh);
+      });
+      // Floor reference plane (green)
+      const floorRef = new THREE.Mesh(
+        new THREE.PlaneGeometry(200, 200),
+        new THREE.MeshBasicMaterial({ color: 0x00ff44, wireframe: true, opacity: 0.15, transparent: true })
+      );
+      floorRef.rotation.x = -Math.PI / 2;
+      mapGroup.add(floorRef);
+    }
+
     // 4. Calculate Optimal Tactical Spawn Position & Map Bounds
     const halfW = data.meta.size ? data.meta.size[0] / 2 : 30;
     const halfD = data.meta.size ? data.meta.size[1] / 2 : 30;
@@ -353,6 +379,7 @@ export class BlueprintMapLoader {
       }
     }
 
+    this.isLoading = false;
     return {
       name: data.meta.name,
       theme: data.meta.theme,

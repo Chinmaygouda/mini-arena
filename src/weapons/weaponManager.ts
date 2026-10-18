@@ -197,6 +197,41 @@ export class WeaponManager {
     this.inspectTimer = 2.4;
   }
 
+  /**
+   * Hard-reset all fire/reload state after a map load.
+   * Does NOT change weapon type or ammo counts.
+   * Prevents accumulated fireAccumulator / stuck trigger from carrying over.
+   */
+  public resetForMapLoad() {
+    this.isTriggerPulled = false;
+    this.fireAccumulator = 0;
+    this.lastFireTime = 0;
+    this.state.isFiring = false;
+    this.state.isReloading = false;
+    this.state.isScoped = false;
+    this.state.reloadProgress = 0;
+    this.reloadTimer = 0;
+    this.reloadDuration = 0;
+    this.reloadStage = 0;
+    this.adsWeight = 0;
+    this.inspectTimer = 0;
+    // Reset all sub-group positions to resting state
+    this.ak47.magazineGroup.position.set(0, -0.04, -0.06);
+    this.ak47.magazineGroup.rotation.set(0, 0, 0);
+    this.ak47.boltCarrierGroup.position.set(0.025, 0.02, 0.02);
+    this.pistol.magazineGroup.position.set(0, -0.075, 0.015);
+    this.pistol.slideGroup.position.set(0, 0.022, 0);
+    this.smg.magazineGroup.position.set(0, -0.06, -0.06);
+    this.smg.magazineGroup.rotation.set(0, 0, 0);
+    this.smg.boltCarrierGroup.position.set(0.022, 0.028, -0.02);
+    this.shotgun.pumpGroup.position.set(0, 0.018, -0.26);
+    this.shotgun.shellGroup.position.set(0, -0.016, -0.02);
+    this.sniper.boltCarrierGroup.position.set(0.028, 0.032, 0.01);
+    this.sniper.boltCarrierGroup.rotation.set(0, 0, 0);
+    this.sniper.magazineGroup.position.set(0, -0.08, -0.06);
+    this.notifyState();
+  }
+
   public setTrigger(isPressed: boolean) {
     this.isTriggerPulled = isPressed;
     if (!isPressed) {

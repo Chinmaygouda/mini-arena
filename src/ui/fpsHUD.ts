@@ -26,6 +26,8 @@ export class FPSHUD {
   private lastHitTime: number = 0;
 
   public onMapSelect?: (mapId: MapId) => void;
+  public onModalOpen?: () => void;
+  public onModalClose?: () => void;
 
   constructor() {
     this.container = document.createElement('div');
@@ -328,6 +330,11 @@ export class FPSHUD {
   public toggleMapModal() {
     this.isMapModalOpen = !this.isMapModalOpen;
     this.mapModal.style.display = this.isMapModalOpen ? 'block' : 'none';
+    if (this.isMapModalOpen) {
+      this.onModalOpen?.();
+    } else {
+      this.onModalClose?.();
+    }
   }
 
   private renderMapModal() {

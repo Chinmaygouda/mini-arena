@@ -14,6 +14,15 @@ import { BlueprintMapLoader, type MapId } from './environment/blueprintMapLoader
 import { FPSHUD } from './ui/fpsHUD';
 import { BUILD_STAMP } from './buildStamp';
 
+// ─── Diagnostic counters exposed for e2e testing ───────────────────────────
+interface ListenerCounts { mousedown: number; mouseup: number; keydown: number; keyup: number; wheel: number; }
+declare global { interface Window { __listenerCounts: ListenerCounts; __simTicksThisSecond: number; } }
+window.__listenerCounts = { mousedown: 0, mouseup: 0, keydown: 0, keyup: 0, wheel: 0 };
+window.__simTicksThisSecond = 0;
+
+// Max delta-time after any pause/load spike (1/20 s)
+const MAX_DT = 1 / 20;
+
 class FPSApp {
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
@@ -29,6 +38,15 @@ class FPSApp {
   private rangeEnvironmentGroup: THREE.Group;
   private tracerMaterial: THREE.MeshBasicMaterial;
   private activeTracers: { mesh: THREE.Mesh; life: number }[] = [];
+
+  // ── Input-blocked flag: set whenever any UI element has focus/is open ────
+  // When true, window-level mouse+key listeners do nothing (except mouseup
+  // which always forces-releases so the trigger cannot get stuck).
+  private inputBlocked: boolean = false;
+
+  // Tick-rate diagnostic
+  private diagTickCount = 0;
+  private diagSecTimer = 0;
 
   constructor() {
     // Set page title with build stamp
@@ -107,7 +125,20 @@ class FPSApp {
     this.animate();
   }
 
+  // ── Force-release: call whenever focus leaves the game ───────────────────
+  // Prevents "stuck trigger" when mousedown fires through UI but mouseup
+  // is consumed by the modal/pointer-lock change.
+  private forceReleaseInputs() {
+    this.weaponManager.setTrigger(false);
+    this.weaponManager.toggleADS(false);
+    this.controls.forceReleaseKeys();
+  }
+
   public async switchMap(mapId: MapId) {
+    // Block game input while loading; force-release any held state first.
+    this.inputBlocked = true;
+    this.forceReleaseInputs();
+
     if (mapId === 'range') {
       this.mapLoader.clearCurrentMap();
       this.rangeEnvironmentGroup.visible = true;
@@ -125,13 +156,49 @@ class FPSApp {
       this.controls.setColliders(result.colliders);
       this.controls.setPosition(result.spawn.x, result.spawn.y, result.spawn.z, result.spawn.facingYaw);
     }
+
+    // Reset weapon state AFTER the async load so no accumulated dt/state leaks.
+    this.weaponManager.resetForMapLoad();
+
+    // Drain the clock so the first post-load delta is ~0 (not the full load time).
+    this.clock.getDelta();
+
+    // Unblock input once load is complete.
+    this.inputBlocked = false;
   }
 
   private setupInteractions() {
-    // Map Selection Linkage
+    // Map Selection Linkage — also blocks/unblocks input around modal open/close.
     this.hud.onMapSelect = (mapId: MapId) => {
+      // The HUD will close the modal; the switchMap call below will force-release
+      // and block input for the duration of the load.
       this.switchMap(mapId);
     };
+
+    // Notify main when modal opens/closes so we can block input.
+    this.hud.onModalOpen = () => {
+      this.inputBlocked = true;
+      this.forceReleaseInputs();
+    };
+    this.hud.onModalClose = () => {
+      // Re-check: if we're in a map load the flag stays true until load ends.
+      if (!this.mapLoader.isLoading) {
+        this.inputBlocked = false;
+      }
+    };
+
+    // Pointer-lock lost → always release; re-acquired → unblock (unless loading).
+    document.addEventListener('pointerlockchange', () => {
+      if (!this.controls.isLocked) {
+        // Lost lock: force-release everything.
+        this.forceReleaseInputs();
+      } else {
+        // Re-acquired lock: unblock if not mid-load.
+        if (!this.mapLoader.isLoading) {
+          this.inputBlocked = false;
+        }
+      }
+    });
 
     // Camera Recoil Linkage
     this.weaponManager.onCameraRecoil = (pitch, yaw) => {
@@ -146,8 +213,6 @@ class FPSApp {
         weaponDef.damage,
         weaponDef.critMultiplier
       );
-
-      // Bullet Tracer Visual Effect
       this.spawnTracer(origin, hitResult.point);
     };
 
@@ -161,31 +226,39 @@ class FPSApp {
       this.hud.update(state, this.weaponManager.currentDef);
     };
 
-    // Mouse Controls
-    window.addEventListener('mousedown', (e: MouseEvent) => {
+    // ── Mouse Controls ────────────────────────────────────────────────────
+    // mousedown: only act when input is NOT blocked (modal open, loading, unlocked).
+    const onMouseDown = (e: MouseEvent) => {
+      window.__listenerCounts.mousedown++;
+      if (this.inputBlocked) return;
       if (!this.controls.isLocked && !this.hud.isDismissed) return;
       if (e.button === 0) {
         this.weaponManager.setTrigger(true);
       } else if (e.button === 2) {
         this.weaponManager.toggleADS(true);
       }
-    });
+    };
 
-    window.addEventListener('mouseup', (e: MouseEvent) => {
+    // mouseup: ALWAYS force-release — this is the "unstuck" safety net.
+    const onMouseUp = (e: MouseEvent) => {
+      window.__listenerCounts.mouseup++;
       if (e.button === 0) {
         this.weaponManager.setTrigger(false);
       } else if (e.button === 2) {
         this.weaponManager.toggleADS(false);
       }
-    });
+    };
+
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
 
     // Prevent context menu on right click
-    window.addEventListener('contextmenu', (e: MouseEvent) => {
-      e.preventDefault();
-    });
+    window.addEventListener('contextmenu', (e: MouseEvent) => { e.preventDefault(); });
 
-    // Keyboard Shortcuts
-    window.addEventListener('keydown', (e: KeyboardEvent) => {
+    // ── Keyboard Shortcuts ────────────────────────────────────────────────
+    const onKeyDown = (e: KeyboardEvent) => {
+      window.__listenerCounts.keydown++;
+      if (this.inputBlocked) return;
       if (e.code === 'KeyR') {
         this.weaponManager.startReload();
       } else if (e.code === 'Digit1') {
@@ -207,11 +280,20 @@ class FPSApp {
       } else if (e.code === 'KeyT') {
         this.hud.toggleTuning(this.weaponManager.currentDef);
       }
-    });
+    };
 
-    // Mouse wheel weapon switch across all 5 firearms
+    const onKeyUp = (_e: KeyboardEvent) => {
+      window.__listenerCounts.keyup++;
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+
+    // ── Mouse wheel weapon switch ─────────────────────────────────────────
     const weapons: WeaponId[] = ['ak47', 'pistol', 'smg', 'shotgun', 'sniper'];
-    window.addEventListener('wheel', (e: WheelEvent) => {
+    const onWheel = (e: WheelEvent) => {
+      window.__listenerCounts.wheel++;
+      if (this.inputBlocked) return;
       if (!this.controls.isLocked && !this.hud.isDismissed) return;
       const currentIndex = weapons.indexOf(this.weaponManager.state.currentWeaponId);
       if (e.deltaY > 0) {
@@ -221,7 +303,8 @@ class FPSApp {
         const prevIndex = (currentIndex - 1 + weapons.length) % weapons.length;
         this.weaponManager.switchWeapon(weapons[prevIndex]);
       }
-    });
+    };
+    window.addEventListener('wheel', onWheel);
   }
 
   private spawnTracer(from: THREE.Vector3, to: THREE.Vector3) {
@@ -229,11 +312,9 @@ class FPSApp {
     const geom = new THREE.CylinderGeometry(0.008, 0.008, dist, 6);
     geom.rotateX(Math.PI / 2);
     const mesh = new THREE.Mesh(geom, this.tracerMaterial);
-
     mesh.position.copy(from).lerp(to, 0.5);
     mesh.lookAt(to);
     this.scene.add(mesh);
-
     this.activeTracers.push({ mesh, life: 0.08 });
   }
 
@@ -248,7 +329,18 @@ class FPSApp {
   private animate = () => {
     requestAnimationFrame(this.animate);
 
-    const delta = Math.min(this.clock.getDelta(), 0.1);
+    // Clamp dt: caps any load-spike frame to MAX_DT.
+    const rawDelta = this.clock.getDelta();
+    const delta = Math.min(rawDelta, MAX_DT);
+
+    // Sim-tick diagnostic counter (exposed for e2e)
+    this.diagTickCount++;
+    this.diagSecTimer += delta;
+    if (this.diagSecTimer >= 1) {
+      window.__simTicksThisSecond = this.diagTickCount;
+      this.diagTickCount = 0;
+      this.diagSecTimer -= 1;
+    }
 
     // Controls & Locomotion Update
     this.controls.update(delta);
