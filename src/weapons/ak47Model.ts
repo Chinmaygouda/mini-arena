@@ -8,6 +8,7 @@ export interface AK47Components {
   gunMeshGroup: THREE.Group;
   magazineGroup: THREE.Group;
   boltCarrierGroup: THREE.Group;
+  muzzlePoint: THREE.Group;
   muzzleFlashGroup: THREE.Group;
   muzzleLight: THREE.PointLight;
   ejectionPoint: THREE.Vector3;
@@ -437,9 +438,15 @@ export function createAK47Model(): AK47Components {
 
   gunMeshGroup.add(leftArmGroup);
 
-  // 10. Muzzle Flash FX Group
+  // 10. Explicit Muzzle Point (Exact barrel bore tip opening at slant brake)
+  const muzzlePoint = new THREE.Group();
+  muzzlePoint.name = 'AK47_MuzzlePoint';
+  muzzlePoint.position.set(0, 0.015, -0.738);
+  gunMeshGroup.add(muzzlePoint);
+
+  // 11. Muzzle Flash FX Group
   const muzzleFlashGroup = new THREE.Group();
-  muzzleFlashGroup.position.set(0, 0.015, -0.74);
+  muzzleFlashGroup.position.set(0, 0.015, -0.738);
   muzzleFlashGroup.visible = false;
 
   const flashCore = new THREE.Mesh(
@@ -474,6 +481,7 @@ export function createAK47Model(): AK47Components {
     gunMeshGroup,
     magazineGroup,
     boltCarrierGroup,
+    muzzlePoint,
     muzzleFlashGroup,
     muzzleLight,
     ejectionPoint,

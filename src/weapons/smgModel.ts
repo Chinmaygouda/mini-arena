@@ -10,6 +10,7 @@ export interface SMGComponents {
   gunMeshGroup: THREE.Group;
   magazineGroup: THREE.Group;
   boltCarrierGroup: THREE.Group;
+  muzzlePoint: THREE.Group;
   muzzleFlashGroup: THREE.Group;
   muzzleLight: THREE.PointLight;
   ejectionPoint: THREE.Vector3;
@@ -348,9 +349,15 @@ export function createSMGModel(): SMGComponents {
 
   gunMeshGroup.add(leftArmGroup);
 
-  // 10. Muzzle Flash FX Group
+  // 10. Explicit Muzzle Point (Exact bore opening at compensator hole)
+  const muzzlePoint = new THREE.Group();
+  muzzlePoint.name = 'SMG_MuzzlePoint';
+  muzzlePoint.position.set(0, 0.025, -0.363);
+  gunMeshGroup.add(muzzlePoint);
+
+  // 11. Muzzle Flash FX Group
   const muzzleFlashGroup = new THREE.Group();
-  muzzleFlashGroup.position.set(0, 0.025, -0.38);
+  muzzleFlashGroup.position.set(0, 0.025, -0.363);
   muzzleFlashGroup.visible = false;
 
   const flashCore = new THREE.Mesh(
@@ -378,6 +385,7 @@ export function createSMGModel(): SMGComponents {
     gunMeshGroup,
     magazineGroup,
     boltCarrierGroup,
+    muzzlePoint,
     muzzleFlashGroup,
     muzzleLight,
     ejectionPoint,

@@ -1,0 +1,437 @@
+{
+  "mapsTested": [
+    {
+      "mapId": "range",
+      "currentMap": "range",
+      "playerPos": {
+        "x": 0,
+        "y": 1.7,
+        "z": 0
+      },
+      "colliderCount": 3,
+      "stairColliders": 0,
+      "hasSkyDome": true,
+      "hasBirds": true,
+      "fogType": "Fog"
+    },
+    {
+      "mapId": "foundry",
+      "currentMap": "foundry",
+      "playerPos": {
+        "x": 0,
+        "y": 1.7,
+        "z": -18
+      },
+      "colliderCount": 100,
+      "stairColliders": 0,
+      "hasSkyDome": true,
+      "hasBirds": true,
+      "fogType": "Fog"
+    },
+    {
+      "mapId": "culdesac",
+      "currentMap": "culdesac",
+      "playerPos": {
+        "x": -7,
+        "y": 1.7,
+        "z": -8
+      },
+      "colliderCount": 37,
+      "stairColliders": 0,
+      "hasSkyDome": true,
+      "hasBirds": true,
+      "fogType": "Fog"
+    },
+    {
+      "mapId": "dustline",
+      "currentMap": "dustline",
+      "playerPos": {
+        "x": 0,
+        "y": 1.7,
+        "z": -15
+      },
+      "colliderCount": 72,
+      "stairColliders": 0,
+      "hasSkyDome": true,
+      "hasBirds": true,
+      "fogType": "Fog"
+    },
+    {
+      "mapId": "overpass",
+      "currentMap": "overpass",
+      "playerPos": {
+        "x": 0,
+        "y": 1.7,
+        "z": -16
+      },
+      "colliderCount": 85,
+      "stairColliders": 0,
+      "hasSkyDome": true,
+      "hasBirds": true,
+      "fogType": "Fog"
+    }
+  ],
+  "staircasesTested": [],
+  "ballisticsTested": [
+    {
+      "mapId": "range",
+      "weaponId": "ak47",
+      "name": "AK-47 VANGUARD",
+      "muzzleY": 1.493545084967189,
+      "camY": 1.6978591980183544,
+      "firedShot": {
+        "muzzleY": 1.493545084967189,
+        "aimY": 1.6978591980183544,
+        "belowCamDist": 0.20431411305116542,
+        "dirY": -0.00008614873279016767
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "range",
+      "weaponId": "pistol",
+      "name": "TACTICAL M9 COMBAT",
+      "muzzleY": 1.519476677958336,
+      "camY": 1.6978591980183544,
+      "firedShot": {
+        "muzzleY": 1.519476677958336,
+        "aimY": 1.6978591980183544,
+        "belowCamDist": 0.17838252006001842,
+        "dirY": -0.00408322368807831
+      },
+      "clipRemaining": 14
+    },
+    {
+      "mapId": "range",
+      "weaponId": "smg",
+      "name": "CYCLONE-9 SMG",
+      "muzzleY": 1.5536799133908836,
+      "camY": 1.6985489644167833,
+      "firedShot": {
+        "muzzleY": 1.5536799133908836,
+        "aimY": 1.6985489644167833,
+        "belowCamDist": 0.14486905102589964,
+        "dirY": 0.043995974422083584
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "range",
+      "weaponId": "shotgun",
+      "name": "SPAS-12 COMBAT SHOTGUN",
+      "muzzleY": 1.5587121287665673,
+      "camY": 1.6998548964416782,
+      "firedShot": {
+        "muzzleY": 1.5587121287665673,
+        "aimY": 1.6998548964416782,
+        "belowCamDist": 0.14114276767511091,
+        "dirY": -0.008029233353457161
+      },
+      "clipRemaining": 7
+    },
+    {
+      "mapId": "range",
+      "weaponId": "sniper",
+      "name": "AW-50 HEAVY SNIPER",
+      "muzzleY": 1.5911470992263241,
+      "camY": 1.6998995593169335,
+      "firedShot": {
+        "muzzleY": 1.5911470992263241,
+        "aimY": 1.6998995593169335,
+        "belowCamDist": 0.10875246009060935,
+        "dirY": 0.06466902913397854
+      },
+      "clipRemaining": 4
+    },
+    {
+      "mapId": "foundry",
+      "weaponId": "ak47",
+      "name": "AK-47 VANGUARD",
+      "muzzleY": 1.5016035483257415,
+      "camY": 1.7058694780879053,
+      "firedShot": {
+        "muzzleY": 1.5016035483257415,
+        "aimY": 1.7058694780879053,
+        "belowCamDist": 0.20426592976216384,
+        "dirY": 0.0016235467281669783
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "foundry",
+      "weaponId": "pistol",
+      "name": "TACTICAL M9 COMBAT",
+      "muzzleY": 1.5275214738018477,
+      "camY": 1.7058694780879053,
+      "firedShot": {
+        "muzzleY": 1.5275214738018477,
+        "aimY": 1.7058694780879053,
+        "belowCamDist": 0.17834800428605768,
+        "dirY": -0.0077594275468934265
+      },
+      "clipRemaining": 14
+    },
+    {
+      "mapId": "foundry",
+      "weaponId": "smg",
+      "name": "CYCLONE-9 SMG",
+      "muzzleY": 1.5297479405089114,
+      "camY": 1.7058694780879053,
+      "firedShot": {
+        "muzzleY": 1.5297479405089114,
+        "aimY": 1.7058694780879053,
+        "belowCamDist": 0.17612153757899396,
+        "dirY": -0.003096521300123993
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "foundry",
+      "weaponId": "shotgun",
+      "name": "SPAS-12 COMBAT SHOTGUN",
+      "muzzleY": 1.5911640411632448,
+      "camY": 1.7020042780385005,
+      "firedShot": {
+        "muzzleY": 1.5911640411632448,
+        "aimY": 1.7020042780385005,
+        "belowCamDist": 0.11084023687525568,
+        "dirY": 0.08089092347273988
+      },
+      "clipRemaining": 7
+    },
+    {
+      "mapId": "foundry",
+      "weaponId": "sniper",
+      "name": "AW-50 HEAVY SNIPER",
+      "muzzleY": 1.5659266663317712,
+      "camY": 1.6955329576673035,
+      "firedShot": {
+        "muzzleY": 1.5659266663317712,
+        "aimY": 1.6955329576673035,
+        "belowCamDist": 0.12960629133553225,
+        "dirY": 0.068825679696311
+      },
+      "clipRemaining": 4
+    },
+    {
+      "mapId": "culdesac",
+      "weaponId": "ak47",
+      "name": "AK-47 VANGUARD",
+      "muzzleY": 1.4967059175194453,
+      "camY": 1.7010396556534932,
+      "firedShot": {
+        "muzzleY": 1.4967059175194453,
+        "aimY": 1.7010396556534932,
+        "belowCamDist": 0.20433373813404798,
+        "dirY": 0.0036592992583997976
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "culdesac",
+      "weaponId": "pistol",
+      "name": "TACTICAL M9 COMBAT",
+      "muzzleY": 1.5226500835311205,
+      "camY": 1.7010396556534932,
+      "firedShot": {
+        "muzzleY": 1.5226500835311205,
+        "aimY": 1.7010396556534932,
+        "belowCamDist": 0.17838957212237272,
+        "dirY": -0.007466950734819386
+      },
+      "clipRemaining": 14
+    },
+    {
+      "mapId": "culdesac",
+      "weaponId": "smg",
+      "name": "CYCLONE-9 SMG",
+      "muzzleY": 1.5566611771476542,
+      "camY": 1.7007159068829814,
+      "firedShot": {
+        "muzzleY": 1.5566611771476542,
+        "aimY": 1.7007159068829814,
+        "belowCamDist": 0.14405472973532718,
+        "dirY": 0.03787751622061846
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "culdesac",
+      "weaponId": "shotgun",
+      "name": "SPAS-12 COMBAT SHOTGUN",
+      "muzzleY": 1.560186711793683,
+      "camY": 1.7000715906882982,
+      "firedShot": {
+        "muzzleY": 1.560186711793683,
+        "aimY": 1.7000715906882982,
+        "belowCamDist": 0.1398848788946152,
+        "dirY": 0.03818442078554427
+      },
+      "clipRemaining": 7
+    },
+    {
+      "mapId": "culdesac",
+      "weaponId": "sniper",
+      "name": "AW-50 HEAVY SNIPER",
+      "muzzleY": 1.5724477861905366,
+      "camY": 1.7000279060503005,
+      "firedShot": {
+        "muzzleY": 1.5724477861905366,
+        "aimY": 1.7000279060503005,
+        "belowCamDist": 0.12758011985976392,
+        "dirY": 0.030370966741905783
+      },
+      "clipRemaining": 4
+    },
+    {
+      "mapId": "dustline",
+      "weaponId": "ak47",
+      "name": "AK-47 VANGUARD",
+      "muzzleY": 1.4909334717805585,
+      "camY": 1.6951285033478147,
+      "firedShot": {
+        "muzzleY": 1.4909334717805585,
+        "aimY": 1.6951285033478147,
+        "belowCamDist": 0.20419503156725627,
+        "dirY": 0.0012551592486650018
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "dustline",
+      "weaponId": "pistol",
+      "name": "TACTICAL M9 COMBAT",
+      "muzzleY": 1.5168554572631838,
+      "camY": 1.6951285033478147,
+      "firedShot": {
+        "muzzleY": 1.5168554572631838,
+        "aimY": 1.6951285033478147,
+        "belowCamDist": 0.1782730460846309,
+        "dirY": -0.004990842346508612
+      },
+      "clipRemaining": 14
+    },
+    {
+      "mapId": "dustline",
+      "weaponId": "smg",
+      "name": "CYCLONE-9 SMG",
+      "muzzleY": 1.552653314098602,
+      "camY": 1.6978798768444012,
+      "firedShot": {
+        "muzzleY": 1.552653314098602,
+        "aimY": 1.6978798768444012,
+        "belowCamDist": 0.14522656274579915,
+        "dirY": 0.043575280263401524
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "dustline",
+      "weaponId": "shotgun",
+      "name": "SPAS-12 COMBAT SHOTGUN",
+      "muzzleY": 1.564455531241705,
+      "camY": 1.7054766083855089,
+      "firedShot": {
+        "muzzleY": 1.564455531241705,
+        "aimY": 1.7054766083855089,
+        "belowCamDist": 0.14102107714380385,
+        "dirY": 0.008311755635291688
+      },
+      "clipRemaining": 7
+    },
+    {
+      "mapId": "dustline",
+      "weaponId": "sniper",
+      "name": "AW-50 HEAVY SNIPER",
+      "muzzleY": 1.5533159427529943,
+      "camY": 1.7054766083855089,
+      "firedShot": {
+        "muzzleY": 1.5533159427529943,
+        "aimY": 1.7054766083855089,
+        "belowCamDist": 0.1521606656325145,
+        "dirY": 0.036381027052155575
+      },
+      "clipRemaining": 4
+    },
+    {
+      "mapId": "overpass",
+      "weaponId": "ak47",
+      "name": "AK-47 VANGUARD",
+      "muzzleY": 1.4856688894549508,
+      "camY": 1.6897424618764705,
+      "firedShot": {
+        "muzzleY": 1.4856688894549508,
+        "aimY": 1.6897424618764705,
+        "belowCamDist": 0.2040735724215197,
+        "dirY": -0.0048053407208615475
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "overpass",
+      "weaponId": "pistol",
+      "name": "TACTICAL M9 COMBAT",
+      "muzzleY": 1.5116344770926236,
+      "camY": 1.6897424618764705,
+      "firedShot": {
+        "muzzleY": 1.5116344770926236,
+        "aimY": 1.6897424618764705,
+        "belowCamDist": 0.17810798478384693,
+        "dirY": -0.006464484511463093
+      },
+      "clipRemaining": 14
+    },
+    {
+      "mapId": "overpass",
+      "weaponId": "smg",
+      "name": "CYCLONE-9 SMG",
+      "muzzleY": 1.5137298872771328,
+      "camY": 1.6897424618764705,
+      "firedShot": {
+        "muzzleY": 1.5137298872771328,
+        "aimY": 1.6897424618764705,
+        "belowCamDist": 0.17601257459933772,
+        "dirY": 0.0008904931565553056
+      },
+      "clipRemaining": 29
+    },
+    {
+      "mapId": "overpass",
+      "weaponId": "shotgun",
+      "name": "SPAS-12 COMBAT SHOTGUN",
+      "muzzleY": 1.5828137734538188,
+      "camY": 1.6916331580957291,
+      "firedShot": {
+        "muzzleY": 1.5828137734538188,
+        "aimY": 1.6916331580957291,
+        "belowCamDist": 0.10881938464191032,
+        "dirY": 0.052686022869800536
+      },
+      "clipRemaining": 7
+    },
+    {
+      "mapId": "overpass",
+      "weaponId": "sniper",
+      "name": "AW-50 HEAVY SNIPER",
+      "muzzleY": 1.5732222438569956,
+      "camY": 1.700112868402541,
+      "firedShot": {
+        "muzzleY": 1.5732222438569956,
+        "aimY": 1.700112868402541,
+        "belowCamDist": 0.12689062454554545,
+        "dirY": 0.07296665900315973
+      },
+      "clipRemaining": 4
+    }
+  ],
+  "shotgunDetails": {
+    "pelletCount": 8,
+    "allOriginateAtMuzzle": true,
+    "pelletOriginY": 1.6395618421081675,
+    "spreadVaried": true,
+    "stageAtMid": 1,
+    "ammoAtMid": 6,
+    "interrupted": true
+  },
+  "atmosphereStatus": []
+}

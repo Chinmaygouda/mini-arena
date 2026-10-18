@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AW-50 sniper design sheet</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#eef2f6;--fg:#14202e;--mut:#5a6878;--card:#fff;--line:#cbd5e0;--acc:#1f6fd1;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1722;--fg:#e6edf5;--mut:#9aabbd;--card:#172231;--line:#243448;--acc:#6aa9ff}}
+:root[data-theme="dark"]{--bg:#0f1722;--fg:#e6edf5;--mut:#9aabbd;--card:#172231;--line:#243448;--acc:#6aa9ff}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 Archivo,system-ui,-apple-system,"Segoe UI",sans-serif}
+header,main{max-width:1080px;margin:0 auto;padding:0 16px}header{padding-top:20px}main{padding-bottom:40px}
+h1{font-size:clamp(28px,6vw,44px);line-height:1.05;margin:0 0 6px;font-weight:800}
+.sub{margin:0 0 14px;color:var(--mut);max-width:66ch}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;align-items:center}
+button{font:inherit;font-weight:600;padding:7px 12px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;cursor:pointer}
+button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.views{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+.view{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background-color:var(--card);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:22px 22px}.view.w{grid-column:1/-1}
+.view h3{margin:0 0 4px;font-size:13px;color:var(--mut);font-weight:600}svg{display:block;width:100%;height:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+#cv{width:100%;height:min(66vh,600px);touch-action:none;background:#2a3340}#cv canvas{display:block}
+.note,.lg{color:var(--mut);font-size:13px;max-width:78ch}.lg span{display:inline-block;margin:0 14px 2px 0}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 18px}td,th{border-bottom:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}th{color:var(--mut);font-weight:600}
+h2{font-size:18px;margin:18px 0 4px}
+textarea{width:100%;height:46vh;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace}
+</style></head><body>
+<header><h1>AW-50 heavy sniper</h1>
+<p class="sub">Second pass. The rifle now has a shaped polymer stock with a thumbhole grip and an adjustable cheek riser, a tapered barrel with a ribbed muzzle brake, an M-LOK forend with a deployed bipod, a toothed top rail, a detailed scope, a bolt with a shroud, and an angled five-round magazine in its own slot. Length is about 1.34 m, close to the real rifle.</p>
+<div class="row" id="tabs"><button data-t="tv" class="on">Turnaround</button><button data-t="t3">3D and reload</button><button data-t="tp">Parts and spec</button></div></header>
+<main>
+<section id="tv"><div class="views" id="views"></div><div class="lg" id="legend"></div>
+<p class="note">All views come from one part list, so they always match. They are vector drawings and stay sharp at any size. Muzzle points right in the side and top views.</p></section>
+<section id="t3" hidden><div class="row" id="vb"></div><div class="card"><div id="cv"></div></div>
+<div class="row" id="sb"></div><p class="note" id="sd"></p><div class="row"><label>Zoom <input type="range" id="zm" min="6" max="30" value="16"></label></div></section>
+<section id="tp" hidden><h2>Parts</h2><table id="pt"></table><h2>Sockets for hands and effects</h2><table id="st"></table><h2>Reload timeline (share of the weapon’s reload time)</h2><table id="rt"></table>
+<h2>JSON for your AI</h2><div class="row"><button id="cp">Copy JSON</button><span id="cps" class="note"></span></div><textarea id="ta" readonly spellcheck="false"></textarea></section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const COL={stock:'#566544',stockD:'#3f4b32',steel:'#2b2f35',mid:'#3d434b',light:'#9099a3',rub:'#16171b',glass:'#2a86c8',brass:'#c9a24a',rail:'#454b54'};
+const B=(id,n,g,x,y,z,a,b,d,c)=>[id,n,g,'b',x,y,z,a,b,d,c],X=(id,n,g,x,y,z,a,r,c,k='x')=>[id,n,g,k,x,y,z,a,r,0,c],N=(id,n,g,x,y,z,a,r1,r2,c)=>[id,n,g,'n',x,y,z,a,r1,r2,c],Pp=(id,n,g,z,t,c,pts,hole)=>[id,n,g,'p',0,0,z,t,0,0,c,{pts,hole}],Sp=(id,n,g,x,y,z,r,c)=>[id,n,g,'s',x,y,z,r,0,0,c];
+const LEG=[[.385,-.083],[.415,-.083],[.5,-.3],[.48,-.3]];
+const rows=[Pp('buttpad','Recoil pad','stock',0,.062,'rub',[[-.59,-.105],[-.555,-.095],[-.555,.07],[-.58,.075]]),
+Pp('stock','Stock with thumbhole grip','stock',0,.055,'stock',[[-.555,.07],[-.44,.074],[-.32,.076],[-.21,.058],[-.15,.05],[-.15,-.045],[-.162,-.145],[-.205,-.165],[-.222,-.12],[-.255,-.105],[-.36,-.1],[-.5,-.088],[-.555,-.095]],[[-.3,-.05],[-.285,-.07],[-.24,-.07],[-.222,-.02],[-.245,.02],[-.295,.02]]),
+Pp('cheek','Adjustable cheek riser','stock',0,.068,'stockD',[[-.49,.074],[-.47,.098],[-.37,.098],[-.33,.076]]),
+Pp('guard','Trigger guard','body',0,.024,'steel',[[-.15,-.06],[-.145,-.115],[-.035,-.115],[-.02,-.06]],[[-.138,-.062],[-.134,-.105],[-.045,-.105],[-.033,-.062]]),
+Pp('trigger','Trigger','body',0,.008,'light',[[-.085,-.06],[-.079,-.095],[-.071,-.095],[-.074,-.06]]),
+B('receiver','Receiver','body',0,0,0,.3,.09,.07,'mid'),B('rail','Scope rail','body',0,.0525,0,.36,.01,.032,'rail'),
+B('port','Ejection port','body',.02,.02,.0355,.07,.03,.004,'rub'),
+Pp('mag','Five-round magazine','mag',0,.04,'rub',[[0,-.07],[.075,-.07],[.092,-.225],[.022,-.225]]),B('rounds','.50 BMG rounds','mag',.0375,-.0655,0,.06,.012,.028,'brass'),B('magbase','Magazine base plate','mag',.057,-.23,0,.08,.01,.044,'light'),
+B('magwell','Magazine slot','body',.04,-.062,0,.075,.04,.052,'steel'),B('maglatch','Magazine release','body',-.008,-.088,0,.012,.03,.03,'light'),
+Pp('forend','M-LOK forend','body',0,.064,'stock',[[.15,.045],[.45,.034],[.45,-.052],[.38,-.066],[.15,-.066]]),
+B('ml1','M-LOK slot','body',.22,-.01,.0325,.045,.012,.004,'rub'),B('ml2','M-LOK slot','body',.29,-.01,.0325,.045,.012,.004,'rub'),B('ml3','M-LOK slot','body',.36,-.01,.0325,.045,.012,.004,'rub'),
+Pp('legL','Bipod leg (left)','body',-.052,.012,'light',LEG),Pp('legR','Bipod leg (right)','body',.052,.012,'light',LEG),B('bpm','Bipod mount','body',.4,-.075,0,.045,.016,.05,'steel'),
+N('barrel','Tapered barrel','body',.55,0,0,.2,.026,.02,'steel'),X('brake','Muzzle brake','body',.7,0,0,.1,.034,'mid'),
+B('rib1','Brake rib','body',.675,0,0,.01,.05,.072,'rub'),B('rib2','Brake rib','body',.7,0,0,.01,.05,.072,'rub'),B('rib3','Brake rib','body',.725,0,0,.01,.05,.072,'rub'),
+X('bolt','Bolt body','bolt',-.12,.03,0,.15,.017,'light'),X('bcap','Bolt shroud','bolt',-.205,.03,0,.02,.021,'rub'),X('handle','Bolt handle','bolt',-.14,.03,.07,.07,.007,'light','z'),Sp('knob','Bolt knob','bolt',-.14,.03,.118,.02,'rub'),
+B('mnt1','Scope mount (rear)','scope',-.05,.07,0,.035,.03,.04,'steel'),B('mnt2','Scope mount (front)','scope',.08,.07,0,.035,.03,.04,'steel'),
+X('rng1','Scope ring (rear)','scope',-.05,.115,0,.03,.031,'steel'),X('rng2','Scope ring (front)','scope',.08,.115,0,.03,.031,'steel'),X('tube','Scope tube','scope',.01,.115,0,.22,.026,'steel'),
+N('bell','Objective bell','scope',.155,.115,0,.07,.026,.042,'steel'),X('hood','Sunshade','scope',.2175,.115,0,.055,.045,'rub'),X('lensF','Front lens','scope',.247,.115,0,.004,.04,'glass'),
+N('ocu','Eyepiece','scope',-.135,.115,0,.07,.033,.026,'steel'),X('eye','Eyecup','scope',-.18,.115,0,.02,.036,'rub'),X('lensR','Rear lens','scope',-.192,.115,0,.004,.028,'glass'),
+X('tE','Elevation turret','scope',.01,.15,0,.028,.018,'mid','y'),X('tEc','Turret cap','scope',.01,.171,0,.014,.02,'light','y'),
+X('tW','Windage turret','scope',.01,.115,.04,.028,.018,'mid','z'),X('tWc','Turret cap','scope',.01,.115,.059,.014,.02,'light','z'),X('para','Parallax knob','scope',.055,.115,-.04,.03,.016,'mid','z')];
+const P=rows.map(r=>{const o={id:r[0],name:r[1],g:r[2],k:r[3],c:[r[4],r[5],r[6]],a:r[7],b:r[8],d:r[9],col:r[10]};if(r[11]){o.pts=r[11].pts;o.hole=r[11].hole;const xs=o.pts.map(q=>q[0]),ys=o.pts.map(q=>q[1]);o.c=[(Math.min(...xs)+Math.max(...xs))/2,(Math.min(...ys)+Math.max(...ys))/2,r[6]];o.bb=[(Math.max(...xs)-Math.min(...xs))/2,(Math.max(...ys)-Math.min(...ys))/2]}return o});
+const TEETH=Array.from({length:12},(_,i)=>({id:'tooth'+i,name:'Rail tooth',g:'body',k:'b',c:[-.165+i*.03,.0585,0],a:.014,b:.007,d:.034,col:'steel',skip:1}));
+P.splice(P.findIndex(p=>p.id==='rail')+1,0,...TEETH);
+const SOCK=[['gripR','Right hand, thumbhole grip',-.19,-.1,0],['gripL','Left hand, under the forend',.3,-.05,0],['boltKnob','Right hand on the bolt knob',-.14,.03,.118],['magWell','Magazine slot, center',.04,-.062,0],['ejectPort','Ejection port, right side',.02,.02,.04],['muzzle','Muzzle exit',.755,0,0],['scopeEye','Scope eye point',-.215,.115,0]];
+const STEPS=[['Ready','Bolt closed, five rounds in the magazine.'],['Bolt lift','Right hand lifts the bolt handle up about 80 degrees.'],['Bolt back','Pull the bolt back 6 cm. The spent case leaves through the ejection port.'],['Magazine out','Press the release. The empty magazine drops out of the slot under the receiver.'],['Magazine in','Left hand seats a full magazine into the slot.'],['Bolt forward','Push the bolt forward to chamber a round.'],['Locked','Lower the handle. The rifle is ready.']];
+const TGT=[[0,0,0],[-1.4,0,0],[-1.4,-.065,0],[-1.4,-.065,-.17],[-1.4,-.065,0],[-1.4,0,0],[0,0,0]];
+const RL=[['0 to 8%','Release','Right hand stays on the grip, left thumb presses the magazine release.'],['8 to 25%','Magazine out','Left hand pulls the empty magazine down and drops it (cosmetic only).'],['25 to 55%','Fetch','Left hand leaves the forend, goes down and out of frame for a new magazine, then comes back.'],['55 to 80%','Insert','Left hand guides the magazine up into the slot. Ammo is committed at 80%.'],['80 to 88%','Seat','Palm slaps the magazine home, the rifle dips slightly.'],['88 to 100%','Settle','Left hand returns to the forend.'],['After, if the rifle was empty','Bolt cycle','Right hand grips the bolt knob: lift, pull, push, lock.']];
+const VW={R:{n:'Right side (ejection port side)',h:'x',sh:1,v:'y',d:'z',dir:1},L:{n:'Left side',h:'x',sh:-1,v:'y',d:'z',dir:-1},T:{n:'Top',h:'x',sh:1,v:'z',d:'y',dir:1},F:{n:'Front (muzzle end)',h:'z',sh:-1,v:'y',d:'x',dir:1},B:{n:'Rear (buttpad end)',h:'z',sh:1,v:'y',d:'x',dir:-1}};
+const LAB=[['Scope',.01,.22,.01,.15],['Bolt handle and knob',-.3,.14,-.14,.03],['Ejection port',.12,-.16,.025,.02],['Magazine slot and magazine',.05,-.3,.055,-.2],['Trigger',-.1,-.22,-.078,-.085],['Adjustable cheek riser',-.42,.18,-.42,.098],['Thumbhole grip',-.28,-.24,-.265,-.03],['Muzzle brake',.7,.11,.7,.034],['Bipod',.6,-.2,.48,-.2],['Recoil pad',-.6,-.22,-.575,-.09]];
+const IDX={x:0,y:1,z:2},$=i=>document.getElementById(i);
+const hf=p=>{const k=p.k;return k==='b'?[p.a/2,p.b/2,p.d/2]:k==='x'?[p.a/2,p.b,p.b]:k==='y'?[p.b,p.a/2,p.b]:k==='z'?[p.b,p.b,p.a/2]:k==='n'?[p.a/2,Math.max(p.b,p.d),Math.max(p.b,p.d)]:k==='s'?[p.a,p.a,p.a]:[p.bb[0],p.bb[1],p.a/2]};
+let XMIN=9,XMAX=-9,YMIN=9;P.forEach(p=>{const H=hf(p);XMIN=Math.min(XMIN,p.c[0]-H[0]);XMAX=Math.max(XMAX,p.c[0]+H[0]);YMIN=Math.min(YMIN,p.c[1]-H[1])});
+function shp(p,v,hi,vi,vs){const H=hf(p),cx=v.sh*p.c[hi],cy=vs*p.c[vi],w=H[hi],h=H[vi],f=COL[p.col],st=' stroke="#0009" stroke-width=".004"';
+ if(p.k==='p'&&v.d==='z'){const q=a=>v.sh*a[0]+','+(-a[1]);let d='M'+p.pts.map(q).join('L')+'Z';if(p.hole)d+='M'+p.hole.map(q).join('L')+'Z';return `<path d="${d}" fill="${f}" fill-rule="evenodd"${st}/>`}
+ if(p.k==='n'&&v.h==='x'){const xr=v.sh*(p.c[0]-p.a/2),xf=v.sh*(p.c[0]+p.a/2);return `<polygon points="${xr},${cy-p.b} ${xf},${cy-p.d} ${xf},${cy+p.d} ${xr},${cy+p.b}" fill="${f}"${st}/>`}
+ if(p.k==='s'||p.k===v.d||(p.k==='n'&&v.d==='x'))return `<ellipse cx="${cx}" cy="${cy}" rx="${w}" ry="${h}" fill="${f}"${st}/>`;
+ return `<rect x="${cx-w}" y="${cy-h}" width="${2*w}" height="${2*h}" fill="${f}"${st}/>`}
+function svgView(key){const v=VW[key],hi=IDX[v.h],vi=IDX[v.v],di=IDX[v.d],vs=v.v==='y'?-1:1;let x0=9,x1=-9,y0=9,y1=-9,s='';
+const ex=(x,y,w,h)=>{x0=Math.min(x0,x-w);x1=Math.max(x1,x+w);y0=Math.min(y0,y-h);y1=Math.max(y1,y+h)};
+P.slice().sort((p,q)=>v.dir*(p.c[di]-q.c[di])).forEach(p=>{const H=hf(p);ex(v.sh*p.c[hi],vs*p.c[vi],H[hi],H[vi]);s+=shp(p,v,hi,vi,vs)});
+if(key==='R'){LAB.forEach((l,i)=>{ex(l[1],-l[2],.03,.03);s+=`<line x1="${l[1]}" y1="${-l[2]}" x2="${l[3]}" y2="${-l[4]}" stroke="#e0a82e" stroke-width=".006"/><circle cx="${l[1]}" cy="${-l[2]}" r=".022" fill="#e0a82e"/><text x="${l[1]}" y="${-l[2]+.009}" font-size=".026" font-weight="700" text-anchor="middle" fill="#111">${i+1}</text>`});
+ const dy=-YMIN+.07;ex(XMIN,dy,.01,.03);s+=`<g stroke="currentColor" stroke-width=".005" fill="currentColor"><line x1="${XMIN}" y1="${dy}" x2="${XMAX}" y2="${dy}"/><line x1="${XMIN}" y1="${dy-.015}" x2="${XMIN}" y2="${dy+.015}"/><line x1="${XMAX}" y1="${dy-.015}" x2="${XMAX}" y2="${dy+.015}"/><text x="${(XMIN+XMAX)/2}" y="${dy+.035}" font-size=".03" text-anchor="middle" stroke="none">about ${(XMAX-XMIN).toFixed(2)} m long</text></g>`}
+return `<svg viewBox="${x0-.05} ${y0-.05} ${x1-x0+.1} ${y1-y0+.1}" role="img" aria-label="${v.n}">${s}</svg>`}
+$('views').innerHTML=['R','L','T','F','B'].map(k=>`<div class="view${k==='R'||k==='L'||k==='T'?' w':''}"><h3>${VW[k].n}</h3>${svgView(k)}</div>`).join('');
+$('legend').innerHTML=LAB.map((l,i)=>`<span><b>${i+1}</b> ${l[0]}</span>`).join('');
+const sz=p=>p.k==='b'?`${p.a} x ${p.b} x ${p.d} m`:p.k==='s'?`radius ${p.a} m`:p.k==='p'?`profile of ${p.pts.length} points${p.hole?' with a hole':''}, thickness ${p.a} m`:p.k==='n'?`length ${p.a} m, radius ${p.b} to ${p.d} m`:`length ${p.a} m, radius ${p.b} m`;
+const PV=P.filter(p=>!p.skip);
+$('pt').innerHTML='<tr><th>Part</th><th>Group</th><th>Shape and size</th><th>Center x, y, z (m)</th></tr>'+PV.map(p=>`<tr><td>${p.name}</td><td>${p.g}</td><td>${sz(p)}</td><td>${p.k==='p'?'z '+p.c[2]:p.c.join(', ')}</td></tr>`).join('');
+$('st').innerHTML='<tr><th>Socket</th><th>Use</th><th>Position x, y, z (m)</th></tr>'+SOCK.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td><td>${s[2]}, ${s[3]}, ${s[4]}</td></tr>`).join('');
+$('rt').innerHTML='<tr><th>When</th><th>Step</th><th>What happens</th></tr>'+RL.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+const SHAPES={b:'box (size x,y,z)',x:'cylinder along x (length, radius)',y:'cylinder along y',z:'cylinder along z',n:'cone along x (length, rear radius, front radius)',s:'sphere (radius)',p:'profile in the x-y plane extruded along z (points, optional hole, thickness)'};
+const SPEC={name:'AW-50 heavy sniper',length_m:+(XMAX-XMIN).toFixed(2),units:'meters',axes:'x toward the muzzle, y up, z toward the shooter right side, origin at the receiver center',shapes:SHAPES,groups:{bolt:'moves with the bolt',mag:'moves with the magazine',scope:'static',body:'static',stock:'static'},
+parts:PV.map(p=>{const o={id:p.id,name:p.name,group:p.g,shape:p.k,color:COL[p.col]};if(p.k==='p'){o.outline=p.pts;if(p.hole)o.hole=p.hole;o.thickness=p.a;o.z=p.c[2]}else{o.center=p.c;o.size=p.k==='b'?[p.a,p.b,p.d]:p.k==='s'?[p.a]:p.k==='n'?[p.a,p.b,p.d]:[p.a,p.b]}return o}),
+rail_teeth:{count:12,first_x:-.165,pitch:.03,y:.0585,size:[.014,.007,.034]},sockets:SOCK.map(s=>({id:s[0],use:s[1],pos:[s[2],s[3],s[4]]})),
+animation:{bolt:{pivot:[-.12,.03,0],lift_deg_about_x:-80,pull_m:.065},magazine:{drop_m:.17},steps:STEPS.map(s=>s[0])},reload_timeline:RL.map(r=>({when:r[0],step:r[1],detail:r[2]}))};
+$('ta').value=JSON.stringify(SPEC,null,1);
+$('cp').onclick=async()=>{try{await navigator.clipboard.writeText($('ta').value);$('cps').textContent='Copied.'}catch(e){$('ta').select();$('cps').textContent='Press Ctrl+C to copy.'}};
+let R3,S,cam,gB,gM,th=.7,ph=1.2,rad=1.6,step=0;const VB=[['Right',0,1.5708],['Left',Math.PI,1.5708],['Top',0,.05],['Underside',0,3.09],['Front',1.5708,1.5708],['Rear',-1.5708,1.5708],['3/4 front right',.7,1.25],['3/4 rear left',-2.36,1.25]];
+function setStep(i){step=i;document.querySelectorAll('#sb button').forEach((b,j)=>b.classList.toggle('on',j===i));$('sd').textContent=(i+1)+'. '+STEPS[i][0]+': '+STEPS[i][1]}
+function geo(p){const W=THREE;let g;const k=p.k;
+ if(k==='b')g=new W.BoxGeometry(p.a,p.b,p.d);else if(k==='s')g=new W.SphereGeometry(p.a,18,14);
+ else if(k==='p'){const sh=new W.Shape(p.pts.map(q=>new W.Vector2(q[0],q[1])));if(p.hole)sh.holes.push(new W.Path(p.hole.map(q=>new W.Vector2(q[0],q[1]))));const bv=.003,dp=p.a-2*bv;g=new W.ExtrudeGeometry(sh,{depth:dp,bevelEnabled:true,bevelSize:bv,bevelThickness:bv,bevelSegments:2,steps:1});g.translate(0,0,-dp/2+p.c[2]);return g}
+ else{g=k==='n'?new W.CylinderGeometry(p.d,p.b,p.a,28):new W.CylinderGeometry(p.b,p.b,p.a,28);if(k==='x'||k==='n')g.rotateZ(-Math.PI/2);if(k==='z')g.rotateX(Math.PI/2)}
+ g.translate(...p.c);return g}
+function init3(){if(R3)return;const el=$('cv');
+try{const W=THREE;R3=new W.WebGLRenderer({antialias:true});R3.setPixelRatio(Math.min(devicePixelRatio,2));R3.shadowMap.enabled=true;R3.toneMapping=W.ACESFilmicToneMapping;R3.toneMappingExposure=1.15;el.appendChild(R3.domElement);S=new W.Scene();cam=new W.PerspectiveCamera(38,1,.05,50);
+S.add(new W.HemisphereLight('#d6e6ff','#3a3f48',.8));const d=new W.DirectionalLight('#fff4e0',1.5);d.position.set(1.2,2,1.5);d.castShadow=true;d.shadow.mapSize.set(2048,2048);Object.assign(d.shadow.camera,{left:-1,right:1,top:1,bottom:-1,near:.5,far:6});d.shadow.bias=-.0005;S.add(d);
+const d2=new W.DirectionalLight('#9ec5ff',.6);d2.position.set(-2,1,-1.5);S.add(d2);const d3=new W.DirectionalLight('#ffffff',.35);d3.position.set(0,-1,1);S.add(d3);
+const fl=new W.Mesh(new W.PlaneGeometry(4,4),new W.ShadowMaterial({opacity:.35}));fl.rotation.x=-Math.PI/2;fl.position.y=-.32;fl.receiveShadow=true;S.add(fl);const gr=new W.GridHelper(4,40,'#5b6878','#3b4553');gr.position.y=-.319;S.add(gr);
+gB=new W.Group();gB.position.set(-.12,.03,0);gM=new W.Group();S.add(gB,gM);const grp={bolt:gB,mag:gM},M={},lm=new W.LineBasicMaterial({color:'#000',transparent:true,opacity:.4});
+P.forEach(p=>{const g=geo(p);if(p.g==='bolt')g.translate(.12,-.03,0);
+ const m=M[p.col]||(M[p.col]=new W.MeshStandardMaterial({color:COL[p.col],roughness:p.col==='glass'?.08:['steel','mid','light','rail'].includes(p.col)?.4:.75,metalness:['steel','mid','light','rail'].includes(p.col)?.45:.05,emissive:p.col==='glass'?'#0b3a5c':'#000'}));
+ const me=new W.Mesh(g,m);me.castShadow=true;me.receiveShadow=true;const t=grp[p.g]||S;t.add(me);t.add(new W.LineSegments(new W.EdgesGeometry(g,28),lm))});
+const T=new W.Vector3(.08,0,0);
+el.onpointerdown=e=>{el._d=[e.clientX,e.clientY];el.setPointerCapture(e.pointerId)};el.onpointerup=()=>el._d=0;
+el.onpointermove=e=>{if(!el._d)return;th-=(e.clientX-el._d[0])*.006;ph=Math.min(3.1,Math.max(.05,ph-(e.clientY-el._d[1])*.006));el._d=[e.clientX,e.clientY]};
+el.onwheel=e=>{e.preventDefault();rad=Math.min(3,Math.max(.6,rad+e.deltaY*.002));$('zm').value=rad*10};$('zm').oninput=e=>rad=e.target.value/10;
+const rs=()=>{const w=el.clientWidth,h=el.clientHeight;R3.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()};new ResizeObserver(rs).observe(el);rs();
+(function loop(){const t=TGT[step];gB.rotation.x+=(t[0]-gB.rotation.x)*.12;gB.position.x+=(-.12+t[1]-gB.position.x)*.12;gM.position.y+=(t[2]-gM.position.y)*.12;
+ cam.position.set(T.x+rad*Math.sin(ph)*Math.sin(th),T.y+rad*Math.cos(ph),T.z+rad*Math.sin(ph)*Math.cos(th));cam.lookAt(T);R3.render(S,cam);requestAnimationFrame(loop)})();
+}catch(e){R3=0;el.innerHTML='<p class="note" style="padding:16px;color:#ccd">The 3D view needs WebGL, which this browser did not provide. The turnaround and the spec still work.</p>'}}
+$('vb').innerHTML=VB.map((v,i)=>`<button data-i="${i}">${v[0]}</button>`).join('');$('vb').onclick=e=>{const i=e.target.dataset.i;if(i!==undefined){th=VB[i][1];ph=VB[i][2]}};
+$('sb').innerHTML=STEPS.map(s=>`<button>${s[0]}</button>`).join('');document.querySelectorAll('#sb button').forEach((b,i)=>b.onclick=()=>setStep(i));setStep(0);
+document.querySelectorAll('#tabs button').forEach(bt=>bt.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===bt));['tv','t3','tp'].forEach(i=>$(i).hidden=i!==bt.dataset.t);if(bt.dataset.t==='t3')init3()});
+</script></body></html>

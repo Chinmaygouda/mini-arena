@@ -254,3 +254,24 @@ test('Trigger release and weapon equip reset nextShotTime to prevent delayed bur
   });
   assert.equal(firstFrameShots, 1, 'First frame after equip must fire at most 1 shot');
 });
+
+test('Injecting a throwing onFireRaycast never stalls the scheduler and does not drain magazine in a burst', () => {
+  const state = createSchedulerState('ak47', 30);
+  onTriggerPress(state);
+
+  let throwCount = 0;
+  const dt = 1 / 60;
+
+  // Run 60 frames = 1.0 second of simulation with a callback that ALWAYS throws
+  for (let frame = 0; frame < 60; frame++) {
+    stepFireScheduler(state, dt, () => {
+      throwCount++;
+      throw new Error(`Injected raycast error at shot #${throwCount}`);
+    });
+  }
+
+  // At 600 RPM (0.10s interval), from t=0.0s to 1.0s (inclusive), exactly 11 shots are metered (t=0, 0.1, ..., 1.0)
+  assert.equal(throwCount, 11, 'Must meter exactly 11 shots over 0.0s to 1.0s inclusive (600 RPM)');
+  assert.equal(state.ammoInClip, 19, 'Ammo must decrement by exactly 1 per metered shot (30 - 11 = 19)');
+  assert.ok(state.nextShotTime >= 1.0, 'nextShotTime must advance properly despite exceptions');
+});

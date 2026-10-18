@@ -53,6 +53,11 @@ export class FirstPersonControls {
 
   public bounds: MapBounds = { minX: -7.5, maxX: 7.5, minZ: -3.2, maxZ: 5.5 };
   public colliders: BoxCollider[] = [];
+  public spawnPoint = { x: 0, y: PLAYER_EYE_H, z: 0, yaw: 0 };
+  public oobTimer: number = 0;
+  public isOutOfBounds: boolean = false;
+  public onOutOfBoundsWarning?: (remainingSec: number) => void;
+  public onOutOfBoundsClear?: () => void;
 
   private yaw: number = 0;
   private pitch: number = 0;
@@ -61,6 +66,8 @@ export class FirstPersonControls {
 
   private headBobTimer: number = 0;
   private eyeHeight: number = PLAYER_EYE_H;
+  private currentCameraEyeY: number = PLAYER_EYE_H;
+  private cameraBobOffset: number = 0;
 
   private input: PlayerInputState = {
     forward: false,
@@ -77,6 +84,7 @@ export class FirstPersonControls {
     this.camera = camera;
     this.domElement = domElement;
     this.position = new THREE.Vector3(0, this.eyeHeight, 0);
+    this.currentCameraEyeY = this.position.y;
     this.camera.position.copy(this.position);
 
     this.setupListeners();
@@ -92,6 +100,8 @@ export class FirstPersonControls {
 
   public setPosition(x: number, y: number, z: number, yaw: number = 0) {
     this.position.set(x, y || this.eyeHeight, z);
+    this.currentCameraEyeY = this.position.y;
+    this.cameraBobOffset = 0;
     this.camera.position.copy(this.position);
     this.velocity.set(0, 0, 0);
     this.isGrounded = true;
@@ -99,6 +109,14 @@ export class FirstPersonControls {
     this.pitch = 0;
     this.cameraRecoilPitch = 0;
     this.cameraRecoilYaw = 0;
+  }
+
+  public setSpawnPoint(x: number, y: number, z: number, yaw: number = 0) {
+    this.spawnPoint = { x, y, z, yaw };
+  }
+
+  public getHorizontalSpeed(): number {
+    return Math.hypot(this.velocity.x, this.velocity.z);
   }
 
   /** Force-release all held keys — call on pointer-lock loss or modal open. */
@@ -114,6 +132,7 @@ export class FirstPersonControls {
   }
 
   private setupListeners() {
+    if (typeof document === 'undefined') return;
     this.domElement.addEventListener('click', () => {
       if (!this.isLocked) {
         this.domElement.requestPointerLock();
@@ -166,18 +185,32 @@ export class FirstPersonControls {
 
   // ── Collision helpers ─────────────────────────────────────────────────────
 
-  /** Returns the highest surface Y at (px, pz) within the collider set, or
-   *  -Infinity if no collider occupies that XZ footprint. */
-  private getSurfaceY(px: number, pz: number): number {
+  /** Returns the highest surface Y at (px, pz) within the collider set that is
+   *  walkable beneath currentFeetY (not a wall/ceiling above step-up limit).
+   *  Prefers center of player footprint to prevent getting hung up on trailing steps. */
+  private getSurfaceY(px: number, pz: number, currentFeetY: number): number {
+    const maxAllowedY = this.isGrounded ? currentFeetY + STEP_UP_MAX : currentFeetY + GROUND_MARGIN;
+    let centerSurface = -Infinity;
     let best = -Infinity;
     const r = PLAYER_RADIUS;
+
     for (const c of this.colliders) {
+      if (c.maxY > maxAllowedY) continue; // Surface is above step-up threshold (wall/ceiling)
+
+      if (px >= c.minX && px <= c.maxX && pz >= c.minZ && pz <= c.maxZ) {
+        if (c.maxY > centerSurface) centerSurface = c.maxY;
+      }
+
       if (
         px + r > c.minX && px - r < c.maxX &&
         pz + r > c.minZ && pz - r < c.maxZ
       ) {
         if (c.maxY > best) best = c.maxY;
       }
+    }
+
+    if (centerSurface !== -Infinity) {
+      return centerSurface;
     }
     return best;
   }
@@ -191,7 +224,7 @@ export class FirstPersonControls {
       // Skip if vertically clear (above head or below step-up threshold)
       if (c.minY > headY) continue;
       if (c.maxY <= feetY + GROUND_MARGIN) continue;      // below feet entirely
-      if (c.maxY <= feetY + STEP_UP_MAX) continue;        // short enough to step over
+      if (this.isGrounded && c.maxY <= feetY + STEP_UP_MAX) continue; // step-up ONLY while grounded
       if (
         nextX + r > c.minX && nextX - r < c.maxX &&
         curZ   + r > c.minZ && curZ   - r < c.maxZ
@@ -206,13 +239,28 @@ export class FirstPersonControls {
     for (const c of this.colliders) {
       if (c.minY > headY) continue;
       if (c.maxY <= feetY + GROUND_MARGIN) continue;
-      if (c.maxY <= feetY + STEP_UP_MAX) continue;
+      if (this.isGrounded && c.maxY <= feetY + STEP_UP_MAX) continue;
       if (
         curX  + r > c.minX && curX  - r < c.maxX &&
         nextZ + r > c.minZ && nextZ - r < c.maxZ
       ) return true;
     }
     return false;
+  }
+
+  public getCollidingHits(): BoxCollider[] {
+    const r = PLAYER_RADIUS;
+    const feetY = this.position.y - this.eyeHeight;
+    const headY = this.position.y + PLAYER_HEAD_M;
+    return this.colliders.filter(c =>
+      this.position.x + r > c.minX && this.position.x - r < c.maxX &&
+      this.position.z + r > c.minZ && this.position.z - r < c.maxZ &&
+      headY > c.minY && feetY < c.maxY
+    );
+  }
+
+  public getCollidingCount(): number {
+    return this.getCollidingHits().length;
   }
 
   public update(delta: number) {
@@ -236,10 +284,16 @@ export class FirstPersonControls {
     if (this.input.right)    moveDir.x += 1;
     moveDir.normalize();
 
-    this.isMoving    = moveDir.lengthSq() > 0;
-    this.isSprinting = this.isMoving && this.input.sprint && this.input.forward;
+    const hasMoveInput = moveDir.lengthSq() > 0;
+    const horizontalSpeed = Math.hypot(this.velocity.x, this.velocity.z);
 
-    const speed = this.isSprinting ? 8.5 : 4.8;
+    // Physically coupled locomotion states:
+    // isMoving is true if actively inputting movement OR physically decelerating above 0.15 m/s
+    this.isMoving = hasMoveInput || horizontalSpeed > 0.15;
+    // isSprinting requires commanding forward + sprint AND actually moving at sprint velocity (>3.0 m/s)
+    this.isSprinting = hasMoveInput && this.input.sprint && this.input.forward && horizontalSpeed > 3.0;
+
+    const speed = (this.input.sprint && this.input.forward) ? 8.5 : 4.8;
 
     const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
     const right   = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
@@ -282,10 +336,30 @@ export class FirstPersonControls {
     }
 
     // ── Y axis: apply gravity then snap to ground surface ───────────────
+    const prevY = this.position.y;
     this.position.y += this.velocity.y * delta;
 
+    // Ceiling head collision: if moving upwards, clamp head against bottom of ceilings
+    if (this.velocity.y > 0) {
+      const r = PLAYER_RADIUS;
+      const headY = this.position.y + PLAYER_HEAD_M;
+      for (const c of this.colliders) {
+        if (
+          this.position.x + r > c.minX && this.position.x - r < c.maxX &&
+          this.position.z + r > c.minZ && this.position.z - r < c.maxZ
+        ) {
+          // If head reached or penetrated into the underside of collider
+          if (headY >= c.minY && prevY + PLAYER_HEAD_M <= c.minY + 0.15) {
+            this.position.y = c.minY - PLAYER_HEAD_M - 0.002;
+            this.velocity.y = 0;
+            break;
+          }
+        }
+      }
+    }
+
     // Determine the ground surface under the player's current XZ footprint.
-    const surfaceY = this.getSurfaceY(this.position.x, this.position.z);
+    const surfaceY = this.getSurfaceY(this.position.x, this.position.z, feetY);
     const groundFloorY = this.eyeHeight; // absolute minimum (world floor at y=0)
 
     // The effective floor the camera eyes should be at:
@@ -314,18 +388,19 @@ export class FirstPersonControls {
     }
     // Grounded: at or below the surface → push up and land.
     else if (this.position.y <= targetEyeY && this.velocity.y <= 0) {
-      // Step-DOWN: if we just walked off an edge, smoothly snap down rather
-      // than free-falling, so descending stairs doesn't look like falling.
-      if (
-        !this.isGrounded &&
-        targetEyeY < this.position.y &&
-        this.position.y - targetEyeY <= STEP_DOWN_MAX + 0.05
-      ) {
-        // Smooth step-down: lerp toward target rather than instant snap
-        this.position.y = THREE.MathUtils.lerp(this.position.y, targetEyeY, Math.min(1, delta * 30));
-      } else {
-        this.position.y = targetEyeY;
-      }
+      this.position.y = targetEyeY;
+      this.velocity.y = 0;
+      this.isGrounded = true;
+    }
+    // Step-DOWN: if we were grounded and surface dropped within STEP_DOWN_MAX, smoothly step down
+    // (Does not depend on isMoving so player never airborne-drops when slowing or stopping on stairs)
+    else if (
+      this.isGrounded &&
+      this.position.y > targetEyeY &&
+      this.position.y - targetEyeY <= STEP_DOWN_MAX + 0.05 &&
+      this.velocity.y <= 0
+    ) {
+      this.position.y = targetEyeY;
       this.velocity.y = 0;
       this.isGrounded = true;
     } else {
@@ -333,18 +408,77 @@ export class FirstPersonControls {
       this.isGrounded = false;
     }
 
-    // Safety boundary clamp
-    this.position.x = THREE.MathUtils.clamp(this.position.x, this.bounds.minX, this.bounds.maxX);
-    this.position.z = THREE.MathUtils.clamp(this.position.z, this.bounds.minZ, this.bounds.maxZ);
+    // Out-of-bounds detection with countdown and return to safe spawn
+    const OOB_MARGIN = 1.5;
+    const isOut = (
+      this.position.x < this.bounds.minX - OOB_MARGIN ||
+      this.position.x > this.bounds.maxX + OOB_MARGIN ||
+      this.position.z < this.bounds.minZ - OOB_MARGIN ||
+      this.position.z > this.bounds.maxZ + OOB_MARGIN ||
+      this.position.y < -2.0
+    );
 
-    // 5. Subtle Head Bob
-    if (this.isMoving && this.isGrounded) {
-      this.headBobTimer += delta * (this.isSprinting ? 14 : 9);
-      const bobOffset = Math.sin(this.headBobTimer) * (this.isSprinting ? 0.04 : 0.02);
-      this.camera.position.set(this.position.x, this.position.y + bobOffset, this.position.z);
+    if (isOut) {
+      this.isOutOfBounds = true;
+      this.oobTimer += delta;
+      const remaining = Math.max(0, 5.0 - this.oobTimer);
+      if (this.onOutOfBoundsWarning) {
+        this.onOutOfBoundsWarning(Math.ceil(remaining));
+      }
+      if (this.oobTimer >= 5.0) {
+        // Return player to spawn point
+        this.setPosition(this.spawnPoint.x, this.spawnPoint.y, this.spawnPoint.z, this.spawnPoint.yaw);
+        this.velocity.set(0, 0, 0);
+        this.oobTimer = 0;
+        this.isOutOfBounds = false;
+        if (this.onOutOfBoundsClear) this.onOutOfBoundsClear();
+      }
     } else {
-      this.camera.position.copy(this.position);
+      if (this.isOutOfBounds) {
+        this.isOutOfBounds = false;
+        this.oobTimer = 0;
+        if (this.onOutOfBoundsClear) this.onOutOfBoundsClear();
+      }
     }
+
+    // Safety boundary clamp (keeps player from infinitely falling into the void)
+    this.position.x = THREE.MathUtils.clamp(this.position.x, this.bounds.minX - 3.0, this.bounds.maxX + 3.0);
+    this.position.z = THREE.MathUtils.clamp(this.position.z, this.bounds.minZ - 3.0, this.bounds.maxZ + 3.0);
+
+    // 5. Camera Eye Height Smoothing & Head Bob
+    // Smooth camera eye height over stair steps to eliminate vertical camera pop while keeping collider solid
+    if (this.isGrounded) {
+      const eyeDiff = this.position.y - this.currentCameraEyeY;
+      if (Math.abs(eyeDiff) > 0.0005) {
+        this.currentCameraEyeY += eyeDiff * Math.min(1, delta * 22);
+      } else {
+        this.currentCameraEyeY = this.position.y;
+      }
+    } else {
+      // Airborne / jumping: immediate 1:1 camera vertical tracking
+      this.currentCameraEyeY = this.position.y;
+    }
+
+    const isActuallyMoving = this.isGrounded && horizontalSpeed > 0.15;
+    if (isActuallyMoving) {
+      // Natural human stride cadence: ~1.85 Hz walking (11.6 rad/s), ~3.2 Hz sprinting (20.1 rad/s)
+      const bobRate = this.isSprinting ? 20.0 : 11.6;
+      const speedScale = Math.min(1.2, horizontalSpeed / (this.isSprinting ? 8.5 : 4.8));
+      this.headBobTimer += delta * bobRate * speedScale;
+
+      const targetAmp = (this.isSprinting ? 0.030 : 0.016) * speedScale;
+      const targetBob = Math.sin(this.headBobTimer) * targetAmp;
+      this.cameraBobOffset = THREE.MathUtils.lerp(this.cameraBobOffset, targetBob, Math.min(1, delta * 15));
+    } else {
+      // Smoothly decay head-bob offset to zero on stop — NEVER an instantaneous jump
+      this.cameraBobOffset = THREE.MathUtils.lerp(this.cameraBobOffset, 0, Math.min(1, delta * 18));
+    }
+
+    this.camera.position.set(
+      this.position.x,
+      this.currentCameraEyeY + this.cameraBobOffset,
+      this.position.z
+    );
 
     // Decay mouse delta
     this.mouseDelta.x = THREE.MathUtils.lerp(this.mouseDelta.x, 0, delta * 16);

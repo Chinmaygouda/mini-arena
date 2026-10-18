@@ -2,14 +2,18 @@
 // Interactive Shooting Range Targets: Steel Reactive Poppers, Precision Bullseyes, Explosive Barrels, and Impact Sparks
 
 import * as THREE from 'three';
-import { sound } from '../audio/soundManager';
+import { sound } from '../audio/soundManager.ts';
+import { type WeaponDef, type WeaponRangeConfig, calculateDamageFalloff } from '../weapons/weaponTypes.ts';
 
 export interface HitResult {
   hit: boolean;
   point: THREE.Vector3;
   damage: number;
+  multiplier?: number;
+  distance?: number;
   isCrit: boolean;
   targetType: 'steel' | 'bullseye' | 'barrel' | 'world';
+  shotOrigin?: THREE.Vector3;
 }
 
 interface ReactiveTarget {
@@ -42,6 +46,9 @@ interface FloatingText {
   life: number;
 }
 
+export const BULLET_RAYCAST_LAYER = 0;
+export const FX_NON_RAYCAST_LAYER = 2;
+
 export class TargetManager {
   private scene: THREE.Scene;
   private reactiveTargets: ReactiveTarget[] = [];
@@ -57,6 +64,7 @@ export class TargetManager {
 
   constructor(scene: THREE.Scene) {
     this.scene = scene;
+    this.raycaster.layers.set(BULLET_RAYCAST_LAYER);
     this.rangeTargetsGroup.name = 'range-targets-group';
     this.dynamicTargetsGroup.name = 'dynamic-targets-group';
     this.scene.add(this.rangeTargetsGroup);
@@ -116,28 +124,30 @@ export class TargetManager {
       targetGroup.add(standPost);
 
       // Distance Marker Sign
-      const markerCanvas = document.createElement('canvas');
-      markerCanvas.width = 128;
-      markerCanvas.height = 64;
-      const ctx = markerCanvas.getContext('2d')!;
-      ctx.fillStyle = '#0a0d10';
-      ctx.fillRect(0, 0, 128, 64);
-      ctx.strokeStyle = '#00ff66';
-      ctx.lineWidth = 4;
-      ctx.strokeRect(4, 4, 120, 56);
-      ctx.fillStyle = '#00ff66';
-      ctx.font = 'bold 32px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`${dist}m`, 64, 32);
+      if (typeof document !== 'undefined') {
+        const markerCanvas = document.createElement('canvas');
+        markerCanvas.width = 128;
+        markerCanvas.height = 64;
+        const ctx = markerCanvas.getContext('2d')!;
+        ctx.fillStyle = '#0a0d10';
+        ctx.fillRect(0, 0, 128, 64);
+        ctx.strokeStyle = '#00ff66';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(4, 4, 120, 56);
+        ctx.fillStyle = '#00ff66';
+        ctx.font = 'bold 32px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${dist}m`, 64, 32);
 
-      const markerTexture = new THREE.CanvasTexture(markerCanvas);
-      const markerSign = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.4, 0.2),
-        new THREE.MeshBasicMaterial({ map: markerTexture })
-      );
-      markerSign.position.set(0, 0.35, 0.05);
-      targetGroup.add(markerSign);
+        const markerTexture = new THREE.CanvasTexture(markerCanvas);
+        const markerSign = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.4, 0.2),
+          new THREE.MeshBasicMaterial({ map: markerTexture })
+        );
+        markerSign.position.set(0, 0.35, 0.05);
+        targetGroup.add(markerSign);
+      }
 
       // Hinged Reactive Plate (Upper Silhouette)
       const plateHinge = new THREE.Group();
@@ -224,79 +234,262 @@ export class TargetManager {
     });
   }
 
-  public checkBulletHit(origin: THREE.Vector3, direction: THREE.Vector3, baseDamage: number, critMultiplier: number): HitResult {
-    this.raycaster.set(origin, direction);
-    this.raycaster.far = 150;
+  private scratchAimPoint = new THREE.Vector3();
+  private scratchMuzzleToAim = new THREE.Vector3();
+  private scratchShotDir = new THREE.Vector3();
 
-    const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+  public isValidHit(hit: THREE.Intersection): boolean {
+    if (hit.distance < 0.05) return false;
+    const obj = hit.object;
+    if (
+      obj.userData?.ignoreRaycast ||
+      obj.userData?.isViewmodel ||
+      obj.userData?.isTracer ||
+      obj.userData?.isDecal ||
+      obj.userData?.isParticle ||
+      obj.userData?.isSpark ||
+      (obj as unknown as { isSprite?: boolean }).isSprite ||
+      obj.type === 'Sprite' ||
+      obj.name === 'bullet-tracer' ||
+      obj.name.startsWith('tracer') ||
+      obj.name.startsWith('spark') ||
+      obj.name.startsWith('decal')
+    ) {
+      return false;
+    }
+    return true;
+  }
 
-    for (const hit of intersects) {
-      // 1. NEVER collide with player's own viewmodel, weapon geometry, arms, or anything closer than 1.0m
-      if (hit.distance < 1.0) continue;
+  private processHitObject(
+    hit: THREE.Intersection,
+    weaponDefOrDamage: WeaponDef | number,
+    fallbackNormal: THREE.Vector3,
+    shotOrigin: THREE.Vector3,
+    legacyCritMultiplier?: number
+  ): HitResult {
+    const normal = hit.face?.normal || fallbackNormal;
+    const obj = hit.object as unknown as { isTarget?: boolean; isHead?: boolean; isBarrel?: boolean };
+    const hitDistance = shotOrigin ? shotOrigin.distanceTo(hit.point) : hit.distance;
 
-      // 2. Ignore FX objects, tracers, sparks, floating text sprites
-      if (
-        hit.object.userData?.ignoreRaycast ||
-        hit.object.userData?.isViewmodel ||
-        (hit.object as unknown as { isSprite?: boolean }).isSprite ||
-        hit.object.type === 'Sprite'
-      ) {
-        continue;
+    let baseDamage = 30;
+    let critMultiplier = 2.0;
+    let rangeConfig: WeaponRangeConfig = {
+      fullDamageRange: 150,
+      falloffEndRange: 150,
+      minDamageMultiplier: 1.0,
+      maxRange: 150,
+    };
+
+    if (typeof weaponDefOrDamage === 'number') {
+      baseDamage = weaponDefOrDamage;
+      critMultiplier = legacyCritMultiplier ?? 2.0;
+    } else {
+      baseDamage = weaponDefOrDamage.damage;
+      critMultiplier = weaponDefOrDamage.critMultiplier;
+      rangeConfig = weaponDefOrDamage;
+    }
+
+    // Check Reactive Target Hit
+    if (obj.isTarget) {
+      const isCrit = !!obj.isHead;
+      const falloff = calculateDamageFalloff(hitDistance, baseDamage, rangeConfig, isCrit, critMultiplier);
+
+      if (!falloff.inRange) {
+        return {
+          hit: false,
+          point: hit.point.clone(),
+          damage: 0,
+          multiplier: 0,
+          distance: hitDistance,
+          isCrit: false,
+          targetType: 'steel',
+          shotOrigin,
+        };
       }
 
-      const obj = hit.object as unknown as { isTarget?: boolean; isHead?: boolean; isBarrel?: boolean };
+      const dmg = falloff.damage;
+      sound.playTargetHit(isCrit);
 
-      // Check Reactive Target Hit
-      if (obj.isTarget) {
-        const isCrit = !!obj.isHead;
-        const dmg = Math.round(baseDamage * (isCrit ? critMultiplier : 1.0));
-        sound.playTargetHit(isCrit);
-
-        // Find associated target and trigger physical hinged swing
-        for (const target of this.reactiveTargets) {
-          if (target.group.getObjectById(hit.object.id)) {
-            target.pitch = Math.PI * 0.45; // Knock back
-            target.recovering = false;
-            break;
-          }
-        }
-
-        this.spawnSparks(hit.point, hit.face?.normal || new THREE.Vector3(0, 1, 0), isCrit ? 0xff3b30 : 0xffdd44);
-        this.spawnFloatingText(hit.point, `${dmg}${isCrit ? ' CRIT!' : ''}`, isCrit ? '#ff3b30' : '#ffcc00');
-
-        if (this.onHitRegistered) {
-          this.onHitRegistered(dmg, isCrit, isCrit ? 'HEADSHOT' : 'BODY HIT');
-        }
-
-        return { hit: true, point: hit.point, damage: dmg, isCrit, targetType: 'steel' };
-      }
-
-      // Check Explosive Barrel Hit
-      if (obj.isBarrel) {
-        const barrel = this.barrels.find((b) => b.mesh.id === hit.object.id);
-        if (barrel && !barrel.exploded) {
-          barrel.hp -= baseDamage;
-          this.spawnSparks(hit.point, hit.face?.normal || new THREE.Vector3(0, 1, 0), 0xff8800);
-
-          if (barrel.hp <= 0) {
-            this.explodeBarrel(barrel);
-          } else {
-            sound.playTargetHit(false);
-          }
-
-          this.spawnFloatingText(hit.point, `${baseDamage}`, '#ff6600');
-          return { hit: true, point: hit.point, damage: baseDamage, isCrit: false, targetType: 'barrel' };
+      // Find associated target and trigger physical hinged swing
+      for (const target of this.reactiveTargets) {
+        if (target.group.getObjectById(hit.object.id)) {
+          target.pitch = Math.PI * 0.45; // Knock back
+          target.recovering = false;
+          break;
         }
       }
 
-      // Hit general world (ground/walls/berms)
-      if (hit.point) {
-        this.spawnSparks(hit.point, hit.face?.normal || new THREE.Vector3(0, 1, 0), 0xddccaa);
-        return { hit: true, point: hit.point, damage: 0, isCrit: false, targetType: 'world' };
+      this.spawnSparks(hit.point, normal, isCrit ? 0xff3b30 : 0xffdd44);
+      this.spawnFloatingText(hit.point, `${dmg}${isCrit ? ' CRIT!' : ''}`, isCrit ? '#ff3b30' : '#ffcc00');
+
+      if (this.onHitRegistered) {
+        this.onHitRegistered(dmg, isCrit, isCrit ? 'HEADSHOT' : 'BODY HIT');
+      }
+
+      return {
+        hit: true,
+        point: hit.point.clone(),
+        damage: dmg,
+        multiplier: falloff.multiplier,
+        distance: hitDistance,
+        isCrit,
+        targetType: 'steel',
+        shotOrigin,
+      };
+    }
+
+    // Check Explosive Barrel Hit
+    if (obj.isBarrel) {
+      const barrel = this.barrels.find((b) => b.mesh.id === hit.object.id);
+      if (barrel && !barrel.exploded) {
+        const falloff = calculateDamageFalloff(hitDistance, baseDamage, rangeConfig, false, 1.0);
+        if (!falloff.inRange) {
+          return {
+            hit: false,
+            point: hit.point.clone(),
+            damage: 0,
+            multiplier: 0,
+            distance: hitDistance,
+            isCrit: false,
+            targetType: 'barrel',
+            shotOrigin,
+          };
+        }
+
+        barrel.hp -= falloff.damage;
+        this.spawnSparks(hit.point, normal, 0xff8800);
+
+        if (barrel.hp <= 0) {
+          this.explodeBarrel(barrel);
+        } else {
+          sound.playTargetHit(false);
+        }
+
+        this.spawnFloatingText(hit.point, `${falloff.damage}`, '#ff6600');
+        return {
+          hit: true,
+          point: hit.point.clone(),
+          damage: falloff.damage,
+          multiplier: falloff.multiplier,
+          distance: hitDistance,
+          isCrit: false,
+          targetType: 'barrel',
+          shotOrigin,
+        };
       }
     }
 
-    return { hit: false, point: origin.clone().add(direction.multiplyScalar(50)), damage: 0, isCrit: false, targetType: 'world' };
+    // Hit general world (ground/walls/berms/props)
+    if (hit.point) {
+      if (hitDistance > rangeConfig.maxRange) {
+        return {
+          hit: false,
+          point: hit.point.clone(),
+          damage: 0,
+          multiplier: 0,
+          distance: hitDistance,
+          isCrit: false,
+          targetType: 'world',
+          shotOrigin,
+        };
+      }
+      this.spawnSparks(hit.point, normal, 0xddccaa);
+      return {
+        hit: true,
+        point: hit.point.clone(),
+        damage: 0,
+        multiplier: 1.0,
+        distance: hitDistance,
+        isCrit: false,
+        targetType: 'world',
+        shotOrigin,
+      };
+    }
+
+    return {
+      hit: false,
+      point: new THREE.Vector3(),
+      damage: 0,
+      multiplier: 0,
+      distance: hitDistance,
+      isCrit: false,
+      targetType: 'world',
+      shotOrigin,
+    };
+  }
+
+  public checkBallisticHit(
+    muzzleOrigin: THREE.Vector3,
+    aimOrigin: THREE.Vector3,
+    aimDirection: THREE.Vector3,
+    weaponDefOrDamage: WeaponDef | number,
+    legacyCritMultiplier?: number
+  ): HitResult {
+    const maxRange = typeof weaponDefOrDamage === 'object' ? weaponDefOrDamage.maxRange : 150;
+
+    // 1. Aim Raycast from camera/crosshair to find intended target point
+    this.raycaster.set(aimOrigin, aimDirection);
+    this.raycaster.far = maxRange;
+    const aimIntersects = this.raycaster.intersectObjects(this.scene.children, true);
+
+    let aimHit: THREE.Intersection | null = null;
+    for (const h of aimIntersects) {
+      if (this.isValidHit(h)) {
+        aimHit = h;
+        break;
+      }
+    }
+
+    if (aimHit) {
+      this.scratchAimPoint.copy(aimHit.point);
+    } else {
+      this.scratchAimPoint.copy(aimOrigin).addScaledVector(aimDirection, maxRange);
+    }
+
+    // 2. Muzzle Raycast toward Aim Point & Obstruction Check
+    this.scratchMuzzleToAim.copy(this.scratchAimPoint).sub(muzzleOrigin);
+    const distToAim = this.scratchMuzzleToAim.length();
+    this.scratchShotDir.copy(this.scratchMuzzleToAim).normalize();
+
+    this.raycaster.set(muzzleOrigin, this.scratchShotDir);
+    this.raycaster.far = Math.min(distToAim + 0.1, maxRange);
+    const muzzleIntersects = this.raycaster.intersectObjects(this.scene.children, true);
+
+    let muzzleHit: THREE.Intersection | null = null;
+    for (const h of muzzleIntersects) {
+      if (this.isValidHit(h)) {
+        muzzleHit = h;
+        break;
+      }
+    }
+
+    const fallbackNormal = this.scratchShotDir.clone().negate();
+
+    // If muzzle ray hit an obstruction closer than aim point (distToAim - 0.08m)
+    if (muzzleHit && muzzleHit.distance < distToAim - 0.08) {
+      return this.processHitObject(muzzleHit, weaponDefOrDamage, fallbackNormal, muzzleOrigin, legacyCritMultiplier);
+    }
+
+    // Line of sight clear from muzzle to aim target
+    if (aimHit) {
+      return this.processHitObject(aimHit, weaponDefOrDamage, fallbackNormal, muzzleOrigin, legacyCritMultiplier);
+    }
+
+    // No hit (sky / infinite distance / out of maxRange)
+    return {
+      hit: false,
+      point: this.scratchAimPoint.clone(),
+      damage: 0,
+      multiplier: 0,
+      distance: maxRange,
+      isCrit: false,
+      targetType: 'world',
+      shotOrigin: muzzleOrigin,
+    };
+  }
+
+  public checkBulletHit(origin: THREE.Vector3, direction: THREE.Vector3, weaponDefOrDamage: WeaponDef | number, legacyCritMultiplier?: number): HitResult {
+    return this.checkBallisticHit(origin, origin, direction, weaponDefOrDamage, legacyCritMultiplier);
   }
 
   private explodeBarrel(barrel: ExplosiveBarrel) {
@@ -321,6 +514,9 @@ export class TargetManager {
         (Math.random() - 0.5) * 12
       );
 
+      p.layers.set(FX_NON_RAYCAST_LAYER);
+      p.userData.ignoreRaycast = true;
+      p.userData.isSpark = true;
       this.scene.add(p);
       this.sparks.push({ mesh: p, velocity: vel, life: 1.2 });
     }
@@ -338,6 +534,9 @@ export class TargetManager {
     for (let i = 0; i < count; i++) {
       const spark = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 0.02), sparkMat);
       spark.position.copy(pos);
+      spark.layers.set(FX_NON_RAYCAST_LAYER);
+      spark.userData.ignoreRaycast = true;
+      spark.userData.isSpark = true;
 
       const randomSpread = new THREE.Vector3(
         (Math.random() - 0.5) * 2,
@@ -368,8 +567,8 @@ export class TargetManager {
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
     const sprite = new THREE.Sprite(spriteMat);
-    sprite.raycast = () => {}; // Disable raycasting on floating text to prevent matrixWorld null crashes
-    sprite.userData = { ignoreRaycast: true };
+    sprite.layers.set(FX_NON_RAYCAST_LAYER);
+    sprite.userData.ignoreRaycast = true;
     sprite.scale.set(0.9, 0.35, 1);
     sprite.position.copy(pos).add(new THREE.Vector3((Math.random() - 0.5) * 0.2, 0.2, 0));
 

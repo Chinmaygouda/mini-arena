@@ -23,9 +23,16 @@ export interface StepSchedulerResult {
 
 export const CATCH_UP_CAP = 2;
 
+let hasLoggedFireError = false;
+
+export function resetSchedulerErrorLog() {
+  hasLoggedFireError = false;
+}
+
 /**
  * Step the fire scheduler by dt seconds.
  * Pure function: mutates state in place and calls onFire() for each validated shot.
+ * Robustness guarantee: exceptions in onFire can never stall the scheduler, loop, or burst-drain ammo.
  */
 export function stepFireScheduler(
   state: FireSchedulerState,
@@ -47,9 +54,23 @@ export function stepFireScheduler(
     if (state.fireMode === 'auto') {
       // Automatic weapons: fire up to CATCH_UP_CAP shots if time >= nextShotTime
       while (state.simTime >= state.nextShotTime && shotsFired < CATCH_UP_CAP && state.ammoInClip > 0) {
-        onFire();
         shotsFired++;
         state.nextShotTime += state.fireInterval;
+        const prevAmmo = state.ammoInClip;
+        try {
+          onFire();
+        } catch (err) {
+          if (!hasLoggedFireError) {
+            console.error('[FireScheduler] Error during shot execution:', err);
+            hasLoggedFireError = true;
+          }
+          break; // Never loop on exception
+        } finally {
+          // Guarantee ammo is decremented exactly once even if onFire threw before decrementing
+          if (state.ammoInClip === prevAmmo && state.ammoInClip > 0) {
+            state.ammoInClip -= 1;
+          }
+        }
       }
 
       // If time still exceeds nextShotTime (e.g. after a huge pause or frame spike),
@@ -61,9 +82,21 @@ export function stepFireScheduler(
       // Semi-automatic weapons: fire once per trigger press (rising edge only)
       const cycle = state.cycleTime || state.fireInterval;
       if (state.triggerJustPressed && state.simTime >= state.nextShotTime && state.ammoInClip > 0) {
-        onFire();
         shotsFired = 1;
         state.nextShotTime = state.simTime + cycle;
+        const prevAmmo = state.ammoInClip;
+        try {
+          onFire();
+        } catch (err) {
+          if (!hasLoggedFireError) {
+            console.error('[FireScheduler] Error during semi-auto shot execution:', err);
+            hasLoggedFireError = true;
+          }
+        } finally {
+          if (state.ammoInClip === prevAmmo && state.ammoInClip > 0) {
+            state.ammoInClip -= 1;
+          }
+        }
       }
     }
   }

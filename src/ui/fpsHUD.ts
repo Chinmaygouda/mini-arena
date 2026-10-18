@@ -19,6 +19,8 @@ export class FPSHUD {
   private sniperScope: HTMLDivElement;
   private mapBadge: HTMLDivElement;
   private mapModal: HTMLDivElement;
+  private oobBanner: HTMLDivElement;
+  private rangefinder: HTMLDivElement | null = null;
 
   public isTuningOpen: boolean = false;
   public isMapModalOpen: boolean = false;
@@ -147,6 +149,34 @@ export class FPSHUD {
     `;
     this.container.appendChild(this.crosshair);
 
+    // 1.2 Debug Rangefinder Overlay (?debug=1)
+    const isDebugUrl = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1';
+    if (isDebugUrl) {
+      this.rangefinder = document.createElement('div');
+      this.rangefinder.id = 'hud-rangefinder';
+      this.rangefinder.style.cssText = `
+        position: absolute;
+        top: calc(50% + 28px);
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        font-size: 11px;
+        font-weight: 600;
+        color: #00ff88;
+        background: rgba(10, 16, 22, 0.75);
+        border: 1px solid rgba(0, 255, 136, 0.35);
+        border-radius: 4px;
+        padding: 2px 8px;
+        letter-spacing: 0.5px;
+        pointer-events: none;
+        white-space: nowrap;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      `;
+      this.rangefinder.textContent = 'RANGE: -- | MULT: 100%';
+      this.container.appendChild(this.rangefinder);
+    }
+
     // 1.5 High-Power Telescopic Sniper Scope Overlay
     this.sniperScope = document.createElement('div');
     this.sniperScope.id = 'sniper-scope-overlay';
@@ -198,6 +228,7 @@ export class FPSHUD {
 
     // 3. Glassmorphic Ammo & Weapon Telemetry Card (Bottom-Right)
     this.ammoCard = document.createElement('div');
+    this.ammoCard.id = 'hud-ammo-card';
     this.ammoCard.style.cssText = `
       position: absolute;
       bottom: 35px;
@@ -230,6 +261,32 @@ export class FPSHUD {
     `;
     this.container.appendChild(this.hotbar);
 
+    // 4.1 Out-Of-Bounds Tactical Alert Banner (Center Screen)
+    this.oobBanner = document.createElement('div');
+    this.oobBanner.id = 'hud-oob-banner';
+    this.oobBanner.style.cssText = `
+      position: absolute;
+      top: 25%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(220, 20, 60, 0.9);
+      border: 2px solid #ff4466;
+      border-radius: 10px;
+      padding: 14px 30px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      box-shadow: 0 0 30px rgba(255, 0, 50, 0.6);
+      display: none;
+      z-index: 150;
+      pointer-events: none;
+      text-align: center;
+      line-height: 1.4;
+    `;
+    this.container.appendChild(this.oobBanner);
+
     // 5. Controls Guide Overlay (Top-Left)
     this.controlsCard = document.createElement('div');
     this.controlsCard.style.cssText = `
@@ -259,6 +316,7 @@ export class FPSHUD {
 
     // 6. Click-to-Play Overlay
     this.promptOverlay = document.createElement('div');
+    this.promptOverlay.id = 'instructions-overlay';
     this.promptOverlay.style.cssText = `
       position: absolute;
       top: 0;
@@ -458,7 +516,7 @@ export class FPSHUD {
       </div>
 
       <div style="display: flex; align-items: baseline; gap: 8px; margin: 12px 0 8px 0;">
-        <span style="font-size: 44px; font-weight: 900; line-height: 1; color: ${state.ammoInClip === 0 ? '#ff3b30' : '#ffffff'}; font-variant-numeric: tabular-nums;">
+        <span id="ammo-counter" style="font-size: 44px; font-weight: 900; line-height: 1; color: ${state.ammoInClip === 0 ? '#ff3b30' : '#ffffff'}; font-variant-numeric: tabular-nums;">
           ${state.ammoInClip}
         </span>
         <span style="font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.4);">
@@ -506,4 +564,41 @@ export class FPSHUD {
       })
       .join('');
   }
+
+  public showOOBWarning(remainingSec: number) {
+    if (this.oobBanner) {
+      this.oobBanner.style.display = 'block';
+      this.oobBanner.innerHTML = `
+        <div style="font-size:13px;letter-spacing:2px;opacity:0.85;margin-bottom:4px;">⚠ COMBAT AREA BOUNDARY EXCEEDED</div>
+        <div style="font-size:22px;color:#ffff00;font-weight:900;">RETURN TO BATTLEFIELD: ${remainingSec}s</div>
+      `;
+    }
+  }
+
+  public clearOOBWarning() {
+    if (this.oobBanner) {
+      this.oobBanner.style.display = 'none';
+    }
+  }
+
+  public updateDebugRangefinder(
+    distance: number | null,
+    multiplier: number,
+    damage: number,
+    inRange: boolean,
+    weaponName?: string
+  ) {
+    if (!this.rangefinder) return;
+    if (distance === null || !inRange) {
+      this.rangefinder.textContent = `RANGE: ${distance !== null ? distance.toFixed(1) + 'm' : '--'} | OUT OF RANGE (0 dmg)`;
+      this.rangefinder.style.color = '#ff4444';
+      this.rangefinder.style.borderColor = 'rgba(255, 68, 68, 0.4)';
+    } else {
+      const pct = Math.round(multiplier * 100);
+      this.rangefinder.textContent = `DST: ${distance.toFixed(1)}m | DMG: ${damage} (${pct}%) ${weaponName ? '[' + weaponName + ']' : ''}`;
+      this.rangefinder.style.color = multiplier === 1.0 ? '#00ff88' : (multiplier > 0.4 ? '#ffcc00' : '#ff8844');
+      this.rangefinder.style.borderColor = multiplier === 1.0 ? 'rgba(0, 255, 136, 0.35)' : 'rgba(255, 204, 0, 0.4)';
+    }
+  }
 }
+

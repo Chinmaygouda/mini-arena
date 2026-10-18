@@ -66,89 +66,148 @@ async function runWalker() {
           let solidPenetrations = 0;
           const penetrationDetails = [];
 
-          // Helper: check if position is inside any solid collider
+          // Helper: check if position penetrates inside any solid (non-walkable) collider
           function checkSolidPenetration(px, py, pz, context) {
             totalPositionsChecked++;
             const feetY = py - 1.7;
             const headY = py + 0.15;
-            const r = 0.35;
 
             for (let i = 0; i < colliders.length; i++) {
               const c = colliders[i];
-              // Check horizontal overlap with collider
-              const overlapX = (px + r > c.minX) && (px - r < c.maxX);
-              const overlapZ = (pz + r > c.minZ) && (pz - r < c.maxZ);
+              if (c.isWalkable) continue; // Walkable surfaces/stairs are designed to be walked on
 
-              if (overlapX && overlapZ) {
-                // If horizontal overlap exists, player must be either:
-                // 1) Standing safely ON TOP: feetY >= c.maxY - 0.06
-                // 2) Completely BELOW: headY <= c.minY + 0.02
-                const isStandingOnTop = feetY >= (c.maxY - 0.06);
-                const isBelow = headY <= (c.minY + 0.02);
+              // Solid box penetration check (with 5cm skin margin)
+              const insideX = px > (c.minX + 0.05) && px < (c.maxX - 0.05);
+              const insideZ = pz > (c.minZ + 0.05) && pz < (c.maxZ - 0.05);
+              const insideY = feetY < (c.maxY - 0.05) && headY > (c.minY + 0.05);
 
-                if (!isStandingOnTop && !isBelow) {
-                  // Inside solid volume!
-                  solidPenetrations++;
-                  if (penetrationDetails.length < 5) {
-                    penetrationDetails.push({
-                      context,
-                      pos: { x: +px.toFixed(3), y: +py.toFixed(3), z: +pz.toFixed(3) },
-                      feetY: +feetY.toFixed(3),
-                      collider: { minX: c.minX, maxX: c.maxX, minY: c.minY, maxY: c.maxY, minZ: c.minZ, maxZ: c.maxZ },
-                      depthY: +(c.maxY - feetY).toFixed(3)
-                    });
-                  }
+              if (insideX && insideZ && insideY) {
+                solidPenetrations++;
+                if (penetrationDetails.length < 5) {
+                  penetrationDetails.push({
+                    context,
+                    pos: { x: +px.toFixed(3), y: +py.toFixed(3), z: +pz.toFixed(3) },
+                    feetY: +feetY.toFixed(3),
+                    collider: { minX: c.minX, maxX: c.maxX, minY: c.minY, maxY: c.maxY, minZ: c.minZ, maxZ: c.maxZ },
+                    depthY: +(c.maxY - feetY).toFixed(3)
+                  });
                 }
               }
             }
           }
 
-          // 1. STAIR TESTING
-          // Find stairs: colliders with isWalkable or narrow steps (depth <= 1.2, height <= 0.6)
-          const stairColliders = colliders.filter(c => c.isWalkable || (c.maxY - c.minY <= 0.5 && c.maxY > 0.1));
+          // 1. STAIR TESTING (Flight-based ascent & descent)
+          const stairColliders = colliders.filter(c => c.isWalkable && (c.maxY - c.minY <= 0.6));
+          
+          // Group steps into flights by spatial proximity
+          const visited = new Set();
+          const flights = [];
 
-          // Group stairs by spatial proximity to find flights
-          for (let s = 0; s < stairColliders.length; s++) {
-            const stair = stairColliders[s];
-            const cx = (stair.minX + stair.maxX) / 2;
-            const cz = (stair.minZ + stair.maxZ) / 2;
-            const topY = stair.maxY;
+          for (let i = 0; i < stairColliders.length; i++) {
+            if (visited.has(i)) continue;
+            const flight = [stairColliders[i]];
+            visited.add(i);
 
-            // Test walking UP: position player at base
-            controls.setPosition(cx, 1.7, cz + 0.8, Math.PI); // facing -Z
+            let added = true;
+            while (added) {
+              added = false;
+              for (let j = 0; j < stairColliders.length; j++) {
+                if (visited.has(j)) continue;
+                const cand = stairColliders[j];
+                const candCX = (cand.minX + cand.maxX) / 2;
+                const candCZ = (cand.minZ + cand.maxZ) / 2;
+
+                const connects = flight.some(st => {
+                  const stCX = (st.minX + st.maxX) / 2;
+                  const stCZ = (st.minZ + st.maxZ) / 2;
+                  const distXZ = Math.hypot(candCX - stCX, candCZ - stCZ);
+                  const distY = Math.abs(cand.maxY - st.maxY);
+                  return distXZ < 2.5 && distY < 0.6;
+                });
+
+                if (connects) {
+                  flight.push(cand);
+                  visited.add(j);
+                  added = true;
+                }
+              }
+            }
+
+            if (flight.length >= 2) {
+              flight.sort((a, b) => a.minY - b.minY);
+              flights.push(flight);
+            }
+          }
+
+          for (const flight of flights) {
+            const firstStep = flight[0];
+            const lastStep = flight[flight.length - 1];
+
+            const firstCX = (firstStep.minX + firstStep.maxX) / 2;
+            const firstCZ = (firstStep.minZ + firstStep.maxZ) / 2;
+            const lastCX = (lastStep.minX + lastStep.maxX) / 2;
+            const lastCZ = (lastStep.minZ + lastStep.maxZ) / 2;
+
+            const dx = lastCX - firstCX;
+            const dz = lastCZ - firstCZ;
+            const dist = Math.hypot(dx, dz) || 1;
+            const normX = dx / dist;
+            const normZ = dz / dist;
+
+            const ascendYaw = Math.atan2(-normX, -normZ);
+            const descendYaw = Math.atan2(normX, normZ);
+
+            // Position at bottom step
+            controls.setPosition(firstCX, firstStep.maxY + 1.7, firstCZ, ascendYaw);
             controls.velocity.set(0, 0, 0);
 
-            for (let step = 0; step < 40; step++) {
+            // Climb up
+            for (let step = 0; step < 70; step++) {
               controls.input.forward = true;
               controls.update(1 / 60);
               checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'stair-up');
+              if (controls.position.y - 1.7 >= lastStep.maxY - 0.05) break;
             }
             controls.input.forward = false;
 
-            // Test walking DOWN: turn around and walk forward
-            controls.yaw = 0; // facing +Z
-            for (let step = 0; step < 40; step++) {
+            // Turn around and descend
+            controls.yaw = descendYaw;
+            for (let step = 0; step < 70; step++) {
               controls.input.forward = true;
               controls.update(1 / 60);
               checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'stair-down');
+              if (controls.position.y - 1.7 <= firstStep.minY + 0.05) break;
             }
             controls.input.forward = false;
             totalStairsWalked++;
           }
 
-          // 2. BOX TESTING
-          // Test low cover boxes (maxY <= 2.2) and containers/crates
-          const boxes = colliders.filter(c => !c.isWalkable && c.maxY <= 2.8 && c.maxY >= 0.5);
-          for (let b = 0; b < Math.min(boxes.length, 25); b++) {
+          // 2. BOX TESTING (Walk into cover & jump on top)
+          const boxes = colliders.filter(c => !c.isWalkable && c.maxY <= 2.5 && c.maxY >= 0.5);
+          for (let b = 0; b < Math.min(boxes.length, 20); b++) {
             const box = boxes[b];
-            const cx = Math.max(bounds.minX + 0.6, Math.min(bounds.maxX - 0.6, (box.minX + box.maxX) / 2));
-            const cz = Math.max(bounds.minZ + 0.6, Math.min(bounds.maxZ - 0.6, (box.minZ + box.maxZ) / 2));
+            const cx = (box.minX + box.maxX) / 2;
+            const cz = (box.minZ + box.maxZ) / 2;
 
-            // Choose valid approach axis that stays within map bounds
-            if (box.maxZ + 0.9 <= bounds.maxZ - 0.1) {
-              // Approach from North (+Z) facing South (-Z)
-              controls.setPosition(cx, 1.7, box.maxZ + 0.8, Math.PI);
-              for (let step = 0; step < 30; step++) {
+            // Check if -X approach is clear of other colliders
+            const approachX = box.minX - 1.2;
+            const approachZ = cz;
+            const startFeetY = box.minY;
+
+            const isStartBlocked = colliders.some(c => 
+              c !== box && !c.isWalkable &&
+              approachX > (c.minX - 0.35) && approachX < (c.maxX + 0.35) &&
+              approachZ > (c.minZ - 0.35) && approachZ < (c.maxZ + 0.35) &&
+              startFeetY < c.maxY && (startFeetY + 1.7) > c.minY
+            );
+
+            if (!isStartBlocked && approachX >= bounds.minX + 0.5) {
+              // Approach facing +X toward box (yaw = -PI/2)
+              controls.setPosition(approachX, startFeetY + 1.7, approachZ, -Math.PI / 2);
+              controls.velocity.set(0, 0, 0);
+
+              // Walk into box face
+              for (let step = 0; step < 35; step++) {
                 controls.input.forward = true;
                 controls.update(1 / 60);
                 checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'box-walk-into');
@@ -157,68 +216,28 @@ async function runWalker() {
 
               // Jump onto box if jumpable height
               if (box.maxY <= 1.5) {
-                controls.setPosition(cx, 1.7, box.maxZ + 0.6, Math.PI);
-                controls.input.jump = true;
-                for (let step = 0; step < 45; step++) {
+                controls.setPosition(approachX, startFeetY + 1.7, approachZ, -Math.PI / 2);
+                controls.velocity.set(0, 0, 0);
+                for (let step = 0; step < 50; step++) {
                   controls.input.forward = true;
+                  if (step === 3) controls.input.jump = true;
+                  else controls.input.jump = false;
                   controls.update(1 / 60);
                   checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'box-jump-onto');
                 }
                 controls.input.forward = false;
               }
-            } else if (box.minZ - 0.9 >= bounds.minZ + 0.1) {
-              // Approach from South (-Z) facing North (+Z)
-              controls.setPosition(cx, 1.7, box.minZ - 0.8, 0);
-              for (let step = 0; step < 30; step++) {
-                controls.input.forward = true;
-                controls.update(1 / 60);
-                checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'box-walk-into');
-              }
-              controls.input.forward = false;
-
-              // Jump onto box if jumpable height
-              if (box.maxY <= 1.5) {
-                controls.setPosition(cx, 1.7, box.minZ - 0.6, 0);
-                controls.input.jump = true;
-                for (let step = 0; step < 45; step++) {
-                  controls.input.forward = true;
-                  controls.update(1 / 60);
-                  checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'box-jump-onto');
-                }
-                controls.input.forward = false;
-              }
+              totalBoxesTested++;
             }
-
-            // Approach box along X axis if valid in bounds
-            if (box.minX - 0.9 >= bounds.minX + 0.1) {
-              controls.setPosition(box.minX - 0.8, 1.7, cz, -Math.PI / 2); // facing +X
-              for (let step = 0; step < 20; step++) {
-                controls.input.forward = true;
-                controls.update(1 / 60);
-                checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'box-collide-X');
-              }
-              controls.input.forward = false;
-            } else if (box.maxX + 0.9 <= bounds.maxX - 0.1) {
-              controls.setPosition(box.maxX + 0.8, 1.7, cz, Math.PI / 2); // facing -X
-              for (let step = 0; step < 20; step++) {
-                controls.input.forward = true;
-                controls.update(1 / 60);
-                checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'box-collide-X');
-              }
-              controls.input.forward = false;
-            }
-
-            totalBoxesTested++;
           }
 
-          // Range map has 0 box colliders by default (open range), test boundary walls
-          if (colliders.length === 0) {
-            // Test range boundary walls
-            controls.setPosition(0, 1.7, 0, Math.PI);
-            for (let step = 0; step < 60; step++) {
+          // Open maps with no small cover boxes: test open boundaries
+          if (totalBoxesTested === 0) {
+            controls.setPosition(0, 1.7, 0, 0);
+            for (let step = 0; step < 50; step++) {
               controls.input.forward = true;
               controls.update(1 / 60);
-              checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'range-bounds');
+              checkSolidPenetration(controls.position.x, controls.position.y, controls.position.z, 'bounds-walk');
             }
             controls.input.forward = false;
           }

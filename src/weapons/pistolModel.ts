@@ -9,6 +9,7 @@ export interface PistolComponents {
   gunMeshGroup: THREE.Group;
   slideGroup: THREE.Group;
   magazineGroup: THREE.Group;
+  muzzlePoint: THREE.Group;
   muzzleFlashGroup: THREE.Group;
   muzzleLight: THREE.PointLight;
   ejectionPoint: THREE.Vector3;
@@ -239,9 +240,15 @@ export function createPistolModel(): PistolComponents {
   leftArmGroup.add(leftForearm);
   gunMeshGroup.add(leftArmGroup);
 
-  // 6. Muzzle Flash & Light
+  // 6. Explicit Muzzle Point (Exact barrel bore tip opening)
+  const muzzlePoint = new THREE.Group();
+  muzzlePoint.name = 'Pistol_MuzzlePoint';
+  muzzlePoint.position.set(0, 0.022, -0.155);
+  gunMeshGroup.add(muzzlePoint);
+
+  // 7. Muzzle Flash & Light
   const muzzleFlashGroup = new THREE.Group();
-  muzzleFlashGroup.position.set(0, 0.022, -0.17);
+  muzzleFlashGroup.position.set(0, 0.022, -0.155);
   muzzleFlashGroup.visible = false;
 
   const flash = new THREE.Mesh(
@@ -261,6 +268,7 @@ export function createPistolModel(): PistolComponents {
     gunMeshGroup,
     slideGroup,
     magazineGroup,
+    muzzlePoint,
     muzzleFlashGroup,
     muzzleLight,
     ejectionPoint,

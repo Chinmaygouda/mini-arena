@@ -1,0 +1,514 @@
+{
+  "timestamp": "2026-10-18T12:35:58.767Z",
+  "weaponAudits": {
+    "ak47": {
+      "name": "AK-47 VANGUARD",
+      "localMuzzle": {
+        "x": 0,
+        "y": 0.015,
+        "z": -0.738
+      },
+      "hipfire": {
+        "world": {
+          "x": 0.20028597550008495,
+          "y": 1.495532520565981,
+          "z": -1.188
+        },
+        "screen": {
+          "x": "0.1221",
+          "y": "-0.2243",
+          "z": "0.9160"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_ak47_hip_marker.png"
+      },
+      "ads": {
+        "world": {
+          "x": 0.2006308087374059,
+          "y": 1.496097637076724,
+          "z": -1.188
+        },
+        "screen": {
+          "x": "0.1224",
+          "y": "-0.2237",
+          "z": "0.9160"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_ak47_ads_marker.png"
+      },
+      "adsCenteringVerified": false,
+      "firingAlignment": {
+        "weapon": "ak47",
+        "shotsCaptured": 1,
+        "firstTracer": {
+          "from": {
+            "x": 0.20273560305492846,
+            "y": 1.5442305185643554,
+            "z": -1.1101185456478588
+          },
+          "to": {
+            "x": 0.09300654494011498,
+            "y": 1.6346229278594442,
+            "z": -14.982499999925492
+          },
+          "dist": 13.87310990610393
+        },
+        "actualMuzzlePos": {
+          "x": 0.20273560305492846,
+          "y": 1.5442305185643554,
+          "z": -1.1101185456478588
+        },
+        "cameraPos": {
+          "x": 0,
+          "y": 1.7,
+          "z": 0
+        },
+        "diffMuzzleY": 0,
+        "diffCameraY": 0.1557694814356445,
+        "tracerMatchesMuzzle": true,
+        "tracerDiffersFromCamera": true,
+        "verifiedPhysicalShot": true
+      }
+    },
+    "pistol": {
+      "name": "TACTICAL M9 COMBAT",
+      "localMuzzle": {
+        "x": 0,
+        "y": 0.022,
+        "z": -0.155
+      },
+      "hipfire": {
+        "world": {
+          "x": 0.00016894281667618273,
+          "y": 1.4601290186715625,
+          "z": -0.5350060240594569
+        },
+        "screen": {
+          "x": "0.0004",
+          "y": "-1.0060",
+          "z": "0.8133"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_pistol_hip_marker.png"
+      },
+      "ads": {
+        "world": {
+          "x": 0.18065669861460473,
+          "y": 1.5212279515360505,
+          "z": -0.554994144565939
+        },
+        "screen": {
+          "x": "0.2359",
+          "y": "-0.4198",
+          "z": "0.8200"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_pistol_ads_marker.png"
+      },
+      "adsCenteringVerified": false,
+      "firingAlignment": {
+        "weapon": "pistol",
+        "shotsCaptured": 1,
+        "firstTracer": {
+          "from": {
+            "x": 0.179958296082455,
+            "y": 1.537721200707684,
+            "z": -0.46221387487791543
+          },
+          "to": {
+            "x": -0.12205330345139939,
+            "y": 1.7831204037410933,
+            "z": -14.982499999925494
+          },
+          "dist": 14.525499679128137
+        },
+        "actualMuzzlePos": {
+          "x": 0.179958296082455,
+          "y": 1.537721200707684,
+          "z": -0.46221387487791543
+        },
+        "cameraPos": {
+          "x": 0,
+          "y": 1.7,
+          "z": 0
+        },
+        "diffMuzzleY": 0,
+        "diffCameraY": 0.16227879929231603,
+        "tracerMatchesMuzzle": true,
+        "tracerDiffersFromCamera": true,
+        "verifiedPhysicalShot": true
+      }
+    },
+    "smg": {
+      "name": "CYCLONE-9 SMG",
+      "localMuzzle": {
+        "x": 0,
+        "y": 0.025,
+        "z": -0.363
+      },
+      "hipfire": {
+        "world": {
+          "x": 0.00012701177175827668,
+          "y": 1.430982864306371,
+          "z": -0.6230494624941084
+        },
+        "screen": {
+          "x": "0.0002",
+          "y": "-0.7171",
+          "z": "0.8397"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_smg_hip_marker.png"
+      },
+      "ads": {
+        "world": {
+          "x": 0.18006890412350435,
+          "y": 1.5222942080077404,
+          "z": -0.7829523182209113
+        },
+        "screen": {
+          "x": "0.1667",
+          "y": "-0.2960",
+          "z": "0.8725"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_smg_ads_marker.png"
+      },
+      "adsCenteringVerified": false,
+      "firingAlignment": {
+        "weapon": "smg",
+        "shotsCaptured": 1,
+        "firstTracer": {
+          "from": {
+            "x": 0.17925190754658066,
+            "y": 1.5393045490251611,
+            "z": -0.7367853073809165
+          },
+          "to": {
+            "x": 0.018382192584958323,
+            "y": 1.7158150663865626,
+            "z": -14.982499999925494
+          },
+          "dist": 14.247716382961569
+        },
+        "actualMuzzlePos": {
+          "x": 0.17925190754658066,
+          "y": 1.5393045490251611,
+          "z": -0.7367853073809165
+        },
+        "cameraPos": {
+          "x": 0,
+          "y": 1.7,
+          "z": 0
+        },
+        "diffMuzzleY": 0,
+        "diffCameraY": 0.16069545097483884,
+        "tracerMatchesMuzzle": true,
+        "tracerDiffersFromCamera": true,
+        "verifiedPhysicalShot": true
+      }
+    },
+    "shotgun": {
+      "name": "SPAS-12 COMBAT SHOTGUN",
+      "localMuzzle": {
+        "x": 0,
+        "y": 0.038,
+        "z": -0.56
+      },
+      "hipfire": {
+        "world": {
+          "x": 0.00001623206608611404,
+          "y": 1.462793623421962,
+          "z": -0.8800301981610696
+        },
+        "screen": {
+          "x": "0.0000",
+          "y": "-0.5286",
+          "z": "0.8866"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_shotgun_hip_marker.png"
+      },
+      "ads": {
+        "world": {
+          "x": 0.1793830359849224,
+          "y": 1.5343102351917155,
+          "z": -0.9799696915597884
+        },
+        "screen": {
+          "x": "0.1327",
+          "y": "-0.2205",
+          "z": "0.8982"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_shotgun_ads_marker.png"
+      },
+      "adsCenteringVerified": false,
+      "firingAlignment": {
+        "weapon": "shotgun",
+        "shotsCaptured": 8,
+        "firstTracer": {
+          "from": {
+            "x": 0.18537558818872968,
+            "y": 1.6071868718231994,
+            "z": -0.8408746168475018
+          },
+          "to": {
+            "x": -0.1982445150476613,
+            "y": 1.4568935624886588,
+            "z": -14.982499999925496
+          },
+          "dist": 14.14762598239555
+        },
+        "actualMuzzlePos": {
+          "x": 0.18537558818872968,
+          "y": 1.6071868718231994,
+          "z": -0.8408746168475018
+        },
+        "cameraPos": {
+          "x": 0,
+          "y": 1.7,
+          "z": 0
+        },
+        "diffMuzzleY": 0,
+        "diffCameraY": 0.09281312817680054,
+        "tracerMatchesMuzzle": true,
+        "tracerDiffersFromCamera": true,
+        "verifiedPhysicalShot": true
+      }
+    },
+    "sniper": {
+      "name": "AW-50 HEAVY SNIPER",
+      "localMuzzle": {
+        "x": 0,
+        "y": 0.025,
+        "z": -0.923
+      },
+      "hipfire": {
+        "world": {
+          "x": -0.000054777050601341226,
+          "y": 1.4128377545416568,
+          "z": -1.1430667401756065
+        },
+        "screen": {
+          "x": "-0.0000",
+          "y": "-0.4530",
+          "z": "0.9127"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_sniper_hip_marker.png"
+      },
+      "ads": {
+        "world": {
+          "x": 0.18920995107593447,
+          "y": 1.51129543363033,
+          "z": -1.362930279251018
+        },
+        "screen": {
+          "x": "0.1008",
+          "y": "-0.1807",
+          "z": "0.9268"
+        },
+        "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\audit_sniper_ads_marker.png"
+      },
+      "adsCenteringVerified": false,
+      "firingAlignment": {
+        "weapon": "sniper",
+        "shotsCaptured": 1,
+        "firstTracer": {
+          "from": {
+            "x": 0.18865648617764416,
+            "y": 1.6607087194226853,
+            "z": -1.1972258478086752
+          },
+          "to": {
+            "x": 0.7199751639873216,
+            "y": 0.5605815617746663,
+            "z": -31.84000000357628
+          },
+          "dist": 30.667118991874066
+        },
+        "actualMuzzlePos": {
+          "x": 0.18865648617764416,
+          "y": 1.6607087194226853,
+          "z": -1.1972258478086752
+        },
+        "cameraPos": {
+          "x": 0,
+          "y": 1.7,
+          "z": 0
+        },
+        "diffMuzzleY": 0,
+        "diffCameraY": 0.03929128057731468,
+        "tracerMatchesMuzzle": true,
+        "tracerDiffersFromCamera": false,
+        "verifiedPhysicalShot": false
+      }
+    }
+  },
+  "movementAndAnimationStates": {
+    "Standing_Still_Idle": {
+      "muzzleWorld": {
+        "x": "0.1993",
+        "y": "1.4954",
+        "z": "-1.1880"
+      },
+      "isSprinting": false,
+      "isMoving": false,
+      "adsWeight": 2.492916780857529e-23,
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_01_standing_still_idle.png"
+    },
+    "Walking_Forward_Backward": {
+      "muzzleWorld": {
+        "x": "0.2102",
+        "y": "1.5037",
+        "z": "-1.1884"
+      },
+      "isMoving": true,
+      "walkBobCycle": "3.720",
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_02_walking_forward_backward.png"
+    },
+    "Strafing_Left_Right": {
+      "muzzleWorld": {
+        "x": "0.1924",
+        "y": "1.5184",
+        "z": "-2.4637"
+      },
+      "swayX": "0.0036",
+      "isMoving": true,
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_03_strafing_left_right.png"
+    },
+    "Moving_Diagonally": {
+      "muzzleWorld": {
+        "x": "-1.1292",
+        "y": "1.4909",
+        "z": "-2.5439"
+      },
+      "isMoving": true,
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_04_moving_diagonally.png"
+    },
+    "Sprinting_Fire_Blocked": {
+      "muzzleWorld": {
+        "x": "-0.9246",
+        "y": "1.6560",
+        "z": "-2.9000"
+      },
+      "isSprinting": true,
+      "sprintWeight": "1.000",
+      "initialAmmo": 30,
+      "ammoAfter": 30,
+      "firingWasBlocked": true,
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_05_sprinting_fire_blocked.png"
+    },
+    "Sprint_Recovery_Ready": {
+      "muzzleWorld": {
+        "x": "-2.8069",
+        "y": "1.5246",
+        "z": "-3.9489"
+      },
+      "isSprinting": false,
+      "sprintWeight": "0.003",
+      "firedSuccessfullyAfterRecovery": true,
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_06_sprint_recovery_ready.png"
+    },
+    "Jumping_And_Landing": {
+      "muzzleWorld": {
+        "x": "-3.5984",
+        "y": "2.7443",
+        "z": "-4.0264"
+      },
+      "cameraY": "2.9499",
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_07_jumping_and_landing.png"
+    },
+    "Aiming_Down_Sights_ADS": {
+      "muzzleWorld": {
+        "x": "-5.1465",
+        "y": "3.0746",
+        "z": "-3.8565"
+      },
+      "screenX": "0.0003",
+      "screenY": "-0.2229",
+      "isScoped": true,
+      "adsWeight": "0.999",
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_08_aiming_down_sights_ads.png"
+    },
+    "Firing_During_Recoil": {
+      "muzzleWorld": {
+        "x": "-6.3061",
+        "y": "2.4159",
+        "z": "-4.0094"
+      },
+      "recoilKickZ": "0.0164",
+      "recoilPitchX": "0.0142",
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_09_firing_during_recoil.png"
+    },
+    "Weapon_Switching": {
+      "muzzleWorld": {
+        "x": "-6.9458",
+        "y": "1.5100",
+        "z": "-4.2016"
+      },
+      "currentWeapon": "sniper",
+      "switchWeight": "0.776",
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_10_weapon_switching.png"
+    },
+    "Reload_Choreography_And_Interrupt": {
+      "muzzleWorld": {
+        "x": "-6.9575",
+        "y": "1.6063",
+        "z": "-3.6793"
+      },
+      "ammoMidReload": 5,
+      "ammoAfterInterruptFire": 4,
+      "isReloading": false,
+      "interruptedAndFiredSuccessfully": true,
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_11_reload_choreography_and_interrupt.png"
+    },
+    "Near_Wall_Cover_Firing": {
+      "muzzleWorld": {
+        "x": "-6.9430",
+        "y": "1.4953",
+        "z": "-4.0264"
+      },
+      "screenshot": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\state_12_near_wall_cover_firing.png"
+    }
+  },
+  "pelletSpreadAudit": {
+    "pelletCount": 8,
+    "initialAmmo": 8,
+    "ammoAfterShot": 7,
+    "ammoConsumed": 1,
+    "originsMatchMuzzle": true,
+    "endpointsVary": true,
+    "muzzleWorld": {
+      "x": 0.17668810697035986,
+      "y": 1.6063397749005845,
+      "z": -0.8408822591270741
+    },
+    "firstPellet": {
+      "from": {
+        "x": 0.17668810697035986,
+        "y": 1.6063397749005845,
+        "z": -0.8408822591270741
+      },
+      "to": {
+        "x": 0.5151797067633203,
+        "y": 2.01314544393576,
+        "z": -24.992729538821514
+      }
+    },
+    "lastPellet": {
+      "from": {
+        "x": 0.17668810697035986,
+        "y": 1.6063397749005845,
+        "z": -0.8408822591270741
+      },
+      "to": {
+        "x": -0.6970135973791266,
+        "y": 1.430023600736196,
+        "z": -24.98882319735984
+      }
+    }
+  },
+  "obstructionAudit": {
+    "clearShotDistance": 13.798298446141661,
+    "clearShotTargetType": "steel",
+    "obstructedDistance": 1.185112827897632,
+    "obstructedTargetType": "world",
+    "coverBlockedBullet": true
+  },
+  "screenshots": {
+    "cleanGameplay": "C:\\Users\\Chinmaygouda\\.gemini\\antigravity-ide\\brain\\fd669695-232e-421c-895b-222183896b36\\clean_gameplay_ak47_firing.png"
+  }
+}
