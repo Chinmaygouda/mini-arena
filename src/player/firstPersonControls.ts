@@ -28,6 +28,14 @@ export interface BoxCollider {
   minZ: number;
   maxZ: number;
   isWalkable?: boolean;
+  /** A walkable inclined surface; unlike its bounding box, it must not block horizontal movement. */
+  ramp?: {
+    axis: 'x' | 'z';
+    startCoord: number;
+    endCoord: number;
+    startY: number;
+    endY: number;
+  };
 }
 
 // ── Stair/step constants ──────────────────────────────────────────────────
@@ -195,6 +203,31 @@ export class FirstPersonControls {
     const r = PLAYER_RADIUS;
 
     for (const c of this.colliders) {
+      if (c.ramp) {
+        // Resolve a stair ramp at the player's actual position, not at the
+        // ramp's bounding-box top. This prevents the player getting stuck on
+        // higher stair risers that lie just ahead of the current footprint.
+        const coord = c.ramp.axis === 'x' ? px : pz;
+        const t = THREE.MathUtils.clamp(
+          (coord - c.ramp.startCoord) / (c.ramp.endCoord - c.ramp.startCoord),
+          0,
+          1
+        );
+        const rampY = c.ramp.startY + (c.ramp.endY - c.ramp.startY) * t;
+        if (rampY > maxAllowedY) continue;
+
+        if (px >= c.minX && px <= c.maxX && pz >= c.minZ && pz <= c.maxZ) {
+          if (rampY > centerSurface) centerSurface = rampY;
+        }
+        if (
+          px + r > c.minX && px - r < c.maxX &&
+          pz + r > c.minZ && pz - r < c.maxZ
+        ) {
+          if (rampY > best) best = rampY;
+        }
+        continue;
+      }
+
       if (c.maxY > maxAllowedY) continue; // Surface is above step-up threshold (wall/ceiling)
 
       if (px >= c.minX && px <= c.maxX && pz >= c.minZ && pz <= c.maxZ) {
@@ -221,6 +254,7 @@ export class FirstPersonControls {
     const r = PLAYER_RADIUS;
     if (nextX - r < this.bounds.minX || nextX + r > this.bounds.maxX) return true;
     for (const c of this.colliders) {
+      if (c.ramp) continue; // Ramp bounding boxes are support surfaces, not solid walls.
       // Skip if vertically clear (above head or below step-up threshold)
       if (c.minY > headY) continue;
       if (c.maxY <= feetY + GROUND_MARGIN) continue;      // below feet entirely
@@ -237,6 +271,7 @@ export class FirstPersonControls {
     const r = PLAYER_RADIUS;
     if (nextZ - r < this.bounds.minZ || nextZ + r > this.bounds.maxZ) return true;
     for (const c of this.colliders) {
+      if (c.ramp) continue; // Ramp bounding boxes are support surfaces, not ceilings.
       if (c.minY > headY) continue;
       if (c.maxY <= feetY + GROUND_MARGIN) continue;
       if (this.isGrounded && c.maxY <= feetY + STEP_UP_MAX) continue;
@@ -253,6 +288,7 @@ export class FirstPersonControls {
     const feetY = this.position.y - this.eyeHeight;
     const headY = this.position.y + PLAYER_HEAD_M;
     return this.colliders.filter(c =>
+      !c.ramp &&
       this.position.x + r > c.minX && this.position.x - r < c.maxX &&
       this.position.z + r > c.minZ && this.position.z - r < c.maxZ &&
       headY > c.minY && feetY < c.maxY
@@ -344,6 +380,7 @@ export class FirstPersonControls {
       const r = PLAYER_RADIUS;
       const headY = this.position.y + PLAYER_HEAD_M;
       for (const c of this.colliders) {
+        if (c.ramp) continue; // Never treat stair support as an overhead surface.
         if (
           this.position.x + r > c.minX && this.position.x - r < c.maxX &&
           this.position.z + r > c.minZ && this.position.z - r < c.maxZ
