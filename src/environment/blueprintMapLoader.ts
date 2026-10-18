@@ -517,10 +517,8 @@ export class BlueprintMapLoader {
       const toPx = (world: number) => ((world + groundSpan / 2) / groundSpan) * 1024;
       const roadHalf = (4.2 / 2 / groundSpan) * 1024;
       const walkHalf = (0.8 / 2 / groundSpan) * 1024;
-      // Derive the road grid from the actual compact ground span so it stays aligned
-      // when the neighborhood footprint changes.
-      // Preserve the established street centerlines when the playable boundary is
-      // modestly tightened for 2v2; the roads, sidewalks and set dressing share this grid.
+      // Preserve the established street centerlines while the playable boundary is
+      // modestly tightened for 2v2; road texture, sidewalks, and set dressing share this grid.
       const outerRoadAxis = 33;
       const innerRoadAxis = 16;
       const roadAxes = [-outerRoadAxis, -innerRoadAxis, innerRoadAxis, outerRoadAxis];
