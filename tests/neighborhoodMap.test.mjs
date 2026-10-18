@@ -41,7 +41,7 @@ test('Buildings are within map bounds and contain usable floors', () => {
   }
 });
 
-test('Maple House is the first approved detailed prototype; all other structures remain blockouts', () => {
+test('Maple House is the first detailed prototype; all other structures remain blockouts', () => {
   const maple = map.buildings.find((building) => building.id === 'home_south_west');
   assert.ok(maple, 'Maple House exists');
   assert.equal(maple.blockout, undefined, 'the first prototype is a real building');
