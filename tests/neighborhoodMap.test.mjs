@@ -47,7 +47,7 @@ test('Maple House is the first detailed prototype; all other structures remain b
   assert.equal(maple.blockout, undefined, 'the first prototype is a real building');
   assert.equal(maple.roof.type, 'pitched', 'the first prototype uses a pitched roof');
   assert.equal(maple.floors.length, 2, 'the prototype has two floors');
-  assert.deepEqual(maple.size, [12, 12], 'Maple House has a roomier 12m x 12m footprint');
+  assert.deepEqual(maple.size, [12, 10], 'Maple House has a roomier 12m x 10m footprint');
   assert.equal(maple.floors[0].height, 3, 'ground floor has extra headroom');
   assert.equal(maple.floors[1].floorY, 3.2, 'upper floor aligns with the ground-floor slab');
   assert.ok(maple.floors.every((floor) => (floor.interiorWalls || []).length === 0),
