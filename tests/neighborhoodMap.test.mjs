@@ -12,7 +12,7 @@ const map = JSON.parse(read('public/maps/neighborhood.json'));
 test('Neighborhood map declares a playable 4v4 low-poly arena', () => {
   assert.equal(map.meta.name, 'Neighborhood District');
   assert.equal(map.meta.theme, 'neighborhood');
-  assert.deepEqual(map.meta.size, [88, 88]);
+  assert.deepEqual(map.meta.size, [96, 96]);
   assert.match(map.meta.mode, /4v4/i);
 });
 
@@ -23,8 +23,8 @@ test('Buildings are within map bounds and contain usable floors', () => {
     assert.ok(building.floors.length >= 1, `${building.id} has at least one floor`);
     const [x, , z] = building.center;
     const [width, depth] = building.size;
-    assert.ok(x - width / 2 >= -44 && x + width / 2 <= 44, `${building.id} fits X bounds`);
-    assert.ok(z - depth / 2 >= -44 && z + depth / 2 <= 44, `${building.id} fits Z bounds`);
+    assert.ok(x - width / 2 >= -48 && x + width / 2 <= 48, `${building.id} fits X bounds`);
+    assert.ok(z - depth / 2 >= -48 && z + depth / 2 <= 48, `${building.id} fits Z bounds`);
     for (const floor of building.floors) {
       assert.ok(floor.height >= 2.6, `${building.id} floor clear height`);
       for (const wall of floor.walls || []) {
@@ -72,7 +72,7 @@ test('Map box identifiers are unique and team spawn markers exist at opposite en
   }
   const a = map.boxes.find((box) => box.id === 'spawn_A_flagpole_1');
   const b = map.boxes.find((box) => box.id === 'spawn_B_flagpole_1');
-  assert.ok(a.center[2] < -30 && b.center[2] > 30, 'team markers must be at opposite ends');
+  assert.ok(a.center[2] < -35 && b.center[2] > 35, 'team markers must be at opposite ends');
   assert.equal(map.teamSpawns.teamA.length, 4, 'Team A has four reserved player slots');
   assert.equal(map.teamSpawns.teamB.length, 4, 'Team B has four reserved player slots');
 });
@@ -99,7 +99,9 @@ test('Neighborhood is registered in the loader, map selector, atmosphere, and bi
   assert.match(loader, /private expandPerchedBird/);
   assert.match(loader, /private expandBlockoutBuilding/);
   assert.match(loader, /bldg\.roof\.type === 'pitched'/);
-  assert.match(loader, /const outerRoadAxis = groundSpan \* 0\.32/);
+  assert.match(loader, /const outerRoadAxis = mapWorldSpan \* 0\.34375/);
+  assert.match(loader, /const innerRoadAxis = mapWorldSpan \/ 6/);
+  assert.match(loader, /const isPitchedRoofCeiling/);
   assert.match(loader, /box\.collision !== false/);
   assert.match(hud, /'neighborhood'\]/);
   assert.match(atmosphere, /mapId === 'neighborhood'\s*\?\s*'suburban'/);
