@@ -29,9 +29,10 @@ async function testHold(throttleRate = 1) {
   console.log(` TEST REAL MOUSE HOLD IN CHROME (CPU Throttling: ${throttleRate}x)`);
   console.log(`========================================================================`);
 
+  await send('Page.bringToFront');
   // Navigate to fresh page
   await send('Page.navigate', { url: 'http://localhost:5173/' });
-  await new Promise(r => setTimeout(r, 1200));
+  await new Promise(r => setTimeout(r, 1500));
 
   // Set CPU throttling if requested
   if (throttleRate > 1) {
