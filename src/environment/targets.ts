@@ -12,7 +12,7 @@ export interface HitResult {
   multiplier?: number;
   distance?: number;
   isCrit: boolean;
-  targetType: 'steel' | 'bullseye' | 'barrel' | 'world';
+  targetType: 'steel' | 'bullseye' | 'barrel' | 'bird' | 'world';
   shotOrigin?: THREE.Vector3;
   normal?: THREE.Vector3;
   targetObjectId?: number;
@@ -266,6 +266,15 @@ export class TargetManager {
     if (!result.hit) return;
     const normal = result.normal || new THREE.Vector3(0, 1, 0);
 
+    if (result.targetType === 'bird') {
+      let node = result.targetObjectId ? this.scene.getObjectById(result.targetObjectId) : undefined;
+      while (node && !node.userData.isPerchedBird) node = node.parent ?? undefined;
+      if (node) node.visible = false;
+      sound.playTargetHit(false);
+      if (this.onHitRegistered) this.onHitRegistered(0, false, 'BIRD HIT');
+      return;
+    }
+
     if (result.targetType === 'steel') {
       sound.playTargetHit(result.isCrit);
 
@@ -315,6 +324,24 @@ export class TargetManager {
     const normal = hit.face?.normal || fallbackNormal;
     const obj = hit.object as unknown as { isTarget?: boolean; isHead?: boolean; isBarrel?: boolean };
     const hitDistance = shotOrigin ? shotOrigin.distanceTo(hit.point) : hit.distance;
+
+    // Static low-poly neighbourhood birds are shootable world entities.
+    if (hit.object.userData?.isBird) {
+      const result: HitResult = {
+        hit: true,
+        point: hit.point.clone(),
+        normal: normal.clone(),
+        damage: 0,
+        multiplier: 1,
+        distance: hitDistance,
+        isCrit: false,
+        targetType: 'bird',
+        shotOrigin,
+        targetObjectId: hit.object.id,
+      };
+      if (!deferImpact) this.applyHitImpact(result);
+      return result;
+    }
 
     let baseDamage = 30;
     let critMultiplier = 2.0;
