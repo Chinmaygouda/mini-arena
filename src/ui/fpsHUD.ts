@@ -425,7 +425,7 @@ export class FPSHUD {
   }
 
   private renderMapModal() {
-    const maps: MapId[] = ['range', 'foundry', 'culdesac', 'dustline', 'overpass'];
+    const maps: MapId[] = ['range', 'foundry', 'culdesac', 'dustline', 'overpass', 'neighborhood'];
     this.mapModal.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
         <span style="font-weight: 800; color: #00ff88; font-size: 13px;">TACTICAL MAP ARENA SELECTOR</span>
