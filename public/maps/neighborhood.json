@@ -6087,75 +6087,65 @@
     }
   ],
   "teamSpawns": {
-    "teamA": {
-      "team": "blue",
-      "teamName": "Team A",
-      "facingYaw": 3.141592653589793,
-      "points": [
-        {
-          "position": [
-            -4,
-            -42
-          ],
-          "facingYaw": 3.141592653589793
-        },
-        {
-          "position": [
-            -1.35,
-            -42
-          ],
-          "facingYaw": 3.141592653589793
-        },
-        {
-          "position": [
-            1.35,
-            -42
-          ],
-          "facingYaw": 3.141592653589793
-        },
-        {
-          "position": [
-            4,
-            -42
-          ],
-          "facingYaw": 3.141592653589793
-        }
-      ]
-    },
-    "teamB": {
-      "team": "red",
-      "teamName": "Team B",
-      "facingYaw": 0,
-      "points": [
-        {
-          "position": [
-            4,
-            42
-          ],
-          "facingYaw": 0
-        },
-        {
-          "position": [
-            1.35,
-            42
-          ],
-          "facingYaw": 0
-        },
-        {
-          "position": [
-            -1.35,
-            42
-          ],
-          "facingYaw": 0
-        },
-        {
-          "position": [
-            -4,
-            42
-          ],
-          "facingYaw": 0
-        }
-      ]
-    }
+    "teamA": [
+      {
+        "position": [
+          -4,
+          -42
+        ],
+        "facingYaw": 3.141592653589793
+      },
+      {
+        "position": [
+          -1.35,
+          -42
+        ],
+        "facingYaw": 3.141592653589793
+      },
+      {
+        "position": [
+          1.35,
+          -42
+        ],
+        "facingYaw": 3.141592653589793
+      },
+      {
+        "position": [
+          4,
+          -42
+        ],
+        "facingYaw": 3.141592653589793
+      }
+    ],
+    "teamB": [
+      {
+        "position": [
+          4,
+          42
+        ],
+        "facingYaw": 0
+      },
+      {
+        "position": [
+          1.35,
+          42
+        ],
+        "facingYaw": 0
+      },
+      {
+        "position": [
+          -1.35,
+          42
+        ],
+        "facingYaw": 0
+      },
+      {
+        "position": [
+          -4,
+          42
+        ],
+        "facingYaw": 0
+      }
+    ]
   }
 }
