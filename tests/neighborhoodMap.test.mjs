@@ -12,7 +12,7 @@ const map = JSON.parse(read('public/maps/neighborhood.json'));
 test('Neighborhood map declares a playable 4v4 low-poly arena', () => {
   assert.equal(map.meta.name, 'Neighborhood District');
   assert.equal(map.meta.theme, 'neighborhood');
-  assert.deepEqual(map.meta.size, [96, 96]);
+  assert.deepEqual(map.meta.size, [88, 88]);
   assert.match(map.meta.mode, /4v4/i);
 });
 
@@ -23,8 +23,8 @@ test('Buildings are within map bounds and contain usable floors', () => {
     assert.ok(building.floors.length >= 1, `${building.id} has at least one floor`);
     const [x, , z] = building.center;
     const [width, depth] = building.size;
-    assert.ok(x - width / 2 >= -48 && x + width / 2 <= 48, `${building.id} fits X bounds`);
-    assert.ok(z - depth / 2 >= -48 && z + depth / 2 <= 48, `${building.id} fits Z bounds`);
+    assert.ok(x - width / 2 >= -44 && x + width / 2 <= 44, `${building.id} fits X bounds`);
+    assert.ok(z - depth / 2 >= -44 && z + depth / 2 <= 44, `${building.id} fits Z bounds`);
     for (const floor of building.floors) {
       assert.ok(floor.height >= 2.6, `${building.id} floor clear height`);
       for (const wall of floor.walls || []) {
@@ -41,6 +41,29 @@ test('Buildings are within map bounds and contain usable floors', () => {
   }
 });
 
+test('Maple House is the first approved detailed prototype; all other structures remain blockouts', () => {
+  const maple = map.buildings.find((building) => building.id === 'home_south_west');
+  assert.ok(maple, 'Maple House exists');
+  assert.equal(maple.blockout, undefined, 'the first prototype is a real building');
+  assert.equal(maple.roof.type, 'pitched', 'the first prototype uses a pitched roof');
+  assert.equal(maple.floors.length, 2, 'the prototype has two floors');
+
+  const unfinished = map.buildings.filter((building) => building.id !== 'home_south_west');
+  assert.equal(unfinished.length, 6);
+  assert.ok(unfinished.every((building) => building.blockout === true),
+    'unfinished buildings must be visually represented as neutral blockouts');
+
+  const detailIds = new Set(map.boxes.map((box) => box.id));
+  for (const id of [
+    'home_south_west_porch_canopy',
+    'home_south_west_porch_column_l',
+    'home_south_west_door_lintel',
+    'home_south_west_belt_south',
+  ]) assert.ok(detailIds.has(id), `Maple House detail exists: ${id}`);
+  assert.ok(map.boxes.filter((box) => box.id.startsWith('home_south_west_') && box.kind === 'trim')
+    .every((box) => box.collision === false), 'decorative trim must not add collision blockers');
+});
+
 test('Map box identifiers are unique and team spawn markers exist at opposite ends', () => {
   const ids = map.boxes.map((box) => box.id);
   assert.equal(new Set(ids).size, ids.length, 'box ids must be unique');
@@ -49,7 +72,7 @@ test('Map box identifiers are unique and team spawn markers exist at opposite en
   }
   const a = map.boxes.find((box) => box.id === 'spawn_A_flagpole_1');
   const b = map.boxes.find((box) => box.id === 'spawn_B_flagpole_1');
-  assert.ok(a.center[2] < -35 && b.center[2] > 35, 'team markers must be at opposite ends');
+  assert.ok(a.center[2] < -30 && b.center[2] > 30, 'team markers must be at opposite ends');
   assert.equal(map.teamSpawns.teamA.length, 4, 'Team A has four reserved player slots');
   assert.equal(map.teamSpawns.teamB.length, 4, 'Team B has four reserved player slots');
 });
@@ -74,6 +97,10 @@ test('Neighborhood is registered in the loader, map selector, atmosphere, and bi
   assert.match(loader, /'neighborhood'\s*;/);
   assert.match(loader, /neighborhood:\s*\{\s*name:\s*'Neighborhood District',\s*file:\s*'\/maps\/neighborhood\.json'/);
   assert.match(loader, /private expandPerchedBird/);
+  assert.match(loader, /private expandBlockoutBuilding/);
+  assert.match(loader, /bldg\.roof\.type === 'pitched'/);
+  assert.match(loader, /const outerRoadAxis = groundSpan \* 0\.32/);
+  assert.match(loader, /box\.collision !== false/);
   assert.match(hud, /'neighborhood'\]/);
   assert.match(atmosphere, /mapId === 'neighborhood'\s*\?\s*'suburban'/);
   assert.match(targets, /targetType: 'bird'/);
