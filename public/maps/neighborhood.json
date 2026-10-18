@@ -5776,7 +5776,8 @@
           0,
           -11
         ],
-        "scale": 0.72
+        "scale": 0.72,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5784,7 +5785,8 @@
           0,
           -11
         ],
-        "scale": 0.72
+        "scale": 0.72,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5792,7 +5794,8 @@
           0,
           11
         ],
-        "scale": 0.72
+        "scale": 0.72,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5800,7 +5803,8 @@
           0,
           11
         ],
-        "scale": 0.72
+        "scale": 0.72,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5808,7 +5812,8 @@
           0,
           -18
         ],
-        "scale": 0.95
+        "scale": 0.95,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5816,7 +5821,8 @@
           0,
           18
         ],
-        "scale": 0.9
+        "scale": 0.9,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5824,7 +5830,8 @@
           0,
           -18
         ],
-        "scale": 0.95
+        "scale": 0.95,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5832,7 +5839,8 @@
           0,
           18
         ],
-        "scale": 0.9
+        "scale": 0.9,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5840,7 +5848,8 @@
           0,
           -31
         ],
-        "scale": 0.85
+        "scale": 0.85,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5848,7 +5857,8 @@
           0,
           -31
         ],
-        "scale": 0.85
+        "scale": 0.85,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5856,7 +5866,8 @@
           0,
           31
         ],
-        "scale": 0.85
+        "scale": 0.85,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5864,7 +5875,8 @@
           0,
           31
         ],
-        "scale": 0.85
+        "scale": 0.85,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5872,7 +5884,8 @@
           0,
           -35
         ],
-        "scale": 0.75
+        "scale": 0.75,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5880,7 +5893,8 @@
           0,
           -35
         ],
-        "scale": 0.75
+        "scale": 0.75,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5888,7 +5902,8 @@
           0,
           35
         ],
-        "scale": 0.75
+        "scale": 0.75,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5896,7 +5911,8 @@
           0,
           35
         ],
-        "scale": 0.75
+        "scale": 0.75,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5904,7 +5920,8 @@
           0,
           -12
         ],
-        "scale": 0.7
+        "scale": 0.7,
+        "style": "conifer"
       },
       {
         "pos": [
@@ -5912,7 +5929,8 @@
           0,
           12
         ],
-        "scale": 0.7
+        "scale": 0.7,
+        "style": "conifer"
       }
     ],
     "rocks": [
