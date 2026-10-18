@@ -95,6 +95,16 @@ try {
   console.log('Neighborhood map loaded in Chromium; intro dismissed; capturing spawn view.');
   await page.screenshot({ path: `${outputDir}/01-neighborhood-spawn.png`, fullPage: true });
 
+  // Capture Maple House from its street frontage so the report includes the real building,
+  // not only the long-range spawn view.
+  await page.evaluate(() => {
+    const controls = window.__fpsApp.controls;
+    controls.forceReleaseKeys();
+    controls.setPosition(-24, 3.5, -11.5, 0);
+    controls.update(0);
+  });
+  await page.screenshot({ path: `${outputDir}/02-maple-front-exterior.png`, fullPage: true });
+
   // Stair origin: house center (-24, -25.5) + local stair start (-4.2, -3.8).
   // Walk forward toward +Z; a successful run should reach the upper floor and stay grounded.
   const stair = await simulateMovement(page, {
@@ -104,7 +114,15 @@ try {
     frames: 85,
   });
   await page.waitForTimeout(100);
-  await page.screenshot({ path: `${outputDir}/02-maple-stair-climb.png`, fullPage: true });
+  // Face back into the house after reaching the upper floor, looking along the
+  // staircase instead of straight out through the adjacent window.
+  await page.evaluate(({ stair }) => {
+    const controls = window.__fpsApp.controls;
+    controls.forceReleaseKeys();
+    controls.setPosition(stair.x, stair.eyeY, stair.z, 0);
+    controls.update(0);
+  }, { stair });
+  await page.screenshot({ path: `${outputDir}/03-maple-stair-climb.png`, fullPage: true });
   assert.ok(stair.z > -25.5, `Player did not advance up the stair run (z=${stair.z.toFixed(2)})`);
   assert.ok(stair.feetY >= 3.0 && stair.feetY <= 3.45,
     `Player did not settle on the upper floor (feetY=${stair.feetY.toFixed(2)})`);
@@ -119,7 +137,14 @@ try {
     frames: 30,
   });
   await page.waitForTimeout(100);
-  await page.screenshot({ path: `${outputDir}/03-maple-window-jump.png`, fullPage: true });
+  // Face back toward the actual window opening from the outside garden.
+  await page.evaluate(({ windowExit }) => {
+    const controls = window.__fpsApp.controls;
+    controls.forceReleaseKeys();
+    controls.setPosition(windowExit.x, windowExit.eyeY, windowExit.z, 0);
+    controls.update(0);
+  }, { windowExit });
+  await page.screenshot({ path: `${outputDir}/04-maple-window-jump.png`, fullPage: true });
   assert.ok(windowExit.z > -20.4,
     `Player did not pass through the south window opening (z=${windowExit.z.toFixed(2)})`);
   assert.equal(windowExit.collidingCount, 0,
@@ -134,7 +159,14 @@ try {
     frames: 24,
   });
   await page.waitForTimeout(100);
-  await page.screenshot({ path: `${outputDir}/04-maple-balcony-jump.png`, fullPage: true });
+  // Face the house while still just clear of the terrace's central exit gap.
+  await page.evaluate(({ balconyJump }) => {
+    const controls = window.__fpsApp.controls;
+    controls.forceReleaseKeys();
+    controls.setPosition(balconyJump.x, balconyJump.eyeY, balconyJump.z, 0);
+    controls.update(0);
+  }, { balconyJump });
+  await page.screenshot({ path: `${outputDir}/05-maple-balcony-jump.png`, fullPage: true });
   assert.ok(balconyJump.z > -18.25,
     `Player did not clear the balcony deck edge (z=${balconyJump.z.toFixed(2)})`);
   assert.ok(balconyJump.feetY > 3.2,
@@ -149,9 +181,10 @@ try {
     balconyJump,
     screenshots: [
       `${outputDir}/01-neighborhood-spawn.png`,
-      `${outputDir}/02-maple-stair-climb.png`,
-      `${outputDir}/03-maple-window-jump.png`,
-      `${outputDir}/04-maple-balcony-jump.png`,
+      `${outputDir}/02-maple-front-exterior.png`,
+      `${outputDir}/03-maple-stair-climb.png`,
+      `${outputDir}/04-maple-window-jump.png`,
+      `${outputDir}/05-maple-balcony-jump.png`,
     ],
   }, null, 2));
 } catch (error) {
