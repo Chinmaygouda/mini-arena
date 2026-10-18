@@ -86,7 +86,13 @@ try {
       app.controls.colliders.length > 100;
   }, null, { timeout: 20000 });
   await page.waitForTimeout(500);
-  console.log('Neighborhood map loaded in Chromium; capturing spawn view.');
+  // Dismiss the game's intro overlay so the screenshots show the actual rendered scene.
+  await page.evaluate(() => {
+    const engage = document.querySelector('#btn-engage');
+    if (engage instanceof HTMLElement) engage.click();
+  });
+  await page.waitForTimeout(250);
+  console.log('Neighborhood map loaded in Chromium; intro dismissed; capturing spawn view.');
   await page.screenshot({ path: `${outputDir}/01-neighborhood-spawn.png`, fullPage: true });
 
   // Stair origin: house center (-24, -25.5) + local stair start (-4.2, -3.8).
