@@ -349,9 +349,11 @@ export class BlueprintMapLoader {
         'home_north_west',
         'home_north_east',
       ];
+      const unfinishedStandaloneBoxIds = new Set(['market_sign_panel', 'market_awning']);
       data.boxes
         .filter((box) => mapId !== 'neighborhood' ||
-          !unfinishedHomePrefixes.some((id) => box.id.startsWith(`${id}_`)))
+          (!unfinishedHomePrefixes.some((id) => box.id.startsWith(`${id}_`)) &&
+            !unfinishedStandaloneBoxIds.has(box.id)))
         .forEach((box) => {
         const hex = box.color || '#718096';
         const isMetal = box.kind === 'container' || box.kind === 'metal' || box.kind === 'cont';
