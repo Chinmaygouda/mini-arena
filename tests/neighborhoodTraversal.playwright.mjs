@@ -157,7 +157,8 @@ try {
   if (browser) await browser.close().catch(() => {});
   if (server?.pid) {
     try {
-      if (process.platform !== 'win32' && server.detached) {
+      if (process.platform !== 'win32') {
+        // spawn({ detached: true }) makes the child's PID the process-group ID on POSIX.
         process.kill(-server.pid, 'SIGTERM');
       } else if (!server.killed) {
         server.kill('SIGTERM');
