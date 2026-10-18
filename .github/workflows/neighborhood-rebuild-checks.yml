@@ -17,6 +17,7 @@ on:
 jobs:
   build-and-map-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
