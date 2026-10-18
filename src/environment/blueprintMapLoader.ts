@@ -18,6 +18,8 @@ export interface BlueprintBox {
   center: [number, number, number];
   size: [number, number, number];
   color: string;
+  /** False for visual trims and decorative details that should not obstruct movement. */
+  collision?: boolean;
 }
 
 export interface BuildingDoorway {
@@ -339,9 +341,18 @@ export class BlueprintMapLoader {
       });
     }
 
-    // 3. Expand Simple Boxes & Cover Props (if defined in JSON)
+    // 3. Expand simple objects and cover props. During staged neighborhood work,
+    // suppress the porch/balcony/fence kits attached to houses still shown as blockouts.
     if (data.boxes) {
-      data.boxes.forEach((box) => {
+      const unfinishedHomePrefixes = [
+        'home_south_east',
+        'home_north_west',
+        'home_north_east',
+      ];
+      data.boxes
+        .filter((box) => mapId !== 'neighborhood' ||
+          !unfinishedHomePrefixes.some((id) => box.id.startsWith(`${id}_`)))
+        .forEach((box) => {
         const hex = box.color || '#718096';
         const isMetal = box.kind === 'container' || box.kind === 'metal' || box.kind === 'cont';
         const mat = getMaterial(hex, isMetal ? 0.35 : 0.8, isMetal ? 0.85 : 0.15);
@@ -359,7 +370,7 @@ export class BlueprintMapLoader {
         const isRoof = box.kind === 'roof';
         const isWalkable = box.kind === 'stairs' || box.kind === 'stair' || box.kind === 'platform';
 
-        if (!isRoof) {
+        if (!isRoof && box.collision !== false) {
           colliders.push({
             minX: cx - w / 2,
             maxX: cx + w / 2,
@@ -435,7 +446,7 @@ export class BlueprintMapLoader {
       spawnYaw = Math.PI;
     } else if (mapId === 'neighborhood') {
       spawnX = 0;
-      spawnZ = -42.0;
+      spawnZ = -halfD * 0.8;
       spawnYaw = Math.PI;
     }
 
@@ -504,7 +515,11 @@ export class BlueprintMapLoader {
       const toPx = (world: number) => ((world + groundSpan / 2) / groundSpan) * 1024;
       const roadHalf = (4.2 / 2 / groundSpan) * 1024;
       const walkHalf = (0.8 / 2 / groundSpan) * 1024;
-      const roadAxes = [-33, -16, 16, 33];
+      // Derive the road grid from the actual compact ground span so it stays aligned
+      // when the neighborhood footprint changes.
+      const outerRoadAxis = groundSpan * 0.32;
+      const innerRoadAxis = groundSpan * 0.15;
+      const roadAxes = [-outerRoadAxis, -innerRoadAxis, innerRoadAxis, outerRoadAxis];
       // Sidewalk strips first, then asphalt, so the road edges remain readable.
       ctx.fillStyle = '#c4c4b8';
       for (const axis of roadAxes) {
@@ -523,14 +538,15 @@ export class BlueprintMapLoader {
       ctx.strokeStyle = '#e7cf79';
       ctx.lineWidth = Math.max(1.5, 0.07 / groundSpan * 1024);
       ctx.setLineDash([toPx(2.2) - toPx(0), toPx(1.5) - toPx(0)]);
-      for (const axis of [-33, 33]) {
+      for (const axis of [-outerRoadAxis, outerRoadAxis]) {
         const p = toPx(axis);
         ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, 1024); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(1024, p); ctx.stroke();
       }
       ctx.setLineDash([]);
       // A central green park pocket with pale cross paths and a paved gathering node.
-      const parkMin = toPx(-11.5), parkMax = toPx(11.5);
+      const parkHalfWorld = Math.max(8, innerRoadAxis - 2.4);
+      const parkMin = toPx(-parkHalfWorld), parkMax = toPx(parkHalfWorld);
       ctx.fillStyle = '#6f9450';
       ctx.fillRect(parkMin, parkMin, parkMax - parkMin, parkMax - parkMin);
       ctx.fillStyle = '#c4bda0';
@@ -544,22 +560,26 @@ export class BlueprintMapLoader {
       // Small garden beds on the four park corners.
       ctx.fillStyle = '#496f40';
       const bed = (1.4 / groundSpan) * 1024;
-      for (const [gx, gz] of [[-8.5, -8.5], [8.5, -8.5], [-8.5, 8.5], [8.5, 8.5]]) {
+      const bedOffset = parkHalfWorld * 0.74;
+      for (const [gx, gz] of [
+        [-bedOffset, -bedOffset], [bedOffset, -bedOffset],
+        [-bedOffset, bedOffset], [bedOffset, bedOffset],
+      ]) {
         const px = toPx(gx), pz = toPx(gz);
         ctx.fillRect(px - bed, pz - bed, bed * 2, bed * 2);
       }
       // Crosswalk bars at non-central intersections.
       ctx.fillStyle = '#e7e4d8';
-      for (const axis of [-33, 33]) {
+      for (const axis of [-outerRoadAxis, outerRoadAxis]) {
         const p = toPx(axis);
         const stripe = (0.18 / groundSpan) * 1024;
         const gap = (0.24 / groundSpan) * 1024;
         for (let k = -5; k <= 5; k++) {
           const offset = k * (stripe + gap);
-          ctx.fillRect(p - roadHalf + offset, toPx(-16) - roadHalf, stripe, roadHalf * 2);
-          ctx.fillRect(p - roadHalf + offset, toPx(16) - roadHalf, stripe, roadHalf * 2);
-          ctx.fillRect(toPx(-16) - roadHalf, p - roadHalf + offset, roadHalf * 2, stripe);
-          ctx.fillRect(toPx(16) - roadHalf, p - roadHalf + offset, roadHalf * 2, stripe);
+          ctx.fillRect(p - roadHalf + offset, toPx(-innerRoadAxis) - roadHalf, stripe, roadHalf * 2);
+          ctx.fillRect(p - roadHalf + offset, toPx(innerRoadAxis) - roadHalf, stripe, roadHalf * 2);
+          ctx.fillRect(toPx(-innerRoadAxis) - roadHalf, p - roadHalf + offset, roadHalf * 2, stripe);
+          ctx.fillRect(toPx(innerRoadAxis) - roadHalf, p - roadHalf + offset, roadHalf * 2, stripe);
         }
       }
     } else {
