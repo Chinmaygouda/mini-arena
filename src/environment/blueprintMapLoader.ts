@@ -519,9 +519,10 @@ export class BlueprintMapLoader {
       const walkHalf = (0.8 / 2 / groundSpan) * 1024;
       // Derive the road grid from the actual compact ground span so it stays aligned
       // when the neighborhood footprint changes.
-      const mapWorldSpan = groundSpan / 1.05;
-      const outerRoadAxis = mapWorldSpan * 0.34375;
-      const innerRoadAxis = mapWorldSpan / 6;
+      // Preserve the established street centerlines when the playable boundary is
+      // modestly tightened for 2v2; the roads, sidewalks and set dressing share this grid.
+      const outerRoadAxis = 33;
+      const innerRoadAxis = 16;
       const roadAxes = [-outerRoadAxis, -innerRoadAxis, innerRoadAxis, outerRoadAxis];
       // Sidewalk strips first, then asphalt, so the road edges remain readable.
       ctx.fillStyle = '#c4c4b8';
@@ -701,35 +702,39 @@ export class BlueprintMapLoader {
         const count = ascendingStair.stepCount;
         const tread = Math.max(0.28, ascendingStair.treadDepth);
         const width = Math.max(1.2, ascendingStair.width);
-        const margin = 0.3; // side clearance
+        const sideClearance = 0.35;
+        const runClearance = 0.45;
 
+        // Keep the entire ascending route clear overhead, including the lower
+        // treads; the previous hole started halfway up the flight and caught the
+        // player's head against the slab while climbing.
         if (ascendingStair.direction === '+Z') {
           hole = {
-            minX: sx - width / 2 - margin,
-            maxX: sx + width / 2 + margin,
-            minZ: sz + 4 * tread,
-            maxZ: sz + count * tread + 0.1,
+            minX: sx - width / 2 - sideClearance,
+            maxX: sx + width / 2 + sideClearance,
+            minZ: sz - runClearance,
+            maxZ: sz + count * tread + runClearance,
           };
         } else if (ascendingStair.direction === '-Z') {
           hole = {
-            minX: sx - width / 2 - margin,
-            maxX: sx + width / 2 + margin,
-            minZ: sz - count * tread - 0.1,
-            maxZ: sz - 4 * tread,
+            minX: sx - width / 2 - sideClearance,
+            maxX: sx + width / 2 + sideClearance,
+            minZ: sz - count * tread - runClearance,
+            maxZ: sz + runClearance,
           };
         } else if (ascendingStair.direction === '+X') {
           hole = {
-            minX: sx + 4 * tread,
-            maxX: sx + count * tread + 0.1,
-            minZ: sz - width / 2 - margin,
-            maxZ: sz + width / 2 + margin,
+            minX: sx - runClearance,
+            maxX: sx + count * tread + runClearance,
+            minZ: sz - width / 2 - sideClearance,
+            maxZ: sz + width / 2 + sideClearance,
           };
         } else { // -X
           hole = {
-            minX: sx - count * tread - 0.1,
-            maxX: sx - 4 * tread,
-            minZ: sz - width / 2 - margin,
-            maxZ: sz + width / 2 + margin,
+            minX: sx - count * tread - runClearance,
+            maxX: sx + runClearance,
+            minZ: sz - width / 2 - sideClearance,
+            maxZ: sz + width / 2 + sideClearance,
           };
         }
       }
@@ -813,6 +818,7 @@ export class BlueprintMapLoader {
           type: 'door' | 'window';
           sill: number;
           height: number;
+          hasPlayerBlocker?: boolean;
         }> = [];
 
         if (ws.doors) {
@@ -833,8 +839,9 @@ export class BlueprintMapLoader {
               offset: w.offset,
               width: Math.max(1.0, w.width),
               type: 'window',
-              sill: Math.max(1.0, w.sillHeight),
+              sill: Math.max(0.2, w.sillHeight),
               height: Math.max(1.0, w.height),
+              hasPlayerBlocker: w.hasPlayerBlocker,
             });
           });
         }
@@ -904,16 +911,19 @@ export class BlueprintMapLoader {
             const winBottom = flY + op.sill;
             const winTop = flY + op.sill + op.height;
 
-            // Thin player-only blocker collider
-            colliders.push({
-              minX: bx + winX - winW / 2,
-              maxX: bx + winX + winW / 2,
-              minY: by + winBottom,
-              maxY: by + winTop,
-              minZ: bz + winZ - winD / 2,
-              maxZ: bz + winZ + winD / 2,
-              isWalkable: false,
-            });
+            // Optional thin player-only blocker. A window with hasPlayerBlocker:false
+            // is a real jump-through opening; its sill and lintel still provide geometry.
+            if (op.hasPlayerBlocker !== false) {
+              colliders.push({
+                minX: bx + winX - winW / 2,
+                maxX: bx + winX + winW / 2,
+                minY: by + winBottom,
+                maxY: by + winTop,
+                minZ: bz + winZ - winD / 2,
+                maxZ: bz + winZ + winD / 2,
+                isWalkable: false,
+              });
+            }
 
             // Window glass geometry
             const glassGeom = new THREE.BoxGeometry(winW, op.height, winD);
@@ -1083,6 +1093,10 @@ export class BlueprintMapLoader {
           let curZ = sz;
           let curY = flY;
 
+          const isZAxis = st.direction === '+Z' || st.direction === '-Z';
+          const originX = sx;
+          const originZ = sz;
+
           for (let step = 0; step < count; step++) {
             curY += rise;
             if (st.direction === '+Z') curZ += tread;
@@ -1090,24 +1104,43 @@ export class BlueprintMapLoader {
             else if (st.direction === '+X') curX += tread;
             else if (st.direction === '-X') curX -= tread;
 
-            const isZAxis = st.direction === '+Z' || st.direction === '-Z';
             const stepW = isZAxis ? width : tread;
             const stepD = isZAxis ? tread : width;
 
+            // Keep the individual treads visible, but use one stair-profile collider
+            // for support. Per-tread solid AABBs allowed higher steps inside the
+            // player's radius to block forward movement.
             const stepGeom = new THREE.BoxGeometry(stepW, rise, stepD);
             stepGeom.translate(curX, curY - rise / 2, curZ);
             trimGeoms.push(stepGeom);
-
-            colliders.push({
-              minX: bx + curX - stepW / 2,
-              maxX: bx + curX + stepW / 2,
-              minY: by + curY - rise,
-              maxY: by + curY,
-              minZ: bz + curZ - stepD / 2,
-              maxZ: bz + curZ + stepD / 2,
-              isWalkable: true,
-            });
           }
+
+          const endX = st.direction === '+X' ? sx + count * tread
+            : st.direction === '-X' ? sx - count * tread : sx;
+          const endZ = st.direction === '+Z' ? sz + count * tread
+            : st.direction === '-Z' ? sz - count * tread : sz;
+          const sideClearance = 0.35;
+          const runClearance = 0.45;
+
+          colliders.push({
+            minX: bx + Math.min(originX, endX) - (isZAxis ? width / 2 + sideClearance : runClearance),
+            maxX: bx + Math.max(originX, endX) + (isZAxis ? width / 2 + sideClearance : runClearance),
+            minY: by + flY,
+            maxY: by + flY + count * rise,
+            minZ: bz + Math.min(originZ, endZ) - (isZAxis ? runClearance : width / 2 + sideClearance),
+            maxZ: bz + Math.max(originZ, endZ) + (isZAxis ? runClearance : width / 2 + sideClearance),
+            isWalkable: true,
+            ramp: {
+              axis: isZAxis ? 'z' : 'x',
+              startCoord: isZAxis ? bz + originZ : bx + originX,
+              endCoord: isZAxis ? bz + endZ : bx + endX,
+              startY: by + flY,
+              endY: by + flY + count * rise,
+              stepRise: rise,
+              treadDepth: tread,
+              stepCount: count,
+            },
+          });
         });
       }
 
