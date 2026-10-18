@@ -109,6 +109,21 @@ test('2v2 bounds and perimeter blockers use the smaller playable footprint', () 
   }
 });
 
+test('Maple House window jump lanes are clear of garden planters', () => {
+  const house = map.buildings.find((building) => building.id === 'home_south_west');
+  const south = house.floors[0].walls.find((wall) => wall.side === 'south');
+  const leftWindowX = house.center[0] + south.windows.find((window) => window.offset < 0).offset;
+  const rightWindowX = house.center[0] + south.windows.find((window) => window.offset > 0).offset;
+  const boxes = new Map(map.boxes.map((box) => [box.id, box]));
+  const westPlanter = boxes.get('home_south_west_planter_1');
+  const eastPlanter = boxes.get('home_south_west_planter_2');
+  assert.ok(westPlanter && eastPlanter, 'both front garden planters exist');
+  assert.ok(westPlanter.center[0] + westPlanter.size[0] / 2 < leftWindowX - 0.35,
+    'west planter clears the left window exit by at least one player radius');
+  assert.ok(eastPlanter.center[0] - eastPlanter.size[0] / 2 > rightWindowX + 0.35,
+    'east planter clears the right window exit by at least one player radius');
+});
+
 test('Map box identifiers are unique and team spawn markers exist at opposite ends', () => {
   const ids = map.boxes.map((box) => box.id);
   assert.equal(new Set(ids).size, ids.length, 'box ids must be unique');
