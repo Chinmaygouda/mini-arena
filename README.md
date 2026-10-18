@@ -43,7 +43,7 @@ npm run preview
 
 The `neighborhood-rebuild` branch develops this map incrementally:
 1. Lock the compact block layout and road grid.
-2. Finish and runtime-test spacious Maple House traversal (entrance, stair run, windows and balcony jump-out) as the architectural reference.
+2. Finish and runtime-test spacious Maple House traversal (wide entrance, stair run, vaultable windows and balcony jump-out) as the architectural reference.
 3. Approve each next house, apartment building, and market separately.
 4. Build out the park, vehicles, bus shelter, street furniture, and final route balancing after the structures pass review.
 
