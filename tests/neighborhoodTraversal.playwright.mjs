@@ -105,6 +105,46 @@ try {
   });
   await page.screenshot({ path: `${outputDir}/02-maple-front-exterior.png`, fullPage: true });
 
+  // Enter Maple House from the street through the front gate, porch and main door.
+  const doorEntry = await simulateMovement(page, {
+    position: { x: -24.0, y: 1.7, z: -15.5 },
+    yaw: 0,
+    keys: ['KeyW'],
+    frames: 90,
+  });
+  assert.ok(doorEntry.z < -21.2,
+    `Player did not enter through the front doorway (z=${doorEntry.z.toFixed(2)})`);
+  assert.equal(doorEntry.collidingCount, 0,
+    'Front-door entry should end in clear interior space');
+  await page.evaluate(({ doorEntry }) => {
+    const controls = window.__fpsApp.controls;
+    controls.forceReleaseKeys();
+    controls.setPosition(doorEntry.x, doorEntry.eyeY, doorEntry.z, 0);
+    controls.update(0);
+  }, { doorEntry });
+  await page.screenshot({ path: `${outputDir}/03-maple-door-entry.png`, fullPage: true });
+  console.log('Door entry passed:', JSON.stringify(doorEntry));
+
+  // Leave through the same door and step sequence; this verifies the route is bidirectional.
+  const doorExit = await simulateMovement(page, {
+    position: { x: -24.0, y: 1.7, z: doorEntry.z },
+    yaw: Math.PI,
+    keys: ['KeyW'],
+    frames: 90,
+  });
+  assert.ok(doorExit.z > -19.0,
+    `Player did not exit through the front doorway (z=${doorExit.z.toFixed(2)})`);
+  assert.equal(doorExit.collidingCount, 0,
+    'Front-door exit should finish in clear garden/street space');
+  await page.evaluate(({ doorExit }) => {
+    const controls = window.__fpsApp.controls;
+    controls.forceReleaseKeys();
+    controls.setPosition(doorExit.x, doorExit.eyeY, doorExit.z, 0);
+    controls.update(0);
+  }, { doorExit });
+  await page.screenshot({ path: `${outputDir}/04-maple-door-exit.png`, fullPage: true });
+  console.log('Door exit passed:', JSON.stringify(doorExit));
+
   // Stair origin: house center (-24, -25.5) + local stair start (-4.2, -3.8).
   // Walk forward toward +Z; a successful run should reach the upper floor and stay grounded.
   const stair = await simulateMovement(page, {
@@ -122,7 +162,7 @@ try {
     controls.setPosition(stair.x, stair.eyeY, stair.z, 0);
     controls.update(0);
   }, { stair });
-  await page.screenshot({ path: `${outputDir}/03-maple-stair-climb.png`, fullPage: true });
+  await page.screenshot({ path: `${outputDir}/05-maple-stair-climb.png`, fullPage: true });
   assert.ok(stair.z > -25.5, `Player did not advance up the stair run (z=${stair.z.toFixed(2)})`);
   assert.ok(stair.feetY >= 3.0 && stair.feetY <= 3.45,
     `Player did not settle on the upper floor (feetY=${stair.feetY.toFixed(2)})`);
@@ -144,7 +184,7 @@ try {
     controls.setPosition(windowExit.x, windowExit.eyeY, windowExit.z, 0);
     controls.update(0);
   }, { windowExit });
-  await page.screenshot({ path: `${outputDir}/04-maple-window-jump.png`, fullPage: true });
+  await page.screenshot({ path: `${outputDir}/06-maple-window-jump.png`, fullPage: true });
   assert.ok(windowExit.z > -20.4,
     `Player did not pass through the south window opening (z=${windowExit.z.toFixed(2)})`);
   assert.equal(windowExit.collidingCount, 0,
@@ -166,7 +206,7 @@ try {
     controls.setPosition(balconyJump.x, balconyJump.eyeY, balconyJump.z, 0);
     controls.update(0);
   }, { balconyJump });
-  await page.screenshot({ path: `${outputDir}/05-maple-balcony-jump.png`, fullPage: true });
+  await page.screenshot({ path: `${outputDir}/07-maple-balcony-jump.png`, fullPage: true });
   assert.ok(balconyJump.z > -18.25,
     `Player did not clear the balcony deck edge (z=${balconyJump.z.toFixed(2)})`);
   assert.ok(balconyJump.feetY > 3.2,
@@ -182,9 +222,11 @@ try {
     screenshots: [
       `${outputDir}/01-neighborhood-spawn.png`,
       `${outputDir}/02-maple-front-exterior.png`,
-      `${outputDir}/03-maple-stair-climb.png`,
-      `${outputDir}/04-maple-window-jump.png`,
-      `${outputDir}/05-maple-balcony-jump.png`,
+      `${outputDir}/03-maple-door-entry.png`,
+      `${outputDir}/04-maple-door-exit.png`,
+      `${outputDir}/05-maple-stair-climb.png`,
+      `${outputDir}/06-maple-window-jump.png`,
+      `${outputDir}/07-maple-balcony-jump.png`,
     ],
   }, null, 2));
 } catch (error) {
