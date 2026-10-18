@@ -1,0 +1,32 @@
+name: Neighborhood Rebuild Checks
+
+on:
+  push:
+    branches:
+      - neighborhood-rebuild
+  pull_request:
+    paths:
+      - "public/maps/neighborhood.json"
+      - "src/environment/blueprintMapLoader.ts"
+      - "tests/neighborhoodMap.test.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/neighborhood-rebuild-checks.yml"
+
+jobs:
+  build-and-map-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Compile and bundle
+        run: npm run build
+      - name: Run neighborhood map tests
+        run: node --experimental-strip-types --test tests/neighborhoodMap.test.mjs
