@@ -446,7 +446,7 @@ export class BlueprintMapLoader {
       spawnYaw = Math.PI;
     } else if (mapId === 'neighborhood') {
       spawnX = 0;
-      spawnZ = -halfD * 0.8;
+      spawnZ = -halfD * 0.875;
       spawnYaw = Math.PI;
     }
 
@@ -517,8 +517,9 @@ export class BlueprintMapLoader {
       const walkHalf = (0.8 / 2 / groundSpan) * 1024;
       // Derive the road grid from the actual compact ground span so it stays aligned
       // when the neighborhood footprint changes.
-      const outerRoadAxis = groundSpan * 0.32;
-      const innerRoadAxis = groundSpan * 0.15;
+      const mapWorldSpan = groundSpan / 1.05;
+      const outerRoadAxis = mapWorldSpan * 0.34375;
+      const innerRoadAxis = mapWorldSpan / 6;
       const roadAxes = [-outerRoadAxis, -innerRoadAxis, innerRoadAxis, outerRoadAxis];
       // Sidewalk strips first, then asphalt, so the road edges remain readable.
       ctx.fillStyle = '#c4c4b8';
@@ -545,7 +546,7 @@ export class BlueprintMapLoader {
       }
       ctx.setLineDash([]);
       // A central green park pocket with pale cross paths and a paved gathering node.
-      const parkHalfWorld = Math.max(8, innerRoadAxis - 2.4);
+      const parkHalfWorld = Math.max(8, innerRoadAxis - 4.5);
       const parkMin = toPx(-parkHalfWorld), parkMax = toPx(parkHalfWorld);
       ctx.fillStyle = '#6f9450';
       ctx.fillRect(parkMin, parkMin, parkMax - parkMin, parkMax - parkMin);
