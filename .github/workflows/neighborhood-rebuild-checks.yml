@@ -9,6 +9,7 @@ on:
       - "public/maps/neighborhood.json"
       - "src/environment/blueprintMapLoader.ts"
       - "tests/neighborhoodMap.test.mjs"
+      - "tests/neighborhoodTraversal.playwright.mjs"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/neighborhood-rebuild-checks.yml"
@@ -30,3 +31,15 @@ jobs:
         run: npm run build
       - name: Run neighborhood map tests
         run: node --experimental-strip-types --test tests/neighborhoodMap.test.mjs
+      - name: Install Chromium for traversal tests
+        run: npx playwright install --with-deps chromium
+      - name: Run browser-driven neighborhood traversal
+        run: node tests/neighborhoodTraversal.playwright.mjs
+      - name: Upload neighborhood browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: neighborhood-traversal-screenshots
+          path: artifacts/neighborhood-preview/
+          if-no-files-found: warn
+          retention-days: 7
