@@ -10,6 +10,7 @@ await mkdir(outputDir, { recursive: true });
 
 let server;
 let browser;
+let serverOutput = '';
 
 async function waitForServer(timeoutMs = 20000) {
   const startedAt = Date.now();
@@ -61,8 +62,7 @@ try {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: { ...process.env, BROWSER: 'none' },
   });
-  let serverOutput = '';
-  server.stdout.on('data', chunk => { serverOutput += chunk.toString(); });
+    server.stdout.on('data', chunk => { serverOutput += chunk.toString(); });
   server.stderr.on('data', chunk => { serverOutput += chunk.toString(); });
   server.on('error', error => { serverOutput += String(error); });
   await waitForServer();
