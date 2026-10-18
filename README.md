@@ -37,13 +37,13 @@ npm run preview
 - **Cul-de-Sac**: Suburban tactical combat layout.
 - **Dustline Village**: Arid tactical compound with close-quarters alleys.
 - **Overpass Arena**: Two-tier elevated highway and combat structure.
-- **Neighborhood District (rebuild in progress)**: A compactly composed 96m × 96m playable layout with a central park, market lane, bus stop, parking, trees, and spawn markers. Its ground plane is tightly cropped to remove the previous oversized empty apron. Maple House is the first detailed two-storey prototype with a pitched roof, porch canopy, facade trim, framed windows, interior, and balcony. The other six structures remain neutral blockouts until each is built and tested. Spawn-slot metadata is for future multiplayer integration; it is not networked multiplayer.
+- **Neighborhood District (2v2 rebuild in progress)**: A slightly tighter 92m × 92m playable layout for two players per team. Maple House is being renovated as a spacious 12m × 12m open-plan two-storey prototype, with a pitched roof, wide staircase, jump-through windows, and a wider balcony terrace with a central jump-out gap. The other six structures remain neutral blockouts until each is built and tested. Spawn-slot metadata is for future multiplayer integration; it is not networked multiplayer.
 
 ## Neighborhood Rebuild Workflow
 
 The `neighborhood-rebuild` branch develops this map incrementally:
 1. Lock the compact block layout and road grid.
-2. Complete and runtime-test Maple House as the architectural reference.
+2. Finish and runtime-test spacious Maple House traversal (entrance, stair run, windows and balcony jump-out) as the architectural reference.
 3. Approve each next house, apartment building, and market separately.
 4. Build out the park, vehicles, bus shelter, street furniture, and final route balancing after the structures pass review.
 
