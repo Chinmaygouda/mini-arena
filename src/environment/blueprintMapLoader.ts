@@ -9,7 +9,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { TargetManager, FX_NON_RAYCAST_LAYER } from './targets';
 import type { BoxCollider, MapBounds } from '../player/firstPersonControls';
 
-export type MapId = 'range' | 'foundry' | 'culdesac' | 'dustline' | 'overpass';
+export type MapId = 'range' | 'foundry' | 'culdesac' | 'dustline' | 'overpass' | 'neighborhood';
 
 export interface BlueprintBox {
   id: string;
@@ -124,6 +124,8 @@ export interface BlueprintMapData {
     rocks?: Array<{ pos: [number, number, number]; size: [number, number, number]; color?: string }>;
     mounds?: Array<{ pos: [number, number, number]; size: [number, number, number]; rotation?: number }>;
   };
+  /** Static low-poly ground birds; shot hits hide the bird group. */
+  perchedBirds?: Array<{ id: string; pos: [number, number, number]; scale?: number; color?: string }>;
   invisiblePerimeters?: Array<{
     minX: number;
     maxX: number;
@@ -172,6 +174,7 @@ export const MAP_INFO: Record<MapId, { name: string; file?: string }> = {
   culdesac: { name: 'Cul-de-Sac', file: '/maps/Cul-de-Sac.json' },
   dustline: { name: 'Dustline Village', file: '/maps/Dustline Village.json' },
   overpass: { name: 'Overpass Arena', file: '/maps/Overpass.json' },
+  neighborhood: { name: 'Neighborhood District', file: '/maps/neighborhood.json' },
 };
 
 export class BlueprintMapLoader {
@@ -292,7 +295,7 @@ export class BlueprintMapLoader {
 
     // 1. Procedural High-Detail Ground Plane
     const groundSpan = data.meta.size ? Math.max(data.meta.size[0], data.meta.size[1]) * 1.5 : 120;
-    const groundTexture = this.generateProceduralGroundTexture(data.meta.theme || 'arid');
+    const groundTexture = this.generateProceduralGroundTexture(data.meta.theme || 'arid', groundSpan);
     const groundMat = new THREE.MeshStandardMaterial({
       map: groundTexture,
       roughness: 0.92,
@@ -354,6 +357,11 @@ export class BlueprintMapLoader {
       this.expandNature(data.nature, colliders, mapGroup, getMaterial);
     }
 
+    // 4.5. Static low-poly birds that can be hit and disappear on impact.
+    if (data.perchedBirds) {
+      data.perchedBirds.forEach((bird) => this.expandPerchedBird(bird, mapGroup, getMaterial));
+    }
+
     // 5. Invisible Perimeter Player Blockers
     if (data.invisiblePerimeters) {
       data.invisiblePerimeters.forEach((p) => {
@@ -404,6 +412,10 @@ export class BlueprintMapLoader {
       spawnX = 0;
       spawnZ = -22.0;
       spawnYaw = Math.PI;
+    } else if (mapId === 'neighborhood') {
+      spawnX = 0;
+      spawnZ = -42.0;
+      spawnYaw = Math.PI;
     }
 
     // 7. Tactical Reactive Targets
@@ -439,44 +451,108 @@ export class BlueprintMapLoader {
   /**
    * Generates a 1024x1024 high-detail procedural terrain canvas texture.
    */
-  private generateProceduralGroundTexture(theme: string): THREE.CanvasTexture {
+  private generateProceduralGroundTexture(theme: string, groundSpan: number): THREE.CanvasTexture {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
     canvas.height = 1024;
     const ctx = canvas.getContext('2d')!;
 
-    // Base ground color
+    // Base ground color. Neighborhood uses a single, map-aligned texture so roads
+    // align with actual blocks instead of repeating a generic cross-road tile.
     const isArid = theme === 'arid' || theme === 'desert';
-    ctx.fillStyle = isArid ? '#cbb58c' : '#3e4836';
+    const isNeighborhood = theme === 'neighborhood';
+    ctx.fillStyle = isNeighborhood ? '#78935a' : (isArid ? '#cbb58c' : '#3e4836');
     ctx.fillRect(0, 0, 1024, 1024);
 
-    // Natural soil noise & grain
-    for (let i = 0; i < 8000; i++) {
+    // Low-poly ground variation; texture is generated once per map load.
+    for (let i = 0; i < (isNeighborhood ? 6500 : 8000); i++) {
       const x = Math.random() * 1024;
       const y = Math.random() * 1024;
-      const size = 1 + Math.random() * 4;
+      const size = 1 + Math.random() * (isNeighborhood ? 5 : 4);
       const bright = Math.random() > 0.5;
-      ctx.fillStyle = bright
-        ? (isArid ? 'rgba(235, 220, 190, 0.25)' : 'rgba(90, 110, 80, 0.25)')
-        : (isArid ? 'rgba(150, 125, 90, 0.25)' : 'rgba(40, 50, 35, 0.25)');
+      ctx.fillStyle = isNeighborhood
+        ? (bright ? 'rgba(192, 202, 129, 0.18)' : 'rgba(56, 94, 47, 0.16)')
+        : (bright
+          ? (isArid ? 'rgba(235, 220, 190, 0.25)' : 'rgba(90, 110, 80, 0.25)')
+          : (isArid ? 'rgba(150, 125, 90, 0.25)' : 'rgba(40, 50, 35, 0.25)'));
       ctx.fillRect(x, y, size, size);
     }
 
-    // Dirt roadways / combat lanes running North-South and East-West
-    ctx.fillStyle = isArid ? 'rgba(168, 142, 105, 0.45)' : 'rgba(55, 48, 38, 0.45)';
-    // Central North-South avenue
-    ctx.fillRect(440, 0, 144, 1024);
-    // East-West connector street
-    ctx.fillRect(0, 440, 1024, 144);
-
-    // Central bazaar square paving
-    ctx.fillStyle = isArid ? 'rgba(195, 175, 140, 0.35)' : 'rgba(75, 75, 75, 0.35)';
-    ctx.fillRect(360, 360, 304, 304);
+    if (isNeighborhood) {
+      const toPx = (world: number) => ((world + groundSpan / 2) / groundSpan) * 1024;
+      const roadHalf = (4.2 / 2 / groundSpan) * 1024;
+      const walkHalf = (0.8 / 2 / groundSpan) * 1024;
+      const roadAxes = [-33, -16, 16, 33];
+      // Sidewalk strips first, then asphalt, so the road edges remain readable.
+      ctx.fillStyle = '#c4c4b8';
+      for (const axis of roadAxes) {
+        const p = toPx(axis);
+        const outerHalf = roadHalf + walkHalf;
+        ctx.fillRect(p - outerHalf, 0, outerHalf * 2, 1024);
+        ctx.fillRect(0, p - outerHalf, 1024, outerHalf * 2);
+      }
+      ctx.fillStyle = '#505963';
+      for (const axis of roadAxes) {
+        const p = toPx(axis);
+        ctx.fillRect(p - roadHalf, 0, roadHalf * 2, 1024);
+        ctx.fillRect(0, p - roadHalf, 1024, roadHalf * 2);
+      }
+      // Broken center markings on streets; keep them subtle in the stylized art direction.
+      ctx.strokeStyle = '#e7cf79';
+      ctx.lineWidth = Math.max(1.5, 0.07 / groundSpan * 1024);
+      ctx.setLineDash([toPx(2.2) - toPx(0), toPx(1.5) - toPx(0)]);
+      for (const axis of [-33, 33]) {
+        const p = toPx(axis);
+        ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, 1024); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(1024, p); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      // A central green park pocket with pale cross paths and a paved gathering node.
+      const parkMin = toPx(-11.5), parkMax = toPx(11.5);
+      ctx.fillStyle = '#6f9450';
+      ctx.fillRect(parkMin, parkMin, parkMax - parkMin, parkMax - parkMin);
+      ctx.fillStyle = '#c4bda0';
+      const pathWidth = (1.15 / groundSpan) * 1024;
+      const parkMid = toPx(0);
+      ctx.fillRect(parkMid - pathWidth / 2, parkMin, pathWidth, parkMax - parkMin);
+      ctx.fillRect(parkMin, parkMid - pathWidth / 2, parkMax - parkMin, pathWidth);
+      ctx.fillStyle = '#b8b4a2';
+      const plazaHalf = (2.3 / groundSpan) * 1024;
+      ctx.fillRect(parkMid - plazaHalf, parkMid - plazaHalf, plazaHalf * 2, plazaHalf * 2);
+      // Small garden beds on the four park corners.
+      ctx.fillStyle = '#496f40';
+      const bed = (1.4 / groundSpan) * 1024;
+      for (const [gx, gz] of [[-8.5, -8.5], [8.5, -8.5], [-8.5, 8.5], [8.5, 8.5]]) {
+        const px = toPx(gx), pz = toPx(gz);
+        ctx.fillRect(px - bed, pz - bed, bed * 2, bed * 2);
+      }
+      // Crosswalk bars at non-central intersections.
+      ctx.fillStyle = '#e7e4d8';
+      for (const axis of [-33, 33]) {
+        const p = toPx(axis);
+        const stripe = (0.18 / groundSpan) * 1024;
+        const gap = (0.24 / groundSpan) * 1024;
+        for (let k = -5; k <= 5; k++) {
+          const offset = k * (stripe + gap);
+          ctx.fillRect(p - roadHalf + offset, toPx(-16) - roadHalf, stripe, roadHalf * 2);
+          ctx.fillRect(p - roadHalf + offset, toPx(16) - roadHalf, stripe, roadHalf * 2);
+          ctx.fillRect(toPx(-16) - roadHalf, p - roadHalf + offset, roadHalf * 2, stripe);
+          ctx.fillRect(toPx(16) - roadHalf, p - roadHalf + offset, roadHalf * 2, stripe);
+        }
+      }
+    } else {
+      // Legacy tiled terrain used by the existing arenas.
+      ctx.fillStyle = isArid ? 'rgba(168, 142, 105, 0.45)' : 'rgba(55, 48, 38, 0.45)';
+      ctx.fillRect(440, 0, 144, 1024);
+      ctx.fillRect(0, 440, 1024, 144);
+      ctx.fillStyle = isArid ? 'rgba(195, 175, 140, 0.35)' : 'rgba(75, 75, 75, 0.35)';
+      ctx.fillRect(360, 360, 304, 304);
+    }
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(8, 8);
+    texture.repeat.set(isNeighborhood ? 1 : 8, isNeighborhood ? 1 : 8);
     return texture;
   }
 
@@ -1014,6 +1090,46 @@ export class BlueprintMapLoader {
   /**
    * Expands natural features: trees, rocks, mounds.
    */
+  private expandPerchedBird(
+    bird: NonNullable<BlueprintMapData['perchedBirds']>[number],
+    mapGroup: THREE.Group,
+    getMat: (hex: string, r?: number, m?: number) => THREE.MeshStandardMaterial
+  ) {
+    const [x, y, z] = bird.pos;
+    const scale = Math.max(0.55, Math.min(1.25, bird.scale ?? 1));
+    const group = new THREE.Group();
+    group.name = `perched-bird-${bird.id}`;
+    group.position.set(x, y, z);
+    group.rotation.y = ((bird.id.split('').reduce((n, ch) => n + ch.charCodeAt(0), 0) % 360) * Math.PI) / 180;
+    group.userData.isPerchedBird = true;
+
+    const bodyMat = getMat(bird.color || '#5d6d72', 0.9, 0.02);
+    const wingMat = getMat('#39474b', 0.9, 0.02);
+    const beakMat = getMat('#d9a34e', 0.8, 0.0);
+    const footMat = getMat('#b97b45', 0.9, 0.0);
+
+    const addBirdPart = (geometry: THREE.BufferGeometry, material: THREE.Material, position: [number, number, number], partName: string, partScale?: [number, number, number]) => {
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.name = `bird-${bird.id}-${partName}`;
+      mesh.position.set(position[0] * scale, position[1] * scale, position[2] * scale);
+      if (partScale) mesh.scale.set(partScale[0] * scale, partScale[1] * scale, partScale[2] * scale);
+      mesh.castShadow = true;
+      mesh.userData.isBird = true;
+      // Leave on the normal raycast layer so shots can hit the perched bird.
+      mapGroup.add; // intentionally unused expression avoided below
+      group.add(mesh);
+    };
+
+    addBirdPart(new THREE.SphereGeometry(0.19, 6, 4), bodyMat, [0, 0.22, 0], 'body', [1.0, 0.78, 1.35]);
+    addBirdPart(new THREE.SphereGeometry(0.105, 6, 4), bodyMat, [0, 0.31, 0.20], 'head');
+    addBirdPart(new THREE.ConeGeometry(0.055, 0.16, 4), beakMat, [0, 0.29, 0.32], 'beak', [1, 0.85, 1]);
+    addBirdPart(new THREE.DodecahedronGeometry(0.15, 0), wingMat, [-0.15, 0.25, -0.01], 'left-wing', [0.55, 0.28, 1.1]);
+    addBirdPart(new THREE.DodecahedronGeometry(0.15, 0), wingMat, [0.15, 0.25, -0.01], 'right-wing', [0.55, 0.28, 1.1]);
+    addBirdPart(new THREE.CylinderGeometry(0.018, 0.018, 0.11, 4), footMat, [-0.06, 0.06, 0.04], 'left-foot');
+    addBirdPart(new THREE.CylinderGeometry(0.018, 0.018, 0.11, 4), footMat, [0.06, 0.06, 0.04], 'right-foot');
+    mapGroup.add(group);
+  }
+
   private expandNature(
     nature: NonNullable<BlueprintMapData['nature']>,
     colliders: BoxCollider[],
