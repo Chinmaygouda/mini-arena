@@ -269,6 +269,8 @@ export class AtmosphereManager {
       presetKey = 'dusk';
     } else if (mapId === 'overpass') {
       presetKey = 'noon';
+    } else if (mapId === 'neighborhood') {
+      presetKey = 'golden';
     } else {
       presetKey = 'noon';
     }
@@ -281,7 +283,8 @@ export class AtmosphereManager {
       mapId === 'foundry' ? 'industrial' :
       mapId === 'culdesac' ? 'suburban' :
       mapId === 'dustline' ? 'arid' :
-      mapId === 'overpass' ? 'urban' : 'arid';
+      mapId === 'overpass' ? 'urban' :
+      mapId === 'neighborhood' ? 'suburban' : 'arid';
 
     // 1. Lighting Rig (Single shadow-casting directional light + ambient hemisphere)
     this.setupLighting(cfg);
