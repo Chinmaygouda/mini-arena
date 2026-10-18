@@ -58,9 +58,12 @@ async function simulateMovement(page, { position, yaw = Math.PI, keys = ['KeyW']
 }
 
 try {
+  // Launch in a separate process group so Vite's child process can be stopped
+  // along with npm in finally; otherwise the child can keep the test runner alive.
   server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5173', '--strictPort'], {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: { ...process.env, BROWSER: 'none' },
+    detached: process.platform !== 'win32',
   });
     server.stdout.on('data', chunk => { serverOutput += chunk.toString(); });
   server.stderr.on('data', chunk => { serverOutput += chunk.toString(); });
@@ -83,6 +86,7 @@ try {
       app.controls.colliders.length > 100;
   }, null, { timeout: 20000 });
   await page.waitForTimeout(500);
+  console.log('Neighborhood map loaded in Chromium; capturing spawn view.');
   await page.screenshot({ path: `${outputDir}/01-neighborhood-spawn.png`, fullPage: true });
 
   // Stair origin: house center (-24, -25.5) + local stair start (-4.2, -3.8).
@@ -99,6 +103,7 @@ try {
   assert.ok(stair.feetY >= 3.0 && stair.feetY <= 3.45,
     `Player did not settle on the upper floor (feetY=${stair.feetY.toFixed(2)})`);
   assert.ok(stair.grounded, 'Player should be grounded after climbing onto the upper floor');
+  console.log('Stair traversal passed:', JSON.stringify(stair));
 
   // Ground-floor south window at x=-28. Start just inside the facade and jump forward.
   const windowExit = await simulateMovement(page, {
@@ -111,6 +116,7 @@ try {
   await page.screenshot({ path: `${outputDir}/03-maple-window-jump.png`, fullPage: true });
   assert.ok(windowExit.z > -20.4,
     `Player did not pass through the south window opening (z=${windowExit.z.toFixed(2)})`);
+  console.log('Window jump passed:', JSON.stringify(windowExit));
 
   // Center of the balcony's 2.2m jump-out gap. A forward jump should clear the deck edge.
   const balconyJump = await simulateMovement(page, {
@@ -149,7 +155,17 @@ try {
   process.exitCode = 1;
 } finally {
   if (browser) await browser.close().catch(() => {});
-  if (server && !server.killed) server.kill('SIGTERM');
+  if (server?.pid) {
+    try {
+      if (process.platform !== 'win32' && server.detached) {
+        process.kill(-server.pid, 'SIGTERM');
+      } else if (!server.killed) {
+        server.kill('SIGTERM');
+      }
+    } catch {
+      // The process group may already have exited after Vite shutdown.
+    }
+  }
 }
 
 function serverOutputForDebug() {
