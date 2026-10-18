@@ -50,6 +50,8 @@ test('Map box identifiers are unique and team spawn markers exist at opposite en
   const a = map.boxes.find((box) => box.id === 'spawn_A_flagpole_1');
   const b = map.boxes.find((box) => box.id === 'spawn_B_flagpole_1');
   assert.ok(a.center[2] < -35 && b.center[2] > 35, 'team markers must be at opposite ends');
+  assert.equal(map.teamSpawns.teamA.length, 4, 'Team A has four reserved player slots');
+  assert.equal(map.teamSpawns.teamB.length, 4, 'Team B has four reserved player slots');
 });
 
 test('Neighborhood has the core set dressing requested for the map', () => {
