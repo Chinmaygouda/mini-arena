@@ -157,6 +157,11 @@ export interface BlueprintMapData {
     teamA?: { facing: string; points: [number, number][] };
     teamB?: { facing: string; points: [number, number][] };
   };
+  /** Reserved player-slot positions for a future 4v4 runtime; not target dummies. */
+  teamSpawns?: {
+    teamA?: Array<{ position: [number, number]; facingYaw: number }>;
+    teamB?: Array<{ position: [number, number]; facingYaw: number }>;
+  };
 }
 
 export interface LoadedMapResult {
@@ -166,6 +171,7 @@ export interface LoadedMapResult {
   bounds: MapBounds;
   colliders: BoxCollider[];
   buildings: BuildingDef[];
+  teamSpawns?: BlueprintMapData['teamSpawns'];
 }
 
 export const MAP_INFO: Record<MapId, { name: string; file?: string }> = {
@@ -445,6 +451,7 @@ export class BlueprintMapLoader {
       bounds,
       colliders,
       buildings: this.loadedBuildings,
+      teamSpawns: data.teamSpawns,
     };
   }
 
