@@ -1,0 +1,2631 @@
+{
+    "meta": {
+        "name": "Foundry Yard",
+        "mode": "4v4 team match",
+        "units": "meters",
+        "axes": "x east, z north, y up, origin at map center",
+        "size": [
+            56,
+            56
+        ],
+        "symmetry": "rotate 180 degrees about the origin: (x,z) to (-x,-z) maps team A half to team B half",
+        "theme": "abandoned industrial depot at golden hour",
+        "version": 1
+    },
+    "rules": [
+        "All boxes are axis-aligned and solid, stairs are already expanded into steps (about 0.27 m rise, 0.5 m run).",
+        "Heights: 1.2 m crouch cover, 1.4 m standing cover, 2.6 m container, 3.2 m mezzanine floor, 6 m building walls and perimeter.",
+        "Roofs sit at y 6.0 to 6.3 and are never walkable; skylight gaps are intentional light shafts.",
+        "Keep doorways at least 3 m wide and lanes at least 3.5 m wide; keep at least 2 routes between any two zones.",
+        "Mirror every edit through the 180 degree rotation so the map stays fair.",
+        "The sun is perpendicular to the north-south team axis so neither team looks into it.",
+        "The map has no weapons, characters or pickups; spawn entries are positions only."
+    ],
+    "zones": [
+        {
+            "id": "spawnA",
+            "name": "Bay A",
+            "min": [
+                -8,
+                -28
+            ],
+            "max": [
+                8,
+                -21
+            ]
+        },
+        {
+            "id": "spawnB",
+            "name": "Bay B",
+            "min": [
+                -8,
+                21
+            ],
+            "max": [
+                8,
+                28
+            ]
+        },
+        {
+            "id": "corS",
+            "name": "South Walk",
+            "min": [
+                -28,
+                -21
+            ],
+            "max": [
+                28,
+                -17
+            ]
+        },
+        {
+            "id": "corN",
+            "name": "North Walk",
+            "min": [
+                -28,
+                17
+            ],
+            "max": [
+                28,
+                21
+            ]
+        },
+        {
+            "id": "whSW",
+            "name": "Foundry SW",
+            "min": [
+                -28,
+                -17
+            ],
+            "max": [
+                -11,
+                -3
+            ]
+        },
+        {
+            "id": "whNE",
+            "name": "Foundry NE",
+            "min": [
+                11,
+                3
+            ],
+            "max": [
+                28,
+                17
+            ]
+        },
+        {
+            "id": "cySE",
+            "name": "Yard SE",
+            "min": [
+                11,
+                -17
+            ],
+            "max": [
+                28,
+                -3
+            ]
+        },
+        {
+            "id": "cyNW",
+            "name": "Yard NW",
+            "min": [
+                -28,
+                3
+            ],
+            "max": [
+                -11,
+                17
+            ]
+        },
+        {
+            "id": "center",
+            "name": "Crane Plaza",
+            "min": [
+                -11,
+                -17
+            ],
+            "max": [
+                11,
+                17
+            ]
+        },
+        {
+            "id": "crossW",
+            "name": "West Cross",
+            "min": [
+                -28,
+                -3
+            ],
+            "max": [
+                -11,
+                3
+            ]
+        },
+        {
+            "id": "crossE",
+            "name": "East Cross",
+            "min": [
+                11,
+                -3
+            ],
+            "max": [
+                28,
+                3
+            ]
+        }
+    ],
+    "boxes": [
+        {
+            "id": "sp_wW",
+            "zone": "spawnA",
+            "kind": "wall",
+            "center": [
+                -8,
+                1.5,
+                -26.25
+            ],
+            "size": [
+                0.6,
+                3,
+                3.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "sp_wW_B",
+            "zone": "spawnB",
+            "kind": "wall",
+            "center": [
+                8,
+                1.5,
+                26.25
+            ],
+            "size": [
+                0.6,
+                3,
+                3.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "sp_wE",
+            "zone": "spawnA",
+            "kind": "wall",
+            "center": [
+                8,
+                1.5,
+                -26.25
+            ],
+            "size": [
+                0.6,
+                3,
+                3.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "sp_wE_B",
+            "zone": "spawnB",
+            "kind": "wall",
+            "center": [
+                -8,
+                1.5,
+                26.25
+            ],
+            "size": [
+                0.6,
+                3,
+                3.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "sp_fL",
+            "zone": "spawnA",
+            "kind": "wall",
+            "center": [
+                -5.25,
+                1.5,
+                -21
+            ],
+            "size": [
+                5.5,
+                3,
+                0.6
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "sp_fL_B",
+            "zone": "spawnB",
+            "kind": "wall",
+            "center": [
+                5.25,
+                1.5,
+                21
+            ],
+            "size": [
+                5.5,
+                3,
+                0.6
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "sp_fR",
+            "zone": "spawnA",
+            "kind": "wall",
+            "center": [
+                5.25,
+                1.5,
+                -21
+            ],
+            "size": [
+                5.5,
+                3,
+                0.6
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "sp_fR_B",
+            "zone": "spawnB",
+            "kind": "wall",
+            "center": [
+                -5.25,
+                1.5,
+                21
+            ],
+            "size": [
+                5.5,
+                3,
+                0.6
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "sp_cv",
+            "zone": "spawnA",
+            "kind": "cover",
+            "center": [
+                0,
+                0.6,
+                -24
+            ],
+            "size": [
+                3,
+                1.2,
+                0.8
+            ],
+            "color": "#c9c2b4"
+        },
+        {
+            "id": "sp_cv_B",
+            "zone": "spawnB",
+            "kind": "cover",
+            "center": [
+                0,
+                0.6,
+                24
+            ],
+            "size": [
+                3,
+                1.2,
+                0.8
+            ],
+            "color": "#c9c2b4"
+        },
+        {
+            "id": "wh_eA",
+            "zone": "whSW",
+            "kind": "wall",
+            "center": [
+                -11,
+                3,
+                -13.25
+            ],
+            "size": [
+                0.5,
+                6,
+                7.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_eA_B",
+            "zone": "whNE",
+            "kind": "wall",
+            "center": [
+                11,
+                3,
+                13.25
+            ],
+            "size": [
+                0.5,
+                6,
+                7.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_eB",
+            "zone": "whSW",
+            "kind": "wall",
+            "center": [
+                -11,
+                3,
+                -4.75
+            ],
+            "size": [
+                0.5,
+                6,
+                3.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_eB_B",
+            "zone": "whNE",
+            "kind": "wall",
+            "center": [
+                11,
+                3,
+                4.75
+            ],
+            "size": [
+                0.5,
+                6,
+                3.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_sA",
+            "zone": "whSW",
+            "kind": "wall",
+            "center": [
+                -24.5,
+                3,
+                -17
+            ],
+            "size": [
+                7,
+                6,
+                0.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_sA_B",
+            "zone": "whNE",
+            "kind": "wall",
+            "center": [
+                24.5,
+                3,
+                17
+            ],
+            "size": [
+                7,
+                6,
+                0.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_sB",
+            "zone": "whSW",
+            "kind": "wall",
+            "center": [
+                -14.5,
+                3,
+                -17
+            ],
+            "size": [
+                7,
+                6,
+                0.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_sB_B",
+            "zone": "whNE",
+            "kind": "wall",
+            "center": [
+                14.5,
+                3,
+                17
+            ],
+            "size": [
+                7,
+                6,
+                0.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_nA",
+            "zone": "whSW",
+            "kind": "wall",
+            "center": [
+                -25,
+                3,
+                -3
+            ],
+            "size": [
+                6,
+                6,
+                0.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_nA_B",
+            "zone": "whNE",
+            "kind": "wall",
+            "center": [
+                25,
+                3,
+                3
+            ],
+            "size": [
+                6,
+                6,
+                0.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_nB",
+            "zone": "whSW",
+            "kind": "wall",
+            "center": [
+                -15,
+                3,
+                -3
+            ],
+            "size": [
+                8,
+                6,
+                0.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_nB_B",
+            "zone": "whNE",
+            "kind": "wall",
+            "center": [
+                15,
+                3,
+                3
+            ],
+            "size": [
+                8,
+                6,
+                0.5
+            ],
+            "color": "#b7aa96"
+        },
+        {
+            "id": "wh_r1",
+            "zone": "whSW",
+            "kind": "roof",
+            "center": [
+                -19.5,
+                6.15,
+                -14.75
+            ],
+            "size": [
+                17,
+                0.3,
+                4.5
+            ],
+            "color": "#6c6f75"
+        },
+        {
+            "id": "wh_r1_B",
+            "zone": "whNE",
+            "kind": "roof",
+            "center": [
+                19.5,
+                6.15,
+                14.75
+            ],
+            "size": [
+                17,
+                0.3,
+                4.5
+            ],
+            "color": "#6c6f75"
+        },
+        {
+            "id": "wh_r2",
+            "zone": "whSW",
+            "kind": "roof",
+            "center": [
+                -19.5,
+                6.15,
+                -8.75
+            ],
+            "size": [
+                17,
+                0.3,
+                3.5
+            ],
+            "color": "#6c6f75"
+        },
+        {
+            "id": "wh_r2_B",
+            "zone": "whNE",
+            "kind": "roof",
+            "center": [
+                19.5,
+                6.15,
+                8.75
+            ],
+            "size": [
+                17,
+                0.3,
+                3.5
+            ],
+            "color": "#6c6f75"
+        },
+        {
+            "id": "wh_r3",
+            "zone": "whSW",
+            "kind": "roof",
+            "center": [
+                -19.5,
+                6.15,
+                -4
+            ],
+            "size": [
+                17,
+                0.3,
+                2
+            ],
+            "color": "#6c6f75"
+        },
+        {
+            "id": "wh_r3_B",
+            "zone": "whNE",
+            "kind": "roof",
+            "center": [
+                19.5,
+                6.15,
+                4
+            ],
+            "size": [
+                17,
+                0.3,
+                2
+            ],
+            "color": "#6c6f75"
+        },
+        {
+            "id": "wh_mz",
+            "zone": "whSW",
+            "kind": "platform",
+            "center": [
+                -26.25,
+                3,
+                -13.25
+            ],
+            "size": [
+                3.5,
+                0.4,
+                6.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_mz_B",
+            "zone": "whNE",
+            "kind": "platform",
+            "center": [
+                26.25,
+                3,
+                13.25
+            ],
+            "size": [
+                3.5,
+                0.4,
+                6.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_0",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                0.13,
+                -4.25
+            ],
+            "size": [
+                3.5,
+                0.27,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_0_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                0.13,
+                4.25
+            ],
+            "size": [
+                3.5,
+                0.27,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_1",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                0.27,
+                -4.75
+            ],
+            "size": [
+                3.5,
+                0.53,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_1_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                0.27,
+                4.75
+            ],
+            "size": [
+                3.5,
+                0.53,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_2",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                0.4,
+                -5.25
+            ],
+            "size": [
+                3.5,
+                0.8,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_2_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                0.4,
+                5.25
+            ],
+            "size": [
+                3.5,
+                0.8,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_3",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                0.53,
+                -5.75
+            ],
+            "size": [
+                3.5,
+                1.07,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_3_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                0.53,
+                5.75
+            ],
+            "size": [
+                3.5,
+                1.07,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_4",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                0.67,
+                -6.25
+            ],
+            "size": [
+                3.5,
+                1.33,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_4_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                0.67,
+                6.25
+            ],
+            "size": [
+                3.5,
+                1.33,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_5",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                0.8,
+                -6.75
+            ],
+            "size": [
+                3.5,
+                1.6,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_5_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                0.8,
+                6.75
+            ],
+            "size": [
+                3.5,
+                1.6,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_6",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                0.93,
+                -7.25
+            ],
+            "size": [
+                3.5,
+                1.87,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_6_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                0.93,
+                7.25
+            ],
+            "size": [
+                3.5,
+                1.87,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_7",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                1.07,
+                -7.75
+            ],
+            "size": [
+                3.5,
+                2.13,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_7_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                1.07,
+                7.75
+            ],
+            "size": [
+                3.5,
+                2.13,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_8",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                1.2,
+                -8.25
+            ],
+            "size": [
+                3.5,
+                2.4,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_8_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                1.2,
+                8.25
+            ],
+            "size": [
+                3.5,
+                2.4,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_9",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                1.33,
+                -8.75
+            ],
+            "size": [
+                3.5,
+                2.67,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_9_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                1.33,
+                8.75
+            ],
+            "size": [
+                3.5,
+                2.67,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_10",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                1.47,
+                -9.25
+            ],
+            "size": [
+                3.5,
+                2.93,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_10_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                1.47,
+                9.25
+            ],
+            "size": [
+                3.5,
+                2.93,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_11",
+            "zone": "whSW",
+            "kind": "stair",
+            "center": [
+                -26.25,
+                1.6,
+                -9.75
+            ],
+            "size": [
+                3.5,
+                3.2,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_st_11_B",
+            "zone": "whNE",
+            "kind": "stair",
+            "center": [
+                26.25,
+                1.6,
+                9.75
+            ],
+            "size": [
+                3.5,
+                3.2,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "wh_c1",
+            "zone": "whSW",
+            "kind": "crate",
+            "center": [
+                -17,
+                0.9,
+                -12
+            ],
+            "size": [
+                2.4,
+                1.8,
+                2.4
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "wh_c1_B",
+            "zone": "whNE",
+            "kind": "crate",
+            "center": [
+                17,
+                0.9,
+                12
+            ],
+            "size": [
+                2.4,
+                1.8,
+                2.4
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "wh_c2",
+            "zone": "whSW",
+            "kind": "cover",
+            "center": [
+                -14.5,
+                0.6,
+                -7
+            ],
+            "size": [
+                3,
+                1.2,
+                1.2
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "wh_c2_B",
+            "zone": "whNE",
+            "kind": "cover",
+            "center": [
+                14.5,
+                0.6,
+                7
+            ],
+            "size": [
+                3,
+                1.2,
+                1.2
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "wh_c3",
+            "zone": "whSW",
+            "kind": "crate",
+            "center": [
+                -20,
+                0.9,
+                -6.5
+            ],
+            "size": [
+                2.4,
+                1.8,
+                2.4
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "wh_c3_B",
+            "zone": "whNE",
+            "kind": "crate",
+            "center": [
+                20,
+                0.9,
+                6.5
+            ],
+            "size": [
+                2.4,
+                1.8,
+                2.4
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "wh_rk",
+            "zone": "whSW",
+            "kind": "crate",
+            "center": [
+                -18,
+                1.2,
+                -14.5
+            ],
+            "size": [
+                6,
+                2.4,
+                0.8
+            ],
+            "color": "#7d6a52"
+        },
+        {
+            "id": "wh_rk_B",
+            "zone": "whNE",
+            "kind": "crate",
+            "center": [
+                18,
+                1.2,
+                14.5
+            ],
+            "size": [
+                6,
+                2.4,
+                0.8
+            ],
+            "color": "#7d6a52"
+        },
+        {
+            "id": "cy_c1",
+            "zone": "cySE",
+            "kind": "cont",
+            "center": [
+                17.5,
+                1.3,
+                -15
+            ],
+            "size": [
+                11,
+                2.6,
+                2.4
+            ],
+            "color": "#a8503a"
+        },
+        {
+            "id": "cy_c1_B",
+            "zone": "cyNW",
+            "kind": "cont",
+            "center": [
+                -17.5,
+                1.3,
+                15
+            ],
+            "size": [
+                11,
+                2.6,
+                2.4
+            ],
+            "color": "#a8503a"
+        },
+        {
+            "id": "cy_c2",
+            "zone": "cySE",
+            "kind": "cont",
+            "center": [
+                26.5,
+                1.3,
+                -9.5
+            ],
+            "size": [
+                2.4,
+                2.6,
+                13
+            ],
+            "color": "#3f6b8a"
+        },
+        {
+            "id": "cy_c2_B",
+            "zone": "cyNW",
+            "kind": "cont",
+            "center": [
+                -26.5,
+                1.3,
+                9.5
+            ],
+            "size": [
+                2.4,
+                2.6,
+                13
+            ],
+            "color": "#3f6b8a"
+        },
+        {
+            "id": "cy_c3",
+            "zone": "cySE",
+            "kind": "cont",
+            "center": [
+                18,
+                1.3,
+                -9
+            ],
+            "size": [
+                9,
+                2.6,
+                2.4
+            ],
+            "color": "#5b7a4a"
+        },
+        {
+            "id": "cy_c3_B",
+            "zone": "cyNW",
+            "kind": "cont",
+            "center": [
+                -18,
+                1.3,
+                9
+            ],
+            "size": [
+                9,
+                2.6,
+                2.4
+            ],
+            "color": "#5b7a4a"
+        },
+        {
+            "id": "cy_cr",
+            "zone": "cySE",
+            "kind": "cover",
+            "center": [
+                22.8,
+                0.7,
+                -12
+            ],
+            "size": [
+                1.6,
+                1.4,
+                1.6
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "cy_cr_B",
+            "zone": "cyNW",
+            "kind": "cover",
+            "center": [
+                -22.8,
+                0.7,
+                12
+            ],
+            "size": [
+                1.6,
+                1.4,
+                1.6
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "cy_cv",
+            "zone": "cySE",
+            "kind": "cover",
+            "center": [
+                19,
+                0.6,
+                -5
+            ],
+            "size": [
+                2.4,
+                1.2,
+                2.4
+            ],
+            "color": "#c9c2b4"
+        },
+        {
+            "id": "cy_cv_B",
+            "zone": "cyNW",
+            "kind": "cover",
+            "center": [
+                -19,
+                0.6,
+                5
+            ],
+            "size": [
+                2.4,
+                1.2,
+                2.4
+            ],
+            "color": "#c9c2b4"
+        },
+        {
+            "id": "cy_st_0",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                0.13,
+                -3.24
+            ],
+            "size": [
+                2.4,
+                0.26,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_0_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                0.13,
+                3.24
+            ],
+            "size": [
+                2.4,
+                0.26,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_1",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                0.26,
+                -3.72
+            ],
+            "size": [
+                2.4,
+                0.52,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_1_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                0.26,
+                3.72
+            ],
+            "size": [
+                2.4,
+                0.52,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_2",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                0.39,
+                -4.2
+            ],
+            "size": [
+                2.4,
+                0.78,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_2_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                0.39,
+                4.2
+            ],
+            "size": [
+                2.4,
+                0.78,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_3",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                0.52,
+                -4.68
+            ],
+            "size": [
+                2.4,
+                1.04,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_3_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                0.52,
+                4.68
+            ],
+            "size": [
+                2.4,
+                1.04,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_4",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                0.65,
+                -5.16
+            ],
+            "size": [
+                2.4,
+                1.3,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_4_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                0.65,
+                5.16
+            ],
+            "size": [
+                2.4,
+                1.3,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_5",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                0.78,
+                -5.64
+            ],
+            "size": [
+                2.4,
+                1.56,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_5_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                0.78,
+                5.64
+            ],
+            "size": [
+                2.4,
+                1.56,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_6",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                0.91,
+                -6.12
+            ],
+            "size": [
+                2.4,
+                1.82,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_6_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                0.91,
+                6.12
+            ],
+            "size": [
+                2.4,
+                1.82,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_7",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                1.04,
+                -6.6
+            ],
+            "size": [
+                2.4,
+                2.08,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_7_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                1.04,
+                6.6
+            ],
+            "size": [
+                2.4,
+                2.08,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_8",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                1.17,
+                -7.08
+            ],
+            "size": [
+                2.4,
+                2.34,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_8_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                1.17,
+                7.08
+            ],
+            "size": [
+                2.4,
+                2.34,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_9",
+            "zone": "cySE",
+            "kind": "stair",
+            "center": [
+                15,
+                1.3,
+                -7.56
+            ],
+            "size": [
+                2.4,
+                2.6,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "cy_st_9_B",
+            "zone": "cyNW",
+            "kind": "stair",
+            "center": [
+                -15,
+                1.3,
+                7.56
+            ],
+            "size": [
+                2.4,
+                2.6,
+                0.48
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "co_c1",
+            "zone": "corS",
+            "kind": "cover",
+            "center": [
+                14,
+                0.7,
+                -19.5
+            ],
+            "size": [
+                2,
+                1.4,
+                2
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "co_c1_B",
+            "zone": "corN",
+            "kind": "cover",
+            "center": [
+                -14,
+                0.7,
+                19.5
+            ],
+            "size": [
+                2,
+                1.4,
+                2
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "co_c2",
+            "zone": "corS",
+            "kind": "cover",
+            "center": [
+                22,
+                0.7,
+                -19
+            ],
+            "size": [
+                2,
+                1.4,
+                2
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "co_c2_B",
+            "zone": "corN",
+            "kind": "cover",
+            "center": [
+                -22,
+                0.7,
+                19
+            ],
+            "size": [
+                2,
+                1.4,
+                2
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "ct_fr",
+            "zone": "center",
+            "kind": "cont",
+            "center": [
+                -4,
+                1.5,
+                -2.5
+            ],
+            "size": [
+                8,
+                3,
+                3
+            ],
+            "color": "#5b7a4a"
+        },
+        {
+            "id": "ct_fr_B",
+            "zone": "center",
+            "kind": "cont",
+            "center": [
+                4,
+                1.5,
+                2.5
+            ],
+            "size": [
+                8,
+                3,
+                3
+            ],
+            "color": "#5b7a4a"
+        },
+        {
+            "id": "ct_pl",
+            "zone": "center",
+            "kind": "platform",
+            "center": [
+                6,
+                0.5,
+                -6
+            ],
+            "size": [
+                5,
+                1,
+                5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "ct_pl_B",
+            "zone": "center",
+            "kind": "platform",
+            "center": [
+                -6,
+                0.5,
+                6
+            ],
+            "size": [
+                5,
+                1,
+                5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "ct_cv",
+            "zone": "center",
+            "kind": "cover",
+            "center": [
+                -8,
+                0.7,
+                -8
+            ],
+            "size": [
+                1.6,
+                1.4,
+                1.6
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "ct_cv_B",
+            "zone": "center",
+            "kind": "cover",
+            "center": [
+                8,
+                0.7,
+                8
+            ],
+            "size": [
+                1.6,
+                1.4,
+                1.6
+            ],
+            "color": "#9a7b4f"
+        },
+        {
+            "id": "pm_N",
+            "zone": "perimeter",
+            "kind": "wall",
+            "center": [
+                0,
+                3,
+                28.25
+            ],
+            "size": [
+                57,
+                6,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "pm_S",
+            "zone": "perimeter",
+            "kind": "wall",
+            "center": [
+                0,
+                3,
+                -28.25
+            ],
+            "size": [
+                57,
+                6,
+                0.5
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "pm_E",
+            "zone": "perimeter",
+            "kind": "wall",
+            "center": [
+                28.25,
+                3,
+                0
+            ],
+            "size": [
+                0.5,
+                6,
+                57
+            ],
+            "color": "#8c8f93"
+        },
+        {
+            "id": "pm_W",
+            "zone": "perimeter",
+            "kind": "wall",
+            "center": [
+                -28.25,
+                3,
+                0
+            ],
+            "size": [
+                0.5,
+                6,
+                57
+            ],
+            "color": "#8c8f93"
+        }
+    ],
+    "spawns": {
+        "teamA": {
+            "facing": "north",
+            "points": [
+                [
+                    -4.5,
+                    -26.5
+                ],
+                [
+                    -1.5,
+                    -26.5
+                ],
+                [
+                    1.5,
+                    -26.5
+                ],
+                [
+                    4.5,
+                    -26.5
+                ]
+            ]
+        },
+        "teamB": {
+            "facing": "south",
+            "points": [
+                [
+                    4.5,
+                    26.5
+                ],
+                [
+                    1.5,
+                    26.5
+                ],
+                [
+                    -1.5,
+                    26.5
+                ],
+                [
+                    -4.5,
+                    26.5
+                ]
+            ]
+        }
+    },
+    "waypoints": [
+        {
+            "id": "w1",
+            "name": "Bay west exit",
+            "pos": [
+                -9,
+                0,
+                -22.5
+            ],
+            "tag": "exit"
+        },
+        {
+            "id": "nw1",
+            "name": "Bay west exit (north twin)",
+            "pos": [
+                9,
+                0,
+                22.5
+            ],
+            "tag": "exit"
+        },
+        {
+            "id": "w2",
+            "name": "Bay center exit",
+            "pos": [
+                0,
+                0,
+                -20
+            ],
+            "tag": "exit"
+        },
+        {
+            "id": "nw2",
+            "name": "Bay center exit (north twin)",
+            "pos": [
+                0,
+                0,
+                20
+            ],
+            "tag": "exit"
+        },
+        {
+            "id": "w3",
+            "name": "Bay east exit",
+            "pos": [
+                9,
+                0,
+                -22.5
+            ],
+            "tag": "exit"
+        },
+        {
+            "id": "nw3",
+            "name": "Bay east exit (north twin)",
+            "pos": [
+                -9,
+                0,
+                22.5
+            ],
+            "tag": "exit"
+        },
+        {
+            "id": "w4",
+            "name": "South Walk west",
+            "pos": [
+                -14,
+                0,
+                -19
+            ],
+            "tag": "path"
+        },
+        {
+            "id": "nw4",
+            "name": "South Walk west (north twin)",
+            "pos": [
+                14,
+                0,
+                19
+            ],
+            "tag": "path"
+        },
+        {
+            "id": "w5",
+            "name": "Foundry south door",
+            "pos": [
+                -19.5,
+                0,
+                -17
+            ],
+            "tag": "door"
+        },
+        {
+            "id": "nw5",
+            "name": "Foundry south door (north twin)",
+            "pos": [
+                19.5,
+                0,
+                17
+            ],
+            "tag": "door"
+        },
+        {
+            "id": "w6",
+            "name": "Foundry floor",
+            "pos": [
+                -17,
+                0,
+                -10
+            ],
+            "tag": "cover"
+        },
+        {
+            "id": "nw6",
+            "name": "Foundry floor (north twin)",
+            "pos": [
+                17,
+                0,
+                10
+            ],
+            "tag": "cover"
+        },
+        {
+            "id": "w7",
+            "name": "Mezzanine",
+            "pos": [
+                -26.25,
+                3.2,
+                -13
+            ],
+            "tag": "overlook"
+        },
+        {
+            "id": "nw7",
+            "name": "Mezzanine (north twin)",
+            "pos": [
+                26.25,
+                3.2,
+                13
+            ],
+            "tag": "overlook"
+        },
+        {
+            "id": "w8",
+            "name": "Foundry east door",
+            "pos": [
+                -11,
+                0,
+                -8
+            ],
+            "tag": "door"
+        },
+        {
+            "id": "nw8",
+            "name": "Foundry east door (north twin)",
+            "pos": [
+                11,
+                0,
+                8
+            ],
+            "tag": "door"
+        },
+        {
+            "id": "w9",
+            "name": "Foundry north door",
+            "pos": [
+                -20.5,
+                0,
+                -3
+            ],
+            "tag": "door"
+        },
+        {
+            "id": "nw9",
+            "name": "Foundry north door (north twin)",
+            "pos": [
+                20.5,
+                0,
+                3
+            ],
+            "tag": "door"
+        },
+        {
+            "id": "w10",
+            "name": "Plaza west cover",
+            "pos": [
+                -7,
+                0,
+                -9
+            ],
+            "tag": "cover"
+        },
+        {
+            "id": "nw10",
+            "name": "Plaza west cover (north twin)",
+            "pos": [
+                7,
+                0,
+                9
+            ],
+            "tag": "cover"
+        },
+        {
+            "id": "w11",
+            "name": "Plaza platform",
+            "pos": [
+                6,
+                1,
+                -6
+            ],
+            "tag": "overlook"
+        },
+        {
+            "id": "nw11",
+            "name": "Plaza platform (north twin)",
+            "pos": [
+                -6,
+                1,
+                6
+            ],
+            "tag": "overlook"
+        },
+        {
+            "id": "w12",
+            "name": "South Walk east",
+            "pos": [
+                16,
+                0,
+                -19
+            ],
+            "tag": "cover"
+        },
+        {
+            "id": "nw12",
+            "name": "South Walk east (north twin)",
+            "pos": [
+                -16,
+                0,
+                19
+            ],
+            "tag": "cover"
+        },
+        {
+            "id": "w13",
+            "name": "Yard lane",
+            "pos": [
+                18,
+                0,
+                -12
+            ],
+            "tag": "cover"
+        },
+        {
+            "id": "nw13",
+            "name": "Yard lane (north twin)",
+            "pos": [
+                -18,
+                0,
+                12
+            ],
+            "tag": "cover"
+        },
+        {
+            "id": "w14",
+            "name": "Yard top",
+            "pos": [
+                18,
+                2.6,
+                -9
+            ],
+            "tag": "overlook"
+        },
+        {
+            "id": "nw14",
+            "name": "Yard top (north twin)",
+            "pos": [
+                -18,
+                2.6,
+                9
+            ],
+            "tag": "overlook"
+        },
+        {
+            "id": "w15",
+            "name": "Yard stairs",
+            "pos": [
+                15,
+                0,
+                -3
+            ],
+            "tag": "door"
+        },
+        {
+            "id": "nw15",
+            "name": "Yard stairs (north twin)",
+            "pos": [
+                -15,
+                0,
+                3
+            ],
+            "tag": "door"
+        },
+        {
+            "id": "c0",
+            "name": "Freight gap",
+            "pos": [
+                0,
+                0,
+                0
+            ],
+            "tag": "choke"
+        }
+    ],
+    "edges": [
+        [
+            "w1",
+            "w4"
+        ],
+        [
+            "w4",
+            "w5"
+        ],
+        [
+            "w5",
+            "w6"
+        ],
+        [
+            "w6",
+            "w8"
+        ],
+        [
+            "w6",
+            "w7"
+        ],
+        [
+            "w6",
+            "w9"
+        ],
+        [
+            "w8",
+            "w10"
+        ],
+        [
+            "w2",
+            "w10"
+        ],
+        [
+            "w10",
+            "c0"
+        ],
+        [
+            "w10",
+            "w11"
+        ],
+        [
+            "w11",
+            "c0"
+        ],
+        [
+            "w3",
+            "w12"
+        ],
+        [
+            "w12",
+            "w13"
+        ],
+        [
+            "w13",
+            "w11"
+        ],
+        [
+            "w11",
+            "w15"
+        ],
+        [
+            "w15",
+            "w14"
+        ],
+        [
+            "w15",
+            "c0"
+        ],
+        [
+            "nw1",
+            "nw4"
+        ],
+        [
+            "nw4",
+            "nw5"
+        ],
+        [
+            "nw5",
+            "nw6"
+        ],
+        [
+            "nw6",
+            "nw8"
+        ],
+        [
+            "nw6",
+            "nw7"
+        ],
+        [
+            "nw6",
+            "nw9"
+        ],
+        [
+            "nw8",
+            "nw10"
+        ],
+        [
+            "nw2",
+            "nw10"
+        ],
+        [
+            "nw10",
+            "c0"
+        ],
+        [
+            "nw10",
+            "nw11"
+        ],
+        [
+            "nw11",
+            "c0"
+        ],
+        [
+            "nw3",
+            "nw12"
+        ],
+        [
+            "nw12",
+            "nw13"
+        ],
+        [
+            "nw13",
+            "nw11"
+        ],
+        [
+            "nw11",
+            "nw15"
+        ],
+        [
+            "nw15",
+            "nw14"
+        ],
+        [
+            "nw15",
+            "c0"
+        ],
+        [
+            "w9",
+            "nw15"
+        ],
+        [
+            "w15",
+            "nw9"
+        ]
+    ],
+    "sightlines": [
+        {
+            "name": "South Walk long lane",
+            "from": [
+                -8,
+                -19
+            ],
+            "to": [
+                28,
+                -19
+            ],
+            "length_m": 36
+        },
+        {
+            "name": "North Walk long lane",
+            "from": [
+                8,
+                19
+            ],
+            "to": [
+                -28,
+                19
+            ],
+            "length_m": 36
+        },
+        {
+            "name": "West Cross",
+            "from": [
+                -28,
+                0
+            ],
+            "to": [
+                -11,
+                0
+            ],
+            "length_m": 17
+        },
+        {
+            "name": "East Cross",
+            "from": [
+                11,
+                0
+            ],
+            "to": [
+                28,
+                0
+            ],
+            "length_m": 17
+        },
+        {
+            "name": "Mezzanine over Foundry SW",
+            "from": [
+                -26,
+                -12
+            ],
+            "to": [
+                -11,
+                -8
+            ],
+            "length_m": 15.52
+        },
+        {
+            "name": "Mezzanine over Foundry NE",
+            "from": [
+                26,
+                12
+            ],
+            "to": [
+                11,
+                8
+            ],
+            "length_m": 15.52
+        },
+        {
+            "name": "Yard top to plaza",
+            "from": [
+                18,
+                -9
+            ],
+            "to": [
+                6,
+                -6
+            ],
+            "length_m": 12.37
+        },
+        {
+            "name": "Yard top to plaza (north)",
+            "from": [
+                -18,
+                9
+            ],
+            "to": [
+                -6,
+                6
+            ],
+            "length_m": 12.37
+        },
+        {
+            "name": "Center diagonal, broken by freight cars",
+            "from": [
+                -8,
+                -8
+            ],
+            "to": [
+                8,
+                8
+            ],
+            "length_m": 22.63
+        }
+    ],
+    "lighting": {
+        "timeOfDay": "about 17:30, golden hour",
+        "sun": {
+            "from": "west, azimuth 270 degrees",
+            "elevation_deg": 28,
+            "color": "#ffb070",
+            "intensity": "1.0 to 1.4",
+            "shadows": "the only shadow-casting light, 2048 map, ortho frustum +/-45 m"
+        },
+        "sky": {
+            "hemisphere": {
+                "sky": "#8fb4e0",
+                "ground": "#4a4038",
+                "intensity": 0.65
+            },
+            "fog": {
+                "type": "exp2",
+                "color": "#dca878",
+                "density": 0.005
+            }
+        },
+        "points": [
+            {
+                "id": "spawn",
+                "x": 0,
+                "y": 3.2,
+                "z": -25,
+                "color": "#35c3ff",
+                "intensity": 1.1,
+                "range": 12
+            },
+            {
+                "id": "spawn_B",
+                "x": 0,
+                "y": 3.2,
+                "z": 25,
+                "color": "#ff5a4a",
+                "intensity": 1.1,
+                "range": 12
+            },
+            {
+                "id": "wh1",
+                "x": -18,
+                "y": 4.6,
+                "z": -10,
+                "color": "#ffcf8a",
+                "intensity": 1.2,
+                "range": 16
+            },
+            {
+                "id": "wh1_B",
+                "x": 18,
+                "y": 4.6,
+                "z": 10,
+                "color": "#ffcf8a",
+                "intensity": 1.2,
+                "range": 16
+            },
+            {
+                "id": "wh2",
+                "x": -14,
+                "y": 4.6,
+                "z": -15,
+                "color": "#ffcf8a",
+                "intensity": 1.1,
+                "range": 14
+            },
+            {
+                "id": "wh2_B",
+                "x": 14,
+                "y": 4.6,
+                "z": 15,
+                "color": "#ffcf8a",
+                "intensity": 1.1,
+                "range": 14
+            },
+            {
+                "id": "wh3",
+                "x": -25,
+                "y": 4.4,
+                "z": -7,
+                "color": "#ffcf8a",
+                "intensity": 1,
+                "range": 12
+            },
+            {
+                "id": "wh3_B",
+                "x": 25,
+                "y": 4.4,
+                "z": 7,
+                "color": "#ffcf8a",
+                "intensity": 1,
+                "range": 12
+            },
+            {
+                "id": "yd1",
+                "x": 16,
+                "y": 4.5,
+                "z": -6,
+                "color": "#9fd0ff",
+                "intensity": 1,
+                "range": 16
+            },
+            {
+                "id": "yd1_B",
+                "x": -16,
+                "y": 4.5,
+                "z": 6,
+                "color": "#9fd0ff",
+                "intensity": 1,
+                "range": 16
+            },
+            {
+                "id": "yd2",
+                "x": 23,
+                "y": 4.5,
+                "z": -12,
+                "color": "#9fd0ff",
+                "intensity": 0.9,
+                "range": 14
+            },
+            {
+                "id": "yd2_B",
+                "x": -23,
+                "y": 4.5,
+                "z": 12,
+                "color": "#9fd0ff",
+                "intensity": 0.9,
+                "range": 14
+            },
+            {
+                "id": "co",
+                "x": 14,
+                "y": 4,
+                "z": -19,
+                "color": "#ffe0b0",
+                "intensity": 0.8,
+                "range": 14
+            },
+            {
+                "id": "co_B",
+                "x": -14,
+                "y": 4,
+                "z": 19,
+                "color": "#ffe0b0",
+                "intensity": 0.8,
+                "range": 14
+            }
+        ],
+        "teamColors": {
+            "A": "#35c3ff",
+            "B": "#ff5a4a"
+        },
+        "budget": "at most 8 point lights visible at once, none cast shadows; use emissive materials for lamps and signs",
+        "readability": "cover is lighter than the floor, team colors appear only in the bays, interiors are 30 to 50 percent of exterior brightness so doors read as transitions"
+    },
+    "metrics": {
+        "area_m2": 3136,
+        "players": 8,
+        "spawnToCenter_m": 25,
+        "estSecondsToCenterAt5mps": 5,
+        "routes": "three per team: west through the Foundry, center through the Plaza, east through the Yard"
+    }
+}

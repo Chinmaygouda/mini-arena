@@ -398,6 +398,174 @@ class SoundManager {
     osc.start(now);
     osc.stop(now + 0.15);
   }
+
+  // 12-Gauge Combat Shotgun Blast
+  public playShotgunShot() {
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+    const now = this.ctx.currentTime;
+
+    // Heavy Sub Punch
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'triangle';
+    subOsc.frequency.setValueAtTime(160, now);
+    subOsc.frequency.exponentialRampToValueAtTime(28, now + 0.28);
+    subGain.gain.setValueAtTime(1.5, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+    subOsc.connect(subGain);
+    subGain.connect(this.masterGain);
+    subOsc.start(now);
+    subOsc.stop(now + 0.32);
+
+    // Concussive Gas Expansion
+    const bufferSize = this.ctx.sampleRate * 0.35;
+    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1200, now);
+    filter.frequency.exponentialRampToValueAtTime(180, now + 0.3);
+
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(1.4, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(this.masterGain);
+    noise.start(now);
+  }
+
+  // Shotgun Pump Action (Rack-Back then Rack-Forward)
+  public playShotgunPump() {
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+    const now = this.ctx.currentTime;
+
+    // Click 1: Back (Slide unlock & shell eject)
+    const osc1 = this.ctx.createOscillator();
+    const gain1 = this.ctx.createGain();
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(420, now);
+    osc1.frequency.exponentialRampToValueAtTime(160, now + 0.06);
+    gain1.gain.setValueAtTime(0.4, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+    osc1.connect(gain1);
+    gain1.connect(this.masterGain);
+    osc1.start(now);
+    osc1.stop(now + 0.07);
+
+    // Click 2: Forward (Chamber shell & lock bolt)
+    const osc2 = this.ctx.createOscillator();
+    const gain2 = this.ctx.createGain();
+    osc2.type = 'sawtooth';
+    osc2.frequency.setValueAtTime(280, now + 0.14);
+    osc2.frequency.exponentialRampToValueAtTime(550, now + 0.20);
+    gain2.gain.setValueAtTime(0.45, now + 0.14);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    osc2.connect(gain2);
+    gain2.connect(this.masterGain);
+    osc2.start(now + 0.14);
+    osc2.stop(now + 0.22);
+  }
+
+  // High-Caliber Anti-Materiel Sniper Blast (.50 BMG)
+  public playSniperShot() {
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+    const now = this.ctx.currentTime;
+
+    // Massive Sub-Bass Shockwave
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(220, now);
+    subOsc.frequency.exponentialRampToValueAtTime(22, now + 0.45);
+    subGain.gain.setValueAtTime(1.8, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+    subOsc.connect(subGain);
+    subGain.connect(this.masterGain);
+    subOsc.start(now);
+    subOsc.stop(now + 0.55);
+
+    // Supersonic Crack (High-frequency burst)
+    const bufferSize = this.ctx.sampleRate * 0.45;
+    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(3200, now);
+    filter.frequency.exponentialRampToValueAtTime(350, now + 0.4);
+    filter.Q.setValueAtTime(2.2, now);
+
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(1.6, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(this.masterGain);
+    noise.start(now);
+  }
+
+  // Sniper Bolt Cycle (Up, Pull-Back, Push-Forward, Down)
+  public playSniperBolt() {
+    this.init();
+    if (!this.ctx || !this.masterGain) return;
+    const now = this.ctx.currentTime;
+
+    // Unlock bolt
+    const o1 = this.ctx.createOscillator();
+    const g1 = this.ctx.createGain();
+    o1.type = 'triangle';
+    o1.frequency.setValueAtTime(620, now);
+    o1.frequency.exponentialRampToValueAtTime(320, now + 0.08);
+    g1.gain.setValueAtTime(0.4, now);
+    g1.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+    o1.connect(g1);
+    g1.connect(this.masterGain);
+    o1.start(now);
+    o1.stop(now + 0.09);
+
+    // Pull back
+    const o2 = this.ctx.createOscillator();
+    const g2 = this.ctx.createGain();
+    o2.type = 'sawtooth';
+    o2.frequency.setValueAtTime(250, now + 0.16);
+    o2.frequency.exponentialRampToValueAtTime(180, now + 0.28);
+    g2.gain.setValueAtTime(0.35, now + 0.16);
+    g2.gain.exponentialRampToValueAtTime(0.001, now + 0.30);
+    o2.connect(g2);
+    g2.connect(this.masterGain);
+    o2.start(now + 0.16);
+    o2.stop(now + 0.30);
+
+    // Lock forward
+    const o3 = this.ctx.createOscillator();
+    const g3 = this.ctx.createGain();
+    o3.type = 'sawtooth';
+    o3.frequency.setValueAtTime(380, now + 0.42);
+    o3.frequency.exponentialRampToValueAtTime(580, now + 0.52);
+    g3.gain.setValueAtTime(0.5, now + 0.42);
+    g3.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+    o3.connect(g3);
+    g3.connect(this.masterGain);
+    o3.start(now + 0.42);
+    o3.stop(now + 0.55);
+  }
 }
 
 export const sound = new SoundManager();

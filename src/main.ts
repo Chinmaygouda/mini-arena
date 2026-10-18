@@ -1,12 +1,16 @@
 // src/main.ts
 // Master First-Person Shooter Engine & Orchestrator
+// Supports 5 Weapons (AK-47, M9 Pistol, Cyclone-9 SMG, SPAS-12 Shotgun, AW-50 Sniper)
+// and 5 Map Arenas (Shooting Range, Foundry Yard, Cul-de-Sac, Dustline Village, Overpass)
 
 import './style.css';
 import * as THREE from 'three';
 import { FirstPersonControls } from './player/firstPersonControls';
 import { WeaponManager } from './weapons/weaponManager';
+import type { WeaponId } from './weapons/weaponTypes';
 import { TargetManager } from './environment/targets';
 import { createShootingRange } from './environment/shootingRange';
+import { BlueprintMapLoader, type MapId } from './environment/blueprintMapLoader';
 import { FPSHUD } from './ui/fpsHUD';
 import { BUILD_STAMP } from './buildStamp';
 
@@ -19,8 +23,10 @@ class FPSApp {
   private controls: FirstPersonControls;
   private weaponManager: WeaponManager;
   private targetManager: TargetManager;
+  private mapLoader: BlueprintMapLoader;
   private hud: FPSHUD;
 
+  private rangeEnvironmentGroup: THREE.Group;
   private tracerMaterial: THREE.MeshBasicMaterial;
   private activeTracers: { mesh: THREE.Mesh; life: number }[] = [];
 
@@ -38,7 +44,7 @@ class FPSApp {
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 300);
 
-    // Dedicated Viewmodel Lighting Rig (Ensures weapons, arms, and reflex sight are clearly illuminated)
+    // Dedicated Viewmodel Lighting Rig
     const vmKeyLight = new THREE.DirectionalLight(0xfffaed, 1.4);
     vmKeyLight.position.set(0.6, 1.0, 0.8);
     this.camera.add(vmKeyLight);
@@ -68,13 +74,17 @@ class FPSApp {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.15;
 
-    // 2. Environment & Targets
-    createShootingRange(this.scene);
+    // 2. Environment & Maps
+    this.rangeEnvironmentGroup = new THREE.Group();
+    this.scene.add(this.rangeEnvironmentGroup);
+    createShootingRange(this.rangeEnvironmentGroup);
+
     this.targetManager = new TargetManager(this.scene);
+    this.mapLoader = new BlueprintMapLoader(this.scene);
 
     // 3. Player & Weapons
     this.controls = new FirstPersonControls(this.camera, canvas);
@@ -89,10 +99,35 @@ class FPSApp {
 
     this.setupInteractions();
     this.setupResize();
+
+    // Check URL for initial map parameter (e.g., ?map=foundry or ?map=range)
+    const initialMap = (new URLSearchParams(window.location.search).get('map') as MapId) || 'range';
+    this.switchMap(initialMap);
+
     this.animate();
   }
 
+  public async switchMap(mapId: MapId) {
+    if (mapId === 'range') {
+      this.mapLoader.clearCurrentMap();
+      this.rangeEnvironmentGroup.visible = true;
+      this.hud.setMapName('Tactical Shooting Range');
+    } else {
+      this.rangeEnvironmentGroup.visible = false;
+      const mapName = await this.mapLoader.loadMap(mapId, this.targetManager);
+      this.hud.setMapName(mapName);
+    }
+
+    // Reset player position safely
+    this.camera.position.set(0, 1.8, 6);
+  }
+
   private setupInteractions() {
+    // Map Selection Linkage
+    this.hud.onMapSelect = (mapId: MapId) => {
+      this.switchMap(mapId);
+    };
+
     // Camera Recoil Linkage
     this.weaponManager.onCameraRecoil = (pitch, yaw) => {
       this.controls.applyCameraRecoil(pitch, yaw);
@@ -154,6 +189,12 @@ class FPSApp {
         this.weaponManager.switchWeapon('pistol');
       } else if (e.code === 'Digit3') {
         this.weaponManager.switchWeapon('smg');
+      } else if (e.code === 'Digit4') {
+        this.weaponManager.switchWeapon('shotgun');
+      } else if (e.code === 'Digit5') {
+        this.weaponManager.switchWeapon('sniper');
+      } else if (e.code === 'KeyM') {
+        this.hud.toggleMapModal();
       } else if (e.code === 'KeyQ') {
         this.weaponManager.toggleADS();
       } else if (e.code === 'KeyV') {
@@ -163,8 +204,8 @@ class FPSApp {
       }
     });
 
-    // Mouse wheel weapon switch
-    const weapons: Array<'ak47' | 'pistol' | 'smg'> = ['ak47', 'pistol', 'smg'];
+    // Mouse wheel weapon switch across all 5 firearms
+    const weapons: WeaponId[] = ['ak47', 'pistol', 'smg', 'shotgun', 'sniper'];
     window.addEventListener('wheel', (e: WheelEvent) => {
       if (!this.controls.isLocked && !this.hud.isDismissed) return;
       const currentIndex = weapons.indexOf(this.weaponManager.state.currentWeaponId);
@@ -178,18 +219,17 @@ class FPSApp {
     });
   }
 
-  private spawnTracer(start: THREE.Vector3, end: THREE.Vector3) {
-    const dir = end.clone().sub(start);
-    const dist = dir.length();
-    const tracerGeo = new THREE.CylinderGeometry(0.006, 0.006, Math.min(dist, 1.8), 6);
-    const tracerMesh = new THREE.Mesh(tracerGeo, this.tracerMaterial);
-    tracerMesh.userData.ignoreRaycast = true;
+  private spawnTracer(from: THREE.Vector3, to: THREE.Vector3) {
+    const dist = from.distanceTo(to);
+    const geom = new THREE.CylinderGeometry(0.008, 0.008, dist, 6);
+    geom.rotateX(Math.PI / 2);
+    const mesh = new THREE.Mesh(geom, this.tracerMaterial);
 
-    tracerMesh.position.copy(start).add(dir.clone().multiplyScalar(0.2));
-    tracerMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+    mesh.position.copy(from).lerp(to, 0.5);
+    mesh.lookAt(to);
+    this.scene.add(mesh);
 
-    this.scene.add(tracerMesh);
-    this.activeTracers.push({ mesh: tracerMesh, life: 0.08 });
+    this.activeTracers.push({ mesh, life: 0.08 });
   }
 
   private setupResize() {
@@ -197,19 +237,18 @@ class FPSApp {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     });
   }
 
   private animate = () => {
     requestAnimationFrame(this.animate);
+
     const delta = Math.min(this.clock.getDelta(), 0.1);
 
-    // Update Player & Controls
+    // Controls & Locomotion Update
     this.controls.update(delta);
-    this.hud.setPointerLocked(this.controls.isLocked);
 
-    // Update Weapons & Animations
+    // Viewmodel Physics, Recoil, Sway, and Reload Update
     this.weaponManager.update(
       delta,
       this.controls.mouseDelta,
@@ -217,23 +256,29 @@ class FPSApp {
       this.controls.isSprinting
     );
 
-    // Update Targets & Particles
+    // Target Physics & Wobble Update
     this.targetManager.update(delta);
 
-    // Update Tracers
+    // Bullet Tracers Decay
     for (let i = this.activeTracers.length - 1; i >= 0; i--) {
       const tracer = this.activeTracers[i];
       tracer.life -= delta;
       if (tracer.life <= 0) {
         this.scene.remove(tracer.mesh);
+        tracer.mesh.geometry.dispose();
         this.activeTracers.splice(i, 1);
       }
     }
 
-    // Render Scene
+    // Pointer-Lock Sync with HUD
+    this.hud.setPointerLocked(this.controls.isLocked);
+
+    // Primary Scene Rendering
     this.renderer.render(this.scene, this.camera);
   };
 }
 
-// Start Game
-new FPSApp();
+// Instantiate FPS Engine
+window.addEventListener('DOMContentLoaded', () => {
+  new FPSApp();
+});

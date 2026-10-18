@@ -1,0 +1,781 @@
+{
+    "meta": {
+        "name": "Cul-de-Sac",
+        "mode": "4v4 team match",
+        "theme": "suburban street on an overcast morning",
+        "units": "meters",
+        "axes": "x east, z north, y up, origin at center",
+        "size": [
+            50,
+            34
+        ],
+        "symmetry": "rotate 180 degrees about the origin: (x,z) to (-x,-z) maps team A half to team B half",
+        "version": 1
+    },
+    "rules": [
+        "Boxes are axis-aligned and solid; stairs are pre-expanded steps. Kind platform is walkable, kind roof only blocks bullets.",
+        "Cover heights: 1.0 to 1.2 m crouch cover, 1.4 to 1.5 m vehicle and stall cover, 2.4 to 5 m walls.",
+        "Keep doorways at least 3 m wide and lanes at least 3.5 m wide; put cover every 4 to 6 m in open areas.",
+        "Mirror every edit through the 180 degree rotation so the map stays fair.",
+        "The map has no weapons, characters or pickups; spawn entries are positions only."
+    ],
+    "zones": [
+        {
+            "id": "hS",
+            "name": "South House",
+            "min": [
+                -12,
+                -17
+            ],
+            "max": [
+                12,
+                -9
+            ]
+        },
+        {
+            "id": "hN",
+            "name": "North House",
+            "min": [
+                -12,
+                9
+            ],
+            "max": [
+                12,
+                17
+            ]
+        },
+        {
+            "id": "gSW",
+            "name": "Garage SW",
+            "min": [
+                -23,
+                -14.5
+            ],
+            "max": [
+                -17,
+                -9.5
+            ]
+        },
+        {
+            "id": "gNE",
+            "name": "Garage NE",
+            "min": [
+                17,
+                9.5
+            ],
+            "max": [
+                23,
+                14.5
+            ]
+        },
+        {
+            "id": "street",
+            "name": "Street and yards",
+            "min": [
+                -25,
+                -8
+            ],
+            "max": [
+                25,
+                8
+            ]
+        }
+    ],
+    "boxes": [
+        {
+            "id": "hn1",
+            "kind": "wall",
+            "center": [
+                -10,
+                1.6,
+                -9
+            ],
+            "size": [
+                4,
+                3.2,
+                0.5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hn1_B",
+            "kind": "wall",
+            "center": [
+                10,
+                1.6,
+                9
+            ],
+            "size": [
+                4,
+                3.2,
+                0.5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hn2",
+            "kind": "wall",
+            "center": [
+                0,
+                1.6,
+                -9
+            ],
+            "size": [
+                10,
+                3.2,
+                0.5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hn2_B",
+            "kind": "wall",
+            "center": [
+                0,
+                1.6,
+                9
+            ],
+            "size": [
+                10,
+                3.2,
+                0.5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hn3",
+            "kind": "wall",
+            "center": [
+                10,
+                1.6,
+                -9
+            ],
+            "size": [
+                4,
+                3.2,
+                0.5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hn3_B",
+            "kind": "wall",
+            "center": [
+                -10,
+                1.6,
+                9
+            ],
+            "size": [
+                4,
+                3.2,
+                0.5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hwW",
+            "kind": "wall",
+            "center": [
+                -12,
+                1.6,
+                -13
+            ],
+            "size": [
+                0.5,
+                3.2,
+                8
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hwW_B",
+            "kind": "wall",
+            "center": [
+                12,
+                1.6,
+                13
+            ],
+            "size": [
+                0.5,
+                3.2,
+                8
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hwE",
+            "kind": "wall",
+            "center": [
+                12,
+                1.6,
+                -13
+            ],
+            "size": [
+                0.5,
+                3.2,
+                8
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hwE_B",
+            "kind": "wall",
+            "center": [
+                -12,
+                1.6,
+                13
+            ],
+            "size": [
+                0.5,
+                3.2,
+                8
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hr",
+            "kind": "roof",
+            "center": [
+                0,
+                3.35,
+                -13
+            ],
+            "size": [
+                24.5,
+                0.3,
+                8.5
+            ],
+            "color": "#6c6f75"
+        },
+        {
+            "id": "hr_B",
+            "kind": "roof",
+            "center": [
+                0,
+                3.35,
+                13
+            ],
+            "size": [
+                24.5,
+                0.3,
+                8.5
+            ],
+            "color": "#6c6f75"
+        },
+        {
+            "id": "hd",
+            "kind": "wall",
+            "center": [
+                0,
+                1.6,
+                -14
+            ],
+            "size": [
+                0.4,
+                3.2,
+                5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "hd_B",
+            "kind": "wall",
+            "center": [
+                0,
+                1.6,
+                14
+            ],
+            "size": [
+                0.4,
+                3.2,
+                5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "cou",
+            "kind": "cover",
+            "center": [
+                -4,
+                0.45,
+                -13
+            ],
+            "size": [
+                3,
+                0.9,
+                1
+            ],
+            "color": "#8a6a44"
+        },
+        {
+            "id": "cou_B",
+            "kind": "cover",
+            "center": [
+                4,
+                0.45,
+                13
+            ],
+            "size": [
+                3,
+                0.9,
+                1
+            ],
+            "color": "#8a6a44"
+        },
+        {
+            "id": "cou2",
+            "kind": "cover",
+            "center": [
+                4,
+                0.45,
+                -13
+            ],
+            "size": [
+                3,
+                0.9,
+                1
+            ],
+            "color": "#8a6a44"
+        },
+        {
+            "id": "cou2_B",
+            "kind": "cover",
+            "center": [
+                -4,
+                0.45,
+                13
+            ],
+            "size": [
+                3,
+                0.9,
+                1
+            ],
+            "color": "#8a6a44"
+        },
+        {
+            "id": "gar",
+            "kind": "wall",
+            "center": [
+                -20,
+                1.5,
+                -12
+            ],
+            "size": [
+                6,
+                3,
+                5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "gar_B",
+            "kind": "wall",
+            "center": [
+                20,
+                1.5,
+                12
+            ],
+            "size": [
+                6,
+                3,
+                5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "carA",
+            "kind": "cover",
+            "center": [
+                -17,
+                0.75,
+                -4
+            ],
+            "size": [
+                4.6,
+                1.5,
+                1.9
+            ],
+            "color": "#5a6f8a"
+        },
+        {
+            "id": "carA_B",
+            "kind": "cover",
+            "center": [
+                17,
+                0.75,
+                4
+            ],
+            "size": [
+                4.6,
+                1.5,
+                1.9
+            ],
+            "color": "#5a6f8a"
+        },
+        {
+            "id": "carB",
+            "kind": "cover",
+            "center": [
+                14,
+                0.75,
+                -5
+            ],
+            "size": [
+                4.6,
+                1.5,
+                1.9
+            ],
+            "color": "#7a3b3b"
+        },
+        {
+            "id": "carB_B",
+            "kind": "cover",
+            "center": [
+                -14,
+                0.75,
+                5
+            ],
+            "size": [
+                4.6,
+                1.5,
+                1.9
+            ],
+            "color": "#7a3b3b"
+        },
+        {
+            "id": "fn1",
+            "kind": "cover",
+            "center": [
+                -8,
+                0.55,
+                -6
+            ],
+            "size": [
+                6,
+                1.1,
+                0.2
+            ],
+            "color": "#e8e6df"
+        },
+        {
+            "id": "fn1_B",
+            "kind": "cover",
+            "center": [
+                8,
+                0.55,
+                6
+            ],
+            "size": [
+                6,
+                1.1,
+                0.2
+            ],
+            "color": "#e8e6df"
+        },
+        {
+            "id": "fn2",
+            "kind": "cover",
+            "center": [
+                9,
+                0.55,
+                -7
+            ],
+            "size": [
+                5,
+                1.1,
+                0.2
+            ],
+            "color": "#e8e6df"
+        },
+        {
+            "id": "fn2_B",
+            "kind": "cover",
+            "center": [
+                -9,
+                0.55,
+                7
+            ],
+            "size": [
+                5,
+                1.1,
+                0.2
+            ],
+            "color": "#e8e6df"
+        },
+        {
+            "id": "shed",
+            "kind": "wall",
+            "center": [
+                22,
+                1.2,
+                -10
+            ],
+            "size": [
+                3,
+                2.4,
+                3
+            ],
+            "color": "#8a6a44"
+        },
+        {
+            "id": "shed_B",
+            "kind": "wall",
+            "center": [
+                -22,
+                1.2,
+                10
+            ],
+            "size": [
+                3,
+                2.4,
+                3
+            ],
+            "color": "#8a6a44"
+        },
+        {
+            "id": "tr",
+            "kind": "wall",
+            "center": [
+                -10,
+                1.6,
+                -2.5
+            ],
+            "size": [
+                0.9,
+                3.2,
+                0.9
+            ],
+            "color": "#8a6a44"
+        },
+        {
+            "id": "tr_B",
+            "kind": "wall",
+            "center": [
+                10,
+                1.6,
+                2.5
+            ],
+            "size": [
+                0.9,
+                3.2,
+                0.9
+            ],
+            "color": "#8a6a44"
+        },
+        {
+            "id": "dmp",
+            "kind": "cover",
+            "center": [
+                6,
+                0.7,
+                -3.2
+            ],
+            "size": [
+                2.4,
+                1.4,
+                1.5
+            ],
+            "color": "#8a4a30"
+        },
+        {
+            "id": "dmp_B",
+            "kind": "cover",
+            "center": [
+                -6,
+                0.7,
+                3.2
+            ],
+            "size": [
+                2.4,
+                1.4,
+                1.5
+            ],
+            "color": "#8a4a30"
+        },
+        {
+            "id": "bus",
+            "kind": "cover",
+            "center": [
+                0,
+                1.45,
+                0
+            ],
+            "size": [
+                11,
+                2.9,
+                2.6
+            ],
+            "color": "#d8a52a"
+        },
+        {
+            "id": "pm_N",
+            "kind": "wall",
+            "center": [
+                0,
+                1.2,
+                17.25
+            ],
+            "size": [
+                51,
+                2.4,
+                0.5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "pm_S",
+            "kind": "wall",
+            "center": [
+                0,
+                1.2,
+                -17.25
+            ],
+            "size": [
+                51,
+                2.4,
+                0.5
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "pm_E",
+            "kind": "wall",
+            "center": [
+                25.25,
+                1.2,
+                0
+            ],
+            "size": [
+                0.5,
+                2.4,
+                35
+            ],
+            "color": "#9c5a46"
+        },
+        {
+            "id": "pm_W",
+            "kind": "wall",
+            "center": [
+                -25.25,
+                1.2,
+                0
+            ],
+            "size": [
+                0.5,
+                2.4,
+                35
+            ],
+            "color": "#9c5a46"
+        }
+    ],
+    "spawns": {
+        "teamA": {
+            "facing": "north",
+            "points": [
+                [
+                    -6,
+                    -14
+                ],
+                [
+                    -2,
+                    -14
+                ],
+                [
+                    2,
+                    -14
+                ],
+                [
+                    6,
+                    -14
+                ]
+            ]
+        },
+        "teamB": {
+            "facing": "south",
+            "points": [
+                [
+                    6,
+                    14
+                ],
+                [
+                    2,
+                    14
+                ],
+                [
+                    -2,
+                    14
+                ],
+                [
+                    -6,
+                    14
+                ]
+            ]
+        }
+    },
+    "routes": [
+        "South House > Street west > North House",
+        "South House > Bus gap > North House",
+        "South House > Garage SW > Yard east > Shed"
+    ],
+    "lighting": {
+        "sun": {
+            "from": "west",
+            "elevation_deg": 35,
+            "color": "#e8eef5",
+            "intensity": 0.7
+        },
+        "hemisphere": {
+            "sky": "#b9c4cc",
+            "ground": "#7b7f78",
+            "intensity": 0.95
+        },
+        "fog": {
+            "type": "exp2",
+            "color": "#c8d0d6",
+            "density": 0.012
+        },
+        "points": [
+            {
+                "id": "wl",
+                "x": 0,
+                "y": 2.6,
+                "z": -13,
+                "color": "#ffd9a0",
+                "intensity": 0.7,
+                "range": 10
+            },
+            {
+                "id": "wl_B",
+                "x": 0,
+                "y": 2.6,
+                "z": 13,
+                "color": "#ffd9a0",
+                "intensity": 0.7,
+                "range": 10
+            },
+            {
+                "id": "pl",
+                "x": -9,
+                "y": 2.6,
+                "z": -8.5,
+                "color": "#ffe0b0",
+                "intensity": 0.6,
+                "range": 9
+            },
+            {
+                "id": "pl_B",
+                "x": 9,
+                "y": 2.6,
+                "z": 8.5,
+                "color": "#ffe0b0",
+                "intensity": 0.6,
+                "range": 9
+            }
+        ],
+        "budget": "at most 8 point lights visible at once, none cast shadows"
+    },
+    "metrics": {
+        "area_m2": 1700,
+        "players": 8
+    }
+}

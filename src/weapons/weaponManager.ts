@@ -1,5 +1,6 @@
 // src/weapons/weaponManager.ts
-// Weapon Manager: Handles viewmodel lifecycle, recoil physics, shell ejections, procedural reload choreography, ADS, and audio sync
+// Weapon Manager: Handles viewmodel lifecycle, recoil physics, shell ejections,
+// procedural reload choreography, ADS, audio sync, and ballistics for all 5 weapons.
 
 import * as THREE from 'three';
 import type { WeaponId, WeaponDef } from './weaponTypes';
@@ -10,6 +11,10 @@ import { createPistolModel } from './pistolModel';
 import type { PistolComponents } from './pistolModel';
 import { createSMGModel } from './smgModel';
 import type { SMGComponents } from './smgModel';
+import { createShotgunModel } from './shotgunModel';
+import type { ShotgunComponents } from './shotgunModel';
+import { createSniperModel } from './sniperModel';
+import type { SniperComponents } from './sniperModel';
 import { sound } from '../audio/soundManager';
 
 interface ShellCasing {
@@ -42,6 +47,8 @@ export class WeaponManager {
   private ak47: AK47Components;
   private pistol: PistolComponents;
   private smg: SMGComponents;
+  private shotgun: ShotgunComponents;
+  private sniper: SniperComponents;
 
   private ammoCounts: Record<WeaponId, { clip: number; reserve: number }>;
 
@@ -55,7 +62,6 @@ export class WeaponManager {
 
   private lastFireTime = 0;
   private fireAccumulator = 0;
-  private smgTickCounter = 0; // Alternates 4 and 5 ticks for precise 800 RPM (4.5 tick average)
   private isTriggerPulled = false;
   private reloadTimer = 0;
   private reloadDuration = 0;
@@ -79,30 +85,39 @@ export class WeaponManager {
     this.ak47 = createAK47Model();
     this.pistol = createPistolModel();
     this.smg = createSMGModel();
+    this.shotgun = createShotgunModel();
+    this.sniper = createSniperModel();
 
-    this.ak47.root.traverse((child) => {
-      child.userData.isViewmodel = true;
-      child.userData.ignoreRaycast = true;
-    });
-    this.pistol.root.traverse((child) => {
-      child.userData.isViewmodel = true;
-      child.userData.ignoreRaycast = true;
-    });
-    this.smg.root.traverse((child) => {
-      child.userData.isViewmodel = true;
-      child.userData.ignoreRaycast = true;
-    });
+    const markViewmodel = (root: THREE.Group) => {
+      root.traverse((child) => {
+        child.userData.isViewmodel = true;
+        child.userData.ignoreRaycast = true;
+      });
+    };
+
+    markViewmodel(this.ak47.root);
+    markViewmodel(this.pistol.root);
+    markViewmodel(this.smg.root);
+    markViewmodel(this.shotgun.root);
+    markViewmodel(this.sniper.root);
 
     this.rootGroup.add(this.ak47.root);
     this.rootGroup.add(this.pistol.root);
     this.rootGroup.add(this.smg.root);
+    this.rootGroup.add(this.shotgun.root);
+    this.rootGroup.add(this.sniper.root);
+
     this.pistol.root.visible = false;
     this.smg.root.visible = false;
+    this.shotgun.root.visible = false;
+    this.sniper.root.visible = false;
 
     this.ammoCounts = {
       ak47: { clip: 30, reserve: 999 },
       pistol: { clip: 15, reserve: 999 },
       smg: { clip: 30, reserve: 999 },
+      shotgun: { clip: 8, reserve: 999 },
+      sniper: { clip: 5, reserve: 999 },
     };
 
     this.state = {
@@ -140,7 +155,6 @@ export class WeaponManager {
     this.adsWeight = 0;
     this.switchWeight = 1.0;
     this.fireAccumulator = 0;
-    this.smgTickCounter = 0;
 
     this.state.isReloading = false;
     this.reloadTimer = 0;
@@ -162,9 +176,18 @@ export class WeaponManager {
     this.smg.leftArmGroup.position.set(0, 0, 0);
     this.smg.leftArmGroup.rotation.set(0, 0, 0);
 
+    this.shotgun.pumpGroup.position.set(0, 0.018, -0.26);
+    this.shotgun.shellGroup.position.set(0, -0.016, -0.02);
+
+    this.sniper.boltCarrierGroup.position.set(0.028, 0.032, 0.01);
+    this.sniper.boltCarrierGroup.rotation.set(0, 0, 0);
+    this.sniper.magazineGroup.position.set(0, -0.08, -0.06);
+
     this.ak47.root.visible = id === 'ak47';
     this.pistol.root.visible = id === 'pistol';
     this.smg.root.visible = id === 'smg';
+    this.shotgun.root.visible = id === 'shotgun';
+    this.sniper.root.visible = id === 'sniper';
 
     this.notifyState();
   }
@@ -214,8 +237,13 @@ export class WeaponManager {
     this.notifyState();
   }
 
-  private ejectShell(origin: THREE.Vector3, isAK: boolean) {
-    const casingGeo = new THREE.CylinderGeometry(isAK ? 0.007 : 0.005, isAK ? 0.007 : 0.005, isAK ? 0.038 : 0.022, 8);
+  private ejectShell(origin: THREE.Vector3, isHeavy: boolean) {
+    const casingGeo = new THREE.CylinderGeometry(
+      isHeavy ? 0.008 : 0.005,
+      isHeavy ? 0.008 : 0.005,
+      isHeavy ? 0.042 : 0.022,
+      8
+    );
     const casing = new THREE.Mesh(casingGeo, this.shellMaterial);
 
     const worldOrigin = origin.clone().applyQuaternion(this.camera.quaternion).add(this.camera.position);
@@ -272,45 +300,86 @@ export class WeaponManager {
     // Spread Bloom
     this.state.spreadRadius = Math.min(cur.spreadMax, this.state.spreadRadius + cur.spreadBloomPerShot);
 
-    // Audio & Muzzle Flash
+    // Audio & Muzzle Flash & Animation
     if (this.state.currentWeaponId === 'ak47') {
       sound.playAK47Shot();
       this.ak47.muzzleFlashGroup.visible = true;
       this.ak47.muzzleLight.intensity = 14;
       this.ak47.muzzleFlashGroup.rotation.z = Math.random() * Math.PI * 2;
-      this.ak47.boltCarrierGroup.position.z = 0.07; // Bolt blowback
+      this.ak47.boltCarrierGroup.position.z = 0.07;
       this.ejectShell(this.ak47.ejectionPoint, true);
     } else if (this.state.currentWeaponId === 'pistol') {
       sound.playPistolShot();
       this.pistol.muzzleFlashGroup.visible = true;
       this.pistol.muzzleLight.intensity = 10;
-      this.pistol.slideGroup.position.z = 0.045; // Slide blowback
+      this.pistol.slideGroup.position.z = 0.045;
       this.ejectShell(this.pistol.ejectionPoint, false);
     } else if (this.state.currentWeaponId === 'smg') {
       sound.playSMGShot(ammo.clip);
       this.smg.muzzleFlashGroup.visible = true;
       this.smg.muzzleLight.intensity = 12;
       this.smg.muzzleFlashGroup.rotation.z = Math.random() * Math.PI * 2;
-      this.smg.boltCarrierGroup.position.z = 0.035; // Bolt reciprocation
+      this.smg.boltCarrierGroup.position.z = 0.035;
       this.ejectShell(this.smg.ejectionPoint, false);
+    } else if (this.state.currentWeaponId === 'shotgun') {
+      sound.playShotgunShot();
+      this.shotgun.muzzleFlashGroup.visible = true;
+      this.shotgun.muzzleLight.intensity = 16;
+      this.ejectShell(this.shotgun.ejectionPoint, true);
+
+      // Procedural pump-action cycle
+      setTimeout(() => {
+        if (this.state.currentWeaponId === 'shotgun') {
+          sound.playShotgunPump();
+          this.shotgun.pumpGroup.position.z = -0.19; // Pump back
+          setTimeout(() => {
+            if (this.state.currentWeaponId === 'shotgun') {
+              this.shotgun.pumpGroup.position.z = -0.26; // Pump forward
+            }
+          }, 140);
+        }
+      }, 220);
+    } else if (this.state.currentWeaponId === 'sniper') {
+      sound.playSniperShot();
+      this.sniper.muzzleFlashGroup.visible = true;
+      this.sniper.muzzleLight.intensity = 20;
+      this.ejectShell(this.sniper.ejectionPoint, true);
+
+      // Procedural bolt cycle
+      setTimeout(() => {
+        if (this.state.currentWeaponId === 'sniper') {
+          sound.playSniperBolt();
+          this.sniper.boltCarrierGroup.rotation.z = -0.45; // Unlock bolt
+          this.sniper.boltCarrierGroup.position.z = 0.08; // Draw back
+          setTimeout(() => {
+            if (this.state.currentWeaponId === 'sniper') {
+              this.sniper.boltCarrierGroup.position.z = 0.01; // Push forward
+              this.sniper.boltCarrierGroup.rotation.z = 0; // Lock into battery
+            }
+          }, 240);
+        }
+      }, 320);
     }
 
-    // Raycast Callout
+    // Raycast Callout: Handles single projectile or multi-pellet shotgun buckshot
     if (this.onFireRaycast) {
-      const spread = this.state.isScoped ? this.state.spreadRadius * 0.35 : this.state.spreadRadius;
-      const spreadX = (Math.random() - 0.5) * spread;
-      const spreadY = (Math.random() - 0.5) * spread;
-
+      const pelletCount = cur.pellets || 1;
       const camDir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
       const right = new THREE.Vector3(1, 0, 0).applyQuaternion(this.camera.quaternion);
       const up = new THREE.Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion);
 
-      const shotDir = camDir.clone()
-        .add(right.multiplyScalar(spreadX))
-        .add(up.multiplyScalar(spreadY))
-        .normalize();
+      for (let p = 0; p < pelletCount; p++) {
+        const spread = this.state.isScoped ? this.state.spreadRadius * 0.4 : this.state.spreadRadius;
+        const spreadX = (Math.random() - 0.5) * spread;
+        const spreadY = (Math.random() - 0.5) * spread;
 
-      this.onFireRaycast(this.camera.position.clone(), shotDir, cur);
+        const shotDir = camDir.clone()
+          .add(right.multiplyScalar(spreadX))
+          .add(up.multiplyScalar(spreadY))
+          .normalize();
+
+        this.onFireRaycast(this.camera.position.clone(), shotDir, cur);
+      }
     }
 
     this.notifyState();
@@ -319,32 +388,24 @@ export class WeaponManager {
   public update(delta: number, mouseDelta: { x: number; y: number }, isMoving: boolean, isSprinting: boolean) {
     this.state.isMoving = isMoving;
     this.state.isSprinting = isSprinting;
-    const now = performance.now() / 1000;
-    const cur = this.currentDef;
 
-    // 1. Automatic Firing Loop with Fractional Tick Accumulator (Exact 800 RPM / 4.5 ticks)
-    if (this.isTriggerPulled && !this.state.isReloading && !this.state.isSprinting && this.switchWeight < 0.1) {
+    const cur = this.currentDef;
+    const now = performance.now() / 1000;
+
+    // 1. Firing Cadence
+    if (this.isTriggerPulled && !this.state.isReloading && !isSprinting) {
       if (cur.fireMode === 'auto') {
         this.fireAccumulator += delta;
-        const isSMG = this.state.currentWeaponId === 'smg';
-        // Alternates 4 and 5 ticks at 60Hz (4/60 = 0.0667s, 5/60 = 0.0833s, avg = 0.075s = 800.00 RPM)
-        const nextInterval = isSMG
-          ? (this.smgTickCounter % 2 === 0 ? (4 / 60) : (5 / 60))
-          : cur.fireRate;
-
-        if (this.fireAccumulator >= nextInterval) {
-          this.fireAccumulator -= nextInterval;
-          if (isSMG) this.smgTickCounter++;
+        if (this.fireAccumulator >= cur.fireRate) {
           this.executeShot();
+          this.fireAccumulator -= cur.fireRate;
         }
-      } else if (now - this.lastFireTime >= cur.fireRate && this.state.ammoInClip > 0) {
-        if (!this.state.isFiring) {
-          this.executeShot();
-        }
+      } else if (now - this.lastFireTime >= cur.fireRate && !this.state.isFiring) {
+        this.executeShot();
       }
     }
 
-    // 2. Recover Recoil
+    // 2. Physics Decay (Recoil, Sway, Muzzle Flash)
     const recSpeed = cur.recoilRecoverySpeed;
     this.recoil.kickZ = THREE.MathUtils.lerp(this.recoil.kickZ, 0, delta * recSpeed);
     this.recoil.pitchX = THREE.MathUtils.lerp(this.recoil.pitchX, 0, delta * recSpeed);
@@ -359,6 +420,10 @@ export class WeaponManager {
       this.pistol.muzzleLight.intensity = 0;
       this.smg.muzzleFlashGroup.visible = false;
       this.smg.muzzleLight.intensity = 0;
+      this.shotgun.muzzleFlashGroup.visible = false;
+      this.shotgun.muzzleLight.intensity = 0;
+      this.sniper.muzzleFlashGroup.visible = false;
+      this.sniper.muzzleLight.intensity = 0;
     }
 
     // Bolt Carrier / Slide Return
@@ -396,14 +461,38 @@ export class WeaponManager {
       this.camera.updateProjectionMatrix();
     }
 
+    // Hide weapon model during full Sniper Scope ADS for clear reticle view
+    if (cur.isSniperScope) {
+      this.sniper.root.visible = this.adsWeight < 0.85;
+    }
+
     // 6. Sprint Lowering Weight
     const targetSprint = isSprinting && !this.state.isScoped ? 1.0 : 0.0;
     this.sprintWeight = THREE.MathUtils.lerp(this.sprintWeight, targetSprint, delta * 10);
 
-    // 7. Weapon Switch Weight
-    this.switchWeight = THREE.MathUtils.lerp(this.switchWeight, 0, delta * 8);
+    // 7. Weapon Switch Readying Weight
+    if (this.switchWeight > 0) {
+      this.switchWeight = Math.max(0, this.switchWeight - delta * 3.5);
+    }
 
-    // 8. Reload Choreography
+    // 8. Inspect Animation (V key)
+    let inspectRotY = 0;
+    let inspectRotZ = 0;
+    if (this.inspectTimer > 0) {
+      this.inspectTimer -= delta;
+      const t = 1 - this.inspectTimer / 2.4;
+      if (t < 0.4) {
+        const p = t / 0.4;
+        inspectRotY = -0.45 * Math.sin(p * Math.PI);
+        inspectRotZ = 0.35 * Math.sin(p * Math.PI);
+      } else if (t < 0.8) {
+        const p = (t - 0.4) / 0.4;
+        inspectRotY = 0.5 * Math.sin(p * Math.PI);
+        inspectRotZ = -0.4 * Math.sin(p * Math.PI);
+      }
+    }
+
+    // 9. Multi-Stage Reload Choreography
     let reloadPosY = 0;
     let reloadRotX = 0;
     let reloadRotZ = 0;
@@ -414,335 +503,179 @@ export class WeaponManager {
       this.state.reloadProgress = progress;
 
       if (this.state.currentWeaponId === 'ak47') {
-        // High-Fidelity AK-47 Vanguard Reload Choreography
         if (progress < 0.22) {
-          // Stage 1: Weapon Cant & Left Hand Release (0.00 -> 0.22)
           const p = progress / 0.22;
           const ease = p * p * (3 - 2 * p);
           reloadPosY = -0.09 * ease;
           reloadRotX = 0.24 * ease;
-          reloadRotZ = -0.48 * ease; // 28-degree left cant showing magwell
-
-          // Left arm moves from wooden handguard to magazine release lever
-          this.ak47.leftArmGroup.position.set(
-            THREE.MathUtils.lerp(0, 0.04, ease),
-            THREE.MathUtils.lerp(0, -0.06, ease),
-            THREE.MathUtils.lerp(0, 0.18, ease)
-          );
-          this.ak47.leftArmGroup.rotation.set(
-            THREE.MathUtils.lerp(0, -0.25, ease),
-            THREE.MathUtils.lerp(0, 0.15, ease),
-            0
-          );
+          reloadRotZ = -0.48 * ease;
         } else if (progress < 0.44) {
-          // Stage 2: Rock-out Empty Banana Mag & Drop (0.22 -> 0.44)
-          const p = (progress - 0.22) / 0.22;
-          reloadPosY = -0.09;
-          reloadRotX = 0.24;
-          reloadRotZ = -0.48;
-
           if (this.reloadStage === 0) {
             this.reloadStage = 1;
             sound.playMagOut();
           }
-
-          // Magazine rocks forward and drops out of receiver
-          this.ak47.magazineGroup.rotation.x = -p * 0.35;
+          const p = (progress - 0.22) / 0.22;
+          reloadPosY = -0.09;
+          reloadRotX = 0.24;
+          reloadRotZ = -0.48;
           this.ak47.magazineGroup.position.y = -0.04 - p * 0.48;
-          this.ak47.magazineGroup.position.z = -0.06 - p * 0.06;
-
-          // Left hand tracks magazine downward
-          this.ak47.leftArmGroup.position.set(0.04, -0.06 - p * 0.35, 0.18 - p * 0.06);
-          this.ak47.leftArmGroup.rotation.set(-0.25 - p * 0.2, 0.15, 0);
         } else if (progress < 0.68) {
-          // Stage 3: Fetch Fresh Curved Mag & Rock-in Lock (0.44 -> 0.68)
           const p = (progress - 0.44) / 0.24;
           const ease = p * p * (3 - 2 * p);
           reloadPosY = -0.09;
           reloadRotX = 0.24;
           reloadRotZ = -0.48;
-
-          // Fresh magazine brought smoothly up from lower left
-          const magEnterY = THREE.MathUtils.lerp(-0.42, -0.04, ease);
-          const magEnterZ = THREE.MathUtils.lerp(-0.12, -0.06, ease);
-          const magRotX = THREE.MathUtils.lerp(0.32, 0.0, ease);
-
-          this.ak47.magazineGroup.position.set(0, magEnterY, magEnterZ);
-          this.ak47.magazineGroup.rotation.set(magRotX, 0, 0);
-
-          // Left hand guides the magazine into the well
-          this.ak47.leftArmGroup.position.set(
-            THREE.MathUtils.lerp(-0.02, 0.04, ease),
-            THREE.MathUtils.lerp(-0.35, -0.06, ease),
-            THREE.MathUtils.lerp(0.12, 0.18, ease)
-          );
-          this.ak47.leftArmGroup.rotation.set(THREE.MathUtils.lerp(-0.35, -0.15, ease), 0.15, 0);
-
-          if (progress >= 0.64 && this.reloadStage === 1) {
+          this.ak47.magazineGroup.position.y = THREE.MathUtils.lerp(-0.42, -0.04, ease);
+          if (progress >= 0.62 && this.reloadStage === 1) {
             this.reloadStage = 2;
             sound.playMagIn();
-            // Tactile physical weapon slap impulse
-            this.recoil.kickZ += 0.018;
-            this.recoil.pitchX += 0.012;
-            this.ak47.magazineGroup.position.set(0, -0.04, -0.06);
-            this.ak47.magazineGroup.rotation.set(0, 0, 0);
+            this.recoil.kickZ += 0.02;
           }
         } else if (progress < 0.85) {
-          // Stage 4: Overhand/Underhand Charging Handle Rack (0.68 -> 0.85)
-          const p = (progress - 0.68) / 0.17;
-          reloadPosY = -0.07;
-          reloadRotX = 0.18;
-          reloadRotZ = -0.32;
-
-          this.ak47.magazineGroup.position.set(0, -0.04, -0.06);
-          this.ak47.magazineGroup.rotation.set(0, 0, 0);
-
-          // Left hand reaches over the receiver to grab the bolt handle
-          this.ak47.leftArmGroup.position.set(
-            THREE.MathUtils.lerp(0.04, 0.065, Math.min(1, p * 2)),
-            THREE.MathUtils.lerp(-0.06, 0.04, Math.min(1, p * 2)),
-            THREE.MathUtils.lerp(0.18, 0.26, Math.min(1, p * 2))
-          );
-
-          if (p < 0.5) {
-            // Pull charging handle back
-            const pull = p / 0.5;
-            this.ak47.boltCarrierGroup.position.z = THREE.MathUtils.lerp(0.02, 0.085, pull);
-          } else {
-            // Snap forward into battery
-            const snap = (p - 0.5) / 0.5;
-            this.ak47.boltCarrierGroup.position.z = THREE.MathUtils.lerp(0.085, 0.02, snap * snap);
-          }
-
           if (progress >= 0.74 && this.reloadStage === 2) {
             this.reloadStage = 3;
             sound.playBoltRack();
           }
-        } else {
-          // Stage 5: Return to Handguard & Settle (0.85 -> 1.00)
-          const p = (progress - 0.85) / 0.15;
-          const ease = p * p * (3 - 2 * p);
-          reloadPosY = -0.07 * (1 - ease);
-          reloadRotX = 0.18 * (1 - ease);
-          reloadRotZ = -0.32 * (1 - ease);
-
-          this.ak47.magazineGroup.position.set(0, -0.04, -0.06);
-          this.ak47.magazineGroup.rotation.set(0, 0, 0);
-          this.ak47.boltCarrierGroup.position.set(0.025, 0.02, 0.02);
-
-          // Left hand moves back to wooden handguard
-          this.ak47.leftArmGroup.position.set(
-            THREE.MathUtils.lerp(0.065, 0, ease),
-            THREE.MathUtils.lerp(0.04, 0, ease),
-            THREE.MathUtils.lerp(0.26, 0, ease)
-          );
-          this.ak47.leftArmGroup.rotation.set(
-            THREE.MathUtils.lerp(-0.15, 0, ease),
-            THREE.MathUtils.lerp(0.15, 0, ease),
-            0
-          );
         }
-      } else if (this.state.currentWeaponId === 'pistol') {
-        // High-Fidelity Tactical M9 Pistol Reload Choreography
-        if (progress < 0.28) {
-          const p = progress / 0.28;
-          reloadPosY = -0.12 * p;
-          reloadRotX = 0.25 * p;
-          reloadRotZ = -0.28 * p;
+      } else if (this.state.currentWeaponId === 'shotgun') {
+        // Shotgun Shell Feed Reload
+        if (progress < 0.3) {
+          reloadPosY = -0.08 * (progress / 0.3);
+          reloadRotX = 0.22 * (progress / 0.3);
           if (this.reloadStage === 0) {
             this.reloadStage = 1;
             sound.playMagOut();
           }
-          this.pistol.magazineGroup.position.y = -0.075 - p * 0.38;
-        } else if (progress < 0.65) {
-          const p = (progress - 0.28) / 0.37;
-          reloadPosY = -0.12;
-          reloadRotX = 0.25;
-          reloadRotZ = -0.28;
-
-          this.pistol.magazineGroup.position.y = -0.075 - (1 - p) * 0.38;
-          if (progress > 0.58 && this.reloadStage === 1) {
+          this.shotgun.shellGroup.position.y = -0.016 - (progress / 0.3) * 0.2;
+        } else if (progress < 0.75) {
+          reloadPosY = -0.08;
+          reloadRotX = 0.22;
+          const p = (progress - 0.3) / 0.45;
+          this.shotgun.shellGroup.position.y = THREE.MathUtils.lerp(-0.2, -0.016, p);
+          if (progress > 0.65 && this.reloadStage === 1) {
             this.reloadStage = 2;
             sound.playMagIn();
-            this.recoil.kickZ += 0.015;
-            this.pistol.magazineGroup.position.y = -0.075;
           }
-        } else if (progress < 0.85) {
-          const p = (progress - 0.65) / 0.2;
-          reloadPosY = -0.10;
-          reloadRotX = 0.18;
-          reloadRotZ = -0.20;
-          this.pistol.magazineGroup.position.y = -0.075;
-
+        } else {
+          reloadPosY = -0.08 * (1 - (progress - 0.75) / 0.25);
           if (this.reloadStage === 2) {
             this.reloadStage = 3;
-            sound.playBoltRack();
+            sound.playShotgunPump();
           }
-          this.pistol.slideGroup.position.z = p < 0.5 ? 0.038 : 0;
-        } else {
-          const p = (progress - 0.85) / 0.15;
-          reloadPosY = -0.10 * (1 - p);
-          reloadRotX = 0.18 * (1 - p);
-          reloadRotZ = -0.20 * (1 - p);
-          this.pistol.slideGroup.position.z = 0;
-          this.pistol.magazineGroup.position.y = -0.075;
         }
-      } else if (this.state.currentWeaponId === 'smg') {
-        // High-Fidelity CYCLONE-9 SMG 4-Stage Reload Choreography (1.8s)
-        if (progress < 0.25) {
-          // Stage 1: Weapon Cant & Drop Empty Stick Magazine (0.00 -> 0.25)
-          const p = progress / 0.25;
-          const ease = p * p * (3 - 2 * p);
-          reloadPosY = -0.08 * ease;
-          reloadRotX = 0.18 * ease;
-          reloadRotZ = -0.38 * ease; // 22-degree tactical cant
-
+      } else if (this.state.currentWeaponId === 'sniper') {
+        // Sniper Box Magazine Reload
+        if (progress < 0.35) {
+          const p = progress / 0.35;
+          reloadPosY = -0.10 * p;
+          reloadRotX = 0.20 * p;
           if (this.reloadStage === 0) {
             this.reloadStage = 1;
             sound.playMagOut();
           }
-
-          // Straight 9mm stick mag drops out of well
-          this.smg.magazineGroup.position.y = -0.06 - p * 0.42;
-
-          // Left hand guides magazine downwards
-          this.smg.leftArmGroup.position.set(0.02, -p * 0.32, -p * 0.03);
-          this.smg.leftArmGroup.rotation.set(-p * 0.2, 0.15, 0);
-        } else if (progress < 0.60) {
-          // Stage 2: Fetch Fresh Straight Stick Mag & Slap Lock (0.25 -> 0.60)
-          const p = (progress - 0.25) / 0.35;
-          const ease = p * p * (3 - 2 * p);
-          reloadPosY = -0.08;
-          reloadRotX = 0.18;
-          reloadRotZ = -0.38;
-
-          // Fresh magazine brought straight up into magwell
-          const magEnterY = THREE.MathUtils.lerp(-0.45, -0.06, ease);
-          this.smg.magazineGroup.position.set(0, magEnterY, -0.06);
-
-          // Left hand tracks magazine up into position
-          this.smg.leftArmGroup.position.set(
-            THREE.MathUtils.lerp(0.02, 0.02, ease),
-            THREE.MathUtils.lerp(-0.32, -0.06, ease),
-            THREE.MathUtils.lerp(-0.03, 0.02, ease)
-          );
-          this.smg.leftArmGroup.rotation.set(THREE.MathUtils.lerp(-0.2, 0, ease), 0.15, 0);
-
-          if (progress >= 0.55 && this.reloadStage === 1) {
+          this.sniper.magazineGroup.position.y = -0.08 - p * 0.35;
+        } else if (progress < 0.75) {
+          reloadPosY = -0.10;
+          reloadRotX = 0.20;
+          const p = (progress - 0.35) / 0.4;
+          this.sniper.magazineGroup.position.y = THREE.MathUtils.lerp(-0.43, -0.08, p);
+          if (progress > 0.68 && this.reloadStage === 1) {
             this.reloadStage = 2;
             sound.playMagIn();
-            this.recoil.kickZ += 0.016; // Tactile mag slap impulse
-            this.recoil.pitchX += 0.010;
-            this.smg.magazineGroup.position.set(0, -0.06, -0.06);
-          }
-        } else if (progress < 0.82) {
-          // Stage 3: Charge Charging Handle (0.60 -> 0.82)
-          const p = (progress - 0.60) / 0.22;
-          reloadPosY = -0.07;
-          reloadRotX = 0.15;
-          reloadRotZ = -0.25;
-
-          this.smg.magazineGroup.position.set(0, -0.06, -0.06);
-
-          // Left hand reaches up to the charging handle on the left receiver
-          this.smg.leftArmGroup.position.set(
-            -0.035,
-            THREE.MathUtils.lerp(-0.06, 0.03, Math.min(1, p * 2)),
-            THREE.MathUtils.lerp(0.02, 0.08, Math.min(1, p * 2))
-          );
-
-          if (p < 0.5) {
-            // Pull handle back
-            const pull = p / 0.5;
-            this.smg.boltCarrierGroup.position.z = THREE.MathUtils.lerp(-0.02, 0.045, pull);
-          } else {
-            // Snap forward into battery
-            const snap = (p - 0.5) / 0.5;
-            this.smg.boltCarrierGroup.position.z = THREE.MathUtils.lerp(0.045, -0.02, snap * snap);
-          }
-
-          if (progress >= 0.68 && this.reloadStage === 2) {
-            this.reloadStage = 3;
-            sound.playBoltRack();
           }
         } else {
-          // Stage 4: Regrip Vertical Foregrip & Settle (0.82 -> 1.00)
-          const p = (progress - 0.82) / 0.18;
-          const ease = p * p * (3 - 2 * p);
-          reloadPosY = -0.07 * (1 - ease);
-          reloadRotX = 0.15 * (1 - ease);
-          reloadRotZ = -0.25 * (1 - ease);
-
-          this.smg.magazineGroup.position.set(0, -0.06, -0.06);
-          this.smg.boltCarrierGroup.position.set(0.022, 0.028, -0.02);
-
-          // Left hand returns to front vertical foregrip
-          this.smg.leftArmGroup.position.set(
-            THREE.MathUtils.lerp(-0.035, 0, ease),
-            THREE.MathUtils.lerp(0.03, 0, ease),
-            THREE.MathUtils.lerp(0.08, 0, ease)
-          );
-          this.smg.leftArmGroup.rotation.set(0, 0, 0);
+          reloadPosY = -0.10 * (1 - (progress - 0.75) / 0.25);
+          if (this.reloadStage === 2) {
+            this.reloadStage = 3;
+            sound.playSniperBolt();
+          }
+        }
+      } else if (this.state.currentWeaponId === 'pistol') {
+        if (progress < 0.3) {
+          if (this.reloadStage === 0) {
+            this.reloadStage = 1;
+            sound.playMagOut();
+          }
+          this.pistol.magazineGroup.position.y = -0.075 - (progress / 0.3) * 0.35;
+        } else if (progress < 0.7) {
+          const p = (progress - 0.3) / 0.4;
+          this.pistol.magazineGroup.position.y = -0.075 - (1 - p) * 0.35;
+          if (progress > 0.62 && this.reloadStage === 1) {
+            this.reloadStage = 2;
+            sound.playMagIn();
+          }
+        } else if (this.reloadStage === 2) {
+          this.reloadStage = 3;
+          sound.playBoltRack();
+        }
+      } else if (this.state.currentWeaponId === 'smg') {
+        if (progress < 0.3) {
+          if (this.reloadStage === 0) {
+            this.reloadStage = 1;
+            sound.playMagOut();
+          }
+          this.smg.magazineGroup.position.y = -0.06 - (progress / 0.3) * 0.38;
+        } else if (progress < 0.7) {
+          const p = (progress - 0.3) / 0.4;
+          this.smg.magazineGroup.position.y = -0.06 - (1 - p) * 0.38;
+          if (progress > 0.62 && this.reloadStage === 1) {
+            this.reloadStage = 2;
+            sound.playMagIn();
+          }
+        } else if (this.reloadStage === 2) {
+          this.reloadStage = 3;
+          sound.playBoltRack();
         }
       }
 
       if (progress >= 1) {
         this.state.isReloading = false;
-        // Clean reset of all viewmodel component offsets
+        const curAmmo = this.ammoCounts[this.state.currentWeaponId];
+        curAmmo.clip = cur.magCapacity;
+        this.state.ammoInClip = cur.magCapacity;
+
+        // Reset positions
         this.ak47.magazineGroup.position.set(0, -0.04, -0.06);
-        this.ak47.magazineGroup.rotation.set(0, 0, 0);
-        this.ak47.boltCarrierGroup.position.set(0.025, 0.02, 0.02);
-        this.ak47.leftArmGroup.position.set(0, 0, 0);
-        this.ak47.leftArmGroup.rotation.set(0, 0, 0);
-
         this.pistol.magazineGroup.position.set(0, -0.075, 0.015);
-        this.pistol.slideGroup.position.set(0, 0.022, 0);
-
         this.smg.magazineGroup.position.set(0, -0.06, -0.06);
-        this.smg.magazineGroup.rotation.set(0, 0, 0);
-        this.smg.boltCarrierGroup.position.set(0.022, 0.028, -0.02);
-        this.smg.leftArmGroup.position.set(0, 0, 0);
-        this.smg.leftArmGroup.rotation.set(0, 0, 0);
-
-        const ammo = this.ammoCounts[this.state.currentWeaponId];
-        const needed = cur.magCapacity - ammo.clip;
-        const taken = Math.min(needed, ammo.reserve);
-        ammo.clip += taken;
-        ammo.reserve -= taken;
-        this.state.ammoInClip = ammo.clip;
-        this.state.reserveAmmo = ammo.reserve;
-        this.notifyState();
+        this.shotgun.shellGroup.position.set(0, -0.016, -0.02);
+        this.shotgun.pumpGroup.position.set(0, 0.018, -0.26);
+        this.sniper.magazineGroup.position.set(0, -0.08, -0.06);
+        this.sniper.boltCarrierGroup.position.set(0.028, 0.032, 0.01);
       }
     }
 
-    // 9. Inspect Animation
-    let inspectRotY = 0;
-    let inspectRotZ = 0;
-    if (this.inspectTimer > 0) {
-      this.inspectTimer -= delta;
-      const inspP = Math.sin((2.4 - this.inspectTimer) * 1.5);
-      inspectRotY = inspP * 0.4;
-      inspectRotZ = inspP * 0.5;
-    }
+    // 10. Transform Blending & Assembly
+    const hipPos = new THREE.Vector3(...cur.hipPosition);
+    const adsPos = new THREE.Vector3(...cur.adsPosition);
+    const currentRestPos = hipPos.clone().lerp(adsPos, this.adsWeight);
 
-    // 10. Combine Viewmodel World Transform
-    const hipPos = cur.hipPosition;
-    const adsPos = cur.adsPosition;
+    const hipRot = new THREE.Euler(...cur.hipRotation);
+    const adsRot = new THREE.Euler(...cur.adsRotation);
+    const restRotX = THREE.MathUtils.lerp(hipRot.x, adsRot.x, this.adsWeight);
+    const restRotY = THREE.MathUtils.lerp(hipRot.y, adsRot.y, this.adsWeight);
+    const restRotZ = THREE.MathUtils.lerp(hipRot.z, adsRot.z, this.adsWeight);
 
-    const basePosX = THREE.MathUtils.lerp(hipPos[0], adsPos[0], this.adsWeight) + this.sway.x + bobX;
-    const basePosY = THREE.MathUtils.lerp(hipPos[1], adsPos[1], this.adsWeight) + this.sway.y - bobY - this.sprintWeight * 0.16 - this.switchWeight * 0.25 + reloadPosY;
-    const basePosZ = THREE.MathUtils.lerp(hipPos[2], adsPos[2], this.adsWeight) + this.recoil.kickZ;
+    const localPos = currentRestPos.clone();
+    localPos.x += this.sway.x + bobX;
+    localPos.y += this.sway.y + bobY + reloadPosY - this.sprintWeight * 0.12 - this.switchWeight * 0.22;
+    localPos.z += this.recoil.kickZ - this.sprintWeight * 0.08;
 
-    const localOffset = new THREE.Vector3(basePosX, basePosY, basePosZ);
-    localOffset.applyQuaternion(this.camera.quaternion);
-
-    this.rootGroup.position.copy(this.camera.position).add(localOffset);
+    this.rootGroup.position.copy(this.camera.position);
     this.rootGroup.quaternion.copy(this.camera.quaternion);
 
-    // Rotational offsets (Recoil pitch, sway roll, sprint rotation, reload cant)
-    const totalPitch = this.recoil.pitchX + this.sprintWeight * 0.45 + reloadRotX;
-    const totalYaw = this.recoil.yawY + this.sway.x * 0.8 - this.sprintWeight * 0.35 + inspectRotY;
-    const totalRoll = this.recoil.rollZ + bobX * 1.8 + reloadRotZ + inspectRotZ;
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(this.camera.quaternion);
+    const up = new THREE.Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion);
+
+    this.rootGroup.position
+      .addScaledVector(right, localPos.x)
+      .addScaledVector(up, localPos.y)
+      .addScaledVector(forward, -localPos.z);
+
+    const totalPitch = this.recoil.pitchX + restRotX + this.sprintWeight * 0.45 + reloadRotX;
+    const totalYaw = this.recoil.yawY + restRotY + this.sway.x * 0.8 - this.sprintWeight * 0.35 + inspectRotY;
+    const totalRoll = this.recoil.rollZ + restRotZ + bobX * 1.8 + reloadRotZ + inspectRotZ;
 
     this.rootGroup.rotateX(totalPitch);
     this.rootGroup.rotateY(totalYaw);
@@ -758,12 +691,11 @@ export class WeaponManager {
         continue;
       }
 
-      shell.velocity.y -= 9.8 * delta; // Gravity
+      shell.velocity.y -= 9.8 * delta;
       shell.mesh.position.addScaledVector(shell.velocity, delta);
       shell.mesh.rotation.x += shell.rotVelocity.x * delta;
       shell.mesh.rotation.y += shell.rotVelocity.y * delta;
 
-      // Floor bounce
       if (shell.mesh.position.y < 0.05) {
         shell.mesh.position.y = 0.05;
         shell.velocity.y = -shell.velocity.y * 0.45;

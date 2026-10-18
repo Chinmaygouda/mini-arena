@@ -398,4 +398,58 @@ export class TargetManager {
       text.sprite.material.opacity = text.life / 0.75;
     }
   }
+
+  public addDynamicTarget(x: number, y: number, z: number, isEnemy: boolean = false) {
+    const targetGroup = new THREE.Group();
+    targetGroup.position.set(x, y, z);
+
+    // Stand Base & Post
+    const standPost = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 1.2, 8),
+      new THREE.MeshStandardMaterial({ color: 0x33383d, metalness: 0.8, roughness: 0.3 })
+    );
+    standPost.position.y = 0.6;
+    targetGroup.add(standPost);
+
+    // Hinged Silhouette Plate
+    const plateHinge = new THREE.Group();
+    plateHinge.position.set(0, 1.2, 0);
+
+    const steelMat = new THREE.MeshStandardMaterial({
+      color: isEnemy ? 0xcc4444 : 0xcccccc,
+      metalness: 0.85,
+      roughness: 0.35,
+    });
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.65, 0.035), steelMat);
+    torso.position.set(0, 0.32, 0);
+    torso.castShadow = true;
+    (torso as unknown as { isTarget: boolean; isHead: boolean }).isTarget = true;
+    (torso as unknown as { isTarget: boolean; isHead: boolean }).isHead = false;
+    plateHinge.add(torso);
+
+    const headMat = new THREE.MeshStandardMaterial({
+      color: 0xff3b30,
+      metalness: 0.7,
+      roughness: 0.4,
+    });
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.24, 0.04), headMat);
+    head.position.set(0, 0.76, 0);
+    head.castShadow = true;
+    (head as unknown as { isTarget: boolean; isHead: boolean }).isTarget = true;
+    (head as unknown as { isTarget: boolean; isHead: boolean }).isHead = true;
+    plateHinge.add(head);
+
+    targetGroup.add(plateHinge);
+    this.scene.add(targetGroup);
+
+    this.reactiveTargets.push({
+      group: plateHinge,
+      mesh: torso,
+      baseY: y + 1.2,
+      pitch: 0,
+      recovering: false,
+      hp: 100,
+      isCritZone: false,
+    });
+  }
 }

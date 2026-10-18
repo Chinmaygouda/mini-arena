@@ -3,7 +3,7 @@
 
 import * as THREE from 'three';
 
-export function createShootingRange(scene: THREE.Scene) {
+export function createShootingRange(scene: THREE.Object3D) {
   // 1. Lighting Setup
   const ambientLight = new THREE.HemisphereLight(0xddeeff, 0x444433, 0.95);
   scene.add(ambientLight);
@@ -153,6 +153,8 @@ export function createShootingRange(scene: THREE.Scene) {
   scene.add(backstopBerm);
 
   // 7. Atmospheric Sky Background Color
-  scene.background = new THREE.Color(0x8cb8d6);
-  scene.fog = new THREE.FogExp2(0x8cb8d6, 0.012);
+  if (scene instanceof THREE.Scene) {
+    scene.background = new THREE.Color(0x8cb8d6);
+    scene.fog = new THREE.FogExp2(0x8cb8d6, 0.012);
+  }
 }
