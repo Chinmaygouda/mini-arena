@@ -1116,7 +1116,6 @@ export class BlueprintMapLoader {
       mesh.castShadow = true;
       mesh.userData.isBird = true;
       // Leave on the normal raycast layer so shots can hit the perched bird.
-      mapGroup.add; // intentionally unused expression avoided below
       group.add(mesh);
     };
 
