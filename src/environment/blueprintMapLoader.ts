@@ -96,11 +96,18 @@ export interface BuildingRoof {
   parapetThickness?: number;
   accessFromStairs?: boolean;
   stairExitHole?: { x: number; z: number; width: number; length: number };
+  /** Pitched-roof options; ridgeDirection describes the horizontal ridge axis. */
+  ridgeDirection?: 'x' | 'z';
+  pitchHeight?: number;
+  overhang?: number;
+  color?: string;
 }
 
 export interface BuildingDef {
   id: string;
   name: string;
+  /** Temporary massing proxy while this building has not passed its quality gate. */
+  blockout?: boolean;
   center: [number, number, number]; // [cx, cy, cz]
   size: [number, number]; // [width, depth]
   wallColor?: string;
@@ -299,8 +306,11 @@ export class BlueprintMapLoader {
       return m;
     };
 
-    // 1. Procedural High-Detail Ground Plane
-    const groundSpan = data.meta.size ? Math.max(data.meta.size[0], data.meta.size[1]) * 1.5 : 120;
+    // 1. Ground plane: keep neighborhood ground close to its playable bounds instead of
+    // showing a large empty apron beyond the streets. Other maps retain their legacy span.
+    const groundSpan = data.meta.size
+      ? Math.max(data.meta.size[0], data.meta.size[1]) * (mapId === 'neighborhood' ? 1.05 : 1.5)
+      : 120;
     const groundTexture = this.generateProceduralGroundTexture(data.meta.theme || 'arid', groundSpan);
     const groundMat = new THREE.MeshStandardMaterial({
       map: groundTexture,
@@ -316,11 +326,16 @@ export class BlueprintMapLoader {
     groundMesh.receiveShadow = true;
     mapGroup.add(groundMesh);
 
-    // 2. Expand Buildings into Full Visuals & Colliders
-    this.loadedBuildings = data.buildings || [];
+    // 2. Expand the current approved building plus neutral blockout masses for unfinished ones.
+    // Only approved buildings participate in indoor detection.
+    this.loadedBuildings = (data.buildings || []).filter((bldg) => !bldg.blockout);
     if (data.buildings) {
       data.buildings.forEach((bldg) => {
-        this.expandBuilding(bldg, colliders, mapGroup, lightsGroup, getMaterial);
+        if (bldg.blockout) {
+          this.expandBlockoutBuilding(bldg, colliders, mapGroup, getMaterial);
+        } else {
+          this.expandBuilding(bldg, colliders, mapGroup, lightsGroup, getMaterial);
+        }
       });
     }
 
@@ -561,6 +576,57 @@ export class BlueprintMapLoader {
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(isNeighborhood ? 1 : 8, isNeighborhood ? 1 : 8);
     return texture;
+  }
+
+  /**
+   * A neutral, collision-safe massing volume used until a building has passed its
+   * visual and traversal review. It deliberately does not pretend to be finished art.
+   */
+  private expandBlockoutBuilding(
+    bldg: BuildingDef,
+    colliders: BoxCollider[],
+    mapGroup: THREE.Group,
+    getMat: (hex: string, r?: number, m?: number) => THREE.MeshStandardMaterial
+  ) {
+    const [bx, by, bz] = bldg.center;
+    const [bw, bd] = bldg.size;
+    const topFloor = bldg.floors[bldg.floors.length - 1];
+    const bodyHeight = Math.max(2.8, (topFloor?.floorY ?? 0) + (topFloor?.height ?? 2.8));
+    const group = new THREE.Group();
+    group.name = `building-blockout-${bldg.id}`;
+    group.position.set(bx, by, bz);
+
+    const body = new THREE.Mesh(
+      new THREE.BoxGeometry(bw, bodyHeight, bd),
+      getMat('#9aa2a6', 0.92, 0.02)
+    );
+    body.position.y = bodyHeight / 2;
+    body.castShadow = true;
+    body.receiveShadow = true;
+    group.add(body);
+
+    // A darker, slightly overhanging cap makes each placeholder readable as a building mass.
+    const capThickness = 0.22;
+    const cap = new THREE.Mesh(
+      new THREE.BoxGeometry(bw + 0.35, capThickness, bd + 0.35),
+      getMat('#626c73', 0.88, 0.04)
+    );
+    cap.position.y = bodyHeight + capThickness / 2;
+    cap.castShadow = true;
+    cap.receiveShadow = true;
+    group.add(cap);
+
+    colliders.push({
+      minX: bx - bw / 2,
+      maxX: bx + bw / 2,
+      minY: by,
+      maxY: by + bodyHeight + capThickness,
+      minZ: bz - bd / 2,
+      maxZ: bz + bd / 2,
+      isWalkable: false,
+    });
+
+    mapGroup.add(group);
   }
 
   /**
@@ -822,6 +888,45 @@ export class BlueprintMapLoader {
             const glassGeom = new THREE.BoxGeometry(winW, op.height, winD);
             glassGeom.translate(winX, (winBottom + winTop) / 2, winZ);
             glassGeoms.push(glassGeom);
+
+            // Readable exterior window frames and sills. These are real geometry, not
+            // baked pixels, and stay aligned with each opening when house dimensions change.
+            const frameT = 0.075;
+            const frameD = 0.085;
+            const frameX = ws.side === 'west'
+              ? -bw / 2 - 0.015
+              : ws.side === 'east'
+                ? bw / 2 + 0.015
+                : winX;
+            const frameZ = ws.side === 'north'
+              ? -bd / 2 - 0.015
+              : ws.side === 'south'
+                ? bd / 2 + 0.015
+                : winZ;
+            const windowY = (winBottom + winTop) / 2;
+            const frameParts: Array<{
+              w: number; h: number; d: number; x: number; y: number; z: number;
+            }> = [];
+            if (isNorthSouth) {
+              frameParts.push(
+                { w: op.width + frameT * 2, h: frameT, d: frameD, x: winX, y: winBottom - frameT / 2, z: frameZ },
+                { w: op.width + frameT * 2, h: frameT, d: frameD, x: winX, y: winTop + frameT / 2, z: frameZ },
+                { w: frameT, h: op.height + frameT * 2, d: frameD, x: winX - op.width / 2 - frameT / 2, y: windowY, z: frameZ },
+                { w: frameT, h: op.height + frameT * 2, d: frameD, x: winX + op.width / 2 + frameT / 2, y: windowY, z: frameZ }
+              );
+            } else {
+              frameParts.push(
+                { w: frameD, h: frameT, d: op.width + frameT * 2, x: frameX, y: winBottom - frameT / 2, z: winZ },
+                { w: frameD, h: frameT, d: op.width + frameT * 2, x: frameX, y: winTop + frameT / 2, z: winZ },
+                { w: frameD, h: op.height + frameT * 2, d: frameT, x: frameX, y: windowY, z: winZ - op.width / 2 - frameT / 2 },
+                { w: frameD, h: op.height + frameT * 2, d: frameT, x: frameX, y: windowY, z: winZ + op.width / 2 + frameT / 2 }
+              );
+            }
+            frameParts.forEach((part) => {
+              const frameGeom = new THREE.BoxGeometry(part.w, part.h, part.d);
+              frameGeom.translate(part.x, part.y, part.z);
+              trimGeoms.push(frameGeom);
+            });
           }
 
           currentPos = Math.max(currentPos, opEnd);
@@ -1050,6 +1155,98 @@ export class BlueprintMapLoader {
           isWalkable: false,
         });
       });
+    }
+
+    // ── I. Pitched roof and gable ends ─────────────────────────────────────
+    if (bldg.roof && bldg.roof.type === 'pitched') {
+      const topFloor = bldg.floors[bldg.floors.length - 1];
+      const roofBaseY = topFloor.floorY + topFloor.height + slabThickness;
+      const pitchHeight = Math.max(1.2, bldg.roof.pitchHeight ?? 1.8);
+      const overhang = Math.max(0.15, bldg.roof.overhang ?? 0.45);
+      const ridgeDirection = bldg.roof.ridgeDirection ?? 'x';
+      const roofMat = new THREE.MeshStandardMaterial({
+        color: bldg.roof.color || '#ad5940',
+        roughness: 0.82,
+        metalness: 0.02,
+        side: THREE.DoubleSide,
+      });
+      const ridgeY = roofBaseY + pitchHeight;
+      const ridgeHalf = ridgeDirection === 'x' ? bw / 2 + overhang : bd / 2 + overhang;
+      const eaveHalf = ridgeDirection === 'x' ? bd / 2 + overhang : bw / 2 + overhang;
+
+      const makeQuad = (points: number[][]) => {
+        const geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.Float32BufferAttribute(points.flat(), 3));
+        geom.setIndex([0, 1, 2, 0, 2, 3]);
+        geom.computeVertexNormals();
+        return geom;
+      };
+
+      let roofFaces: number[][][] = [];
+      if (ridgeDirection === 'x') {
+        roofFaces = [
+          [[-ridgeHalf, ridgeY, 0], [ridgeHalf, ridgeY, 0], [ridgeHalf, roofBaseY, eaveHalf], [-ridgeHalf, roofBaseY, eaveHalf]],
+          [[-ridgeHalf, ridgeY, 0], [ridgeHalf, ridgeY, 0], [ridgeHalf, roofBaseY, -eaveHalf], [-ridgeHalf, roofBaseY, -eaveHalf]],
+        ];
+      } else {
+        roofFaces = [
+          [[0, ridgeY, -ridgeHalf], [0, ridgeY, ridgeHalf], [eaveHalf, roofBaseY, ridgeHalf], [eaveHalf, roofBaseY, -ridgeHalf]],
+          [[0, ridgeY, -ridgeHalf], [0, ridgeY, ridgeHalf], [-eaveHalf, roofBaseY, ridgeHalf], [-eaveHalf, roofBaseY, -ridgeHalf]],
+        ];
+      }
+
+      roofFaces.forEach((points) => {
+        const roofMesh = new THREE.Mesh(makeQuad(points), roofMat);
+        roofMesh.castShadow = true;
+        roofMesh.receiveShadow = true;
+        buildingGroup.add(roofMesh);
+      });
+
+      // Close the triangular gable ends above the rectangular wall tops.
+      const gableMat = new THREE.MeshStandardMaterial({
+        color: wallColor,
+        roughness: 0.88,
+        side: THREE.DoubleSide,
+      });
+      const gableFaces: number[][][] = ridgeDirection === 'x'
+        ? [
+            [[-bw / 2, roofBaseY, -bd / 2], [-bw / 2, roofBaseY, bd / 2], [-bw / 2, ridgeY, 0]],
+            [[bw / 2, roofBaseY, -bd / 2], [bw / 2, roofBaseY, bd / 2], [bw / 2, ridgeY, 0]],
+          ]
+        : [
+            [[-bw / 2, roofBaseY, -bd / 2], [bw / 2, roofBaseY, -bd / 2], [0, ridgeY, -bd / 2]],
+            [[-bw / 2, roofBaseY, bd / 2], [bw / 2, roofBaseY, bd / 2], [0, ridgeY, bd / 2]],
+          ];
+      gableFaces.forEach((points) => {
+        const geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.Float32BufferAttribute(points.flat(), 3));
+        geom.computeVertexNormals();
+        const mesh = new THREE.Mesh(geom, gableMat);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        buildingGroup.add(mesh);
+      });
+
+      // Eave fascia and ridge cap create a finished roof edge instead of a paper-thin plane.
+      if (ridgeDirection === 'x') {
+        for (const sign of [-1, 1]) {
+          const fascia = new THREE.BoxGeometry(ridgeHalf * 2, 0.16, 0.18);
+          fascia.translate(0, roofBaseY - 0.06, sign * eaveHalf);
+          trimGeoms.push(fascia);
+        }
+        const ridgeCap = new THREE.BoxGeometry(ridgeHalf * 2, 0.10, 0.12);
+        ridgeCap.translate(0, ridgeY - 0.035, 0);
+        trimGeoms.push(ridgeCap);
+      } else {
+        for (const sign of [-1, 1]) {
+          const fascia = new THREE.BoxGeometry(0.18, 0.16, ridgeHalf * 2);
+          fascia.translate(sign * eaveHalf, roofBaseY - 0.06, 0);
+          trimGeoms.push(fascia);
+        }
+        const ridgeCap = new THREE.BoxGeometry(0.12, 0.10, ridgeHalf * 2);
+        ridgeCap.translate(0, ridgeY - 0.035, 0);
+        trimGeoms.push(ridgeCap);
+      }
     }
 
     // Merge accumulated geometries into single draw call meshes
