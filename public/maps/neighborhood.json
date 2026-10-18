@@ -6,17 +6,17 @@
     "units": "meters",
     "axes": "x east, z north, y up, origin at map center",
     "size": [
-      88,
-      88
+      96,
+      96
     ],
-    "symmetry": "Compact street blocks around a central park. Maple House is the first fully detailed building; unfinished buildings are neutral blockouts until approved.",
+    "symmetry": "A compact 96m x 96m playable footprint with four clearly defined street axes, a central park, and balanced spawn edges. Maple House is the first detailed building; unfinished structures remain neutral blockouts.",
     "version": 2
   },
   "rules": [
-    "Compact low-poly suburban tactical map using a tighter 88m x 88m playable footprint.",
-    "Maple House is the first approved architectural prototype with a pitched roof; other buildings remain neutral blockouts for staged development.",
-    "Keep the central park, market lane, bus stop, parking, and side routes traversable.",
-    "Building interiors, stairs, collisions and roof/balcony access require runtime validation before further buildings are approved.",
+    "Stylized low-poly suburban tactical environment within a 96m x 96m playable footprint; ground imagery is tightly cropped to reduce the empty outer apron.",
+    "Maple House is the first approved architectural prototype with a pitched roof, porch canopy, facade trim, framed windows, usable two-floor interior, and balcony.",
+    "Unfinished houses, apartment blocks, and the market are neutral blockouts while they await individual construction and approval.",
+    "Keep the central park, market lane, bus stop, parking, and side routes traversable; don't shrink full-size props into roadway space.",
     "Team spawn markers remain at opposite ends; they are layout markers, not a networked multiplayer implementation."
   ],
   "zones": [
@@ -24,84 +24,84 @@
       "id": "spawnA",
       "name": "Team A Spawn",
       "min": [
-        -5.739999999999999,
-        -37.72
+        -7,
+        -46
       ],
       "max": [
-        5.739999999999999,
-        -31.159999999999997
+        7,
+        -38
       ]
     },
     {
       "id": "spawnB",
       "name": "Team B Spawn",
       "min": [
-        -5.739999999999999,
-        31.159999999999997
+        -7,
+        38
       ],
       "max": [
-        5.739999999999999,
-        37.72
+        7,
+        46
       ]
     },
     {
       "id": "park",
       "name": "Central Park",
       "min": [
-        -9.84,
-        -9.84
+        -12,
+        -12
       ],
       "max": [
-        9.84,
-        9.84
+        12,
+        12
       ]
     },
     {
       "id": "westHomes",
       "name": "West Homes",
       "min": [
-        -25.419999999999998,
-        -26.24
+        -31,
+        -32
       ],
       "max": [
-        -15.579999999999998,
-        26.24
+        -19,
+        32
       ]
     },
     {
       "id": "eastHomes",
       "name": "East Homes",
       "min": [
-        15.579999999999998,
-        -26.24
+        19,
+        -32
       ],
       "max": [
-        25.419999999999998,
-        26.24
+        31,
+        32
       ]
     },
     {
       "id": "market",
       "name": "Corner Market",
       "min": [
-        -38.54,
-        -5.739999999999999
+        -47,
+        -7
       ],
       "max": [
-        -28.7,
-        5.739999999999999
+        -35,
+        7
       ]
     },
     {
       "id": "bus",
       "name": "Bus Stop and Parking",
       "min": [
-        28.7,
-        -26.24
+        35,
+        -32
       ],
       "max": [
-        38.54,
-        11.479999999999999
+        47,
+        14
       ]
     }
   ],
@@ -110,9 +110,9 @@
       "id": "home_south_west",
       "name": "Maple House — Approved Prototype",
       "center": [
-        -20.5,
+        -25,
         0,
-        -20.91
+        -25.5
       ],
       "size": [
         10,
@@ -500,9 +500,9 @@
       "id": "home_south_east",
       "name": "Cedar House",
       "center": [
-        20.5,
+        25,
         0,
-        -20.91
+        -25.5
       ],
       "size": [
         10,
@@ -890,9 +890,9 @@
       "id": "home_north_west",
       "name": "Willow House",
       "center": [
-        -20.5,
+        -25,
         0,
-        20.91
+        25.5
       ],
       "size": [
         10,
@@ -1280,9 +1280,9 @@
       "id": "home_north_east",
       "name": "Pine House",
       "center": [
-        20.5,
+        25,
         0,
-        20.91
+        25.5
       ],
       "size": [
         10,
@@ -1670,7 +1670,7 @@
       "id": "apartment_west",
       "name": "Oak Court Apartments",
       "center": [
-        -20.5,
+        -25,
         0,
         0
       ],
@@ -2250,7 +2250,7 @@
       "id": "apartment_east",
       "name": "Maple Court Apartments",
       "center": [
-        20.5,
+        25,
         0,
         0
       ],
@@ -2830,7 +2830,7 @@
       "id": "corner_market",
       "name": "Corner Market",
       "center": [
-        -33.62,
+        -41,
         0,
         0
       ],
@@ -3033,9 +3033,9 @@
       "id": "spawn_A_flagpole_1",
       "kind": "prop",
       "center": [
-        -1.64,
+        -2,
         1.5,
-        -34.44
+        -42
       ],
       "size": [
         0.09,
@@ -3048,9 +3048,9 @@
       "id": "spawn_A_flag_1",
       "kind": "prop",
       "center": [
-        -1.23,
+        -1.5,
         2.35,
-        -34.44
+        -42
       ],
       "size": [
         1,
@@ -3063,9 +3063,9 @@
       "id": "spawn_A_flagpole_2",
       "kind": "prop",
       "center": [
-        1.64,
+        2,
         1.5,
-        -34.44
+        -42
       ],
       "size": [
         0.09,
@@ -3078,9 +3078,9 @@
       "id": "spawn_A_flag_2",
       "kind": "prop",
       "center": [
-        2.05,
+        2.5,
         2.35,
-        -34.44
+        -42
       ],
       "size": [
         1,
@@ -3093,9 +3093,9 @@
       "id": "spawn_B_flagpole_1",
       "kind": "prop",
       "center": [
-        -1.64,
+        -2,
         1.5,
-        34.44
+        42
       ],
       "size": [
         0.09,
@@ -3108,9 +3108,9 @@
       "id": "spawn_B_flag_1",
       "kind": "prop",
       "center": [
-        -1.23,
+        -1.5,
         2.35,
-        34.44
+        42
       ],
       "size": [
         1,
@@ -3123,9 +3123,9 @@
       "id": "spawn_B_flagpole_2",
       "kind": "prop",
       "center": [
-        1.64,
+        2,
         1.5,
-        34.44
+        42
       ],
       "size": [
         0.09,
@@ -3138,9 +3138,9 @@
       "id": "spawn_B_flag_2",
       "kind": "prop",
       "center": [
-        2.05,
+        2.5,
         2.35,
-        34.44
+        42
       ],
       "size": [
         1,
@@ -3153,9 +3153,9 @@
       "id": "home_south_west_fence_e",
       "kind": "fence",
       "center": [
-        -14.7,
+        -19.2,
         0.55,
-        -20.91
+        -25.5
       ],
       "size": [
         0.12,
@@ -3168,9 +3168,9 @@
       "id": "home_south_west_fence_front_l",
       "kind": "fence",
       "center": [
-        -24.2,
+        -28.7,
         0.55,
-        -15.11
+        -19.7
       ],
       "size": [
         4.2,
@@ -3183,9 +3183,9 @@
       "id": "home_south_west_fence_front_r",
       "kind": "fence",
       "center": [
-        -16.8,
+        -21.3,
         0.55,
-        -15.11
+        -19.7
       ],
       "size": [
         4.2,
@@ -3198,9 +3198,9 @@
       "id": "home_south_west_planter_1",
       "kind": "prop",
       "center": [
-        -24.6,
+        -29.1,
         0.28,
-        -17.61
+        -22.2
       ],
       "size": [
         1.1,
@@ -3213,9 +3213,9 @@
       "id": "home_south_west_planter_2",
       "kind": "prop",
       "center": [
-        -16.4,
+        -20.9,
         0.28,
-        -17.61
+        -22.2
       ],
       "size": [
         1.1,
@@ -3228,9 +3228,9 @@
       "id": "home_south_east_fence_w",
       "kind": "fence",
       "center": [
-        14.7,
+        19.2,
         0.55,
-        -20.91
+        -25.5
       ],
       "size": [
         0.12,
@@ -3243,9 +3243,9 @@
       "id": "home_south_east_fence_front_l",
       "kind": "fence",
       "center": [
-        16.8,
+        21.3,
         0.55,
-        -15.11
+        -19.7
       ],
       "size": [
         4.2,
@@ -3258,9 +3258,9 @@
       "id": "home_south_east_fence_front_r",
       "kind": "fence",
       "center": [
-        24.2,
+        28.7,
         0.55,
-        -15.11
+        -19.7
       ],
       "size": [
         4.2,
@@ -3273,9 +3273,9 @@
       "id": "home_south_east_planter_1",
       "kind": "prop",
       "center": [
-        16.4,
+        20.9,
         0.28,
-        -17.61
+        -22.2
       ],
       "size": [
         1.1,
@@ -3288,9 +3288,9 @@
       "id": "home_south_east_planter_2",
       "kind": "prop",
       "center": [
-        24.6,
+        29.1,
         0.28,
-        -17.61
+        -22.2
       ],
       "size": [
         1.1,
@@ -3303,9 +3303,9 @@
       "id": "home_north_west_fence_e",
       "kind": "fence",
       "center": [
-        -14.7,
+        -19.2,
         0.55,
-        20.91
+        25.5
       ],
       "size": [
         0.12,
@@ -3318,9 +3318,9 @@
       "id": "home_north_west_fence_front_l",
       "kind": "fence",
       "center": [
-        -24.2,
+        -28.7,
         0.55,
-        15.11
+        19.7
       ],
       "size": [
         4.2,
@@ -3333,9 +3333,9 @@
       "id": "home_north_west_fence_front_r",
       "kind": "fence",
       "center": [
-        -16.8,
+        -21.3,
         0.55,
-        15.11
+        19.7
       ],
       "size": [
         4.2,
@@ -3348,9 +3348,9 @@
       "id": "home_north_west_planter_1",
       "kind": "prop",
       "center": [
-        -24.6,
+        -29.1,
         0.28,
-        17.61
+        22.2
       ],
       "size": [
         1.1,
@@ -3363,9 +3363,9 @@
       "id": "home_north_west_planter_2",
       "kind": "prop",
       "center": [
-        -16.4,
+        -20.9,
         0.28,
-        17.61
+        22.2
       ],
       "size": [
         1.1,
@@ -3378,9 +3378,9 @@
       "id": "home_north_east_fence_w",
       "kind": "fence",
       "center": [
-        14.7,
+        19.2,
         0.55,
-        20.91
+        25.5
       ],
       "size": [
         0.12,
@@ -3393,9 +3393,9 @@
       "id": "home_north_east_fence_front_l",
       "kind": "fence",
       "center": [
-        16.8,
+        21.3,
         0.55,
-        15.11
+        19.7
       ],
       "size": [
         4.2,
@@ -3408,9 +3408,9 @@
       "id": "home_north_east_fence_front_r",
       "kind": "fence",
       "center": [
-        24.2,
+        28.7,
         0.55,
-        15.11
+        19.7
       ],
       "size": [
         4.2,
@@ -3423,9 +3423,9 @@
       "id": "home_north_east_planter_1",
       "kind": "prop",
       "center": [
-        16.4,
+        20.9,
         0.28,
-        17.61
+        22.2
       ],
       "size": [
         1.1,
@@ -3438,9 +3438,9 @@
       "id": "home_north_east_planter_2",
       "kind": "prop",
       "center": [
-        24.6,
+        29.1,
         0.28,
-        17.61
+        22.2
       ],
       "size": [
         1.1,
@@ -3453,9 +3453,9 @@
       "id": "home_south_west_porch",
       "kind": "platform",
       "center": [
-        -20.5,
+        -25,
         0.1,
-        -15.41
+        -20
       ],
       "size": [
         3.2,
@@ -3468,9 +3468,9 @@
       "id": "home_south_west_porch_step_0",
       "kind": "stairs",
       "center": [
-        -20.5,
+        -25,
         0.07,
-        -14.66
+        -19.25
       ],
       "size": [
         1.8,
@@ -3483,9 +3483,9 @@
       "id": "home_south_west_porch_step_1",
       "kind": "stairs",
       "center": [
-        -20.5,
+        -25,
         0.15000000000000002,
-        -14.32
+        -18.91
       ],
       "size": [
         1.8,
@@ -3498,9 +3498,9 @@
       "id": "home_south_west_porch_step_2",
       "kind": "stairs",
       "center": [
-        -20.5,
+        -25,
         0.23,
-        -13.98
+        -18.57
       ],
       "size": [
         1.8,
@@ -3513,9 +3513,9 @@
       "id": "home_south_west_balcony_deck",
       "kind": "platform",
       "center": [
-        -20.5,
+        -25,
         3.05,
-        -15.46
+        -20.05
       ],
       "size": [
         3,
@@ -3528,9 +3528,9 @@
       "id": "home_south_west_balcony_rail_outer",
       "kind": "fence",
       "center": [
-        -20.5,
+        -25,
         3.55,
-        -14.809999999999999
+        -19.4
       ],
       "size": [
         3,
@@ -3543,9 +3543,9 @@
       "id": "home_south_west_balcony_rail_l",
       "kind": "fence",
       "center": [
-        -21.95,
+        -26.45,
         3.55,
-        -15.46
+        -20.05
       ],
       "size": [
         0.1,
@@ -3558,9 +3558,9 @@
       "id": "home_south_west_balcony_rail_r",
       "kind": "fence",
       "center": [
-        -19.05,
+        -23.55,
         3.55,
-        -15.46
+        -20.05
       ],
       "size": [
         0.1,
@@ -3573,9 +3573,9 @@
       "id": "home_south_east_porch",
       "kind": "platform",
       "center": [
-        20.5,
+        25,
         0.1,
-        -15.41
+        -20
       ],
       "size": [
         3.2,
@@ -3588,9 +3588,9 @@
       "id": "home_south_east_porch_step_0",
       "kind": "stairs",
       "center": [
-        20.5,
+        25,
         0.07,
-        -14.66
+        -19.25
       ],
       "size": [
         1.8,
@@ -3603,9 +3603,9 @@
       "id": "home_south_east_porch_step_1",
       "kind": "stairs",
       "center": [
-        20.5,
+        25,
         0.15000000000000002,
-        -14.32
+        -18.91
       ],
       "size": [
         1.8,
@@ -3618,9 +3618,9 @@
       "id": "home_south_east_porch_step_2",
       "kind": "stairs",
       "center": [
-        20.5,
+        25,
         0.23,
-        -13.98
+        -18.57
       ],
       "size": [
         1.8,
@@ -3633,9 +3633,9 @@
       "id": "home_south_east_balcony_deck",
       "kind": "platform",
       "center": [
-        20.5,
+        25,
         3.05,
-        -15.46
+        -20.05
       ],
       "size": [
         3,
@@ -3648,9 +3648,9 @@
       "id": "home_south_east_balcony_rail_outer",
       "kind": "fence",
       "center": [
-        20.5,
+        25,
         3.55,
-        -14.809999999999999
+        -19.4
       ],
       "size": [
         3,
@@ -3663,9 +3663,9 @@
       "id": "home_south_east_balcony_rail_l",
       "kind": "fence",
       "center": [
-        19.05,
+        23.55,
         3.55,
-        -15.46
+        -20.05
       ],
       "size": [
         0.1,
@@ -3678,9 +3678,9 @@
       "id": "home_south_east_balcony_rail_r",
       "kind": "fence",
       "center": [
-        21.95,
+        26.45,
         3.55,
-        -15.46
+        -20.05
       ],
       "size": [
         0.1,
@@ -3693,9 +3693,9 @@
       "id": "home_north_west_porch",
       "kind": "platform",
       "center": [
-        -20.5,
+        -25,
         0.1,
-        15.41
+        20
       ],
       "size": [
         3.2,
@@ -3708,9 +3708,9 @@
       "id": "home_north_west_porch_step_0",
       "kind": "stairs",
       "center": [
-        -20.5,
+        -25,
         0.07,
-        14.66
+        19.25
       ],
       "size": [
         1.8,
@@ -3723,9 +3723,9 @@
       "id": "home_north_west_porch_step_1",
       "kind": "stairs",
       "center": [
-        -20.5,
+        -25,
         0.15000000000000002,
-        14.32
+        18.91
       ],
       "size": [
         1.8,
@@ -3738,9 +3738,9 @@
       "id": "home_north_west_porch_step_2",
       "kind": "stairs",
       "center": [
-        -20.5,
+        -25,
         0.23,
-        13.98
+        18.57
       ],
       "size": [
         1.8,
@@ -3753,9 +3753,9 @@
       "id": "home_north_west_balcony_deck",
       "kind": "platform",
       "center": [
-        -20.5,
+        -25,
         3.05,
-        15.46
+        20.05
       ],
       "size": [
         3,
@@ -3768,9 +3768,9 @@
       "id": "home_north_west_balcony_rail_outer",
       "kind": "fence",
       "center": [
-        -20.5,
+        -25,
         3.55,
-        14.809999999999999
+        19.4
       ],
       "size": [
         3,
@@ -3783,9 +3783,9 @@
       "id": "home_north_west_balcony_rail_l",
       "kind": "fence",
       "center": [
-        -21.95,
+        -26.45,
         3.55,
-        15.46
+        20.05
       ],
       "size": [
         0.1,
@@ -3798,9 +3798,9 @@
       "id": "home_north_west_balcony_rail_r",
       "kind": "fence",
       "center": [
-        -19.05,
+        -23.55,
         3.55,
-        15.46
+        20.05
       ],
       "size": [
         0.1,
@@ -3813,9 +3813,9 @@
       "id": "home_north_east_porch",
       "kind": "platform",
       "center": [
-        20.5,
+        25,
         0.1,
-        15.41
+        20
       ],
       "size": [
         3.2,
@@ -3828,9 +3828,9 @@
       "id": "home_north_east_porch_step_0",
       "kind": "stairs",
       "center": [
-        20.5,
+        25,
         0.07,
-        14.66
+        19.25
       ],
       "size": [
         1.8,
@@ -3843,9 +3843,9 @@
       "id": "home_north_east_porch_step_1",
       "kind": "stairs",
       "center": [
-        20.5,
+        25,
         0.15000000000000002,
-        14.32
+        18.91
       ],
       "size": [
         1.8,
@@ -3858,9 +3858,9 @@
       "id": "home_north_east_porch_step_2",
       "kind": "stairs",
       "center": [
-        20.5,
+        25,
         0.23,
-        13.98
+        18.57
       ],
       "size": [
         1.8,
@@ -3873,9 +3873,9 @@
       "id": "home_north_east_balcony_deck",
       "kind": "platform",
       "center": [
-        20.5,
+        25,
         3.05,
-        15.46
+        20.05
       ],
       "size": [
         3,
@@ -3888,9 +3888,9 @@
       "id": "home_north_east_balcony_rail_outer",
       "kind": "fence",
       "center": [
-        20.5,
+        25,
         3.55,
-        14.809999999999999
+        19.4
       ],
       "size": [
         3,
@@ -3903,9 +3903,9 @@
       "id": "home_north_east_balcony_rail_l",
       "kind": "fence",
       "center": [
-        19.05,
+        23.55,
         3.55,
-        15.46
+        20.05
       ],
       "size": [
         0.1,
@@ -3918,9 +3918,9 @@
       "id": "home_north_east_balcony_rail_r",
       "kind": "fence",
       "center": [
-        21.95,
+        26.45,
         3.55,
-        15.46
+        20.05
       ],
       "size": [
         0.1,
@@ -3933,9 +3933,9 @@
       "id": "market_sign_panel",
       "kind": "prop",
       "center": [
-        -33.62,
+        -41,
         3.45,
-        5.0676
+        6.18
       ],
       "size": [
         4.7,
@@ -3948,7 +3948,7 @@
       "id": "market_awning",
       "kind": "prop",
       "center": [
-        -30.667999999999996,
+        -37.4,
         2.35,
         0
       ],
@@ -3963,9 +3963,9 @@
       "id": "bus_body",
       "kind": "vehicle",
       "center": [
-        33.62,
+        41,
         1.45,
-        2.952
+        3.6
       ],
       "size": [
         2.35,
@@ -3978,9 +3978,9 @@
       "id": "bus_roof",
       "kind": "vehicle",
       "center": [
-        33.62,
+        41,
         2.92,
-        2.952
+        3.6
       ],
       "size": [
         2.15,
@@ -3993,9 +3993,9 @@
       "id": "bus_front_window",
       "kind": "glass",
       "center": [
-        33.62,
+        41,
         2.15,
-        5.8793999999999995
+        7.17
       ],
       "size": [
         2,
@@ -4008,9 +4008,9 @@
       "id": "bus_side_windows_1",
       "kind": "glass",
       "center": [
-        32.6196,
+        39.78,
         2.15,
-        1.066
+        1.3
       ],
       "size": [
         0.08,
@@ -4023,9 +4023,9 @@
       "id": "bus_side_windows_2",
       "kind": "glass",
       "center": [
-        32.6196,
+        39.78,
         2.15,
-        2.46
+        3
       ],
       "size": [
         0.08,
@@ -4038,9 +4038,9 @@
       "id": "bus_side_windows_3",
       "kind": "glass",
       "center": [
-        32.6196,
+        39.78,
         2.15,
-        3.854
+        4.7
       ],
       "size": [
         0.08,
@@ -4053,9 +4053,9 @@
       "id": "bus_side_windows_4",
       "kind": "glass",
       "center": [
-        32.6196,
+        39.78,
         2.15,
-        4.92
+        6
       ],
       "size": [
         0.08,
@@ -4068,9 +4068,9 @@
       "id": "bus_bumper_front",
       "kind": "vehicle",
       "center": [
-        33.62,
+        41,
         0.52,
-        5.9204
+        7.22
       ],
       "size": [
         2.5,
@@ -4083,7 +4083,7 @@
       "id": "bus_bumper_back",
       "kind": "vehicle",
       "center": [
-        33.62,
+        41,
         0.52,
         0
       ],
@@ -4098,9 +4098,9 @@
       "id": "bus_wheel_39.65_1",
       "kind": "vehicle",
       "center": [
-        32.513,
+        39.65,
         0.45,
-        0.82
+        1
       ],
       "size": [
         0.23,
@@ -4113,9 +4113,9 @@
       "id": "bus_wheel_39.65_6.1",
       "kind": "vehicle",
       "center": [
-        32.513,
+        39.65,
         0.45,
-        5.002
+        6.1
       ],
       "size": [
         0.23,
@@ -4128,9 +4128,9 @@
       "id": "bus_wheel_42.35_1",
       "kind": "vehicle",
       "center": [
-        34.727,
+        42.35,
         0.45,
-        0.82
+        1
       ],
       "size": [
         0.23,
@@ -4143,9 +4143,9 @@
       "id": "bus_wheel_42.35_6.1",
       "kind": "vehicle",
       "center": [
-        34.727,
+        42.35,
         0.45,
-        5.002
+        6.1
       ],
       "size": [
         0.23,
@@ -4158,9 +4158,9 @@
       "id": "bus_stop_roof",
       "kind": "prop",
       "center": [
-        32.8,
+        40,
         2.9,
-        9.84
+        12
       ],
       "size": [
         4.6,
@@ -4173,9 +4173,9 @@
       "id": "bus_stop_pillar_38_11",
       "kind": "prop",
       "center": [
-        31.159999999999997,
+        38,
         1.45,
-        9.02
+        11
       ],
       "size": [
         0.12,
@@ -4188,9 +4188,9 @@
       "id": "bus_stop_pillar_38_13",
       "kind": "prop",
       "center": [
-        31.159999999999997,
+        38,
         1.45,
-        10.66
+        13
       ],
       "size": [
         0.12,
@@ -4203,9 +4203,9 @@
       "id": "bus_stop_pillar_42_11",
       "kind": "prop",
       "center": [
-        34.44,
+        42,
         1.45,
-        9.02
+        11
       ],
       "size": [
         0.12,
@@ -4218,9 +4218,9 @@
       "id": "bus_stop_pillar_42_13",
       "kind": "prop",
       "center": [
-        34.44,
+        42,
         1.45,
-        10.66
+        13
       ],
       "size": [
         0.12,
@@ -4233,9 +4233,9 @@
       "id": "bus_stop_bench_seat",
       "kind": "bench",
       "center": [
-        32.8,
+        40,
         0.6,
-        10.004
+        12.2
       ],
       "size": [
         2.2,
@@ -4248,9 +4248,9 @@
       "id": "bus_stop_bench_back",
       "kind": "bench",
       "center": [
-        32.8,
+        40,
         1,
-        10.192599999999999
+        12.43
       ],
       "size": [
         2.2,
@@ -4263,9 +4263,9 @@
       "id": "bus_stop_sign_post",
       "kind": "prop",
       "center": [
-        35.424,
+        43.2,
         1.5,
-        12.136
+        14.8
       ],
       "size": [
         0.08,
@@ -4278,9 +4278,9 @@
       "id": "bus_stop_sign",
       "kind": "prop",
       "center": [
-        35.424,
+        43.2,
         2.55,
-        12.136
+        14.8
       ],
       "size": [
         0.75,
@@ -4293,9 +4293,9 @@
       "id": "parking_car_1_body",
       "kind": "vehicle",
       "center": [
-        30.34,
+        37,
         0.72,
-        -19.843999999999998
+        -24.2
       ],
       "size": [
         2,
@@ -4308,9 +4308,9 @@
       "id": "parking_car_1_cabin",
       "kind": "vehicle",
       "center": [
-        30.34,
+        37,
         1.4,
-        -19.843999999999998
+        -24.2
       ],
       "size": [
         1.65,
@@ -4323,9 +4323,9 @@
       "id": "parking_car_1_hood",
       "kind": "vehicle",
       "center": [
-        30.34,
+        37,
         1.1,
-        -20.951
+        -25.55
       ],
       "size": [
         1.85,
@@ -4338,9 +4338,9 @@
       "id": "parking_car_1_wheel_-25.55_-0.95",
       "kind": "vehicle",
       "center": [
-        29.560999999999996,
+        36.05,
         0.35,
-        -20.951
+        -25.55
       ],
       "size": [
         0.28,
@@ -4353,9 +4353,9 @@
       "id": "parking_car_1_wheel_-25.55_0.95",
       "kind": "vehicle",
       "center": [
-        31.119,
+        37.95,
         0.35,
-        -20.951
+        -25.55
       ],
       "size": [
         0.28,
@@ -4368,9 +4368,9 @@
       "id": "parking_car_1_wheel_-22.85_-0.95",
       "kind": "vehicle",
       "center": [
-        29.560999999999996,
+        36.05,
         0.35,
-        -18.737
+        -22.85
       ],
       "size": [
         0.28,
@@ -4383,9 +4383,9 @@
       "id": "parking_car_1_wheel_-22.85_0.95",
       "kind": "vehicle",
       "center": [
-        31.119,
+        37.95,
         0.35,
-        -18.737
+        -22.85
       ],
       "size": [
         0.28,
@@ -4398,9 +4398,9 @@
       "id": "parking_car_2_body",
       "kind": "vehicle",
       "center": [
-        33.62,
+        41,
         0.72,
-        -19.843999999999998
+        -24.2
       ],
       "size": [
         2,
@@ -4413,9 +4413,9 @@
       "id": "parking_car_2_cabin",
       "kind": "vehicle",
       "center": [
-        33.62,
+        41,
         1.4,
-        -19.843999999999998
+        -24.2
       ],
       "size": [
         1.65,
@@ -4428,9 +4428,9 @@
       "id": "parking_car_2_hood",
       "kind": "vehicle",
       "center": [
-        33.62,
+        41,
         1.1,
-        -20.951
+        -25.55
       ],
       "size": [
         1.85,
@@ -4443,9 +4443,9 @@
       "id": "parking_car_2_wheel_-25.55_-0.95",
       "kind": "vehicle",
       "center": [
-        32.840999999999994,
+        40.05,
         0.35,
-        -20.951
+        -25.55
       ],
       "size": [
         0.28,
@@ -4458,9 +4458,9 @@
       "id": "parking_car_2_wheel_-25.55_0.95",
       "kind": "vehicle",
       "center": [
-        34.399,
+        41.95,
         0.35,
-        -20.951
+        -25.55
       ],
       "size": [
         0.28,
@@ -4473,9 +4473,9 @@
       "id": "parking_car_2_wheel_-22.85_-0.95",
       "kind": "vehicle",
       "center": [
-        32.840999999999994,
+        40.05,
         0.35,
-        -18.737
+        -22.85
       ],
       "size": [
         0.28,
@@ -4488,9 +4488,9 @@
       "id": "parking_car_2_wheel_-22.85_0.95",
       "kind": "vehicle",
       "center": [
-        34.399,
+        41.95,
         0.35,
-        -18.737
+        -22.85
       ],
       "size": [
         0.28,
@@ -4503,9 +4503,9 @@
       "id": "parking_car_3_body",
       "kind": "vehicle",
       "center": [
-        36.9,
+        45,
         0.72,
-        -19.843999999999998
+        -24.2
       ],
       "size": [
         2,
@@ -4518,9 +4518,9 @@
       "id": "parking_car_3_cabin",
       "kind": "vehicle",
       "center": [
-        36.9,
+        45,
         1.4,
-        -19.843999999999998
+        -24.2
       ],
       "size": [
         1.65,
@@ -4533,9 +4533,9 @@
       "id": "parking_car_3_hood",
       "kind": "vehicle",
       "center": [
-        36.9,
+        45,
         1.1,
-        -20.951
+        -25.55
       ],
       "size": [
         1.85,
@@ -4548,9 +4548,9 @@
       "id": "parking_car_3_wheel_-25.55_-0.95",
       "kind": "vehicle",
       "center": [
-        36.120999999999995,
+        44.05,
         0.35,
-        -20.951
+        -25.55
       ],
       "size": [
         0.28,
@@ -4563,9 +4563,9 @@
       "id": "parking_car_3_wheel_-25.55_0.95",
       "kind": "vehicle",
       "center": [
-        37.679,
+        45.95,
         0.35,
-        -20.951
+        -25.55
       ],
       "size": [
         0.28,
@@ -4578,9 +4578,9 @@
       "id": "parking_car_3_wheel_-22.85_-0.95",
       "kind": "vehicle",
       "center": [
-        36.120999999999995,
+        44.05,
         0.35,
-        -18.737
+        -22.85
       ],
       "size": [
         0.28,
@@ -4593,9 +4593,9 @@
       "id": "parking_car_3_wheel_-22.85_0.95",
       "kind": "vehicle",
       "center": [
-        37.679,
+        45.95,
         0.35,
-        -18.737
+        -22.85
       ],
       "size": [
         0.28,
@@ -4608,9 +4608,9 @@
       "id": "park_bench_1_seat",
       "kind": "bench",
       "center": [
-        -4.92,
+        -6,
         0.58,
-        -4.1
+        -5
       ],
       "size": [
         2,
@@ -4623,9 +4623,9 @@
       "id": "park_bench_1_back",
       "kind": "bench",
       "center": [
-        -4.92,
+        -6,
         0.98,
-        -4.280399999999999
+        -5.22
       ],
       "size": [
         2,
@@ -4638,9 +4638,9 @@
       "id": "park_bench_1_leg_l",
       "kind": "bench",
       "center": [
-        -5.494,
+        -6.7,
         0.3,
-        -4.1
+        -5
       ],
       "size": [
         0.12,
@@ -4653,9 +4653,9 @@
       "id": "park_bench_1_leg_r",
       "kind": "bench",
       "center": [
-        -4.345999999999999,
+        -5.3,
         0.3,
-        -4.1
+        -5
       ],
       "size": [
         0.12,
@@ -4668,9 +4668,9 @@
       "id": "park_bench_2_seat",
       "kind": "bench",
       "center": [
-        4.92,
+        6,
         0.58,
-        -4.1
+        -5
       ],
       "size": [
         2,
@@ -4683,9 +4683,9 @@
       "id": "park_bench_2_back",
       "kind": "bench",
       "center": [
-        4.92,
+        6,
         0.98,
-        -4.280399999999999
+        -5.22
       ],
       "size": [
         2,
@@ -4698,9 +4698,9 @@
       "id": "park_bench_2_leg_l",
       "kind": "bench",
       "center": [
-        4.345999999999999,
+        5.3,
         0.3,
-        -4.1
+        -5
       ],
       "size": [
         0.12,
@@ -4713,9 +4713,9 @@
       "id": "park_bench_2_leg_r",
       "kind": "bench",
       "center": [
-        5.494,
+        6.7,
         0.3,
-        -4.1
+        -5
       ],
       "size": [
         0.12,
@@ -4728,9 +4728,9 @@
       "id": "park_bench_3_seat",
       "kind": "bench",
       "center": [
-        -4.92,
+        -6,
         0.58,
-        4.1
+        5
       ],
       "size": [
         2,
@@ -4743,9 +4743,9 @@
       "id": "park_bench_3_back",
       "kind": "bench",
       "center": [
-        -4.92,
+        -6,
         0.98,
-        3.9196
+        4.78
       ],
       "size": [
         2,
@@ -4758,9 +4758,9 @@
       "id": "park_bench_3_leg_l",
       "kind": "bench",
       "center": [
-        -5.494,
+        -6.7,
         0.3,
-        4.1
+        5
       ],
       "size": [
         0.12,
@@ -4773,9 +4773,9 @@
       "id": "park_bench_3_leg_r",
       "kind": "bench",
       "center": [
-        -4.345999999999999,
+        -5.3,
         0.3,
-        4.1
+        5
       ],
       "size": [
         0.12,
@@ -4788,9 +4788,9 @@
       "id": "park_bench_4_seat",
       "kind": "bench",
       "center": [
-        4.92,
+        6,
         0.58,
-        4.1
+        5
       ],
       "size": [
         2,
@@ -4803,9 +4803,9 @@
       "id": "park_bench_4_back",
       "kind": "bench",
       "center": [
-        4.92,
+        6,
         0.98,
-        3.9196
+        4.78
       ],
       "size": [
         2,
@@ -4818,9 +4818,9 @@
       "id": "park_bench_4_leg_l",
       "kind": "bench",
       "center": [
-        4.345999999999999,
+        5.3,
         0.3,
-        4.1
+        5
       ],
       "size": [
         0.12,
@@ -4833,9 +4833,9 @@
       "id": "park_bench_4_leg_r",
       "kind": "bench",
       "center": [
-        5.494,
+        6.7,
         0.3,
-        4.1
+        5
       ],
       "size": [
         0.12,
@@ -4863,7 +4863,7 @@
       "id": "play_support_1",
       "kind": "playground",
       "center": [
-        -1.271,
+        -1.55,
         0.85,
         0
       ],
@@ -4878,7 +4878,7 @@
       "id": "play_support_2",
       "kind": "playground",
       "center": [
-        1.271,
+        1.55,
         0.85,
         0
       ],
@@ -4908,7 +4908,7 @@
       "id": "play_ladder_step_0",
       "kind": "playground",
       "center": [
-        -1.845,
+        -2.25,
         0.25,
         0
       ],
@@ -4923,7 +4923,7 @@
       "id": "play_ladder_step_1",
       "kind": "playground",
       "center": [
-        -1.845,
+        -2.25,
         0.48,
         0
       ],
@@ -4938,7 +4938,7 @@
       "id": "play_ladder_step_2",
       "kind": "playground",
       "center": [
-        -1.845,
+        -2.25,
         0.71,
         0
       ],
@@ -4953,7 +4953,7 @@
       "id": "play_ladder_step_3",
       "kind": "playground",
       "center": [
-        -1.845,
+        -2.25,
         0.9400000000000001,
         0
       ],
@@ -4968,7 +4968,7 @@
       "id": "play_ladder_step_4",
       "kind": "playground",
       "center": [
-        -1.845,
+        -2.25,
         1.17,
         0
       ],
@@ -4983,7 +4983,7 @@
       "id": "slide_landing",
       "kind": "playground",
       "center": [
-        1.845,
+        2.25,
         0.75,
         0
       ],
@@ -5000,7 +5000,7 @@
       "center": [
         0,
         2.3,
-        3.444
+        4.2
       ],
       "size": [
         4.4,
@@ -5013,9 +5013,9 @@
       "id": "swing_frame_-2_left",
       "kind": "playground",
       "center": [
-        -1.64,
+        -2,
         1.15,
-        3.1159999999999997
+        3.8
       ],
       "size": [
         0.13,
@@ -5028,9 +5028,9 @@
       "id": "swing_frame_-2_right",
       "kind": "playground",
       "center": [
-        -1.64,
+        -2,
         1.15,
-        3.7719999999999994
+        4.6
       ],
       "size": [
         0.13,
@@ -5043,9 +5043,9 @@
       "id": "swing_frame_2_left",
       "kind": "playground",
       "center": [
-        1.64,
+        2,
         1.15,
-        3.1159999999999997
+        3.8
       ],
       "size": [
         0.13,
@@ -5058,9 +5058,9 @@
       "id": "swing_frame_2_right",
       "kind": "playground",
       "center": [
-        1.64,
+        2,
         1.15,
-        3.7719999999999994
+        4.6
       ],
       "size": [
         0.13,
@@ -5073,9 +5073,9 @@
       "id": "swing_rope_1_a",
       "kind": "playground",
       "center": [
-        -0.82,
+        -1,
         1.65,
-        3.28
+        4
       ],
       "size": [
         0.04,
@@ -5088,9 +5088,9 @@
       "id": "swing_rope_1_b",
       "kind": "playground",
       "center": [
-        -0.82,
+        -1,
         1.65,
-        3.608
+        4.4
       ],
       "size": [
         0.04,
@@ -5103,9 +5103,9 @@
       "id": "swing_seat_1",
       "kind": "playground",
       "center": [
-        -0.82,
+        -1,
         0.95,
-        3.444
+        4.2
       ],
       "size": [
         0.75,
@@ -5118,9 +5118,9 @@
       "id": "swing_rope_2_a",
       "kind": "playground",
       "center": [
-        0.82,
+        1,
         1.65,
-        3.28
+        4
       ],
       "size": [
         0.04,
@@ -5133,9 +5133,9 @@
       "id": "swing_rope_2_b",
       "kind": "playground",
       "center": [
-        0.82,
+        1,
         1.65,
-        3.608
+        4.4
       ],
       "size": [
         0.04,
@@ -5148,9 +5148,9 @@
       "id": "swing_seat_2",
       "kind": "playground",
       "center": [
-        0.82,
+        1,
         0.95,
-        3.444
+        4.2
       ],
       "size": [
         0.75,
@@ -5165,7 +5165,7 @@
       "center": [
         0,
         0.95,
-        -6.231999999999999
+        -7.6
       ],
       "size": [
         2.2,
@@ -5178,9 +5178,9 @@
       "id": "picnic_table_leg_-0.8",
       "kind": "table",
       "center": [
-        -0.656,
+        -0.8,
         0.5,
-        -6.231999999999999
+        -7.6
       ],
       "size": [
         0.14,
@@ -5193,9 +5193,9 @@
       "id": "picnic_table_leg_0.8",
       "kind": "table",
       "center": [
-        0.656,
+        0.8,
         0.5,
-        -6.231999999999999
+        -7.6
       ],
       "size": [
         0.14,
@@ -5208,9 +5208,9 @@
       "id": "picnic_bench_left",
       "kind": "bench",
       "center": [
-        -1.476,
+        -1.8,
         0.56,
-        -6.231999999999999
+        -7.6
       ],
       "size": [
         1.6,
@@ -5223,9 +5223,9 @@
       "id": "picnic_bench_right",
       "kind": "bench",
       "center": [
-        1.476,
+        1.8,
         0.56,
-        -6.231999999999999
+        -7.6
       ],
       "size": [
         1.6,
@@ -5238,9 +5238,9 @@
       "id": "streetlight_1_pole",
       "kind": "streetlight",
       "center": [
-        -11.479999999999999,
+        -14,
         2.2,
-        -25.419999999999998
+        -31
       ],
       "size": [
         0.14,
@@ -5253,9 +5253,9 @@
       "id": "streetlight_1_arm",
       "kind": "streetlight",
       "center": [
-        -11.0864,
+        -13.52,
         4.1,
-        -25.419999999999998
+        -31
       ],
       "size": [
         1,
@@ -5268,9 +5268,9 @@
       "id": "streetlight_1_lamp",
       "kind": "streetlight",
       "center": [
-        -10.741999999999999,
+        -13.1,
         4,
-        -25.419999999999998
+        -31
       ],
       "size": [
         0.36,
@@ -5283,9 +5283,9 @@
       "id": "streetlight_2_pole",
       "kind": "streetlight",
       "center": [
-        11.479999999999999,
+        14,
         2.2,
-        -25.419999999999998
+        -31
       ],
       "size": [
         0.14,
@@ -5298,9 +5298,9 @@
       "id": "streetlight_2_arm",
       "kind": "streetlight",
       "center": [
-        11.0864,
+        13.52,
         4.1,
-        -25.419999999999998
+        -31
       ],
       "size": [
         1,
@@ -5313,9 +5313,9 @@
       "id": "streetlight_2_lamp",
       "kind": "streetlight",
       "center": [
-        10.741999999999999,
+        13.1,
         4,
-        -25.419999999999998
+        -31
       ],
       "size": [
         0.36,
@@ -5328,9 +5328,9 @@
       "id": "streetlight_3_pole",
       "kind": "streetlight",
       "center": [
-        -11.479999999999999,
+        -14,
         2.2,
-        25.419999999999998
+        31
       ],
       "size": [
         0.14,
@@ -5343,9 +5343,9 @@
       "id": "streetlight_3_arm",
       "kind": "streetlight",
       "center": [
-        -11.0864,
+        -13.52,
         4.1,
-        25.419999999999998
+        31
       ],
       "size": [
         1,
@@ -5358,9 +5358,9 @@
       "id": "streetlight_3_lamp",
       "kind": "streetlight",
       "center": [
-        -10.741999999999999,
+        -13.1,
         4,
-        25.419999999999998
+        31
       ],
       "size": [
         0.36,
@@ -5373,9 +5373,9 @@
       "id": "streetlight_4_pole",
       "kind": "streetlight",
       "center": [
-        11.479999999999999,
+        14,
         2.2,
-        25.419999999999998
+        31
       ],
       "size": [
         0.14,
@@ -5388,9 +5388,9 @@
       "id": "streetlight_4_arm",
       "kind": "streetlight",
       "center": [
-        11.0864,
+        13.52,
         4.1,
-        25.419999999999998
+        31
       ],
       "size": [
         1,
@@ -5403,9 +5403,9 @@
       "id": "streetlight_4_lamp",
       "kind": "streetlight",
       "center": [
-        10.741999999999999,
+        13.1,
         4,
-        25.419999999999998
+        31
       ],
       "size": [
         0.36,
@@ -5418,9 +5418,9 @@
       "id": "streetlight_5_pole",
       "kind": "streetlight",
       "center": [
-        -30.34,
+        -37,
         2.2,
-        -12.299999999999999
+        -15
       ],
       "size": [
         0.14,
@@ -5433,9 +5433,9 @@
       "id": "streetlight_5_arm",
       "kind": "streetlight",
       "center": [
-        -29.9464,
+        -36.52,
         4.1,
-        -12.299999999999999
+        -15
       ],
       "size": [
         1,
@@ -5448,9 +5448,9 @@
       "id": "streetlight_5_lamp",
       "kind": "streetlight",
       "center": [
-        -29.602,
+        -36.1,
         4,
-        -12.299999999999999
+        -15
       ],
       "size": [
         0.36,
@@ -5463,9 +5463,9 @@
       "id": "streetlight_6_pole",
       "kind": "streetlight",
       "center": [
-        30.34,
+        37,
         2.2,
-        12.299999999999999
+        15
       ],
       "size": [
         0.14,
@@ -5478,9 +5478,9 @@
       "id": "streetlight_6_arm",
       "kind": "streetlight",
       "center": [
-        29.9464,
+        36.52,
         4.1,
-        12.299999999999999
+        15
       ],
       "size": [
         1,
@@ -5493,9 +5493,9 @@
       "id": "streetlight_6_lamp",
       "kind": "streetlight",
       "center": [
-        29.602,
+        36.1,
         4,
-        12.299999999999999
+        15
       ],
       "size": [
         0.36,
@@ -5508,9 +5508,9 @@
       "id": "streetlight_7_pole",
       "kind": "streetlight",
       "center": [
-        -11.479999999999999,
+        -14,
         2.2,
-        11.479999999999999
+        14
       ],
       "size": [
         0.14,
@@ -5523,9 +5523,9 @@
       "id": "streetlight_7_arm",
       "kind": "streetlight",
       "center": [
-        -11.0864,
+        -13.52,
         4.1,
-        11.479999999999999
+        14
       ],
       "size": [
         1,
@@ -5538,9 +5538,9 @@
       "id": "streetlight_7_lamp",
       "kind": "streetlight",
       "center": [
-        -10.741999999999999,
+        -13.1,
         4,
-        11.479999999999999
+        14
       ],
       "size": [
         0.36,
@@ -5553,9 +5553,9 @@
       "id": "streetlight_8_pole",
       "kind": "streetlight",
       "center": [
-        11.479999999999999,
+        14,
         2.2,
-        -11.479999999999999
+        -14
       ],
       "size": [
         0.14,
@@ -5568,9 +5568,9 @@
       "id": "streetlight_8_arm",
       "kind": "streetlight",
       "center": [
-        11.0864,
+        13.52,
         4.1,
-        -11.479999999999999
+        -14
       ],
       "size": [
         1,
@@ -5583,9 +5583,9 @@
       "id": "streetlight_8_lamp",
       "kind": "streetlight",
       "center": [
-        10.741999999999999,
+        13.1,
         4,
-        -11.479999999999999
+        -14
       ],
       "size": [
         0.36,
@@ -5598,9 +5598,9 @@
       "id": "mailbox_1_post",
       "kind": "prop",
       "center": [
-        -11.479999999999999,
+        -14,
         0.75,
-        -18.04
+        -22
       ],
       "size": [
         0.1,
@@ -5613,9 +5613,9 @@
       "id": "mailbox_1_body",
       "kind": "prop",
       "center": [
-        -11.479999999999999,
+        -14,
         1.3,
-        -18.04
+        -22
       ],
       "size": [
         0.55,
@@ -5628,9 +5628,9 @@
       "id": "trash_bin_1",
       "kind": "prop",
       "center": [
-        -10.496,
+        -12.8,
         0.55,
-        -18.04
+        -22
       ],
       "size": [
         0.65,
@@ -5643,9 +5643,9 @@
       "id": "mailbox_2_post",
       "kind": "prop",
       "center": [
-        11.479999999999999,
+        14,
         0.75,
-        18.04
+        22
       ],
       "size": [
         0.1,
@@ -5658,9 +5658,9 @@
       "id": "mailbox_2_body",
       "kind": "prop",
       "center": [
-        11.479999999999999,
+        14,
         1.3,
-        18.04
+        22
       ],
       "size": [
         0.55,
@@ -5673,9 +5673,9 @@
       "id": "trash_bin_2",
       "kind": "prop",
       "center": [
-        10.496,
+        12.8,
         0.55,
-        18.04
+        22
       ],
       "size": [
         0.65,
@@ -5688,9 +5688,9 @@
       "id": "mailbox_3_post",
       "kind": "prop",
       "center": [
-        -28.7,
+        -35,
         0.75,
-        12.299999999999999
+        15
       ],
       "size": [
         0.1,
@@ -5703,9 +5703,9 @@
       "id": "mailbox_3_body",
       "kind": "prop",
       "center": [
-        -28.7,
+        -35,
         1.3,
-        12.299999999999999
+        15
       ],
       "size": [
         0.55,
@@ -5718,9 +5718,9 @@
       "id": "trash_bin_3",
       "kind": "prop",
       "center": [
-        -27.715999999999998,
+        -33.8,
         0.55,
-        12.299999999999999
+        15
       ],
       "size": [
         0.65,
@@ -5733,9 +5733,9 @@
       "id": "mailbox_4_post",
       "kind": "prop",
       "center": [
-        28.7,
+        35,
         0.75,
-        -12.299999999999999
+        -15
       ],
       "size": [
         0.1,
@@ -5748,9 +5748,9 @@
       "id": "mailbox_4_body",
       "kind": "prop",
       "center": [
-        28.7,
+        35,
         1.3,
-        -12.299999999999999
+        -15
       ],
       "size": [
         0.55,
@@ -5763,9 +5763,9 @@
       "id": "trash_bin_4",
       "kind": "prop",
       "center": [
-        27.715999999999998,
+        33.8,
         0.55,
-        -12.299999999999999
+        -15
       ],
       "size": [
         0.65,
@@ -5778,9 +5778,9 @@
       "id": "home_south_west_porch_canopy",
       "kind": "trim",
       "center": [
-        -20.5,
+        -25,
         2.75,
-        -14.66
+        -19.25
       ],
       "size": [
         4.3,
@@ -5794,9 +5794,9 @@
       "id": "home_south_west_porch_column_l",
       "kind": "trim",
       "center": [
-        -22.25,
+        -26.75,
         1.35,
-        -14.66
+        -19.25
       ],
       "size": [
         0.18,
@@ -5810,9 +5810,9 @@
       "id": "home_south_west_porch_column_r",
       "kind": "trim",
       "center": [
-        -18.75,
+        -23.25,
         1.35,
-        -14.66
+        -19.25
       ],
       "size": [
         0.18,
@@ -5826,9 +5826,9 @@
       "id": "home_south_west_door_jamb_l",
       "kind": "trim",
       "center": [
-        -21.49,
+        -25.99,
         1.18,
-        -15.83
+        -20.42
       ],
       "size": [
         0.12,
@@ -5842,9 +5842,9 @@
       "id": "home_south_west_door_jamb_r",
       "kind": "trim",
       "center": [
-        -19.51,
+        -24.01,
         1.18,
-        -15.83
+        -20.42
       ],
       "size": [
         0.12,
@@ -5858,9 +5858,9 @@
       "id": "home_south_west_door_lintel",
       "kind": "trim",
       "center": [
-        -20.5,
+        -25,
         2.42,
-        -15.83
+        -20.42
       ],
       "size": [
         2.08,
@@ -5874,9 +5874,9 @@
       "id": "home_south_west_belt_south",
       "kind": "trim",
       "center": [
-        -20.5,
+        -25,
         2.91,
-        -15.870000000000001
+        -20.46
       ],
       "size": [
         10.18,
@@ -5890,9 +5890,9 @@
       "id": "home_south_west_belt_north",
       "kind": "trim",
       "center": [
-        -20.5,
+        -25,
         2.91,
-        -25.95
+        -30.54
       ],
       "size": [
         10.18,
@@ -5906,9 +5906,9 @@
       "id": "home_south_west_belt_east",
       "kind": "trim",
       "center": [
-        -15.46,
+        -19.96,
         2.91,
-        -20.91
+        -25.5
       ],
       "size": [
         0.18,
@@ -5922,9 +5922,9 @@
       "id": "home_south_west_belt_west",
       "kind": "trim",
       "center": [
-        -25.54,
+        -30.04,
         2.91,
-        -20.91
+        -25.5
       ],
       "size": [
         0.18,
@@ -5938,9 +5938,9 @@
       "id": "home_south_west_pilaster_front_l",
       "kind": "trim",
       "center": [
-        -25.15,
+        -29.65,
         1.45,
-        -15.84
+        -20.43
       ],
       "size": [
         0.25,
@@ -5954,9 +5954,9 @@
       "id": "home_south_west_pilaster_front_r",
       "kind": "trim",
       "center": [
-        -15.85,
+        -20.35,
         1.45,
-        -15.84
+        -20.43
       ],
       "size": [
         0.25,
@@ -5970,9 +5970,9 @@
       "id": "home_south_west_pilaster_back_l",
       "kind": "trim",
       "center": [
-        -25.15,
+        -29.65,
         1.45,
-        -25.98
+        -30.57
       ],
       "size": [
         0.25,
@@ -5986,9 +5986,9 @@
       "id": "home_south_west_pilaster_back_r",
       "kind": "trim",
       "center": [
-        -15.85,
+        -20.35,
         1.45,
-        -25.98
+        -30.57
       ],
       "size": [
         0.25,
@@ -6003,162 +6003,162 @@
     "trees": [
       {
         "pos": [
-          -9.02,
+          -11,
           0,
-          -9.02
+          -11
         ],
         "scale": 0.72,
         "style": "conifer"
       },
       {
         "pos": [
-          9.02,
+          11,
           0,
-          -9.02
+          -11
         ],
         "scale": 0.72,
         "style": "conifer"
       },
       {
         "pos": [
-          -9.02,
+          -11,
           0,
-          9.02
+          11
         ],
         "scale": 0.72,
         "style": "conifer"
       },
       {
         "pos": [
-          9.02,
+          11,
           0,
-          9.02
+          11
         ],
         "scale": 0.72,
         "style": "conifer"
       },
       {
         "pos": [
-          -27.88,
+          -34,
           0,
-          -14.76
+          -18
         ],
         "scale": 0.95,
         "style": "conifer"
       },
       {
         "pos": [
-          -27.88,
+          -34,
           0,
-          14.76
+          18
         ],
         "scale": 0.9,
         "style": "conifer"
       },
       {
         "pos": [
-          27.88,
+          34,
           0,
-          -14.76
+          -18
         ],
         "scale": 0.95,
         "style": "conifer"
       },
       {
         "pos": [
-          27.88,
+          34,
           0,
-          14.76
+          18
         ],
         "scale": 0.9,
         "style": "conifer"
       },
       {
         "pos": [
-          -29.52,
+          -36,
           0,
-          -25.419999999999998
+          -31
         ],
         "scale": 0.85,
         "style": "conifer"
       },
       {
         "pos": [
-          29.52,
+          36,
           0,
-          -25.419999999999998
+          -31
         ],
         "scale": 0.85,
         "style": "conifer"
       },
       {
         "pos": [
-          -29.52,
+          -36,
           0,
-          25.419999999999998
+          31
         ],
         "scale": 0.85,
         "style": "conifer"
       },
       {
         "pos": [
-          29.52,
+          36,
           0,
-          25.419999999999998
+          31
         ],
         "scale": 0.85,
         "style": "conifer"
       },
       {
         "pos": [
-          -9.84,
+          -12,
           0,
-          -28.7
+          -35
         ],
         "scale": 0.75,
         "style": "conifer"
       },
       {
         "pos": [
-          9.84,
+          12,
           0,
-          -28.7
+          -35
         ],
         "scale": 0.75,
         "style": "conifer"
       },
       {
         "pos": [
-          -9.84,
+          -12,
           0,
-          28.7
+          35
         ],
         "scale": 0.75,
         "style": "conifer"
       },
       {
         "pos": [
-          9.84,
+          12,
           0,
-          28.7
+          35
         ],
         "scale": 0.75,
         "style": "conifer"
       },
       {
         "pos": [
-          -36.08,
+          -44,
           0,
-          -9.84
+          -12
         ],
         "scale": 0.7,
         "style": "conifer"
       },
       {
         "pos": [
-          36.08,
+          44,
           0,
-          9.84
+          12
         ],
         "scale": 0.7,
         "style": "conifer"
@@ -6167,9 +6167,9 @@
     "rocks": [
       {
         "pos": [
-          -6.56,
+          -8,
           0,
-          -6.56
+          -8
         ],
         "size": [
           0.8,
@@ -6180,9 +6180,9 @@
       },
       {
         "pos": [
-          6.56,
+          8,
           0,
-          6.56
+          8
         ],
         "size": [
           0.75,
@@ -6193,9 +6193,9 @@
       },
       {
         "pos": [
-          -28.7,
+          -35,
           0,
-          19.68
+          24
         ],
         "size": [
           0.8,
@@ -6206,9 +6206,9 @@
       },
       {
         "pos": [
-          28.7,
+          35,
           0,
-          -19.68
+          -24
         ],
         "size": [
           0.8,
@@ -6223,9 +6223,9 @@
     {
       "id": "park_bird_w",
       "pos": [
-        -6.56,
+        -8,
         0.05,
-        1.64
+        2
       ],
       "scale": 0.9,
       "color": "#4e6874"
@@ -6233,9 +6233,9 @@
     {
       "id": "park_bird_e",
       "pos": [
-        6.56,
+        8,
         0.05,
-        -1.64
+        -2
       ],
       "scale": 0.85,
       "color": "#a9b2b4"
@@ -6243,9 +6243,9 @@
     {
       "id": "market_bird",
       "pos": [
-        -31.569999999999997,
+        -38.5,
         0.05,
-        4.755999999999999
+        5.8
       ],
       "scale": 0.8,
       "color": "#5d6870"
@@ -6253,9 +6253,9 @@
     {
       "id": "busstop_bird",
       "pos": [
-        35.587999999999994,
+        43.4,
         0.05,
-        8.2
+        10
       ],
       "scale": 0.8,
       "color": "#9b9d9b"
@@ -6263,9 +6263,9 @@
     {
       "id": "garden_bird_1",
       "pos": [
-        -27.962,
+        -34.1,
         0.05,
-        -13.94
+        -17
       ],
       "scale": 0.78,
       "color": "#536a67"
@@ -6273,9 +6273,9 @@
     {
       "id": "garden_bird_2",
       "pos": [
-        27.962,
+        34.1,
         0.05,
-        13.94
+        17
       ],
       "scale": 0.78,
       "color": "#b7b9a6"
@@ -6283,9 +6283,9 @@
     {
       "id": "picnic_bird",
       "pos": [
-        -2.214,
+        -2.7,
         0.05,
-        -6.723999999999999
+        -8.2
       ],
       "scale": 0.85,
       "color": "#69787f"
@@ -6293,9 +6293,9 @@
     {
       "id": "apartment_bird",
       "pos": [
-        -15.989999999999998,
+        -19.5,
         0.05,
-        4.51
+        5.5
       ],
       "scale": 0.75,
       "color": "#7e8b8d"
@@ -6303,65 +6303,65 @@
   ],
   "invisiblePerimeters": [
     {
-      "minX": -39.36,
-      "maxX": -38.949999999999996,
+      "minX": -48,
+      "maxX": -47.5,
       "minY": 0,
       "maxY": 8,
-      "minZ": -39.36,
-      "maxZ": 39.36
+      "minZ": -48,
+      "maxZ": 48
     },
     {
-      "minX": 38.949999999999996,
-      "maxX": 39.36,
+      "minX": 47.5,
+      "maxX": 48,
       "minY": 0,
       "maxY": 8,
-      "minZ": -39.36,
-      "maxZ": 39.36
+      "minZ": -48,
+      "maxZ": 48
     },
     {
-      "minX": -39.36,
-      "maxX": 39.36,
+      "minX": -48,
+      "maxX": 48,
       "minY": 0,
       "maxY": 8,
-      "minZ": -39.36,
-      "maxZ": -38.949999999999996
+      "minZ": -48,
+      "maxZ": -47.5
     },
     {
-      "minX": -39.36,
-      "maxX": 39.36,
+      "minX": -48,
+      "maxX": 48,
       "minY": 0,
       "maxY": 8,
-      "minZ": 38.949999999999996,
-      "maxZ": 39.36
+      "minZ": 47.5,
+      "maxZ": 48
     }
   ],
   "teamSpawns": {
     "teamA": [
       {
         "position": [
-          -3.28,
-          -34.44
+          -4,
+          -42
         ],
         "facingYaw": 3.141592653589793
       },
       {
         "position": [
-          -1.107,
-          -34.44
+          -1.35,
+          -42
         ],
         "facingYaw": 3.141592653589793
       },
       {
         "position": [
-          1.107,
-          -34.44
+          1.35,
+          -42
         ],
         "facingYaw": 3.141592653589793
       },
       {
         "position": [
-          3.28,
-          -34.44
+          4,
+          -42
         ],
         "facingYaw": 3.141592653589793
       }
@@ -6369,29 +6369,29 @@
     "teamB": [
       {
         "position": [
-          3.28,
-          34.44
+          4,
+          42
         ],
         "facingYaw": 0
       },
       {
         "position": [
-          1.107,
-          34.44
+          1.35,
+          42
         ],
         "facingYaw": 0
       },
       {
         "position": [
-          -1.107,
-          34.44
+          -1.35,
+          42
         ],
         "facingYaw": 0
       },
       {
         "position": [
-          -3.28,
-          34.44
+          -4,
+          42
         ],
         "facingYaw": 0
       }
