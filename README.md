@@ -37,7 +37,7 @@ npm run preview
 - **Cul-de-Sac**: Suburban tactical combat layout.
 - **Dustline Village**: Arid tactical compound with close-quarters alleys.
 - **Overpass Arena**: Two-tier elevated highway and combat structure.
-- **Neighborhood District (rebuild in progress)**: Compact 88m × 88m layout with a central park, market lane, bus stop, parking, trees, and spawn markers. Maple House is the first detailed two-storey prototype with a pitched roof, porch canopy, facade trim, windows, interior, and balcony. The other six structures remain neutral blockouts until each is built and tested. Spawn-slot metadata is for future multiplayer integration; it is not networked multiplayer.
+- **Neighborhood District (rebuild in progress)**: A compactly composed 96m × 96m playable layout with a central park, market lane, bus stop, parking, trees, and spawn markers. Its ground plane is tightly cropped to remove the previous oversized empty apron. Maple House is the first detailed two-storey prototype with a pitched roof, porch canopy, facade trim, framed windows, interior, and balcony. The other six structures remain neutral blockouts until each is built and tested. Spawn-slot metadata is for future multiplayer integration; it is not networked multiplayer.
 
 ## Neighborhood Rebuild Workflow
 
