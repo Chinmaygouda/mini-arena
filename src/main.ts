@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { FirstPersonControls } from './player/firstPersonControls';
 import { WeaponManager } from './weapons/weaponManager';
 import { type WeaponId, type WeaponDef, calculateDamageFalloff } from './weapons/weaponTypes';
-import { TargetManager, FX_NON_RAYCAST_LAYER } from './environment/targets';
+import { TargetManager, FX_NON_RAYCAST_LAYER, type HitResult } from './environment/targets';
 import { createShootingRange } from './environment/shootingRange';
 import { BlueprintMapLoader, type MapId } from './environment/blueprintMapLoader';
 import { AtmosphereManager } from './environment/atmosphereManager';
@@ -38,6 +38,8 @@ interface ActiveTracer {
   boltLength: number;
   life: number;
   maxLife: number;
+  hitResult?: HitResult;
+  impactTriggered: boolean;
 }
 
 class FPSApp {
@@ -55,7 +57,7 @@ class FPSApp {
 
   private rangeEnvironmentGroup: THREE.Group;
   private tracerMaterials: Map<number, THREE.MeshBasicMaterial> = new Map();
-  private activeTracers: ActiveTracer[] = [];
+  public activeTracers: ActiveTracer[] = [];
   private isDebugMode: boolean = false;
   private debugRaycaster = new THREE.Raycaster();
   private scratchCameraDir = new THREE.Vector3();
@@ -238,6 +240,13 @@ class FPSApp {
     // Configure open-world atmospheric sky dome, horizon ridgeline, framing foliage & bird flock
     this.atmosphereManager.setupAtmosphere(mapId);
 
+    // Clear any active tracers on map load
+    for (const tracer of this.activeTracers) {
+      this.scene.remove(tracer.mesh);
+      tracer.mesh.geometry.dispose();
+    }
+    this.activeTracers = [];
+
     // Reset weapon state AFTER the async load so no accumulated dt/state leaks.
     this.weaponManager.resetForMapLoad();
 
@@ -293,9 +302,11 @@ class FPSApp {
         muzzleOrigin,
         aimOrigin,
         aimDirection,
-        weaponDef
+        weaponDef,
+        undefined,
+        true // Defer visual and sound impact until visible bullet/tracer arrives
       );
-      this.spawnTracer(muzzleOrigin, hitResult.point, weaponDef, aimOrigin, aimDirection);
+      this.spawnTracer(muzzleOrigin, hitResult.point, weaponDef, aimOrigin, aimDirection, hitResult);
     };
 
     // Target Hit Confirmation Linkage
@@ -429,10 +440,10 @@ class FPSApp {
     to: THREE.Vector3,
     weaponDef?: WeaponDef,
     aimOrigin?: THREE.Vector3,
-    aimDirection?: THREE.Vector3
+    aimDirection?: THREE.Vector3,
+    hitResult?: HitResult
   ) {
     const thickness = weaponDef?.tracerThickness ?? 0.008;
-    const maxLife = weaponDef?.tracerLife ?? 0.08;
     const color = weaponDef?.tracerColor ?? 0xffea88;
 
     const effectiveAimOrigin = aimOrigin ? aimOrigin.clone() : this.camera.position.clone();
@@ -460,12 +471,16 @@ class FPSApp {
     const totalDist = effectiveStart.distanceTo(to);
     if (totalDist < 0.08) return;
 
-    // High velocity ballistic projectile streak (350 - 550 m/s)
-    const speed = Math.max(350, Math.min(550, totalDist / Math.max(0.04, maxLife)));
+    // Bullet tracer speed: calibrated per weapon (130 - 240 m/s) to produce a crisp, perceptible travel journey
+    const speed = weaponDef?.tracerSpeed ?? 160;
 
-    // Finite glowing projectile bolt length (tight 1.4m bolt for sniper)
-    let boltLength = weaponDef?.id === 'sniper' ? 1.4 : (weaponDef?.id === 'shotgun' ? 0.6 : 1.0);
-    boltLength = Math.min(boltLength, Math.max(0.2, totalDist * 0.35));
+    // Finite glowing projectile bolt length
+    let boltLength = weaponDef?.tracerBoltLength ?? (weaponDef?.id === 'sniper' ? 1.8 : (weaponDef?.id === 'shotgun' ? 0.6 : 1.0));
+    boltLength = Math.min(boltLength, Math.max(0.2, totalDist * 0.45));
+
+    // Calculate maxLife to comfortably cover full flight duration + tail exit + buffer
+    const travelDuration = (totalDist + boltLength) / speed;
+    const maxLife = Math.max(weaponDef?.tracerLife ?? 1.2, travelDuration + 0.35);
 
     // Unit length cylinder (length = 1.0 along Z axis, rotated Math.PI / 2 on X)
     const geom = new THREE.CylinderGeometry(thickness, thickness, 1.0, 6);
@@ -508,6 +523,8 @@ class FPSApp {
       boltLength,
       life: maxLife,
       maxLife,
+      hitResult,
+      impactTriggered: false,
     });
   }
 
@@ -546,10 +563,22 @@ class FPSApp {
       tracer.currentDist += tracer.speed * delta;
       tracer.life -= delta;
 
+      // Trigger impact when the bullet head reaches or passes the target point
+      if (tracer.currentDist >= tracer.totalDist && !tracer.impactTriggered) {
+        tracer.impactTriggered = true;
+        if (tracer.hitResult) {
+          this.targetManager.applyHitImpact(tracer.hitResult);
+        }
+      }
+
       const tailDist = Math.max(0, tracer.currentDist - tracer.boltLength);
       const headDist = Math.min(tracer.totalDist, tracer.currentDist);
 
       if (tailDist >= tracer.totalDist || tracer.life <= 0) {
+        if (!tracer.impactTriggered && tracer.hitResult) {
+          tracer.impactTriggered = true;
+          this.targetManager.applyHitImpact(tracer.hitResult);
+        }
         this.scene.remove(tracer.mesh);
         tracer.mesh.geometry.dispose();
         this.activeTracers.splice(i, 1);

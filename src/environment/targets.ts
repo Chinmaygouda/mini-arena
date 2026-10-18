@@ -14,6 +14,8 @@ export interface HitResult {
   isCrit: boolean;
   targetType: 'steel' | 'bullseye' | 'barrel' | 'world';
   shotOrigin?: THREE.Vector3;
+  normal?: THREE.Vector3;
+  targetObjectId?: number;
 }
 
 interface ReactiveTarget {
@@ -260,12 +262,55 @@ export class TargetManager {
     return true;
   }
 
+  public applyHitImpact(result: HitResult) {
+    if (!result.hit) return;
+    const normal = result.normal || new THREE.Vector3(0, 1, 0);
+
+    if (result.targetType === 'steel') {
+      sound.playTargetHit(result.isCrit);
+
+      // Find associated target and trigger physical hinged swing
+      const allTargets = [...this.reactiveTargets, ...this.dynamicReactiveTargets];
+      for (const target of allTargets) {
+        if (result.targetObjectId && target.group.getObjectById(result.targetObjectId)) {
+          target.pitch = Math.PI * 0.45; // Knock back
+          target.recovering = false;
+          break;
+        }
+      }
+
+      this.spawnSparks(result.point, normal, result.isCrit ? 0xff3b30 : 0xffdd44);
+      this.spawnFloatingText(result.point, `${result.damage}${result.isCrit ? ' CRIT!' : ''}`, result.isCrit ? '#ff3b30' : '#ffcc00');
+
+      if (this.onHitRegistered) {
+        this.onHitRegistered(result.damage, result.isCrit, result.isCrit ? 'HEADSHOT' : 'BODY HIT');
+      }
+    } else if (result.targetType === 'barrel') {
+      const barrel = this.barrels.find((b) => b.mesh.id === result.targetObjectId);
+      if (barrel && !barrel.exploded) {
+        barrel.hp -= result.damage;
+        this.spawnSparks(result.point, normal, 0xff8800);
+
+        if (barrel.hp <= 0) {
+          this.explodeBarrel(barrel);
+        } else {
+          sound.playTargetHit(false);
+        }
+
+        this.spawnFloatingText(result.point, `${result.damage}`, '#ff6600');
+      }
+    } else if (result.targetType === 'world') {
+      this.spawnSparks(result.point, normal, 0xddccaa);
+    }
+  }
+
   private processHitObject(
     hit: THREE.Intersection,
     weaponDefOrDamage: WeaponDef | number,
     fallbackNormal: THREE.Vector3,
     shotOrigin: THREE.Vector3,
-    legacyCritMultiplier?: number
+    legacyCritMultiplier?: number,
+    deferImpact: boolean = false
   ): HitResult {
     const normal = hit.face?.normal || fallbackNormal;
     const obj = hit.object as unknown as { isTarget?: boolean; isHead?: boolean; isBarrel?: boolean };
@@ -308,34 +353,24 @@ export class TargetManager {
       }
 
       const dmg = falloff.damage;
-      sound.playTargetHit(isCrit);
-
-      // Find associated target and trigger physical hinged swing
-      for (const target of this.reactiveTargets) {
-        if (target.group.getObjectById(hit.object.id)) {
-          target.pitch = Math.PI * 0.45; // Knock back
-          target.recovering = false;
-          break;
-        }
-      }
-
-      this.spawnSparks(hit.point, normal, isCrit ? 0xff3b30 : 0xffdd44);
-      this.spawnFloatingText(hit.point, `${dmg}${isCrit ? ' CRIT!' : ''}`, isCrit ? '#ff3b30' : '#ffcc00');
-
-      if (this.onHitRegistered) {
-        this.onHitRegistered(dmg, isCrit, isCrit ? 'HEADSHOT' : 'BODY HIT');
-      }
-
-      return {
+      const result: HitResult = {
         hit: true,
         point: hit.point.clone(),
+        normal: normal.clone(),
         damage: dmg,
         multiplier: falloff.multiplier,
         distance: hitDistance,
         isCrit,
         targetType: 'steel',
         shotOrigin,
+        targetObjectId: hit.object.id,
       };
+
+      if (!deferImpact) {
+        this.applyHitImpact(result);
+      }
+
+      return result;
     }
 
     // Check Explosive Barrel Hit
@@ -356,26 +391,24 @@ export class TargetManager {
           };
         }
 
-        barrel.hp -= falloff.damage;
-        this.spawnSparks(hit.point, normal, 0xff8800);
-
-        if (barrel.hp <= 0) {
-          this.explodeBarrel(barrel);
-        } else {
-          sound.playTargetHit(false);
-        }
-
-        this.spawnFloatingText(hit.point, `${falloff.damage}`, '#ff6600');
-        return {
+        const result: HitResult = {
           hit: true,
           point: hit.point.clone(),
+          normal: normal.clone(),
           damage: falloff.damage,
           multiplier: falloff.multiplier,
           distance: hitDistance,
           isCrit: false,
           targetType: 'barrel',
           shotOrigin,
+          targetObjectId: hit.object.id,
         };
+
+        if (!deferImpact) {
+          this.applyHitImpact(result);
+        }
+
+        return result;
       }
     }
 
@@ -393,10 +426,11 @@ export class TargetManager {
           shotOrigin,
         };
       }
-      this.spawnSparks(hit.point, normal, 0xddccaa);
-      return {
+
+      const result: HitResult = {
         hit: true,
         point: hit.point.clone(),
+        normal: normal.clone(),
         damage: 0,
         multiplier: 1.0,
         distance: hitDistance,
@@ -404,6 +438,12 @@ export class TargetManager {
         targetType: 'world',
         shotOrigin,
       };
+
+      if (!deferImpact) {
+        this.applyHitImpact(result);
+      }
+
+      return result;
     }
 
     return {
@@ -423,7 +463,8 @@ export class TargetManager {
     aimOrigin: THREE.Vector3,
     aimDirection: THREE.Vector3,
     weaponDefOrDamage: WeaponDef | number,
-    legacyCritMultiplier?: number
+    legacyCritMultiplier?: number,
+    deferImpact: boolean = false
   ): HitResult {
     const maxRange = typeof weaponDefOrDamage === 'object' ? weaponDefOrDamage.maxRange : 150;
 
@@ -467,12 +508,12 @@ export class TargetManager {
 
     // If muzzle ray hit an obstruction closer than aim point (distToAim - 0.08m)
     if (muzzleHit && muzzleHit.distance < distToAim - 0.08) {
-      return this.processHitObject(muzzleHit, weaponDefOrDamage, fallbackNormal, muzzleOrigin, legacyCritMultiplier);
+      return this.processHitObject(muzzleHit, weaponDefOrDamage, fallbackNormal, muzzleOrigin, legacyCritMultiplier, deferImpact);
     }
 
     // Line of sight clear from muzzle to aim target
     if (aimHit) {
-      return this.processHitObject(aimHit, weaponDefOrDamage, fallbackNormal, muzzleOrigin, legacyCritMultiplier);
+      return this.processHitObject(aimHit, weaponDefOrDamage, fallbackNormal, muzzleOrigin, legacyCritMultiplier, deferImpact);
     }
 
     // No hit (sky / infinite distance / out of maxRange)

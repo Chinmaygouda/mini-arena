@@ -65,6 +65,8 @@ export interface WeaponDef extends WeaponRangeConfig {
   tracerThickness?: number;
   tracerLife?: number;
   tracerColor?: number;
+  tracerSpeed?: number;
+  tracerBoltLength?: number;
 
   // Recoil Profile
   recoilKickZ: number; // Backward kick
@@ -150,8 +152,10 @@ export const WEAPON_REGISTRY: Record<WeaponId, WeaponDef> = {
 
     // Tracer Visuals
     tracerThickness: 0.008,
-    tracerLife: 0.08,
+    tracerLife: 1.5,
     tracerColor: 0xffea88,
+    tracerSpeed: 95,
+    tracerBoltLength: 1.2,
 
     // Recoil
     recoilKickZ: 0.075,
@@ -201,9 +205,11 @@ export const WEAPON_REGISTRY: Record<WeaponId, WeaponDef> = {
     maxRange: 50,
 
     // Tracer Visuals
-    tracerThickness: 0.006,
-    tracerLife: 0.05,
+    tracerThickness: 0.007,
+    tracerLife: 1.5,
     tracerColor: 0xffdd77,
+    tracerSpeed: 75,
+    tracerBoltLength: 0.8,
 
     // Recoil
     recoilKickZ: 0.09,
@@ -254,8 +260,10 @@ export const WEAPON_REGISTRY: Record<WeaponId, WeaponDef> = {
 
     // Tracer Visuals
     tracerThickness: 0.006,
-    tracerLife: 0.06,
+    tracerLife: 1.5,
     tracerColor: 0xffd066,
+    tracerSpeed: 85,
+    tracerBoltLength: 0.9,
 
     // Recoil Profile
     recoilKickZ: 0.045,
@@ -306,9 +314,11 @@ export const WEAPON_REGISTRY: Record<WeaponId, WeaponDef> = {
     maxRange: 25,
 
     // Tracer Visuals
-    tracerThickness: 0.005,
-    tracerLife: 0.06,
+    tracerThickness: 0.006,
+    tracerLife: 1.5,
     tracerColor: 0xffaa44,
+    tracerSpeed: 70,
+    tracerBoltLength: 0.6,
 
     // Recoil Profile: Heavy concussive kick
     recoilKickZ: 0.13,
@@ -360,8 +370,10 @@ export const WEAPON_REGISTRY: Record<WeaponId, WeaponDef> = {
 
     // Tracer Visuals
     tracerThickness: 0.012,
-    tracerLife: 0.14,
+    tracerLife: 2.0,
     tracerColor: 0x99ddff,
+    tracerSpeed: 175,
+    tracerBoltLength: 2.0,
 
     // Recoil Profile: Massive high-caliber recoil
     recoilKickZ: 0.15,
