@@ -1,0 +1,158 @@
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+import { mkdir } from 'node:fs/promises';
+import { setTimeout as delay } from 'node:timers/promises';
+import { chromium } from 'playwright';
+
+const baseUrl = 'http://127.0.0.1:5173';
+const outputDir = 'artifacts/neighborhood-preview';
+await mkdir(outputDir, { recursive: true });
+
+let server;
+let browser;
+
+async function waitForServer(timeoutMs = 20000) {
+  const startedAt = Date.now();
+  let lastError = 'No response received';
+  while (Date.now() - startedAt < timeoutMs) {
+    try {
+      const response = await fetch(baseUrl);
+      if (response.ok) return;
+      lastError = `HTTP ${response.status}`;
+    } catch (error) {
+      lastError = String(error);
+    }
+    await delay(250);
+  }
+  throw new Error(`Vite server did not become ready: ${lastError}`);
+}
+
+async function simulateMovement(page, { position, yaw = Math.PI, keys = ['KeyW'], frames }) {
+  return page.evaluate(({ position, yaw, keys, frames }) => {
+    const app = window.__fpsApp;
+    if (!app?.controls) throw new Error('FPS controls are not exposed by the running app');
+    const controls = app.controls;
+    controls.forceReleaseKeys();
+    controls.setPosition(position.x, position.y, position.z, yaw);
+    for (const code of keys) {
+      window.dispatchEvent(new KeyboardEvent('keydown', { code, bubbles: true }));
+    }
+    for (let frame = 0; frame < frames; frame++) {
+      controls.update(1 / 60);
+    }
+    for (const code of keys) {
+      window.dispatchEvent(new KeyboardEvent('keyup', { code, bubbles: true }));
+    }
+    controls.forceReleaseKeys();
+    return {
+      x: controls.position.x,
+      eyeY: controls.position.y,
+      feetY: controls.position.y - 1.7,
+      z: controls.position.z,
+      grounded: controls.isGrounded,
+      horizontalSpeed: controls.getHorizontalSpeed(),
+      collidingCount: controls.getCollidingCount(),
+    };
+  }, { position, yaw, keys, frames });
+}
+
+try {
+  server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5173', '--strictPort'], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...process.env, BROWSER: 'none' },
+  });
+  let serverOutput = '';
+  server.stdout.on('data', chunk => { serverOutput += chunk.toString(); });
+  server.stderr.on('data', chunk => { serverOutput += chunk.toString(); });
+  server.on('error', error => { serverOutput += String(error); });
+  await waitForServer();
+
+  browser = await chromium.launch({
+    headless: true,
+    args: ['--no-sandbox', '--enable-webgl', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
+  });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  await page.goto(`${baseUrl}/?map=neighborhood&quality=low`, { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => {
+    const app = window.__fpsApp;
+    return app?.mapLoader?.currentMapId === 'neighborhood' &&
+      Array.isArray(app?.controls?.colliders) &&
+      app.controls.colliders.length > 100;
+  }, null, { timeout: 20000 });
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: `${outputDir}/01-neighborhood-spawn.png`, fullPage: true });
+
+  // Stair origin: house center (-24, -25.5) + local stair start (-4.2, -3.8).
+  // Walk forward toward +Z; a successful run should reach the upper floor and stay grounded.
+  const stair = await simulateMovement(page, {
+    position: { x: -28.2, y: 1.7, z: -29.3 },
+    yaw: Math.PI,
+    keys: ['KeyW'],
+    frames: 85,
+  });
+  await page.waitForTimeout(100);
+  await page.screenshot({ path: `${outputDir}/02-maple-stair-climb.png`, fullPage: true });
+  assert.ok(stair.z > -25.5, `Player did not advance up the stair run (z=${stair.z.toFixed(2)})`);
+  assert.ok(stair.feetY >= 3.0 && stair.feetY <= 3.45,
+    `Player did not settle on the upper floor (feetY=${stair.feetY.toFixed(2)})`);
+  assert.ok(stair.grounded, 'Player should be grounded after climbing onto the upper floor');
+
+  // Ground-floor south window at x=-28. Start just inside the facade and jump forward.
+  const windowExit = await simulateMovement(page, {
+    position: { x: -28.0, y: 1.7, z: -21.2 },
+    yaw: Math.PI,
+    keys: ['KeyW', 'Space'],
+    frames: 30,
+  });
+  await page.waitForTimeout(100);
+  await page.screenshot({ path: `${outputDir}/03-maple-window-jump.png`, fullPage: true });
+  assert.ok(windowExit.z > -20.4,
+    `Player did not pass through the south window opening (z=${windowExit.z.toFixed(2)})`);
+
+  // Center of the balcony's 2.2m jump-out gap. A forward jump should clear the deck edge.
+  const balconyJump = await simulateMovement(page, {
+    position: { x: -24.0, y: 4.9, z: -19.7 },
+    yaw: Math.PI,
+    keys: ['KeyW', 'Space'],
+    frames: 24,
+  });
+  await page.waitForTimeout(100);
+  await page.screenshot({ path: `${outputDir}/04-maple-balcony-jump.png`, fullPage: true });
+  assert.ok(balconyJump.z > -18.25,
+    `Player did not clear the balcony deck edge (z=${balconyJump.z.toFixed(2)})`);
+  assert.ok(balconyJump.feetY > 3.2,
+    'Balcony jump should initially leave the terrace while airborne');
+
+  assert.deepEqual(pageErrors, [], `Browser runtime errors: ${pageErrors.join('; ')}`);
+  console.log(JSON.stringify({
+    ok: true,
+    map: 'neighborhood',
+    stairClimb: stair,
+    windowJump: windowExit,
+    balconyJump,
+    screenshots: [
+      `${outputDir}/01-neighborhood-spawn.png`,
+      `${outputDir}/02-maple-stair-climb.png`,
+      `${outputDir}/03-maple-window-jump.png`,
+      `${outputDir}/04-maple-balcony-jump.png`,
+    ],
+  }, null, 2));
+} catch (error) {
+  console.error('Neighborhood browser traversal test failed.');
+  console.error(error);
+  if (server) {
+    console.error('Vite output:\n' + (serverOutputForDebug()));
+  }
+  process.exitCode = 1;
+} finally {
+  if (browser) await browser.close().catch(() => {});
+  if (server && !server.killed) server.kill('SIGTERM');
+}
+
+function serverOutputForDebug() {
+  // Vite output is intentionally only included in failure reports.
+  return typeof serverOutput === 'string' ? serverOutput.slice(-4000) : 'No Vite output captured';
+}
