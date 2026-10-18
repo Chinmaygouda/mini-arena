@@ -49,12 +49,43 @@ export class TargetManager {
   private sparks: SparkParticle[] = [];
   private floatingTexts: FloatingText[] = [];
   private raycaster = new THREE.Raycaster();
+  private rangeTargetsGroup = new THREE.Group();
+  private dynamicTargetsGroup = new THREE.Group();
+  private dynamicReactiveTargets: ReactiveTarget[] = [];
 
   public onHitRegistered?: (damage: number, isCrit: boolean, targetName: string) => void;
 
   constructor(scene: THREE.Scene) {
     this.scene = scene;
+    this.rangeTargetsGroup.name = 'range-targets-group';
+    this.dynamicTargetsGroup.name = 'dynamic-targets-group';
+    this.scene.add(this.rangeTargetsGroup);
+    this.scene.add(this.dynamicTargetsGroup);
     this.buildRangeTargets();
+  }
+
+  public setRangeTargetsVisible(visible: boolean) {
+    this.rangeTargetsGroup.visible = visible;
+  }
+
+  public clearDynamicTargets() {
+    while (this.dynamicTargetsGroup.children.length > 0) {
+      const child = this.dynamicTargetsGroup.children[0];
+      this.dynamicTargetsGroup.remove(child);
+      child.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) {
+          obj.geometry.dispose();
+          if (Array.isArray(obj.material)) {
+            obj.material.forEach((m) => m.dispose());
+          } else {
+            obj.material.dispose();
+          }
+        }
+      });
+    }
+    const dynamicSet = new Set(this.dynamicReactiveTargets);
+    this.reactiveTargets = this.reactiveTargets.filter((t) => !dynamicSet.has(t));
+    this.dynamicReactiveTargets = [];
   }
 
   private buildRangeTargets() {
@@ -140,7 +171,7 @@ export class TargetManager {
       plateHinge.add(head);
 
       targetGroup.add(plateHinge);
-      this.scene.add(targetGroup);
+      this.rangeTargetsGroup.add(targetGroup);
 
       this.reactiveTargets.push({
         group: plateHinge,
@@ -182,7 +213,7 @@ export class TargetManager {
       );
       bGroup.add(stripeMesh);
 
-      this.scene.add(bGroup);
+      this.rangeTargetsGroup.add(bGroup);
       this.barrels.push({
         group: bGroup,
         mesh: barrelMesh,
@@ -440,9 +471,9 @@ export class TargetManager {
     plateHinge.add(head);
 
     targetGroup.add(plateHinge);
-    this.scene.add(targetGroup);
+    this.dynamicTargetsGroup.add(targetGroup);
 
-    this.reactiveTargets.push({
+    const targetObj: ReactiveTarget = {
       group: plateHinge,
       mesh: torso,
       baseY: y + 1.2,
@@ -450,6 +481,9 @@ export class TargetManager {
       recovering: false,
       hp: 100,
       isCritZone: false,
-    });
+    };
+
+    this.dynamicReactiveTargets.push(targetObj);
+    this.reactiveTargets.push(targetObj);
   }
 }

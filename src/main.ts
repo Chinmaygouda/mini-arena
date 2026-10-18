@@ -112,14 +112,19 @@ class FPSApp {
       this.mapLoader.clearCurrentMap();
       this.rangeEnvironmentGroup.visible = true;
       this.hud.setMapName('Tactical Shooting Range');
+      this.targetManager.clearDynamicTargets();
+      this.targetManager.setRangeTargetsVisible(true);
+      this.controls.setBounds({ minX: -7.5, maxX: 7.5, minZ: -3.2, maxZ: 5.5 });
+      this.controls.setColliders([]);
+      this.controls.setPosition(0, 1.7, 0, 0);
     } else {
       this.rangeEnvironmentGroup.visible = false;
-      const mapName = await this.mapLoader.loadMap(mapId, this.targetManager);
-      this.hud.setMapName(mapName);
+      const result = await this.mapLoader.loadMap(mapId, this.targetManager);
+      this.hud.setMapName(result.name);
+      this.controls.setBounds(result.bounds);
+      this.controls.setColliders(result.colliders);
+      this.controls.setPosition(result.spawn.x, result.spawn.y, result.spawn.z, result.spawn.facingYaw);
     }
-
-    // Reset player position safely
-    this.camera.position.set(0, 1.8, 6);
   }
 
   private setupInteractions() {

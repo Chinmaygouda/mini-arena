@@ -1,9 +1,10 @@
 // src/environment/blueprintMapLoader.ts
 // Loads and instantiates blueprint maps (Foundry Yard, Cul-de-Sac, Dustline Village, Overpass)
-// into Three.js geometry, PBR materials, and tactical lighting.
+// into Three.js geometry, PBR materials, tactical sun/sky/fog lighting, and collision bounds.
 
 import * as THREE from 'three';
 import { TargetManager } from './targets';
+import type { BoxCollider, MapBounds } from '../player/firstPersonControls';
 
 export type MapId = 'range' | 'foundry' | 'culdesac' | 'dustline' | 'overpass';
 
@@ -26,13 +27,20 @@ export interface BlueprintMapData {
   boxes?: BlueprintBox[];
   lighting?: {
     sun?: {
+      from?: string;
       color?: string;
       intensity?: number | string;
       elevation_deg?: number;
     };
+    hemisphere?: { sky: string; ground: string; intensity: number };
     sky?: {
       hemisphere?: { sky: string; ground: string; intensity: number };
       fog?: { color: string; density: number };
+    };
+    fog?: {
+      type?: string;
+      color: string;
+      density: number;
     };
     points?: Array<{
       id: string;
@@ -44,7 +52,18 @@ export interface BlueprintMapData {
       range: number;
     }>;
   };
-  spawns?: Array<{ id: string; team: string; pos: [number, number, number] }>;
+  spawns?: {
+    teamA?: { facing: string; points: [number, number][] };
+    teamB?: { facing: string; points: [number, number][] };
+  };
+}
+
+export interface LoadedMapResult {
+  name: string;
+  theme?: string;
+  spawn: { x: number; y: number; z: number; facingYaw: number };
+  bounds: MapBounds;
+  colliders: BoxCollider[];
 }
 
 export const MAP_INFO: Record<MapId, { name: string; file?: string }> = {
@@ -85,22 +104,40 @@ export class BlueprintMapLoader {
       this.scene.remove(this.currentLightsGroup);
       this.currentLightsGroup = null;
     }
+
+    // Default shooting range background and fog
+    this.scene.fog = new THREE.FogExp2(0x07090e, 0.01);
+    this.scene.background = new THREE.Color(0x07090e);
   }
 
   public async loadMap(
     mapId: MapId,
     targetManager?: TargetManager
-  ): Promise<string> {
+  ): Promise<LoadedMapResult> {
     this.clearCurrentMap();
     this.currentMapId = mapId;
 
     if (mapId === 'range') {
-      return 'Tactical Shooting Range';
+      if (targetManager) {
+        targetManager.clearDynamicTargets();
+        targetManager.setRangeTargetsVisible(true);
+      }
+      return {
+        name: 'Tactical Shooting Range',
+        spawn: { x: 0, y: 1.7, z: 0, facingYaw: 0 },
+        bounds: { minX: -7.5, maxX: 7.5, minZ: -3.2, maxZ: 5.5 },
+        colliders: [],
+      };
     }
 
     const info = MAP_INFO[mapId];
     if (!info.file) {
-      return info.name;
+      return {
+        name: info.name,
+        spawn: { x: 0, y: 1.7, z: 0, facingYaw: 0 },
+        bounds: { minX: -25, maxX: 25, minZ: -25, maxZ: 25 },
+        colliders: [],
+      };
     }
 
     const response = await fetch(info.file);
@@ -116,40 +153,71 @@ export class BlueprintMapLoader {
     lightsGroup.name = `map-${mapId}-lights`;
 
     // 1. Atmosphere & Sun Lighting
-    const skyConf = data.lighting?.sky?.hemisphere || {
+    const hemiConf = data.lighting?.hemisphere || data.lighting?.sky?.hemisphere || {
       sky: '#90b4e2',
       ground: '#4a4238',
       intensity: 0.75,
     };
+
     const hemiLight = new THREE.HemisphereLight(
-      skyConf.sky,
-      skyConf.ground,
-      skyConf.intensity
+      hemiConf.sky,
+      hemiConf.ground,
+      hemiConf.intensity
     );
     lightsGroup.add(hemiLight);
 
+    // Apply Fog and Sky Background to match map mood
+    const fogConf = data.lighting?.fog || (data.lighting?.sky?.fog ? {
+      color: data.lighting.sky.fog.color,
+      density: data.lighting.sky.fog.density,
+    } : null);
+
+    if (fogConf) {
+      this.scene.fog = new THREE.FogExp2(fogConf.color, fogConf.density);
+      this.scene.background = new THREE.Color(fogConf.color);
+    } else {
+      this.scene.fog = new THREE.FogExp2(hemiConf.sky, 0.007);
+      this.scene.background = new THREE.Color(hemiConf.sky);
+    }
+
+    // Directional Sun Light
     const sunColor = data.lighting?.sun?.color || '#fffaed';
-    const sunLight = new THREE.DirectionalLight(sunColor, 1.4);
-    sunLight.position.set(25, 45, 20);
+    let sunIntensity = 1.2;
+    if (typeof data.lighting?.sun?.intensity === 'number') {
+      sunIntensity = data.lighting.sun.intensity;
+    } else if (typeof data.lighting?.sun?.intensity === 'string') {
+      sunIntensity = parseFloat(data.lighting.sun.intensity) || 1.2;
+    }
+
+    const elevDeg = data.lighting?.sun?.elevation_deg || 35;
+    const elevRad = (elevDeg * Math.PI) / 180;
+    const sunRadius = 85;
+
+    const sunLight = new THREE.DirectionalLight(sunColor, sunIntensity);
+    // Sun comes from west (-X)
+    sunLight.position.set(-sunRadius * Math.cos(elevRad), sunRadius * Math.sin(elevRad), 0);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
-    sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 160;
-    sunLight.shadow.camera.left = -40;
-    sunLight.shadow.camera.right = 40;
-    sunLight.shadow.camera.top = 40;
-    sunLight.shadow.camera.bottom = -40;
-    sunLight.shadow.bias = -0.0004;
+    sunLight.shadow.camera.near = 1.0;
+    sunLight.shadow.camera.far = 200;
+
+    const halfMapSpan = data.meta.size ? Math.max(data.meta.size[0], data.meta.size[1]) * 0.75 : 45;
+    sunLight.shadow.camera.left = -halfMapSpan;
+    sunLight.shadow.camera.right = halfMapSpan;
+    sunLight.shadow.camera.top = halfMapSpan;
+    sunLight.shadow.camera.bottom = -halfMapSpan;
+    sunLight.shadow.bias = -0.0003;
     lightsGroup.add(sunLight);
 
-    // Point lights from blueprint
+    // Tactical Point Lights (street lights, lanterns, sodium lamps)
     if (data.lighting?.points) {
-      data.lighting.points.slice(0, 10).forEach((p) => {
+      data.lighting.points.forEach((p) => {
         const pLight = new THREE.PointLight(
           p.color,
           p.intensity || 1.0,
-          p.range || 16
+          p.range || 16,
+          1.6
         );
         pLight.position.set(p.x, p.y, p.z);
         lightsGroup.add(pLight);
@@ -158,13 +226,13 @@ export class BlueprintMapLoader {
 
     // 2. Map Ground Floor Plane
     const floorMat = new THREE.MeshStandardMaterial({
-      color: 0x3a3f47,
-      roughness: 0.85,
-      metalness: 0.1,
+      color: hemiConf.ground || '#3a3f47',
+      roughness: 0.9,
+      metalness: 0.05,
     });
-    const floorSize = data.meta.size ? Math.max(...data.meta.size) * 2 : 120;
+    const floorSpan = data.meta.size ? Math.max(...data.meta.size) * 2.2 : 140;
     const floorMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(floorSize, floorSize),
+      new THREE.PlaneGeometry(floorSpan, floorSpan),
       floorMat
     );
     floorMesh.rotation.x = -Math.PI / 2;
@@ -172,7 +240,8 @@ export class BlueprintMapLoader {
     floorMesh.receiveShadow = true;
     mapGroup.add(floorMesh);
 
-    // 3. Map Solid Boxes (Walls, cover, stairs, corridors)
+    // 3. Map Solid Boxes & Colliders
+    const colliders: BoxCollider[] = [];
     const materialCache = new Map<string, THREE.MeshStandardMaterial>();
 
     if (data.boxes) {
@@ -180,7 +249,7 @@ export class BlueprintMapLoader {
         const hex = box.color || '#718096';
         let mat = materialCache.get(hex);
         if (!mat) {
-          const isMetal = box.kind === 'container' || box.kind === 'metal';
+          const isMetal = box.kind === 'container' || box.kind === 'metal' || box.kind === 'cont';
           mat = new THREE.MeshStandardMaterial({
             color: hex,
             roughness: isMetal ? 0.35 : 0.8,
@@ -190,12 +259,29 @@ export class BlueprintMapLoader {
         }
 
         const [w, h, d] = box.size;
+        const [cx, cy, cz] = box.center;
+
         const geom = new THREE.BoxGeometry(w, h, d);
         const mesh = new THREE.Mesh(geom, mat);
-        mesh.position.set(box.center[0], box.center[1], box.center[2]);
+        mesh.position.set(cx, cy, cz);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mapGroup.add(mesh);
+
+        const isRoof = box.kind === 'roof';
+        const isWalkable = box.kind === 'stairs' || box.kind === 'stair' || box.kind === 'platform';
+
+        if (!isRoof) {
+          colliders.push({
+            minX: cx - w / 2,
+            maxX: cx + w / 2,
+            minY: cy - h / 2,
+            maxY: cy + h / 2,
+            minZ: cz - d / 2,
+            maxZ: cz + d / 2,
+            isWalkable,
+          });
+        }
       });
     }
 
@@ -204,19 +290,75 @@ export class BlueprintMapLoader {
     this.currentMapGroup = mapGroup;
     this.currentLightsGroup = lightsGroup;
 
-    // 4. Tactical Targets in map arena if targetManager supplied
-    if (targetManager && data.spawns && data.spawns.length > 0) {
-      // Reposition targets or add tactical poppers in map bays
-      data.spawns.forEach((sp) => {
-        targetManager.addDynamicTarget(
-          sp.pos[0],
-          sp.pos[1],
-          sp.pos[2],
-          sp.team === 'B'
-        );
-      });
+    // 4. Calculate Optimal Tactical Spawn Position & Map Bounds
+    const halfW = data.meta.size ? data.meta.size[0] / 2 : 30;
+    const halfD = data.meta.size ? data.meta.size[1] / 2 : 30;
+    const bounds: MapBounds = {
+      minX: -halfW,
+      maxX: halfW,
+      minZ: -halfD,
+      maxZ: halfD,
+    };
+
+    let spawnX = 0;
+    let spawnZ = -halfD * 0.55;
+    const spawnYaw = Math.PI; // Face North (+Z) towards map center
+
+    if (mapId === 'culdesac') {
+      spawnX = -7.0; // West side of street lane with clear sightline past the bus
+      spawnZ = -8.0;
+    } else if (mapId === 'dustline') {
+      spawnX = 0;
+      spawnZ = -15.0; // South camp entrance looking towards bazaar & well square
+    } else if (mapId === 'overpass') {
+      spawnX = 0;
+      spawnZ = -16.0; // South lot looking toward elevated overpass structure
+    } else if (mapId === 'foundry') {
+      spawnX = 0;
+      spawnZ = -18.0; // South bay corridor looking into Crane Plaza
+    } else if (data.spawns?.teamA?.points && data.spawns.teamA.points.length > 0) {
+      const pt = data.spawns.teamA.points[Math.min(1, data.spawns.teamA.points.length - 1)];
+      spawnX = pt[0];
+      spawnZ = pt[1];
     }
 
-    return data.meta.name;
+    // 5. Populate Silhouette Targets in Strategic Skirmish Positions
+    if (targetManager) {
+      targetManager.setRangeTargetsVisible(false);
+      targetManager.clearDynamicTargets();
+
+      if (data.spawns?.teamB?.points) {
+        data.spawns.teamB.points.forEach(([tx, tz]) => {
+          targetManager.addDynamicTarget(tx, 0, tz, true);
+        });
+      }
+
+      // Add central skirmish targets
+      if (mapId === 'culdesac') {
+        targetManager.addDynamicTarget(-6, 0, 5, true);
+        targetManager.addDynamicTarget(6, 0, 6, true);
+        targetManager.addDynamicTarget(0, 0, 11, true);
+      } else if (mapId === 'dustline') {
+        targetManager.addDynamicTarget(0, 0, 0, true);
+        targetManager.addDynamicTarget(-12, 0, 8, true);
+        targetManager.addDynamicTarget(12, 0, 8, true);
+      } else if (mapId === 'overpass') {
+        targetManager.addDynamicTarget(-8, 0, -2, true);
+        targetManager.addDynamicTarget(8, 0, 2, true);
+        targetManager.addDynamicTarget(0, 4.5, 0, true); // on the deck!
+      } else if (mapId === 'foundry') {
+        targetManager.addDynamicTarget(0, 0, 0, true);
+        targetManager.addDynamicTarget(-14, 0, 5, true);
+        targetManager.addDynamicTarget(14, 0, 5, true);
+      }
+    }
+
+    return {
+      name: data.meta.name,
+      theme: data.meta.theme,
+      spawn: { x: spawnX, y: 1.7, z: spawnZ, facingYaw: spawnYaw },
+      bounds,
+      colliders,
+    };
   }
 }

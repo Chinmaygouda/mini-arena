@@ -12,6 +12,23 @@ export interface PlayerInputState {
   jump: boolean;
 }
 
+export interface MapBounds {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+}
+
+export interface BoxCollider {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+  minZ: number;
+  maxZ: number;
+  isWalkable?: boolean;
+}
+
 export class FirstPersonControls {
   public camera: THREE.PerspectiveCamera;
   public domElement: HTMLElement;
@@ -24,6 +41,9 @@ export class FirstPersonControls {
 
   public mouseDelta = { x: 0, y: 0 };
   public isLocked: boolean = false;
+
+  public bounds: MapBounds = { minX: -7.5, maxX: 7.5, minZ: -3.2, maxZ: 5.5 };
+  public colliders: BoxCollider[] = [];
 
   private yaw: number = 0;
   private pitch: number = 0;
@@ -51,6 +71,24 @@ export class FirstPersonControls {
     this.camera.position.copy(this.position);
 
     this.setupListeners();
+  }
+
+  public setBounds(bounds: MapBounds) {
+    this.bounds = bounds;
+  }
+
+  public setColliders(colliders: BoxCollider[]) {
+    this.colliders = colliders;
+  }
+
+  public setPosition(x: number, y: number, z: number, yaw: number = 0) {
+    this.position.set(x, y || this.eyeHeight, z);
+    this.camera.position.copy(this.position);
+    this.velocity.set(0, 0, 0);
+    this.yaw = yaw;
+    this.pitch = 0;
+    this.cameraRecoilPitch = 0;
+    this.cameraRecoilYaw = 0;
   }
 
   private setupListeners() {
@@ -151,22 +189,105 @@ export class FirstPersonControls {
       this.velocity.y -= 16.0 * delta; // Gravity
     }
 
-    this.position.x += this.velocity.x * delta;
-    this.position.z += this.velocity.z * delta;
+    // 4. Movement with Axis-Aligned Box Collision
+    const radius = 0.35;
+    const feetY = this.position.y - this.eyeHeight;
+    const headY = this.position.y + 0.15;
+
+    // Attempt X movement
+    const nextX = this.position.x + this.velocity.x * delta;
+    let blockedX = false;
+
+    // Check bounds
+    if (nextX - radius < this.bounds.minX || nextX + radius > this.bounds.maxX) {
+      blockedX = true;
+    } else {
+      for (let i = 0; i < this.colliders.length; i++) {
+        const c = this.colliders[i];
+        if (c.isWalkable && c.maxY <= feetY + 0.35) continue;
+        if (c.minY > headY || c.maxY < feetY + 0.1) continue;
+
+        if (
+          nextX + radius > c.minX &&
+          nextX - radius < c.maxX &&
+          this.position.z + radius > c.minZ &&
+          this.position.z - radius < c.maxZ
+        ) {
+          blockedX = true;
+          break;
+        }
+      }
+    }
+
+    if (!blockedX) {
+      this.position.x = nextX;
+    } else {
+      this.velocity.x = 0;
+    }
+
+    // Attempt Z movement
+    const nextZ = this.position.z + this.velocity.z * delta;
+    let blockedZ = false;
+
+    if (nextZ - radius < this.bounds.minZ || nextZ + radius > this.bounds.maxZ) {
+      blockedZ = true;
+    } else {
+      for (let i = 0; i < this.colliders.length; i++) {
+        const c = this.colliders[i];
+        if (c.isWalkable && c.maxY <= feetY + 0.35) continue;
+        if (c.minY > headY || c.maxY < feetY + 0.1) continue;
+
+        if (
+          this.position.x + radius > c.minX &&
+          this.position.x - radius < c.maxX &&
+          nextZ + radius > c.minZ &&
+          nextZ - radius < c.maxZ
+        ) {
+          blockedZ = true;
+          break;
+        }
+      }
+    }
+
+    if (!blockedZ) {
+      this.position.z = nextZ;
+    } else {
+      this.velocity.z = 0;
+    }
+
+    // Attempt Y movement
     this.position.y += this.velocity.y * delta;
 
-    // Floor Boundary / Range Platform Limits
-    if (this.position.y <= this.eyeHeight) {
-      this.position.y = this.eyeHeight;
+    // Floor Boundary / Ground Limits
+    let targetFloorY = this.eyeHeight;
+    // Check if on top of a walkable platform or step
+    for (let i = 0; i < this.colliders.length; i++) {
+      const c = this.colliders[i];
+      if (
+        this.position.x >= c.minX - radius &&
+        this.position.x <= c.maxX + radius &&
+        this.position.z >= c.minZ - radius &&
+        this.position.z <= c.maxZ + radius
+      ) {
+        if (c.isWalkable && c.maxY + this.eyeHeight > targetFloorY) {
+          if (this.position.y >= c.maxY + this.eyeHeight - 0.4) {
+            targetFloorY = c.maxY + this.eyeHeight;
+          }
+        }
+      }
+    }
+
+    if (this.position.y <= targetFloorY) {
+      this.position.y = targetFloorY;
       this.velocity.y = 0;
       this.isGrounded = true;
     }
 
-    // Keep player in shooting stall area
-    this.position.x = THREE.MathUtils.clamp(this.position.x, -7.5, 7.5);
-    this.position.z = THREE.MathUtils.clamp(this.position.z, -3.2, 5.5);
+    // Final boundary clamp safety
+    this.position.x = THREE.MathUtils.clamp(this.position.x, this.bounds.minX, this.bounds.maxX);
+    this.position.z = THREE.MathUtils.clamp(this.position.z, this.bounds.minZ, this.bounds.maxZ);
 
-    // 4. Subtle Head Bob
+    // 5. Subtle Head Bob
     if (this.isMoving && this.isGrounded) {
       this.headBobTimer += delta * (this.isSprinting ? 14 : 9);
       const bobOffset = Math.sin(this.headBobTimer) * (this.isSprinting ? 0.04 : 0.02);
