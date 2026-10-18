@@ -5773,6 +5773,230 @@
         0.65
       ],
       "color": "#4b7545"
+    },
+    {
+      "id": "home_south_west_porch_canopy",
+      "kind": "trim",
+      "center": [
+        -20.5,
+        2.75,
+        -14.66
+      ],
+      "size": [
+        4.3,
+        0.2,
+        2.15
+      ],
+      "color": "#8b563d",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_porch_column_l",
+      "kind": "trim",
+      "center": [
+        -22.25,
+        1.35,
+        -14.66
+      ],
+      "size": [
+        0.18,
+        2.65,
+        0.18
+      ],
+      "color": "#dfd2b3",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_porch_column_r",
+      "kind": "trim",
+      "center": [
+        -18.75,
+        1.35,
+        -14.66
+      ],
+      "size": [
+        0.18,
+        2.65,
+        0.18
+      ],
+      "color": "#dfd2b3",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_door_jamb_l",
+      "kind": "trim",
+      "center": [
+        -21.49,
+        1.18,
+        -15.83
+      ],
+      "size": [
+        0.12,
+        2.36,
+        0.14
+      ],
+      "color": "#f0d8a7",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_door_jamb_r",
+      "kind": "trim",
+      "center": [
+        -19.51,
+        1.18,
+        -15.83
+      ],
+      "size": [
+        0.12,
+        2.36,
+        0.14
+      ],
+      "color": "#f0d8a7",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_door_lintel",
+      "kind": "trim",
+      "center": [
+        -20.5,
+        2.42,
+        -15.83
+      ],
+      "size": [
+        2.08,
+        0.14,
+        0.14
+      ],
+      "color": "#f0d8a7",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_belt_south",
+      "kind": "trim",
+      "center": [
+        -20.5,
+        2.91,
+        -15.870000000000001
+      ],
+      "size": [
+        10.18,
+        0.14,
+        0.18
+      ],
+      "color": "#ead7b3",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_belt_north",
+      "kind": "trim",
+      "center": [
+        -20.5,
+        2.91,
+        -25.95
+      ],
+      "size": [
+        10.18,
+        0.14,
+        0.18
+      ],
+      "color": "#ead7b3",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_belt_east",
+      "kind": "trim",
+      "center": [
+        -15.46,
+        2.91,
+        -20.91
+      ],
+      "size": [
+        0.18,
+        0.14,
+        10.18
+      ],
+      "color": "#ead7b3",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_belt_west",
+      "kind": "trim",
+      "center": [
+        -25.54,
+        2.91,
+        -20.91
+      ],
+      "size": [
+        0.18,
+        0.14,
+        10.18
+      ],
+      "color": "#ead7b3",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_pilaster_front_l",
+      "kind": "trim",
+      "center": [
+        -25.15,
+        1.45,
+        -15.84
+      ],
+      "size": [
+        0.25,
+        2.9,
+        0.16
+      ],
+      "color": "#c7a779",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_pilaster_front_r",
+      "kind": "trim",
+      "center": [
+        -15.85,
+        1.45,
+        -15.84
+      ],
+      "size": [
+        0.25,
+        2.9,
+        0.16
+      ],
+      "color": "#c7a779",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_pilaster_back_l",
+      "kind": "trim",
+      "center": [
+        -25.15,
+        1.45,
+        -25.98
+      ],
+      "size": [
+        0.25,
+        2.9,
+        0.16
+      ],
+      "color": "#c7a779",
+      "collision": false
+    },
+    {
+      "id": "home_south_west_pilaster_back_r",
+      "kind": "trim",
+      "center": [
+        -15.85,
+        1.45,
+        -25.98
+      ],
+      "size": [
+        0.25,
+        2.9,
+        0.16
+      ],
+      "color": "#c7a779",
+      "collision": false
     }
   ],
   "nature": {
