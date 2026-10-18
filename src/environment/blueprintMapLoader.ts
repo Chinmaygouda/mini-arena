@@ -120,7 +120,7 @@ export interface BlueprintMapData {
   buildings?: BuildingDef[];
   boxes?: BlueprintBox[];
   nature?: {
-    trees?: Array<{ pos: [number, number, number]; scale?: number }>;
+    trees?: Array<{ pos: [number, number, number]; scale?: number; style?: 'palm' | 'conifer' }>;
     rocks?: Array<{ pos: [number, number, number]; size: [number, number, number]; color?: string }>;
     mounds?: Array<{ pos: [number, number, number]; size: [number, number, number]; rotation?: number }>;
   };
@@ -1176,18 +1176,32 @@ export class BlueprintMapLoader {
           isWalkable: false,
         });
 
-        // Canopy: Drooping Palm Fronds (Layer 2, bullets pass through!)
-        for (let f = 0; f < 8; f++) {
-          const frondAngle = (f / 8) * Math.PI * 2;
-          const frondGeom = new THREE.ConeGeometry(1.2 * scale, 3.8 * scale, 4);
-          frondGeom.rotateZ(Math.PI * 0.38);
-          frondGeom.rotateY(frondAngle);
-          frondGeom.translate(
-            tx + Math.cos(frondAngle) * 1.5 * scale,
-            ty + trunkH - 0.4 * scale,
-            tz + Math.sin(frondAngle) * 1.5 * scale
-          );
-          canopyGeoms.push(frondGeom);
+        // Canopy on FX layer: neighborhood trees use simple faceted conifer tiers;
+        // legacy arenas keep their original low-poly palm fronds.
+        if (t.style === 'conifer') {
+          const tiers = [
+            { radius: 1.85, height: 3.0, y: 3.5 },
+            { radius: 1.45, height: 2.6, y: 4.45 },
+            { radius: 1.05, height: 2.0, y: 5.25 },
+          ];
+          for (const tier of tiers) {
+            const crownGeom = new THREE.ConeGeometry(tier.radius * scale, tier.height * scale, 6);
+            crownGeom.translate(tx, ty + tier.y * scale, tz);
+            canopyGeoms.push(crownGeom);
+          }
+        } else {
+          for (let f = 0; f < 8; f++) {
+            const frondAngle = (f / 8) * Math.PI * 2;
+            const frondGeom = new THREE.ConeGeometry(1.2 * scale, 3.8 * scale, 4);
+            frondGeom.rotateZ(Math.PI * 0.38);
+            frondGeom.rotateY(frondAngle);
+            frondGeom.translate(
+              tx + Math.cos(frondAngle) * 1.5 * scale,
+              ty + trunkH - 0.4 * scale,
+              tz + Math.sin(frondAngle) * 1.5 * scale
+            );
+            canopyGeoms.push(frondGeom);
+          }
         }
       });
     }
