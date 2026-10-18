@@ -9,12 +9,12 @@
       92,
       92
     ],
-    "symmetry": "A slightly tighter 92m x 92m playable footprint for 2v2, preserving the established street grid and combat lanes. Maple House is widened for open-plan traversal, a smooth stair support profile, jump-through windows, and an accessible balcony terrace.",
+    "symmetry": "A slightly tighter 92m x 92m playable footprint for 2v2, preserving the established street grid. Maple House is widened to 12m while retaining its ten-metre depth, with open-plan traversal, jump-through windows, and a jumpable balcony terrace.",
     "version": 3
   },
   "rules": [
     "Stylized low-poly suburban tactical environment within a 92m x 92m playable footprint intended for two players per team.",
-    "Maple House has a 12m x 12m footprint, open-plan interiors, a wide central entrance, a smooth collision profile beneath visible stairs, jump-through windows, and a balcony terrace with a deliberate jump-out gap.",
+    "Maple House has a roomier 12m x 10m footprint, open-plan interiors, a 2.2m-wide entrance, a wide staircase with a full-height stairwell opening, jump-through windows, and a balcony terrace with a central jump-out gap.",
     "Unfinished houses, apartment blocks, and the market remain neutral blockouts while they await individual construction and approval.",
     "Keep the central park, market lane, bus stop, parking, and side routes traversable; don't shrink full-size props into roadway space.",
     "Team spawn metadata has two positions per team. This remains spawn-slot metadata, not networked multiplayer implementation."
@@ -110,13 +110,13 @@
       "id": "home_south_west",
       "name": "Maple House — Spacious Traversal Prototype",
       "center": [
-        -25,
+        -24,
         0,
         -25.5
       ],
       "size": [
         12,
-        12
+        10
       ],
       "wallColor": "#d9ba7b",
       "trimColor": "#a76943",
@@ -184,7 +184,7 @@
               "doors": [],
               "windows": [
                 {
-                  "offset": -4,
+                  "offset": -3.3,
                   "width": 1.5,
                   "sillHeight": 0.55,
                   "height": 2.25,
@@ -192,7 +192,7 @@
                   "hasPlayerBlocker": false
                 },
                 {
-                  "offset": 4,
+                  "offset": 3.3,
                   "width": 1.5,
                   "sillHeight": 0.55,
                   "height": 2.25,
@@ -206,7 +206,7 @@
               "doors": [],
               "windows": [
                 {
-                  "offset": -4,
+                  "offset": -3.3,
                   "width": 1.5,
                   "sillHeight": 0.55,
                   "height": 2.25,
@@ -214,7 +214,7 @@
                   "hasPlayerBlocker": false
                 },
                 {
-                  "offset": 4,
+                  "offset": 3.3,
                   "width": 1.5,
                   "sillHeight": 0.55,
                   "height": 2.25,
@@ -230,7 +230,7 @@
               "id": "maple_open_ramp_stair",
               "start": [
                 -4.2,
-                -4.8
+                -3.8
               ],
               "direction": "+Z",
               "width": 1.6,
@@ -363,7 +363,7 @@
               "doors": [],
               "windows": [
                 {
-                  "offset": -4,
+                  "offset": -3.3,
                   "width": 1.5,
                   "sillHeight": 0.55,
                   "height": 2.25,
@@ -371,7 +371,7 @@
                   "hasPlayerBlocker": false
                 },
                 {
-                  "offset": 4,
+                  "offset": 3.3,
                   "width": 1.5,
                   "sillHeight": 0.55,
                   "height": 2.25,
@@ -385,7 +385,7 @@
               "doors": [],
               "windows": [
                 {
-                  "offset": -4,
+                  "offset": -3.3,
                   "width": 1.5,
                   "sillHeight": 0.55,
                   "height": 2.25,
@@ -393,7 +393,7 @@
                   "hasPlayerBlocker": false
                 },
                 {
-                  "offset": 4,
+                  "offset": 3.3,
                   "width": 1.5,
                   "sillHeight": 0.55,
                   "height": 2.25,
@@ -3132,14 +3132,14 @@
       "id": "home_south_west_fence_e",
       "kind": "fence",
       "center": [
-        -18.1,
+        -17.1,
         0.55,
-        -22.95
+        -24.55
       ],
       "size": [
         0.12,
         1.1,
-        17.1
+        11.9
       ],
       "color": "#8f6344"
     },
@@ -3147,12 +3147,12 @@
       "id": "home_south_west_fence_front_l",
       "kind": "fence",
       "center": [
-        -29.9,
+        -28.8,
         0.55,
-        -14.4
+        -18.45
       ],
       "size": [
-        3.8,
+        3.6,
         1.1,
         0.12
       ],
@@ -3162,12 +3162,12 @@
       "id": "home_south_west_fence_front_r",
       "kind": "fence",
       "center": [
-        -20.7,
+        -19.2,
         0.55,
-        -14.4
+        -18.45
       ],
       "size": [
-        3.8,
+        3.6,
         1.1,
         0.12
       ],
@@ -3177,9 +3177,9 @@
       "id": "home_south_west_planter_1",
       "kind": "prop",
       "center": [
-        -29.1,
+        -28.1,
         0.28,
-        -16
+        -19.2
       ],
       "size": [
         1.1,
@@ -3192,9 +3192,9 @@
       "id": "home_south_west_planter_2",
       "kind": "prop",
       "center": [
-        -20.9,
+        -19.9,
         0.28,
-        -16
+        -19.2
       ],
       "size": [
         1.1,
@@ -3432,14 +3432,14 @@
       "id": "home_south_west_porch",
       "kind": "platform",
       "center": [
-        -25,
+        -24,
         0.1,
-        -18.65
+        -20.25
       ],
       "size": [
         3.8,
         0.2,
-        1.8
+        1.6
       ],
       "color": "#b9b8ae"
     },
@@ -3447,9 +3447,9 @@
       "id": "home_south_west_porch_step_0",
       "kind": "stairs",
       "center": [
-        -25,
+        -24,
         0.04,
-        -16.85
+        -18.55
       ],
       "size": [
         2.2,
@@ -3462,9 +3462,9 @@
       "id": "home_south_west_porch_step_1",
       "kind": "stairs",
       "center": [
-        -25,
+        -24,
         0.07,
-        -17.2
+        -18.9
       ],
       "size": [
         2.2,
@@ -3477,9 +3477,9 @@
       "id": "home_south_west_porch_step_2",
       "kind": "stairs",
       "center": [
-        -25,
+        -24,
         0.1,
-        -17.55
+        -19.25
       ],
       "size": [
         2.2,
@@ -3492,14 +3492,14 @@
       "id": "home_south_west_balcony_deck",
       "kind": "platform",
       "center": [
-        -25,
+        -24,
         3.14,
-        -18.4
+        -19.7
       ],
       "size": [
         4.4,
         0.12,
-        2.4
+        2.2
       ],
       "color": "#8f6344"
     },
@@ -3507,14 +3507,14 @@
       "id": "home_south_west_balcony_rail_l",
       "kind": "fence",
       "center": [
-        -27.14,
+        -26.14,
         3.65,
-        -18.4
+        -19.7
       ],
       "size": [
         0.12,
         0.9,
-        2.4
+        2.2
       ],
       "color": "#8f6344"
     },
@@ -3522,14 +3522,14 @@
       "id": "home_south_west_balcony_rail_r",
       "kind": "fence",
       "center": [
-        -22.86,
+        -21.86,
         3.65,
-        -18.4
+        -19.7
       ],
       "size": [
         0.12,
         0.9,
-        2.4
+        2.2
       ],
       "color": "#8f6344"
     },
@@ -5742,9 +5742,9 @@
       "id": "home_south_west_porch_canopy",
       "kind": "trim",
       "center": [
-        -25,
+        -24,
         2.78,
-        -18.7
+        -19.9
       ],
       "size": [
         4.3,
@@ -5758,9 +5758,9 @@
       "id": "home_south_west_porch_column_l",
       "kind": "trim",
       "center": [
-        -26.75,
+        -25.75,
         1.34,
-        -18.7
+        -19.9
       ],
       "size": [
         0.18,
@@ -5774,9 +5774,9 @@
       "id": "home_south_west_porch_column_r",
       "kind": "trim",
       "center": [
-        -23.25,
+        -22.25,
         1.34,
-        -18.7
+        -19.9
       ],
       "size": [
         0.18,
@@ -5790,9 +5790,9 @@
       "id": "home_south_west_door_jamb_l",
       "kind": "trim",
       "center": [
-        -26.15,
+        -25.15,
         1.225,
-        -19.42
+        -20.42
       ],
       "size": [
         0.12,
@@ -5806,9 +5806,9 @@
       "id": "home_south_west_door_jamb_r",
       "kind": "trim",
       "center": [
-        -23.85,
+        -22.85,
         1.225,
-        -19.42
+        -20.42
       ],
       "size": [
         0.12,
@@ -5822,9 +5822,9 @@
       "id": "home_south_west_door_lintel",
       "kind": "trim",
       "center": [
-        -25,
+        -24,
         2.48,
-        -19.42
+        -20.42
       ],
       "size": [
         2.35,
@@ -5838,9 +5838,9 @@
       "id": "home_south_west_belt_south",
       "kind": "trim",
       "center": [
-        -25,
+        -24,
         3.02,
-        -19.42
+        -20.46
       ],
       "size": [
         12.18,
@@ -5854,9 +5854,9 @@
       "id": "home_south_west_belt_north",
       "kind": "trim",
       "center": [
-        -25,
+        -24,
         3.02,
-        -31.58
+        -30.54
       ],
       "size": [
         12.18,
@@ -5870,14 +5870,14 @@
       "id": "home_south_west_belt_east",
       "kind": "trim",
       "center": [
-        -18.92,
+        -17.92,
         3.02,
         -25.5
       ],
       "size": [
         0.18,
         0.14,
-        12.18
+        10.18
       ],
       "color": "#ead7b3",
       "collision": false
@@ -5886,14 +5886,14 @@
       "id": "home_south_west_belt_west",
       "kind": "trim",
       "center": [
-        -31.08,
+        -30.08,
         3.02,
         -25.5
       ],
       "size": [
         0.18,
         0.14,
-        12.18
+        10.18
       ],
       "color": "#ead7b3",
       "collision": false
@@ -5902,9 +5902,9 @@
       "id": "home_south_west_pilaster_front_l",
       "kind": "trim",
       "center": [
-        -30.65,
+        -29.65,
         1.45,
-        -19.42
+        -20.43
       ],
       "size": [
         0.25,
@@ -5918,9 +5918,9 @@
       "id": "home_south_west_pilaster_front_r",
       "kind": "trim",
       "center": [
-        -19.35,
+        -18.35,
         1.45,
-        -19.42
+        -20.43
       ],
       "size": [
         0.25,
@@ -5934,9 +5934,9 @@
       "id": "home_south_west_pilaster_back_l",
       "kind": "trim",
       "center": [
-        -30.65,
+        -29.65,
         1.45,
-        -31.58
+        -30.57
       ],
       "size": [
         0.25,
@@ -5950,9 +5950,9 @@
       "id": "home_south_west_pilaster_back_r",
       "kind": "trim",
       "center": [
-        -19.35,
+        -18.35,
         1.45,
-        -31.58
+        -30.57
       ],
       "size": [
         0.25,
@@ -5966,14 +5966,14 @@
       "id": "home_south_west_fence_w",
       "kind": "fence",
       "center": [
-        -31.9,
+        -30.9,
         0.55,
-        -22.95
+        -24.55
       ],
       "size": [
         0.12,
         1.1,
-        17.1
+        11.9
       ],
       "color": "#8f6344"
     },
@@ -5981,9 +5981,9 @@
       "id": "home_south_west_balcony_rail_outer_l",
       "kind": "fence",
       "center": [
-        -26.65,
+        -25.65,
         3.65,
-        -17.25
+        -18.65
       ],
       "size": [
         1.1,
@@ -5996,9 +5996,9 @@
       "id": "home_south_west_balcony_rail_outer_r",
       "kind": "fence",
       "center": [
-        -23.35,
+        -22.35,
         3.65,
-        -17.25
+        -18.65
       ],
       "size": [
         1.1,
