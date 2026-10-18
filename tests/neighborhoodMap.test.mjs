@@ -9,7 +9,7 @@ const root = path.resolve(here, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const map = JSON.parse(read('public/maps/neighborhood.json'));
 
-test('Neighborhood map declares a playable 4v4 low-poly arena', () => {
+test('Neighborhood map declares a playable 2v2 low-poly arena', () => {
   assert.equal(map.meta.name, 'Neighborhood District');
   assert.equal(map.meta.theme, 'neighborhood');
   assert.deepEqual(map.meta.size, [92, 92]);
@@ -85,6 +85,16 @@ test('Maple House balcony has a deliberate center opening for jumping off the te
   const leftInner = left.center[0] + left.size[0] / 2;
   const rightInner = right.center[0] - right.size[0] / 2;
   assert.ok(rightInner - leftInner >= 1.8, 'the player can pass through the central jump-out gap');
+  const porch = boxes.get('home_south_west_porch');
+  const outerStep = boxes.get('home_south_west_porch_step_0');
+  const middleStep = boxes.get('home_south_west_porch_step_1');
+  const innerStep = boxes.get('home_south_west_porch_step_2');
+  assert.ok(porch && outerStep && middleStep && innerStep, 'porch and three entrance steps exist');
+  assert.ok(innerStep.center[2] < middleStep.center[2] && middleStep.center[2] < outerStep.center[2],
+    'steps descend outward from the porch instead of rising away from the doorway');
+  assert.ok(innerStep.center[1] + innerStep.size[1] / 2 >= middleStep.center[1] + middleStep.size[1] / 2 &&
+    middleStep.center[1] + middleStep.size[1] / 2 >= outerStep.center[1] + outerStep.size[1] / 2,
+    'the uppermost porch step is nearest the door');
 });
 
 test('2v2 bounds and perimeter blockers use the smaller playable footprint', () => {
