@@ -122,6 +122,8 @@ try {
   await page.screenshot({ path: `${outputDir}/03-maple-window-jump.png`, fullPage: true });
   assert.ok(windowExit.z > -20.4,
     `Player did not pass through the south window opening (z=${windowExit.z.toFixed(2)})`);
+  assert.equal(windowExit.collidingCount, 0,
+    'Player should exit into clear garden space, not land against a planter or fence');
   console.log('Window jump passed:', JSON.stringify(windowExit));
 
   // Center of the balcony's 2.2m jump-out gap. A forward jump should clear the deck edge.
