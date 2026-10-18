@@ -35,6 +35,10 @@ export interface BoxCollider {
     endCoord: number;
     startY: number;
     endY: number;
+    /** Optional stair-like profile: rise occurs at each tread edge rather than as one smooth slope. */
+    stepRise?: number;
+    treadDepth?: number;
+    stepCount?: number;
   };
 }
 
@@ -213,7 +217,21 @@ export class FirstPersonControls {
           0,
           1
         );
-        const rampY = c.ramp.startY + (c.ramp.endY - c.ramp.startY) * t;
+        let rampY: number;
+        if (c.ramp.stepRise !== undefined && c.ramp.treadDepth && c.ramp.stepCount) {
+          // Match the visible stair treads exactly. The player stands on a flat
+          // tread surface, then rises once at the half-tread edge. This avoids
+          // both snagging on future risers and appearing to sink into stair meshes.
+          const progress = t * c.ramp.stepCount;
+          const stepIndex = THREE.MathUtils.clamp(
+            Math.floor(progress + 0.5),
+            0,
+            c.ramp.stepCount
+          );
+          rampY = c.ramp.startY + stepIndex * c.ramp.stepRise;
+        } else {
+          rampY = c.ramp.startY + (c.ramp.endY - c.ramp.startY) * t;
+        }
         if (rampY > maxAllowedY) continue;
 
         if (px >= c.minX && px <= c.maxX && pz >= c.minZ && pz <= c.maxZ) {
