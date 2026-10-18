@@ -759,28 +759,36 @@ export class BlueprintMapLoader {
         }
       }
 
-      // Add visual meshes and colliders for each sub-slab
-      const slabCenterY = ceilY + slabThickness / 2;
-      subSlabs.forEach((s) => {
-        const sw = s.xMax - s.xMin;
-        const sd = s.zMax - s.zMin;
-        const cx = (s.xMin + s.xMax) / 2;
-        const cz = (s.zMin + s.zMax) / 2;
+      // A pitched roof is the top-floor ceiling. Don't put a full flat slab through
+      // the roof slopes or it will visibly protrude through the eaves.
+      const isPitchedRoofCeiling =
+        bldg.roof?.type === 'pitched' &&
+        fl.floorIndex === bldg.floors[bldg.floors.length - 1].floorIndex;
 
-        const geom = new THREE.BoxGeometry(sw, slabThickness, sd);
-        geom.translate(cx, slabCenterY, cz);
-        slabGeoms.push(geom);
+      if (!isPitchedRoofCeiling) {
+        // Add visual meshes and colliders for each sub-slab.
+        const slabCenterY = ceilY + slabThickness / 2;
+        subSlabs.forEach((slab) => {
+          const sw = slab.xMax - slab.xMin;
+          const sd = slab.zMax - slab.zMin;
+          const cx = (slab.xMin + slab.xMax) / 2;
+          const cz = (slab.zMin + slab.zMax) / 2;
 
-        colliders.push({
-          minX: bx + s.xMin,
-          maxX: bx + s.xMax,
-          minY: by + ceilY,
-          maxY: by + ceilY + slabThickness,
-          minZ: bz + s.zMin,
-          maxZ: bz + s.zMax,
-          isWalkable: true, // Walkable from above (floor or roof) and ceiling from below
+          const geom = new THREE.BoxGeometry(sw, slabThickness, sd);
+          geom.translate(cx, slabCenterY, cz);
+          slabGeoms.push(geom);
+
+          colliders.push({
+            minX: bx + slab.xMin,
+            maxX: bx + slab.xMax,
+            minY: by + ceilY,
+            maxY: by + ceilY + slabThickness,
+            minZ: bz + slab.zMin,
+            maxZ: bz + slab.zMax,
+            isWalkable: true, // Floors and flat roofs are walkable from above
+          });
         });
-      });
+      }
 
       // ── C. Exterior Walls with Doorways & Windows ──────────────────────
       const wallSides: BuildingWallSide[] = fl.walls || [
@@ -1181,7 +1189,7 @@ export class BlueprintMapLoader {
     // ── I. Pitched roof and gable ends ─────────────────────────────────────
     if (bldg.roof && bldg.roof.type === 'pitched') {
       const topFloor = bldg.floors[bldg.floors.length - 1];
-      const roofBaseY = topFloor.floorY + topFloor.height + slabThickness;
+      const roofBaseY = topFloor.floorY + topFloor.height;
       const pitchHeight = Math.max(1.2, bldg.roof.pitchHeight ?? 1.8);
       const overhang = Math.max(0.15, bldg.roof.overhang ?? 0.45);
       const ridgeDirection = bldg.roof.ridgeDirection ?? 'x';
