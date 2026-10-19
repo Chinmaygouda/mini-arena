@@ -363,7 +363,7 @@ export class FPSHUD {
       </h1>
       <p style="font-size: 15px; color: rgba(255,255,255,0.7); max-width: 520px; text-align: center; margin: 0 0 28px 0; line-height: 1.5;">
         5 authentic firearms (AK-47, M9 Pistol, Cyclone-9 SMG, SPAS-12 Shotgun, AW-50 Sniper),
-        4 arena maps (Foundry Yard, Cul-de-Sac, Dustline Village, Overpass), and tactical proving grounds.
+        6 arena maps (Foundry Yard, Cul-de-Sac, Dustline Village, Overpass, Neighborhood, Warehouse), and tactical proving grounds.
       </p>
       <div id="btn-engage" style="background: linear-gradient(135deg, #00ff88, #00bb66); color: #04080c; font-weight: 900; font-size: 14px; padding: 16px 36px; border-radius: 14px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 40px rgba(0,255,136,0.6); display: flex; align-items: center; gap: 10px;">
         CLICK ANYWHERE TO ENGAGE
@@ -425,7 +425,7 @@ export class FPSHUD {
   }
 
   private renderMapModal() {
-    const maps: MapId[] = ['range', 'foundry', 'culdesac', 'dustline', 'overpass', 'neighborhood'];
+    const maps: MapId[] = ['range', 'foundry', 'culdesac', 'dustline', 'overpass', 'neighborhood', 'warehouse'];
     this.mapModal.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
         <span style="font-weight: 800; color: #00ff88; font-size: 13px;">TACTICAL MAP ARENA SELECTOR</span>
