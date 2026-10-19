@@ -344,7 +344,7 @@ try {
   await page.waitForTimeout(350);
   await page.screenshot({ path: `${outputDir}/07-warehouse-section-3-offset-maze-oblique.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
-  // Return to player controls and capture the redesigned Section 2 at eye level.
+  // Return to player controls and capture Section 2 at eye level as a preserved-section regression check.
   await page.evaluate(() => {
     const app = window.__fpsApp;
     const controls = app.controls;
@@ -354,10 +354,22 @@ try {
     controls.forceReleaseKeys();
     if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = true;
     controls.pitch = 0;
-    controls.setPosition(24.0, 1.7, -27.0, Math.PI);
+    controls.setPosition(-27.5, 1.7, 14.5, -Math.PI / 2);
     controls.update(1 / 60);
     const hud = document.querySelector('#fps-hud');
     if (hud instanceof HTMLElement) hud.style.display = '';
+  });
+  await page.waitForTimeout(250);
+  await page.screenshot({ path: `${outputDir}/05-warehouse-section-2-first-person.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
+
+  // Capture an actual first-person view from the new Section 3 maze.
+  await page.evaluate(() => {
+    const app = window.__fpsApp;
+    const controls = app.controls;
+    controls.forceReleaseKeys();
+    controls.pitch = 0;
+    controls.setPosition(24.0, 1.7, -27.0, Math.PI);
+    controls.update(1 / 60);
   });
   await page.waitForTimeout(250);
   await page.screenshot({ path: `${outputDir}/08-warehouse-section-3-first-person.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
