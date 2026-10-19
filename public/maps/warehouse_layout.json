@@ -19165,7 +19165,7 @@
     },
     {
       "id": "central-cover-nw",
-      "zone": "central-hall",
+      "zone": "centralHall",
       "kind": "crate",
       "center": [
         -3.35,
@@ -19183,7 +19183,7 @@
     },
     {
       "id": "central-cover-ne",
-      "zone": "central-hall",
+      "zone": "centralHall",
       "kind": "crate",
       "center": [
         3.35,
@@ -19201,7 +19201,7 @@
     },
     {
       "id": "central-cover-sw",
-      "zone": "central-hall",
+      "zone": "centralHall",
       "kind": "crate",
       "center": [
         -3.35,
@@ -19219,7 +19219,7 @@
     },
     {
       "id": "central-cover-se",
-      "zone": "central-hall",
+      "zone": "centralHall",
       "kind": "crate",
       "center": [
         3.35,
