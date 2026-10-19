@@ -61,6 +61,13 @@ try {
       app.controls.colliders.length === expectedColliderCount;
   }, expectedColliderCount, { timeout: 20000 });
 
+  // Engage the actual game before screenshots; otherwise the intro overlay masks the player view.
+  await page.evaluate(() => {
+    const engage = document.querySelector('#btn-engage');
+    if (engage instanceof HTMLElement) engage.click();
+  });
+  await page.waitForTimeout(250);
+
   const runtime = await page.evaluate(() => {
     const app = window.__fpsApp;
     const fixtureNames = [];
