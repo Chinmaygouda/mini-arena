@@ -1,7 +1,7 @@
 {
   "meta": {
-    "name": "Warehouse — Sections 1–2",
-    "mode": "Symmetrical 2v2 warehouse layout — Section 1 and Section 2 storage rack build",
+    "name": "Warehouse — Section 2 Loading Bay",
+    "mode": "Unique warehouse layouts — Section 1 long aisles, Section 2 cross-rack loading bay",
     "theme": "warehouse",
     "units": "meters",
     "axes": "Three.js X/Z world axes, Y up. In the top-down reference render, positive X appears toward screen-left and positive Z toward screen-top; numbered sections follow that visible blueprint orientation.",
@@ -22,16 +22,16 @@
       13.5,
       13.5
     ],
-    "version": 7,
-    "layoutStage": "section-1-and-2-detail",
-    "note": "Sections 1 and 2 contain mirrored four-run pallet-rack storage layouts, 20 pallet bases and 32 crate loads each. Upper crate bays are staggered by rack and shelf decks use dark matte coated-steel values. Sections 3, 4 and the central combat hall remain props-free.",
+    "version": 8,
+    "layoutStage": "section-1-detail-section-2-cross-rack-loading-bay",
+    "note": "Section 1 keeps four long north-south rack runs. Section 2 is deliberately different: three crosswise east-west rack rows with varied crate loading, a static low-poly forklift with wheels, mast, forks and overhead guard, a marked parking bay, industrial drums, safety cones, staged spare pallets and a utility workbench. The original 202-wall shell is unchanged. Sections 3–4 and central hall remain props-free.",
     "wallSegmentCount": 202,
     "sectionArchitecture": "Each numbered quadrant has an enclosing chamber, recessed entry returns, two cross-corridor links, one side-aisle link, and three auxiliary service bays. All quadrant wall geometry is mirrored on both axes.",
-    "propCount": 544,
-    "physicalBoxCount": 746,
+    "propCount": 599,
+    "physicalBoxCount": 801,
     "sectionProgress": {
-      "section1": "stage-2 complete: four pallet-rack runs, 20 pallet bases and 32 crate loads",
-      "section2": "stage-3 complete: mirrored four pallet-rack runs, 20 pallet bases and 32 crate loads",
+      "section1": "long north-south pallet-rack aisles; 20 pallet bases and 32 crate loads",
+      "section2": "unique east-west cross-racks; static forklift loading bay; drums, safety cones, spare pallets and workbench",
       "section3": "walls only",
       "section4": "walls only",
       "centralHall": "walls and floor markings only",
@@ -60,26 +60,35 @@
       ]
     },
     "section2UpperCrateBays": {
-      "01": [
+      "rowA": [
         1,
+        4
+      ],
+      "rowB": [
+        2,
         3,
         5
       ],
-      "02": [
-        2,
-        4,
-        5
-      ],
-      "03": [
+      "rowC": [
         1,
-        2,
-        4
-      ],
-      "04": [
-        1,
-        3,
-        4
+        2
       ]
+    },
+    "visiblePropCount": 597,
+    "section2Vehicle": {
+      "type": "forklift",
+      "driveable": false,
+      "facing": "+X toward the inner route",
+      "bodyCenter": [
+        -10.65,
+        0.7,
+        17.5
+      ],
+      "footprint": [
+        4.15,
+        1.92
+      ],
+      "role": "static loading-bay cover prop"
     }
   },
   "zones": [
@@ -115,12 +124,20 @@
         -7,
         31
       ],
-      "contentStage": "racks-pallets-crates",
+      "contentStage": "cross-rack-loading-bay",
       "propsSummary": {
-        "rackRuns": 4,
-        "pallets": 20,
-        "crateLoads": 32,
-        "upperDecks": 20
+        "rackRuns": 3,
+        "rackBays": 15,
+        "rackPallets": 15,
+        "rackCrateLoads": 22,
+        "upperDecks": 15,
+        "forklifts": 1,
+        "barrels": 3,
+        "safetyCones": 3,
+        "stagingPallets": 2,
+        "stagingCrates": 2,
+        "workbenches": 1,
+        "propParts": 327
       }
     },
     {
@@ -7956,599 +7973,971 @@
       "color": "#a77a4b"
     },
     {
-      "id": "s2-rack-01-upright-L-01",
+      "id": "s2-crossrack-A-upright-1-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -14.42,
+        -33,
         1.7,
-        15
+        10.88
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#df7138"
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-L-02",
+      "id": "s2-crossrack-A-upright-1-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -14.42,
+        -33,
         1.7,
-        17
+        12.12
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#df7138"
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-L-03",
+      "id": "s2-crossrack-A-upright-2-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -14.42,
+        -29.3,
         1.7,
-        19
+        10.88
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#df7138"
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-L-04",
+      "id": "s2-crossrack-A-upright-2-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -14.42,
+        -29.3,
         1.7,
-        21
+        12.12
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#df7138"
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-L-05",
+      "id": "s2-crossrack-A-upright-3-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -14.42,
+        -25.6,
         1.7,
-        23
+        10.88
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#df7138"
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-L-06",
+      "id": "s2-crossrack-A-upright-3-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -14.42,
+        -25.6,
         1.7,
-        25
+        12.12
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#df7138"
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-R-01",
+      "id": "s2-crossrack-A-upright-4-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.18,
+        -21.9,
         1.7,
-        15
+        10.88
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#e78642"
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-R-02",
+      "id": "s2-crossrack-A-upright-4-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.18,
+        -21.9,
         1.7,
-        17
+        12.12
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#e78642"
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-R-03",
+      "id": "s2-crossrack-A-upright-5-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.18,
+        -18.2,
         1.7,
-        19
+        10.88
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#e78642"
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-R-04",
+      "id": "s2-crossrack-A-upright-5-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.18,
+        -18.2,
         1.7,
-        21
+        12.12
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#e78642"
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-R-05",
+      "id": "s2-crossrack-A-upright-6-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.18,
+        -14.5,
         1.7,
-        23
+        10.88
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#e78642"
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-upright-R-06",
+      "id": "s2-crossrack-A-upright-6-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.18,
+        -14.5,
         1.7,
-        25
+        12.12
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#e78642"
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-01-beam-1-01",
+      "id": "s2-crossrack-A-beam-1-1-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -31.15,
         0.62,
-        15
+        10.88
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-2-01",
+      "id": "s2-crossrack-A-beam-2-1-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -31.15,
         1.94,
-        15
+        10.88
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-3-01",
+      "id": "s2-crossrack-A-beam-3-1-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -31.15,
         3.16,
-        15
+        10.88
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-1-02",
+      "id": "s2-crossrack-A-beam-1-1-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -31.15,
         0.62,
-        17
+        12.12
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-2-02",
+      "id": "s2-crossrack-A-beam-2-1-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -31.15,
         1.94,
-        17
+        12.12
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-3-02",
+      "id": "s2-crossrack-A-beam-3-1-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -31.15,
         3.16,
-        17
+        12.12
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-1-03",
+      "id": "s2-crossrack-A-beam-1-2-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -27.45,
         0.62,
-        19
+        10.88
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-2-03",
+      "id": "s2-crossrack-A-beam-2-2-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -27.45,
         1.94,
-        19
+        10.88
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-3-03",
+      "id": "s2-crossrack-A-beam-3-2-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -27.45,
         3.16,
-        19
+        10.88
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-1-04",
+      "id": "s2-crossrack-A-beam-1-2-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -27.45,
         0.62,
-        21
+        12.12
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-2-04",
+      "id": "s2-crossrack-A-beam-2-2-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -27.45,
         1.94,
-        21
+        12.12
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-3-04",
+      "id": "s2-crossrack-A-beam-3-2-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -27.45,
         3.16,
-        21
+        12.12
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-1-05",
+      "id": "s2-crossrack-A-beam-1-3-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -23.75,
         0.62,
-        23
+        10.88
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-2-05",
+      "id": "s2-crossrack-A-beam-2-3-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -23.75,
         1.94,
-        23
+        10.88
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-3-05",
+      "id": "s2-crossrack-A-beam-3-3-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -23.75,
         3.16,
-        23
+        10.88
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-1-06",
+      "id": "s2-crossrack-A-beam-1-3-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -23.75,
         0.62,
-        25
+        12.12
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-2-06",
+      "id": "s2-crossrack-A-beam-2-3-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -23.75,
         1.94,
-        25
+        12.12
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-beam-3-06",
+      "id": "s2-crossrack-A-beam-3-3-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -23.75,
         3.16,
-        25
+        12.12
       ],
       "size": [
-        1.3,
+        3.58,
         0.12,
         0.14
       ],
-      "color": "#2b7796"
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
     },
     {
-      "id": "s2-rack-01-pallet-01-deck-1",
+      "id": "s2-crossrack-A-beam-1-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        0.62,
+        10.88
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-2-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        1.94,
+        10.88
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-3-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        3.16,
+        10.88
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-1-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        0.62,
+        12.12
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-2-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        1.94,
+        12.12
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-3-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        3.16,
+        12.12
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-1-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        0.62,
+        10.88
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-2-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        1.94,
+        10.88
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-3-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        3.16,
+        10.88
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-1-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        0.62,
+        12.12
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-2-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        1.94,
+        12.12
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-beam-3-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        3.16,
+        12.12
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-A-brace-left-west",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -33,
+        1.72,
+        11.5
+      ],
+      "size": [
+        0.075,
+        2.45,
+        0.075
+      ],
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-crossrack-A-brace-right-west",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -33,
+        1.72,
+        11.5
+      ],
+      "size": [
+        0.075,
+        2.45,
+        0.075
+      ],
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        -0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-crossrack-A-brace-left-east",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.5,
+        1.72,
+        11.5
+      ],
+      "size": [
+        0.075,
+        2.45,
+        0.075
+      ],
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-crossrack-A-brace-right-east",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.5,
+        1.72,
+        11.5
+      ],
+      "size": [
+        0.075,
+        2.45,
+        0.075
+      ],
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        -0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-crossrack-A-pallet-01-slat-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.8,
+        -31.43,
         0.7,
-        15.66
+        11.5
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-01-deck-2",
+      "id": "s2-crossrack-A-pallet-01-slat-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.8,
+        -31.15,
         0.7,
-        16
+        11.5
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#b58a58",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-01-deck-3",
+      "id": "s2-crossrack-A-pallet-01-slat-3",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.8,
+        -30.87,
         0.7,
-        16.34
+        11.5
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-01-runner-1",
+      "id": "s2-crossrack-A-pallet-01-runner-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -14.14,
+        -31.15,
         0.58,
-        16
+        11.17
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-01-runner-2",
+      "id": "s2-crossrack-A-pallet-01-runner-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.46,
+        -31.15,
         0.58,
-        16
+        11.83
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-01-crate-lower-01",
+      "id": "s2-crossrack-A-lower-crate-01",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -13.87,
+        -31.21,
         1.11,
-        16
+        11.5
       ],
       "size": [
-        0.82,
+        0.86,
         0.72,
-        0.88
+        0.82
       ],
       "color": "#b98650"
     },
     {
-      "id": "s2-rack-01-upper-deck-01",
+      "id": "s2-crossrack-A-upper-deck-01",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -31.15,
         1.98,
-        16
+        11.5
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -8556,239 +8945,135 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-01-pallet-02-deck-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -13.8,
-        0.7,
-        17.66
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-pallet-02-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -13.8,
-        0.7,
-        18
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-pallet-02-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -13.8,
-        0.7,
-        18.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-pallet-02-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -14.14,
-        0.58,
-        18
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-pallet-02-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -13.46,
-        0.58,
-        18
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-crate-lower-02",
+      "id": "s2-crossrack-A-upper-crate-01",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -13.73,
-        1.11,
-        18
+        -31.1,
+        2.39,
+        11.5
       ],
       "size": [
-        0.82,
+        0.78,
         0.72,
-        0.88
-      ],
-      "color": "#9b7045"
-    },
-    {
-      "id": "s2-rack-01-upper-deck-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -13.8,
-        1.98,
-        18
-      ],
-      "size": [
-        1.2,
-        0.1,
-        1.62
-      ],
-      "color": "#47535b",
-      "collision": false,
-      "roughness": 0.65,
-      "metalness": 0.25
-    },
-    {
-      "id": "s2-rack-01-pallet-03-deck-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -13.8,
-        0.7,
-        19.66
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-pallet-03-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -13.8,
-        0.7,
-        20
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-pallet-03-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -13.8,
-        0.7,
-        20.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-pallet-03-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -14.14,
-        0.58,
-        20
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-pallet-03-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -13.46,
-        0.58,
-        20
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-01-crate-lower-03",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -13.87,
-        1.11,
-        20
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
+        0.82
       ],
       "color": "#c49a62"
     },
     {
-      "id": "s2-rack-01-upper-deck-03",
+      "id": "s2-crossrack-A-pallet-02-slat-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -27.73,
+        0.7,
+        11.5
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-pallet-02-slat-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -27.45,
+        0.7,
+        11.5
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#b58a58",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-pallet-02-slat-3",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -27.17,
+        0.7,
+        11.5
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-pallet-02-runner-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -27.45,
+        0.58,
+        11.17
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-pallet-02-runner-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -27.45,
+        0.58,
+        11.83
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-lower-crate-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -27.39,
+        1.11,
+        11.5
+      ],
+      "size": [
+        0.86,
+        0.72,
+        0.82
+      ],
+      "color": "#9b7045"
+    },
+    {
+      "id": "s2-crossrack-A-upper-deck-02",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -27.45,
         1.98,
-        20
+        11.5
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -8796,119 +9081,239 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-01-pallet-04-deck-1",
+      "id": "s2-crossrack-A-pallet-03-slat-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.8,
+        -24.03,
         0.7,
-        21.66
+        11.5
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-04-deck-2",
+      "id": "s2-crossrack-A-pallet-03-slat-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.8,
+        -23.75,
         0.7,
-        22
+        11.5
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#b58a58",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-04-deck-3",
+      "id": "s2-crossrack-A-pallet-03-slat-3",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.8,
+        -23.47,
         0.7,
-        22.34
+        11.5
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-04-runner-1",
+      "id": "s2-crossrack-A-pallet-03-runner-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -14.14,
+        -23.75,
         0.58,
-        22
+        11.17
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-04-runner-2",
+      "id": "s2-crossrack-A-pallet-03-runner-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.46,
+        -23.75,
         0.58,
-        22
+        11.83
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-01-crate-lower-04",
+      "id": "s2-crossrack-A-lower-crate-03",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -13.73,
+        -23.81,
         1.11,
-        22
+        11.5
       ],
       "size": [
-        0.82,
+        0.86,
         0.72,
-        0.88
+        0.82
+      ],
+      "color": "#c49a62"
+    },
+    {
+      "id": "s2-crossrack-A-upper-deck-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        1.98,
+        11.5
+      ],
+      "size": [
+        3.25,
+        0.1,
+        1.45
+      ],
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
+    },
+    {
+      "id": "s2-crossrack-A-pallet-04-slat-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.33,
+        0.7,
+        11.5
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-pallet-04-slat-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.05,
+        0.7,
+        11.5
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#b58a58",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-pallet-04-slat-3",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -19.77,
+        0.7,
+        11.5
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-pallet-04-runner-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.05,
+        0.58,
+        11.17
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-pallet-04-runner-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.05,
+        0.58,
+        11.83
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-A-lower-crate-04",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -19.99,
+        1.11,
+        11.5
+      ],
+      "size": [
+        0.86,
+        0.72,
+        0.82
       ],
       "color": "#a77a4b"
     },
     {
-      "id": "s2-rack-01-upper-deck-04",
+      "id": "s2-crossrack-A-upper-deck-04",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -20.05,
         1.98,
-        22
+        11.5
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -8916,119 +9321,135 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-01-pallet-05-deck-1",
+      "id": "s2-crossrack-A-upper-crate-04",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -20.1,
+        2.39,
+        11.5
+      ],
+      "size": [
+        0.78,
+        0.72,
+        0.82
+      ],
+      "color": "#b98650"
+    },
+    {
+      "id": "s2-crossrack-A-pallet-05-slat-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.8,
+        -16.63,
         0.7,
-        23.66
+        11.5
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-05-deck-2",
+      "id": "s2-crossrack-A-pallet-05-slat-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.8,
+        -16.35,
         0.7,
-        24
+        11.5
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#b58a58",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-05-deck-3",
+      "id": "s2-crossrack-A-pallet-05-slat-3",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.8,
+        -16.07,
         0.7,
-        24.34
+        11.5
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-05-runner-1",
+      "id": "s2-crossrack-A-pallet-05-runner-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -14.14,
+        -16.35,
         0.58,
-        24
+        11.17
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-01-pallet-05-runner-2",
+      "id": "s2-crossrack-A-pallet-05-runner-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -13.46,
+        -16.35,
         0.58,
-        24
+        11.83
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-01-crate-lower-05",
+      "id": "s2-crossrack-A-lower-crate-05",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -13.87,
+        -16.41,
         1.11,
-        24
+        11.5
       ],
       "size": [
-        0.82,
+        0.86,
         0.72,
-        0.88
+        0.82
       ],
       "color": "#b58a58"
     },
     {
-      "id": "s2-rack-01-upper-deck-05",
+      "id": "s2-crossrack-A-upper-deck-05",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -13.8,
+        -16.35,
         1.98,
-        24
+        11.5
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -9036,599 +9457,971 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-02-upright-L-01",
+      "id": "s2-crossrack-B-upright-1-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -20.42,
+        -33,
         1.7,
-        15
+        18.38
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#df7138"
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-02-upright-L-02",
+      "id": "s2-crossrack-B-upright-1-north",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -20.42,
+        -33,
         1.7,
-        17
+        19.62
       ],
       "size": [
         0.12,
         3.4,
         0.12
       ],
-      "color": "#df7138"
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
     },
     {
-      "id": "s2-rack-02-upright-L-03",
+      "id": "s2-crossrack-B-upright-2-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -20.42,
+        -29.3,
         1.7,
+        18.38
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-upright-2-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -29.3,
+        1.7,
+        19.62
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-upright-3-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -25.6,
+        1.7,
+        18.38
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-upright-3-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -25.6,
+        1.7,
+        19.62
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-upright-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.9,
+        1.7,
+        18.38
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-upright-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.9,
+        1.7,
+        19.62
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-upright-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.2,
+        1.7,
+        18.38
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-upright-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.2,
+        1.7,
+        19.62
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-upright-6-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.5,
+        1.7,
+        18.38
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-upright-6-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.5,
+        1.7,
+        19.62
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-1-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        0.62,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-1-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        1.94,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-1-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        3.16,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-1-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        0.62,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-1-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        1.94,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-1-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        3.16,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-2-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        0.62,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-2-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        1.94,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-2-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        3.16,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-2-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        0.62,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-2-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        1.94,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-2-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        3.16,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-3-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        0.62,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-3-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        1.94,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-3-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        3.16,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-3-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        0.62,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-3-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        1.94,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-3-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        3.16,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        0.62,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        1.94,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        3.16,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        0.62,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        1.94,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        3.16,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        0.62,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        1.94,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        3.16,
+        18.38
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-1-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        0.62,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-2-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        1.94,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-beam-3-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        3.16,
+        19.62
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-B-brace-left-west",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -33,
+        1.72,
         19
       ],
       "size": [
-        0.12,
-        3.4,
-        0.12
+        0.075,
+        2.45,
+        0.075
       ],
-      "color": "#df7138"
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
     },
     {
-      "id": "s2-rack-02-upright-L-04",
+      "id": "s2-crossrack-B-brace-right-west",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -20.42,
-        1.7,
-        21
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-02-upright-L-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -20.42,
-        1.7,
-        23
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-02-upright-L-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -20.42,
-        1.7,
-        25
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-02-upright-R-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.18,
-        1.7,
-        15
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-02-upright-R-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.18,
-        1.7,
-        17
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-02-upright-R-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.18,
-        1.7,
+        -33,
+        1.72,
         19
       ],
       "size": [
-        0.12,
-        3.4,
-        0.12
+        0.075,
+        2.45,
+        0.075
       ],
-      "color": "#e78642"
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        -0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
     },
     {
-      "id": "s2-rack-02-upright-R-04",
+      "id": "s2-crossrack-B-brace-left-east",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -19.18,
-        1.7,
-        21
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-02-upright-R-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.18,
-        1.7,
-        23
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-02-upright-R-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.18,
-        1.7,
-        25
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-02-beam-1-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        0.62,
-        15
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-2-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        1.94,
-        15
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-3-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        3.16,
-        15
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-1-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        0.62,
-        17
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-2-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        1.94,
-        17
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-3-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        3.16,
-        17
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-1-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        0.62,
+        -14.5,
+        1.72,
         19
       ],
       "size": [
-        1.3,
-        0.12,
-        0.14
+        0.075,
+        2.45,
+        0.075
       ],
-      "color": "#2b7796"
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
     },
     {
-      "id": "s2-rack-02-beam-2-03",
+      "id": "s2-crossrack-B-brace-right-east",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -19.8,
-        1.94,
+        -14.5,
+        1.72,
         19
       ],
       "size": [
-        1.3,
-        0.12,
-        0.14
+        0.075,
+        2.45,
+        0.075
       ],
-      "color": "#2b7796"
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        -0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
     },
     {
-      "id": "s2-rack-02-beam-3-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        3.16,
-        19
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-1-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        0.62,
-        21
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-2-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        1.94,
-        21
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-3-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        3.16,
-        21
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-1-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        0.62,
-        23
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-2-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        1.94,
-        23
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-3-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        3.16,
-        23
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-1-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        0.62,
-        25
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-2-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        1.94,
-        25
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-beam-3-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        3.16,
-        25
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-02-pallet-01-deck-1",
+      "id": "s2-crossrack-B-pallet-01-slat-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.8,
+        -31.43,
         0.7,
-        15.66
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-01-deck-2",
+      "id": "s2-crossrack-B-pallet-01-slat-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.8,
+        -31.15,
         0.7,
-        16
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#b58a58",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-01-deck-3",
+      "id": "s2-crossrack-B-pallet-01-slat-3",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.8,
+        -30.87,
         0.7,
-        16.34
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-01-runner-1",
+      "id": "s2-crossrack-B-pallet-01-runner-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -20.14,
+        -31.15,
         0.58,
-        16
+        18.67
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-01-runner-2",
+      "id": "s2-crossrack-B-pallet-01-runner-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.46,
+        -31.15,
         0.58,
-        16
+        19.33
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-02-crate-lower-01",
+      "id": "s2-crossrack-B-lower-crate-01",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -19.73,
+        -31.09,
         1.11,
-        16
+        19
       ],
       "size": [
-        0.82,
+        0.86,
         0.72,
-        0.88
+        0.82
       ],
       "color": "#c49a62"
     },
     {
-      "id": "s2-rack-02-upper-deck-01",
+      "id": "s2-crossrack-B-upper-deck-01",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -19.8,
+        -31.15,
         1.98,
-        16
+        19
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -9636,119 +10429,119 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-02-pallet-02-deck-1",
+      "id": "s2-crossrack-B-pallet-02-slat-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.8,
+        -27.73,
         0.7,
-        17.66
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-02-deck-2",
+      "id": "s2-crossrack-B-pallet-02-slat-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.8,
+        -27.45,
         0.7,
-        18
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#b58a58",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-02-deck-3",
+      "id": "s2-crossrack-B-pallet-02-slat-3",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.8,
+        -27.17,
         0.7,
-        18.34
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-02-runner-1",
+      "id": "s2-crossrack-B-pallet-02-runner-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -20.14,
+        -27.45,
         0.58,
-        18
+        18.67
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-02-runner-2",
+      "id": "s2-crossrack-B-pallet-02-runner-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.46,
+        -27.45,
         0.58,
-        18
+        19.33
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-02-crate-lower-02",
+      "id": "s2-crossrack-B-lower-crate-02",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -19.87,
+        -27.51,
         1.11,
-        18
+        19
       ],
       "size": [
-        0.82,
+        0.86,
         0.72,
-        0.88
+        0.82
       ],
       "color": "#a77a4b"
     },
     {
-      "id": "s2-rack-02-upper-deck-02",
+      "id": "s2-crossrack-B-upper-deck-02",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -19.8,
+        -27.45,
         1.98,
-        18
+        19
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -9756,959 +10549,135 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-02-pallet-03-deck-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -19.8,
-        0.7,
-        19.66
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-pallet-03-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -19.8,
-        0.7,
-        20
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-pallet-03-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -19.8,
-        0.7,
-        20.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-pallet-03-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -20.14,
-        0.58,
-        20
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-pallet-03-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -19.46,
-        0.58,
-        20
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-crate-lower-03",
+      "id": "s2-crossrack-B-upper-crate-02",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -19.73,
-        1.11,
-        20
+        -27.4,
+        2.39,
+        19
       ],
       "size": [
-        0.82,
+        0.78,
         0.72,
-        0.88
+        0.82
       ],
       "color": "#b58a58"
     },
     {
-      "id": "s2-rack-02-upper-deck-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        1.98,
-        20
-      ],
-      "size": [
-        1.2,
-        0.1,
-        1.62
-      ],
-      "color": "#47535b",
-      "collision": false,
-      "roughness": 0.65,
-      "metalness": 0.25
-    },
-    {
-      "id": "s2-rack-02-pallet-04-deck-1",
+      "id": "s2-crossrack-B-pallet-03-slat-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.8,
+        -24.03,
         0.7,
-        21.66
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-04-deck-2",
+      "id": "s2-crossrack-B-pallet-03-slat-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.8,
+        -23.75,
         0.7,
-        22
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#b58a58",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-04-deck-3",
+      "id": "s2-crossrack-B-pallet-03-slat-3",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.8,
+        -23.47,
         0.7,
-        22.34
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-04-runner-1",
+      "id": "s2-crossrack-B-pallet-03-runner-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -20.14,
+        -23.75,
         0.58,
-        22
+        18.67
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-02-pallet-04-runner-2",
+      "id": "s2-crossrack-B-pallet-03-runner-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -19.46,
+        -23.75,
         0.58,
-        22
+        19.33
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-02-crate-lower-04",
+      "id": "s2-crossrack-B-lower-crate-03",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -19.87,
+        -23.69,
         1.11,
-        22
+        19
       ],
       "size": [
-        0.82,
+        0.86,
         0.72,
-        0.88
-      ],
-      "color": "#b98650"
-    },
-    {
-      "id": "s2-rack-02-upper-deck-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        1.98,
-        22
-      ],
-      "size": [
-        1.2,
-        0.1,
-        1.62
-      ],
-      "color": "#47535b",
-      "collision": false,
-      "roughness": 0.65,
-      "metalness": 0.25
-    },
-    {
-      "id": "s2-rack-02-pallet-05-deck-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -19.8,
-        0.7,
-        23.66
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-pallet-05-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -19.8,
-        0.7,
-        24
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-pallet-05-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -19.8,
-        0.7,
-        24.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-pallet-05-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -20.14,
-        0.58,
-        24
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-pallet-05-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -19.46,
-        0.58,
-        24
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-02-crate-lower-05",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -19.73,
-        1.11,
-        24
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#9b7045"
-    },
-    {
-      "id": "s2-rack-02-upper-deck-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -19.8,
-        1.98,
-        24
-      ],
-      "size": [
-        1.2,
-        0.1,
-        1.62
-      ],
-      "color": "#47535b",
-      "collision": false,
-      "roughness": 0.65,
-      "metalness": 0.25
-    },
-    {
-      "id": "s2-rack-03-upright-L-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -26.42,
-        1.7,
-        15
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-03-upright-L-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -26.42,
-        1.7,
-        17
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-03-upright-L-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -26.42,
-        1.7,
-        19
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-03-upright-L-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -26.42,
-        1.7,
-        21
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-03-upright-L-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -26.42,
-        1.7,
-        23
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-03-upright-L-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -26.42,
-        1.7,
-        25
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-03-upright-R-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.18,
-        1.7,
-        15
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-03-upright-R-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.18,
-        1.7,
-        17
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-03-upright-R-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.18,
-        1.7,
-        19
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-03-upright-R-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.18,
-        1.7,
-        21
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-03-upright-R-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.18,
-        1.7,
-        23
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-03-upright-R-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.18,
-        1.7,
-        25
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-03-beam-1-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        0.62,
-        15
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-2-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        1.94,
-        15
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-3-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        3.16,
-        15
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-1-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        0.62,
-        17
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-2-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        1.94,
-        17
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-3-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        3.16,
-        17
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-1-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        0.62,
-        19
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-2-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        1.94,
-        19
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-3-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        3.16,
-        19
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-1-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        0.62,
-        21
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-2-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        1.94,
-        21
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-3-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        3.16,
-        21
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-1-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        0.62,
-        23
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-2-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        1.94,
-        23
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-3-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        3.16,
-        23
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-1-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        0.62,
-        25
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-2-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        1.94,
-        25
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-beam-3-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -25.8,
-        3.16,
-        25
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-03-pallet-01-deck-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.8,
-        0.7,
-        15.66
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-01-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.8,
-        0.7,
-        16
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-01-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.8,
-        0.7,
-        16.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-01-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -26.14,
-        0.58,
-        16
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-01-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.46,
-        0.58,
-        16
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-crate-lower-01",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -25.87,
-        1.11,
-        16
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
+        0.82
       ],
       "color": "#b58a58"
     },
     {
-      "id": "s2-rack-03-upper-deck-01",
+      "id": "s2-crossrack-B-upper-deck-03",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -25.8,
+        -23.75,
         1.98,
-        16
+        19
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -10716,119 +10685,135 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-03-pallet-02-deck-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.8,
-        0.7,
-        17.66
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-02-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.8,
-        0.7,
-        18
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-02-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.8,
-        0.7,
-        18.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-02-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -26.14,
-        0.58,
-        18
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-02-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.46,
-        0.58,
-        18
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-crate-lower-02",
+      "id": "s2-crossrack-B-upper-crate-03",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -25.73,
-        1.11,
-        18
+        -23.8,
+        2.39,
+        19
       ],
       "size": [
-        0.82,
+        0.78,
         0.72,
-        0.88
+        0.82
       ],
       "color": "#b98650"
     },
     {
-      "id": "s2-rack-03-upper-deck-02",
+      "id": "s2-crossrack-B-pallet-04-slat-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.33,
+        0.7,
+        19
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-B-pallet-04-slat-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.05,
+        0.7,
+        19
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#b58a58",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-B-pallet-04-slat-3",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -19.77,
+        0.7,
+        19
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-B-pallet-04-runner-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.05,
+        0.58,
+        18.67
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-B-pallet-04-runner-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.05,
+        0.58,
+        19.33
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-B-lower-crate-04",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -20.11,
+        1.11,
+        19
+      ],
+      "size": [
+        0.86,
+        0.72,
+        0.82
+      ],
+      "color": "#b98650"
+    },
+    {
+      "id": "s2-crossrack-B-upper-deck-04",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -25.8,
+        -20.05,
         1.98,
-        18
+        19
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -10836,119 +10821,119 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-03-pallet-03-deck-1",
+      "id": "s2-crossrack-B-pallet-05-slat-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -25.8,
+        -16.63,
         0.7,
-        19.66
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-03-pallet-03-deck-2",
+      "id": "s2-crossrack-B-pallet-05-slat-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -25.8,
+        -16.35,
         0.7,
-        20
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#b58a58",
       "collision": false
     },
     {
-      "id": "s2-rack-03-pallet-03-deck-3",
+      "id": "s2-crossrack-B-pallet-05-slat-3",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -25.8,
+        -16.07,
         0.7,
-        20.34
+        19
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-03-pallet-03-runner-1",
+      "id": "s2-crossrack-B-pallet-05-runner-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -26.14,
+        -16.35,
         0.58,
-        20
+        18.67
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-03-pallet-03-runner-2",
+      "id": "s2-crossrack-B-pallet-05-runner-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -25.46,
+        -16.35,
         0.58,
-        20
+        19.33
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-03-crate-lower-03",
+      "id": "s2-crossrack-B-lower-crate-05",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -25.87,
+        -16.29,
         1.11,
-        20
+        19
       ],
       "size": [
-        0.82,
+        0.86,
         0.72,
-        0.88
+        0.82
       ],
       "color": "#9b7045"
     },
     {
-      "id": "s2-rack-03-upper-deck-03",
+      "id": "s2-crossrack-B-upper-deck-05",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -25.8,
+        -16.35,
         1.98,
-        20
+        19
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -10956,119 +10941,987 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-03-pallet-04-deck-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.8,
-        0.7,
-        21.66
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-04-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.8,
-        0.7,
-        22
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-04-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.8,
-        0.7,
-        22.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-04-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -26.14,
-        0.58,
-        22
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-pallet-04-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -25.46,
-        0.58,
-        22
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-03-crate-lower-04",
+      "id": "s2-crossrack-B-upper-crate-05",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -25.73,
-        1.11,
-        22
+        -16.4,
+        2.39,
+        19
       ],
       "size": [
-        0.82,
+        0.78,
         0.72,
-        0.88
+        0.82
       ],
       "color": "#c49a62"
     },
     {
-      "id": "s2-rack-03-upper-deck-04",
+      "id": "s2-crossrack-C-upright-1-south",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -25.8,
-        1.98,
-        22
+        -33,
+        1.7,
+        25.78
       ],
       "size": [
-        1.2,
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-1-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -33,
+        1.7,
+        27.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-2-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -29.3,
+        1.7,
+        25.78
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-2-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -29.3,
+        1.7,
+        27.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-3-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -25.6,
+        1.7,
+        25.78
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-3-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -25.6,
+        1.7,
+        27.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.9,
+        1.7,
+        25.78
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.9,
+        1.7,
+        27.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.2,
+        1.7,
+        25.78
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.2,
+        1.7,
+        27.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-6-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.5,
+        1.7,
+        25.78
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#df7138",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-upright-6-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.5,
+        1.7,
+        27.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#e78642",
+      "roughness": 0.58,
+      "metalness": 0.38
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-1-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        0.62,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-1-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        1.94,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-1-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        3.16,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-1-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        0.62,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-1-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        1.94,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-1-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        3.16,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-2-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        0.62,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-2-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        1.94,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-2-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        3.16,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-2-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        0.62,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-2-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        1.94,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-2-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        3.16,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-3-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        0.62,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-3-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        1.94,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-3-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        3.16,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-3-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        0.62,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-3-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        1.94,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-3-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        3.16,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        0.62,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        1.94,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-4-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        3.16,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        0.62,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        1.94,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-4-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        3.16,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        0.62,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        1.94,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-5-south",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        3.16,
+        25.78
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-1-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        0.62,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-2-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        1.94,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-beam-3-5-north",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.35,
+        3.16,
+        27.02
+      ],
+      "size": [
+        3.58,
+        0.12,
+        0.14
+      ],
+      "color": "#2b7796",
+      "roughness": 0.52,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-crossrack-C-brace-left-west",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -33,
+        1.72,
+        26.4
+      ],
+      "size": [
+        0.075,
+        2.45,
+        0.075
+      ],
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-crossrack-C-brace-right-west",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -33,
+        1.72,
+        26.4
+      ],
+      "size": [
+        0.075,
+        2.45,
+        0.075
+      ],
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        -0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-crossrack-C-brace-left-east",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.5,
+        1.72,
+        26.4
+      ],
+      "size": [
+        0.075,
+        2.45,
+        0.075
+      ],
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-crossrack-C-brace-right-east",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.5,
+        1.72,
+        26.4
+      ],
+      "size": [
+        0.075,
+        2.45,
+        0.075
+      ],
+      "color": "#c7a16d",
+      "collision": false,
+      "rotation": [
+        -0.43,
+        0,
+        0
+      ],
+      "roughness": 0.62,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-crossrack-C-pallet-01-slat-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -31.43,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-01-slat-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -31.15,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#b58a58",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-01-slat-3",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -30.87,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-01-runner-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -31.15,
+        0.58,
+        26.07
+      ],
+      "size": [
+        0.84,
         0.1,
-        1.62
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-01-runner-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -31.15,
+        0.58,
+        26.73
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-lower-crate-01",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -31.21,
+        1.11,
+        26.4
+      ],
+      "size": [
+        0.86,
+        0.72,
+        0.82
+      ],
+      "color": "#b58a58"
+    },
+    {
+      "id": "s2-crossrack-C-upper-deck-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -31.15,
+        1.98,
+        26.4
+      ],
+      "size": [
+        3.25,
+        0.1,
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -11076,119 +11929,511 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-03-pallet-05-deck-1",
+      "id": "s2-crossrack-C-upper-crate-01",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -31.1,
+        2.39,
+        26.4
+      ],
+      "size": [
+        0.78,
+        0.72,
+        0.82
+      ],
+      "color": "#b58a58"
+    },
+    {
+      "id": "s2-crossrack-C-pallet-02-slat-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -25.8,
+        -27.73,
         0.7,
-        23.66
+        26.4
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-03-pallet-05-deck-2",
+      "id": "s2-crossrack-C-pallet-02-slat-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -25.8,
+        -27.45,
         0.7,
-        24
+        26.4
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#b58a58",
       "collision": false
     },
     {
-      "id": "s2-rack-03-pallet-05-deck-3",
+      "id": "s2-crossrack-C-pallet-02-slat-3",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -25.8,
+        -27.17,
         0.7,
-        24.34
+        26.4
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        0.96
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-03-pallet-05-runner-1",
+      "id": "s2-crossrack-C-pallet-02-runner-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -26.14,
+        -27.45,
         0.58,
-        24
+        26.07
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-03-pallet-05-runner-2",
+      "id": "s2-crossrack-C-pallet-02-runner-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -25.46,
+        -27.45,
         0.58,
-        24
+        26.73
       ],
       "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-03-crate-lower-05",
+      "id": "s2-crossrack-C-lower-crate-02",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -25.87,
+        -27.39,
         1.11,
-        24
+        26.4
       ],
       "size": [
-        0.82,
+        0.86,
         0.72,
-        0.88
+        0.82
+      ],
+      "color": "#b98650"
+    },
+    {
+      "id": "s2-crossrack-C-upper-deck-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.45,
+        1.98,
+        26.4
+      ],
+      "size": [
+        3.25,
+        0.1,
+        1.45
+      ],
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
+    },
+    {
+      "id": "s2-crossrack-C-upper-crate-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -27.5,
+        2.39,
+        26.4
+      ],
+      "size": [
+        0.78,
+        0.72,
+        0.82
+      ],
+      "color": "#b98650"
+    },
+    {
+      "id": "s2-crossrack-C-pallet-03-slat-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -24.03,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-03-slat-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -23.75,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#b58a58",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-03-slat-3",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -23.47,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-03-runner-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -23.75,
+        0.58,
+        26.07
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-03-runner-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -23.75,
+        0.58,
+        26.73
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-lower-crate-03",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -23.81,
+        1.11,
+        26.4
+      ],
+      "size": [
+        0.86,
+        0.72,
+        0.82
+      ],
+      "color": "#9b7045"
+    },
+    {
+      "id": "s2-crossrack-C-upper-deck-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.75,
+        1.98,
+        26.4
+      ],
+      "size": [
+        3.25,
+        0.1,
+        1.45
+      ],
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
+    },
+    {
+      "id": "s2-crossrack-C-pallet-04-slat-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.33,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-04-slat-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.05,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#b58a58",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-04-slat-3",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -19.77,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-04-runner-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.05,
+        0.58,
+        26.07
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-04-runner-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.05,
+        0.58,
+        26.73
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-lower-crate-04",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -19.99,
+        1.11,
+        26.4
+      ],
+      "size": [
+        0.86,
+        0.72,
+        0.82
+      ],
+      "color": "#c49a62"
+    },
+    {
+      "id": "s2-crossrack-C-upper-deck-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.05,
+        1.98,
+        26.4
+      ],
+      "size": [
+        3.25,
+        0.1,
+        1.45
+      ],
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
+    },
+    {
+      "id": "s2-crossrack-C-pallet-05-slat-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -16.63,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-05-slat-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -16.35,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#b58a58",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-05-slat-3",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -16.07,
+        0.7,
+        26.4
+      ],
+      "size": [
+        0.17,
+        0.08,
+        0.96
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-05-runner-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -16.35,
+        0.58,
+        26.07
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-pallet-05-runner-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -16.35,
+        0.58,
+        26.73
+      ],
+      "size": [
+        0.84,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-crossrack-C-lower-crate-05",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -16.41,
+        1.11,
+        26.4
+      ],
+      "size": [
+        0.86,
+        0.72,
+        0.82
       ],
       "color": "#a77a4b"
     },
     {
-      "id": "s2-rack-03-upper-deck-05",
+      "id": "s2-crossrack-C-upper-deck-05",
       "zone": "section2",
       "kind": "metal",
       "center": [
-        -25.8,
+        -16.35,
         1.98,
-        24
+        26.4
       ],
       "size": [
-        1.2,
+        3.25,
         0.1,
-        1.62
+        1.45
       ],
       "color": "#47535b",
       "collision": false,
@@ -11196,1276 +12441,1487 @@
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-04-upright-L-01",
+      "id": "s2-forklift-chassis",
       "zone": "section2",
-      "kind": "metal",
+      "kind": "vehicle-part",
       "center": [
-        -32.42,
-        1.7,
-        15
+        -11,
+        0.49,
+        17.5
       ],
       "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-04-upright-L-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -32.42,
-        1.7,
-        17
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-04-upright-L-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -32.42,
-        1.7,
-        19
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-04-upright-L-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -32.42,
-        1.7,
-        21
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-04-upright-L-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -32.42,
-        1.7,
-        23
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-04-upright-L-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -32.42,
-        1.7,
-        25
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#df7138"
-    },
-    {
-      "id": "s2-rack-04-upright-R-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.18,
-        1.7,
-        15
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-04-upright-R-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.18,
-        1.7,
-        17
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-04-upright-R-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.18,
-        1.7,
-        19
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-04-upright-R-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.18,
-        1.7,
-        21
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-04-upright-R-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.18,
-        1.7,
-        23
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-04-upright-R-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.18,
-        1.7,
-        25
-      ],
-      "size": [
-        0.12,
-        3.4,
-        0.12
-      ],
-      "color": "#e78642"
-    },
-    {
-      "id": "s2-rack-04-beam-1-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        0.62,
-        15
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-2-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.94,
-        15
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-3-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        3.16,
-        15
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-1-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        0.62,
-        17
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-2-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.94,
-        17
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-3-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        3.16,
-        17
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-1-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        0.62,
-        19
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-2-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.94,
-        19
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-3-03",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        3.16,
-        19
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-1-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        0.62,
-        21
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-2-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.94,
-        21
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-3-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        3.16,
-        21
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-1-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        0.62,
-        23
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-2-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.94,
-        23
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-3-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        3.16,
-        23
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-1-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        0.62,
-        25
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-2-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.94,
-        25
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-beam-3-06",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        3.16,
-        25
-      ],
-      "size": [
-        1.3,
-        0.12,
-        0.14
-      ],
-      "color": "#2b7796"
-    },
-    {
-      "id": "s2-rack-04-pallet-01-deck-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        15.66
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-01-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        16
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-01-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        16.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-01-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -32.14,
-        0.58,
-        16
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-01-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.46,
-        0.58,
-        16
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-crate-lower-01",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -31.73,
-        1.11,
-        16
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#9b7045"
-    },
-    {
-      "id": "s2-rack-04-upper-deck-01",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.98,
-        16
-      ],
-      "size": [
-        1.2,
-        0.1,
-        1.62
-      ],
-      "color": "#47535b",
+        2.22,
+        0.34,
+        1.18
+      ],
+      "color": "#d4a51f",
       "collision": false,
-      "roughness": 0.65,
+      "roughness": 0.66,
+      "metalness": 0.24
+    },
+    {
+      "id": "s2-forklift-rear-counterweight",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -12.07,
+        0.83,
+        17.5
+      ],
+      "size": [
+        0.72,
+        0.58,
+        1.12
+      ],
+      "color": "#e0b52a",
+      "collision": false,
+      "roughness": 0.66,
+      "metalness": 0.22
+    },
+    {
+      "id": "s2-forklift-engine-cover",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.93,
+        0.86,
+        17.5
+      ],
+      "size": [
+        0.94,
+        0.55,
+        1.05
+      ],
+      "color": "#e6bc32",
+      "collision": false,
+      "roughness": 0.62,
       "metalness": 0.25
     },
     {
-      "id": "s2-rack-04-pallet-02-deck-1",
+      "id": "s2-forklift-operator-floor",
       "zone": "section2",
-      "kind": "pallet",
+      "kind": "vehicle-part",
       "center": [
-        -31.8,
-        0.7,
-        17.66
+        -10.83,
+        0.78,
+        17.5
       ],
       "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-02-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        18
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-02-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        18.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-02-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -32.14,
-        0.58,
-        18
-      ],
-      "size": [
-        0.14,
+        0.84,
         0.1,
-        0.88
+        0.94
       ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-02-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.46,
-        0.58,
-        18
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-crate-lower-02",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -31.87,
-        1.11,
-        18
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#c49a62"
-    },
-    {
-      "id": "s2-rack-04-upper-deck-02",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.98,
-        18
-      ],
-      "size": [
-        1.2,
-        0.1,
-        1.62
-      ],
-      "color": "#47535b",
+      "color": "#3c454b",
       "collision": false,
-      "roughness": 0.65,
-      "metalness": 0.25
+      "roughness": 0.83,
+      "metalness": 0.12
     },
     {
-      "id": "s2-rack-04-pallet-03-deck-1",
+      "id": "s2-forklift-seat-cushion",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -11.48,
+        1.12,
+        17.5
+      ],
+      "size": [
+        0.38,
+        0.18,
+        0.42
+      ],
+      "color": "#272b2f",
+      "collision": false,
+      "roughness": 0.94,
+      "metalness": 0.03
+    },
+    {
+      "id": "s2-forklift-seat-back",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -11.67,
+        1.36,
+        17.5
+      ],
+      "size": [
+        0.14,
+        0.54,
+        0.42
+      ],
+      "color": "#202529",
+      "collision": false,
+      "roughness": 0.94,
+      "metalness": 0.03
+    },
+    {
+      "id": "s2-forklift-dashboard",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.68,
+        1.09,
+        17.5
+      ],
+      "size": [
+        0.34,
+        0.16,
+        0.86
+      ],
+      "color": "#454d52",
+      "collision": false,
+      "roughness": 0.84,
+      "metalness": 0.12
+    },
+    {
+      "id": "s2-forklift-steering-column",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.57,
+        1.22,
+        17.5
+      ],
+      "size": [
+        0.11,
+        0.38,
+        0.11
+      ],
+      "color": "#30373b",
+      "collision": false,
+      "roughness": 0.62,
+      "metalness": 0.26
+    },
+    {
+      "id": "s2-forklift-steering-wheel",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.54,
+        1.43,
+        17.5
+      ],
+      "size": [
+        0.28,
+        0.055,
+        0.28
+      ],
+      "color": "#202529",
+      "collision": false,
+      "shape": "cylinder",
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
+      "roughness": 0.92,
+      "metalness": 0.02
+    },
+    {
+      "id": "s2-forklift-guard-post-rear-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -11.67,
+        1.77,
+        16.99
+      ],
+      "size": [
+        0.09,
+        1.48,
+        0.09
+      ],
+      "color": "#4a535a",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-guard-post-rear-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -11.67,
+        1.77,
+        18.01
+      ],
+      "size": [
+        0.09,
+        1.48,
+        0.09
+      ],
+      "color": "#4a535a",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-guard-post-front-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.53,
+        1.77,
+        16.99
+      ],
+      "size": [
+        0.09,
+        1.48,
+        0.09
+      ],
+      "color": "#4a535a",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-guard-post-front-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.53,
+        1.77,
+        18.01
+      ],
+      "size": [
+        0.09,
+        1.48,
+        0.09
+      ],
+      "color": "#4a535a",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-guard-roof-long-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -11.1,
+        2.53,
+        16.99
+      ],
+      "size": [
+        1.3,
+        0.09,
+        0.09
+      ],
+      "color": "#384248",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-guard-roof-cross-rear",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -11.75,
+        2.53,
+        17.5
+      ],
+      "size": [
+        0.09,
+        0.09,
+        1.02
+      ],
+      "color": "#384248",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-mast-rail-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.93,
+        1.31,
+        17.03
+      ],
+      "size": [
+        0.1,
+        2.08,
+        0.1
+      ],
+      "color": "#5c676d",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-fork-tine-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.25,
+        0.2,
+        17.18
+      ],
+      "size": [
+        1.35,
+        0.12,
+        0.12
+      ],
+      "color": "#919b9f",
+      "collision": false,
+      "roughness": 0.48,
+      "metalness": 0.52
+    },
+    {
+      "id": "s2-forklift-guard-roof-long-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -11.1,
+        2.53,
+        18.01
+      ],
+      "size": [
+        1.3,
+        0.09,
+        0.09
+      ],
+      "color": "#384248",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-guard-roof-cross-front",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.45,
+        2.53,
+        17.5
+      ],
+      "size": [
+        0.09,
+        0.09,
+        1.02
+      ],
+      "color": "#384248",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-mast-rail-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.93,
+        1.31,
+        17.97
+      ],
+      "size": [
+        0.1,
+        2.08,
+        0.1
+      ],
+      "color": "#5c676d",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-fork-tine-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.25,
+        0.2,
+        17.82
+      ],
+      "size": [
+        1.35,
+        0.12,
+        0.12
+      ],
+      "color": "#919b9f",
+      "collision": false,
+      "roughness": 0.48,
+      "metalness": 0.52
+    },
+    {
+      "id": "s2-forklift-mast-crossbar-1",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.93,
+        0.52,
+        17.5
+      ],
+      "size": [
+        0.11,
+        0.09,
+        0.96
+      ],
+      "color": "#667278",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-mast-crossbar-2",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.93,
+        1.08,
+        17.5
+      ],
+      "size": [
+        0.11,
+        0.09,
+        0.96
+      ],
+      "color": "#667278",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-mast-crossbar-3",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.93,
+        1.57,
+        17.5
+      ],
+      "size": [
+        0.11,
+        0.09,
+        0.96
+      ],
+      "color": "#667278",
+      "collision": false,
+      "roughness": 0.52,
+      "metalness": 0.48
+    },
+    {
+      "id": "s2-forklift-fork-carriage",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.83,
+        0.72,
+        17.5
+      ],
+      "size": [
+        0.14,
+        0.55,
+        1.05
+      ],
+      "color": "#707c82",
+      "collision": false,
+      "roughness": 0.53,
+      "metalness": 0.42
+    },
+    {
+      "id": "s2-forklift-wheel-rear-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -12,
+        0.35,
+        16.86
+      ],
+      "size": [
+        0.66,
+        0.24,
+        0.66
+      ],
+      "color": "#202529",
+      "collision": false,
+      "shape": "cylinder",
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
+      "roughness": 0.95,
+      "metalness": 0.02
+    },
+    {
+      "id": "s2-forklift-wheel-hub-rear-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -12,
+        0.35,
+        16.73
+      ],
+      "size": [
+        0.28,
+        0.06,
+        0.28
+      ],
+      "color": "#a0a7aa",
+      "collision": false,
+      "shape": "cylinder",
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
+      "roughness": 0.55,
+      "metalness": 0.34
+    },
+    {
+      "id": "s2-forklift-wheel-rear-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -12,
+        0.35,
+        18.14
+      ],
+      "size": [
+        0.66,
+        0.24,
+        0.66
+      ],
+      "color": "#202529",
+      "collision": false,
+      "shape": "cylinder",
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
+      "roughness": 0.95,
+      "metalness": 0.02
+    },
+    {
+      "id": "s2-forklift-wheel-hub-rear-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -12,
+        0.35,
+        18.27
+      ],
+      "size": [
+        0.28,
+        0.06,
+        0.28
+      ],
+      "color": "#a0a7aa",
+      "collision": false,
+      "shape": "cylinder",
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
+      "roughness": 0.55,
+      "metalness": 0.34
+    },
+    {
+      "id": "s2-forklift-wheel-front-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.75,
+        0.35,
+        16.86
+      ],
+      "size": [
+        0.66,
+        0.24,
+        0.66
+      ],
+      "color": "#202529",
+      "collision": false,
+      "shape": "cylinder",
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
+      "roughness": 0.95,
+      "metalness": 0.02
+    },
+    {
+      "id": "s2-forklift-wheel-hub-front-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.75,
+        0.35,
+        16.73
+      ],
+      "size": [
+        0.28,
+        0.06,
+        0.28
+      ],
+      "color": "#a0a7aa",
+      "collision": false,
+      "shape": "cylinder",
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
+      "roughness": 0.55,
+      "metalness": 0.34
+    },
+    {
+      "id": "s2-forklift-wheel-front-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.75,
+        0.35,
+        18.14
+      ],
+      "size": [
+        0.66,
+        0.24,
+        0.66
+      ],
+      "color": "#202529",
+      "collision": false,
+      "shape": "cylinder",
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
+      "roughness": 0.95,
+      "metalness": 0.02
+    },
+    {
+      "id": "s2-forklift-wheel-hub-front-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.75,
+        0.35,
+        18.27
+      ],
+      "size": [
+        0.28,
+        0.06,
+        0.28
+      ],
+      "color": "#a0a7aa",
+      "collision": false,
+      "shape": "cylinder",
+      "rotation": [
+        1.5708,
+        0,
+        0
+      ],
+      "roughness": 0.55,
+      "metalness": 0.34
+    },
+    {
+      "id": "s2-forklift-headlight-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.55,
+        1.08,
+        17.14
+      ],
+      "size": [
+        0.1,
+        0.12,
+        0.16
+      ],
+      "color": "#f1e5b2",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.1
+    },
+    {
+      "id": "s2-forklift-taillight-south",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -12.47,
+        0.91,
+        17.14
+      ],
+      "size": [
+        0.08,
+        0.15,
+        0.14
+      ],
+      "color": "#c64b36",
+      "collision": false,
+      "roughness": 0.55,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-forklift-headlight-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10.55,
+        1.08,
+        17.86
+      ],
+      "size": [
+        0.1,
+        0.12,
+        0.16
+      ],
+      "color": "#f1e5b2",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.1
+    },
+    {
+      "id": "s2-forklift-taillight-north",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -12.47,
+        0.91,
+        17.86
+      ],
+      "size": [
+        0.08,
+        0.15,
+        0.14
+      ],
+      "color": "#c64b36",
+      "collision": false,
+      "roughness": 0.55,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-forklift-collider",
+      "zone": "section2",
+      "kind": "vehicle-collider",
+      "center": [
+        -10.59,
+        1.23,
+        17.5
+      ],
+      "size": [
+        4.1,
+        2.46,
+        1.92
+      ],
+      "color": "#000000",
+      "collision": true,
+      "visible": false
+    },
+    {
+      "id": "s2-forklift-bay-north-line",
+      "zone": "section2",
+      "kind": "marking",
+      "center": [
+        -11.325,
+        0.018,
+        18.68
+      ],
+      "size": [
+        4.35,
+        0.025,
+        0.065
+      ],
+      "color": "#d5a72e",
+      "collision": false,
+      "roughness": 0.94,
+      "metalness": 0.02
+    },
+    {
+      "id": "s2-forklift-bay-south-line",
+      "zone": "section2",
+      "kind": "marking",
+      "center": [
+        -11.325,
+        0.018,
+        16.32
+      ],
+      "size": [
+        4.35,
+        0.025,
+        0.065
+      ],
+      "color": "#d5a72e",
+      "collision": false,
+      "roughness": 0.94,
+      "metalness": 0.02
+    },
+    {
+      "id": "s2-forklift-bay-west-line",
+      "zone": "section2",
+      "kind": "marking",
+      "center": [
+        -13.47,
+        0.018,
+        17.5
+      ],
+      "size": [
+        0.065,
+        0.025,
+        2.42
+      ],
+      "color": "#d5a72e",
+      "collision": false,
+      "roughness": 0.94,
+      "metalness": 0.02
+    },
+    {
+      "id": "s2-forklift-bay-east-line",
+      "zone": "section2",
+      "kind": "marking",
+      "center": [
+        -9.15,
+        0.018,
+        17.5
+      ],
+      "size": [
+        0.065,
+        0.025,
+        2.42
+      ],
+      "color": "#d5a72e",
+      "collision": false,
+      "roughness": 0.94,
+      "metalness": 0.02
+    },
+    {
+      "id": "s2-barrel-1",
+      "zone": "section2",
+      "kind": "barrel",
+      "center": [
+        -36.15,
+        0.48,
+        14
+      ],
+      "size": [
+        0.68,
+        0.96,
+        0.68
+      ],
+      "color": "#2c647e",
+      "shape": "cylinder",
+      "roughness": 0.78,
+      "metalness": 0.12
+    },
+    {
+      "id": "s2-barrel-1-top-rim",
+      "zone": "section2",
+      "kind": "barrel",
+      "center": [
+        -36.15,
+        0.965,
+        14
+      ],
+      "size": [
+        0.7,
+        0.045,
+        0.7
+      ],
+      "color": "#717d83",
+      "collision": false,
+      "shape": "cylinder",
+      "roughness": 0.63,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-barrel-2",
+      "zone": "section2",
+      "kind": "barrel",
+      "center": [
+        -36.15,
+        0.48,
+        20.4
+      ],
+      "size": [
+        0.68,
+        0.96,
+        0.68
+      ],
+      "color": "#8c3e35",
+      "shape": "cylinder",
+      "roughness": 0.78,
+      "metalness": 0.12
+    },
+    {
+      "id": "s2-barrel-2-top-rim",
+      "zone": "section2",
+      "kind": "barrel",
+      "center": [
+        -36.15,
+        0.965,
+        20.4
+      ],
+      "size": [
+        0.7,
+        0.045,
+        0.7
+      ],
+      "color": "#717d83",
+      "collision": false,
+      "shape": "cylinder",
+      "roughness": 0.63,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-barrel-3",
+      "zone": "section2",
+      "kind": "barrel",
+      "center": [
+        -36.15,
+        0.48,
+        26.5
+      ],
+      "size": [
+        0.68,
+        0.96,
+        0.68
+      ],
+      "color": "#4c6b45",
+      "shape": "cylinder",
+      "roughness": 0.78,
+      "metalness": 0.12
+    },
+    {
+      "id": "s2-barrel-3-top-rim",
+      "zone": "section2",
+      "kind": "barrel",
+      "center": [
+        -36.15,
+        0.965,
+        26.5
+      ],
+      "size": [
+        0.7,
+        0.045,
+        0.7
+      ],
+      "color": "#717d83",
+      "collision": false,
+      "shape": "cylinder",
+      "roughness": 0.63,
+      "metalness": 0.28
+    },
+    {
+      "id": "s2-safety-cone-1-base",
+      "zone": "section2",
+      "kind": "safety",
+      "center": [
+        -34,
+        0.045,
+        14
+      ],
+      "size": [
+        0.42,
+        0.09,
+        0.42
+      ],
+      "color": "#34383b",
+      "collision": false,
+      "shape": "cylinder"
+    },
+    {
+      "id": "s2-safety-cone-1-body",
+      "zone": "section2",
+      "kind": "safety",
+      "center": [
+        -34,
+        0.36,
+        14
+      ],
+      "size": [
+        0.34,
+        0.58,
+        0.34
+      ],
+      "color": "#e4772d",
+      "collision": false,
+      "shape": "cone",
+      "roughness": 0.86,
+      "metalness": 0.03
+    },
+    {
+      "id": "s2-safety-cone-1-reflective-band",
+      "zone": "section2",
+      "kind": "safety",
+      "center": [
+        -34,
+        0.34,
+        14
+      ],
+      "size": [
+        0.2,
+        0.065,
+        0.2
+      ],
+      "color": "#f3eee2",
+      "collision": false,
+      "shape": "cylinder"
+    },
+    {
+      "id": "s2-safety-cone-2-base",
+      "zone": "section2",
+      "kind": "safety",
+      "center": [
+        -34,
+        0.045,
+        15.15
+      ],
+      "size": [
+        0.42,
+        0.09,
+        0.42
+      ],
+      "color": "#34383b",
+      "collision": false,
+      "shape": "cylinder"
+    },
+    {
+      "id": "s2-safety-cone-2-body",
+      "zone": "section2",
+      "kind": "safety",
+      "center": [
+        -34,
+        0.36,
+        15.15
+      ],
+      "size": [
+        0.34,
+        0.58,
+        0.34
+      ],
+      "color": "#e4772d",
+      "collision": false,
+      "shape": "cone",
+      "roughness": 0.86,
+      "metalness": 0.03
+    },
+    {
+      "id": "s2-safety-cone-2-reflective-band",
+      "zone": "section2",
+      "kind": "safety",
+      "center": [
+        -34,
+        0.34,
+        15.15
+      ],
+      "size": [
+        0.2,
+        0.065,
+        0.2
+      ],
+      "color": "#f3eee2",
+      "collision": false,
+      "shape": "cylinder"
+    },
+    {
+      "id": "s2-safety-cone-3-base",
+      "zone": "section2",
+      "kind": "safety",
+      "center": [
+        -34,
+        0.045,
+        16.3
+      ],
+      "size": [
+        0.42,
+        0.09,
+        0.42
+      ],
+      "color": "#34383b",
+      "collision": false,
+      "shape": "cylinder"
+    },
+    {
+      "id": "s2-safety-cone-3-body",
+      "zone": "section2",
+      "kind": "safety",
+      "center": [
+        -34,
+        0.36,
+        16.3
+      ],
+      "size": [
+        0.34,
+        0.58,
+        0.34
+      ],
+      "color": "#e4772d",
+      "collision": false,
+      "shape": "cone",
+      "roughness": 0.86,
+      "metalness": 0.03
+    },
+    {
+      "id": "s2-safety-cone-3-reflective-band",
+      "zone": "section2",
+      "kind": "safety",
+      "center": [
+        -34,
+        0.34,
+        16.3
+      ],
+      "size": [
+        0.2,
+        0.065,
+        0.2
+      ],
+      "color": "#f3eee2",
+      "collision": false,
+      "shape": "cylinder"
+    },
+    {
+      "id": "s2-staging-pallet-1-slat-1",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -31.8,
-        0.7,
-        19.66
+        -36.06,
+        0.12,
+        28.55
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
+        1
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-04-pallet-03-deck-2",
+      "id": "s2-staging-pallet-1-slat-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -31.8,
-        0.7,
-        20
+        -35.78,
+        0.12,
+        28.55
       ],
       "size": [
-        1.08,
+        0.17,
         0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-03-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        20.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
+        1
       ],
       "color": "#9f7448",
       "collision": false
     },
     {
-      "id": "s2-rack-04-pallet-03-runner-1",
+      "id": "s2-staging-pallet-1-slat-3",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -32.14,
-        0.58,
-        20
+        -35.5,
+        0.12,
+        28.55
       ],
       "size": [
-        0.14,
+        0.17,
+        0.08,
+        1
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-staging-pallet-1-runner-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -35.78,
+        0.06,
+        28.21
+      ],
+      "size": [
+        0.86,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-04-pallet-03-runner-2",
+      "id": "s2-staging-pallet-1-runner-2",
       "zone": "section2",
       "kind": "pallet",
       "center": [
-        -31.46,
-        0.58,
-        20
+        -35.78,
+        0.06,
+        28.89
       ],
       "size": [
-        0.14,
+        0.86,
         0.1,
-        0.88
+        0.14
       ],
       "color": "#76583e",
       "collision": false
     },
     {
-      "id": "s2-rack-04-crate-lower-03",
+      "id": "s2-staging-cargo-crate-1",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -31.73,
-        1.11,
-        20
+        -35.78,
+        0.55,
+        28.55
       ],
       "size": [
-        0.82,
         0.72,
-        0.88
+        0.68,
+        0.72
       ],
       "color": "#a77a4b"
     },
     {
-      "id": "s2-rack-04-upper-deck-03",
+      "id": "s2-staging-pallet-2-slat-1",
       "zone": "section2",
-      "kind": "metal",
+      "kind": "pallet",
       "center": [
-        -31.8,
-        1.98,
-        20
+        -35.7,
+        0.32,
+        28.55
       ],
       "size": [
-        1.2,
-        0.1,
-        1.62
+        0.17,
+        0.08,
+        1
       ],
-      "color": "#47535b",
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-staging-pallet-2-slat-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -35.42,
+        0.32,
+        28.55
+      ],
+      "size": [
+        0.17,
+        0.08,
+        1
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-staging-pallet-2-slat-3",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -35.14,
+        0.32,
+        28.55
+      ],
+      "size": [
+        0.17,
+        0.08,
+        1
+      ],
+      "color": "#9f7448",
+      "collision": false
+    },
+    {
+      "id": "s2-staging-pallet-2-runner-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -35.42,
+        0.26,
+        28.21
+      ],
+      "size": [
+        0.86,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-staging-pallet-2-runner-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -35.42,
+        0.26,
+        28.89
+      ],
+      "size": [
+        0.86,
+        0.1,
+        0.14
+      ],
+      "color": "#76583e",
+      "collision": false
+    },
+    {
+      "id": "s2-staging-cargo-crate-2",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -35.42,
+        0.75,
+        28.55
+      ],
+      "size": [
+        0.72,
+        0.68,
+        0.72
+      ],
+      "color": "#b58a58"
+    },
+    {
+      "id": "s2-workbench-collider",
+      "zone": "section2",
+      "kind": "prop-collider",
+      "center": [
+        -10,
+        0.46,
+        28.55
+      ],
+      "size": [
+        2.05,
+        0.92,
+        0.9
+      ],
+      "color": "#000000",
+      "collision": true,
+      "visible": false
+    },
+    {
+      "id": "s2-workbench-top",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -10,
+        0.88,
+        28.55
+      ],
+      "size": [
+        2.02,
+        0.13,
+        0.88
+      ],
+      "color": "#4e5960",
       "collision": false,
-      "roughness": 0.65,
-      "metalness": 0.25
+      "roughness": 0.68,
+      "metalness": 0.28
     },
     {
-      "id": "s2-rack-04-pallet-04-deck-1",
+      "id": "s2-workbench-leg--0.78--0.31",
       "zone": "section2",
-      "kind": "pallet",
+      "kind": "vehicle-part",
       "center": [
-        -31.8,
-        0.7,
-        21.66
+        -10.78,
+        0.43,
+        28.24
       ],
       "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-04-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        22
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-04-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        22.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-04-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -32.14,
-        0.58,
-        22
-      ],
-      "size": [
-        0.14,
         0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-04-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.46,
-        0.58,
-        22
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-crate-lower-04",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -31.87,
-        1.11,
-        22
-      ],
-      "size": [
         0.82,
-        0.72,
-        0.88
+        0.1
       ],
-      "color": "#b58a58"
-    },
-    {
-      "id": "s2-rack-04-upper-deck-04",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.98,
-        22
-      ],
-      "size": [
-        1.2,
-        0.1,
-        1.62
-      ],
-      "color": "#47535b",
+      "color": "#3e474d",
       "collision": false,
-      "roughness": 0.65,
-      "metalness": 0.25
+      "roughness": 0.66,
+      "metalness": 0.36
     },
     {
-      "id": "s2-rack-04-pallet-05-deck-1",
+      "id": "s2-workbench-leg--0.78-0.31",
       "zone": "section2",
-      "kind": "pallet",
+      "kind": "vehicle-part",
       "center": [
-        -31.8,
-        0.7,
-        23.66
+        -10.78,
+        0.43,
+        28.86
       ],
       "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-05-deck-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        24
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#b58a58",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-05-deck-3",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.8,
-        0.7,
-        24.34
-      ],
-      "size": [
-        1.08,
-        0.08,
-        0.17
-      ],
-      "color": "#9f7448",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-05-runner-1",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -32.14,
-        0.58,
-        24
-      ],
-      "size": [
-        0.14,
         0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-pallet-05-runner-2",
-      "zone": "section2",
-      "kind": "pallet",
-      "center": [
-        -31.46,
-        0.58,
-        24
-      ],
-      "size": [
-        0.14,
-        0.1,
-        0.88
-      ],
-      "color": "#76583e",
-      "collision": false
-    },
-    {
-      "id": "s2-rack-04-crate-lower-05",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -31.73,
-        1.11,
-        24
-      ],
-      "size": [
         0.82,
-        0.72,
-        0.88
+        0.1
       ],
-      "color": "#b98650"
-    },
-    {
-      "id": "s2-rack-04-upper-deck-05",
-      "zone": "section2",
-      "kind": "metal",
-      "center": [
-        -31.8,
-        1.98,
-        24
-      ],
-      "size": [
-        1.2,
-        0.1,
-        1.62
-      ],
-      "color": "#47535b",
+      "color": "#3e474d",
       "collision": false,
-      "roughness": 0.65,
-      "metalness": 0.25
+      "roughness": 0.66,
+      "metalness": 0.36
     },
     {
-      "id": "s2-rack-01-crate-upper-01",
+      "id": "s2-workbench-leg-0.78--0.31",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.22,
+        0.43,
+        28.24
+      ],
+      "size": [
+        0.1,
+        0.82,
+        0.1
+      ],
+      "color": "#3e474d",
+      "collision": false,
+      "roughness": 0.66,
+      "metalness": 0.36
+    },
+    {
+      "id": "s2-workbench-leg-0.78-0.31",
+      "zone": "section2",
+      "kind": "vehicle-part",
+      "center": [
+        -9.22,
+        0.43,
+        28.86
+      ],
+      "size": [
+        0.1,
+        0.82,
+        0.1
+      ],
+      "color": "#3e474d",
+      "collision": false,
+      "roughness": 0.66,
+      "metalness": 0.36
+    },
+    {
+      "id": "s2-workbench-toolbox",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -13.94,
-        2.39,
-        16
+        -10.42,
+        1.1,
+        28.55
       ],
       "size": [
-        0.82,
-        0.72,
-        0.88
+        0.54,
+        0.33,
+        0.46
       ],
-      "color": "#c49a62"
+      "color": "#406b83"
     },
     {
-      "id": "s2-rack-01-crate-upper-03",
+      "id": "s2-workbench-parts-box",
       "zone": "section2",
       "kind": "crate",
       "center": [
-        -13.94,
-        2.39,
-        20
+        -9.55,
+        1.06,
+        28.6
       ],
       "size": [
-        0.82,
-        0.72,
-        0.88
+        0.4,
+        0.25,
+        0.38
       ],
-      "color": "#b58a58"
-    },
-    {
-      "id": "s2-rack-01-crate-upper-05",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -13.94,
-        2.39,
-        24
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#9b7045"
-    },
-    {
-      "id": "s2-rack-02-crate-upper-02",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -19.94,
-        2.39,
-        18
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#b58a58"
-    },
-    {
-      "id": "s2-rack-02-crate-upper-04",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -19.94,
-        2.39,
-        22
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#9b7045"
-    },
-    {
-      "id": "s2-rack-02-crate-upper-05",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -19.66,
-        2.39,
-        24
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#c49a62"
-    },
-    {
-      "id": "s2-rack-03-crate-upper-01",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -25.94,
-        2.39,
-        16
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#b58a58"
-    },
-    {
-      "id": "s2-rack-03-crate-upper-02",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -25.66,
-        2.39,
-        18
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#b98650"
-    },
-    {
-      "id": "s2-rack-03-crate-upper-04",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -25.66,
-        2.39,
-        22
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#c49a62"
-    },
-    {
-      "id": "s2-rack-04-crate-upper-01",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -31.66,
-        2.39,
-        16
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#b98650"
-    },
-    {
-      "id": "s2-rack-04-crate-upper-03",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -31.66,
-        2.39,
-        20
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#c49a62"
-    },
-    {
-      "id": "s2-rack-04-crate-upper-04",
-      "zone": "section2",
-      "kind": "crate",
-      "center": [
-        -31.94,
-        2.39,
-        22
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.88
-      ],
-      "color": "#a77a4b"
+      "color": "#936a42"
     }
   ],
   "lighting": {

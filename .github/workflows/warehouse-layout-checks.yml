@@ -1,4 +1,4 @@
-name: Warehouse Stage 1 and Sections 1–2 Checks
+name: Warehouse Unique Section 2 Loading Bay Checks
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: warehouse-sections-1-2-stage-3
-          path: artifacts/warehouse-sections-1-2/
+          name: warehouse-section-2-loading-bay
+          path: artifacts/warehouse-section-2-redesign/
           if-no-files-found: warn
           retention-days: 7

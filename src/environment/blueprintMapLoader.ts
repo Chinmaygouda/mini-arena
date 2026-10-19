@@ -23,6 +23,12 @@ export interface BlueprintBox {
   /** Optional per-part physically based material tuning, e.g. coated warehouse steel. */
   roughness?: number;
   metalness?: number;
+  /** Primitive shape for low-poly wheels, drums and traffic cones. */
+  shape?: 'box' | 'cylinder' | 'cone';
+  /** Euler rotation in radians; collision uses an axis-aligned bounding box. */
+  rotation?: [number, number, number];
+  /** False creates a collider-only volume without a visible mesh. */
+  visible?: boolean;
 }
 
 export interface BuildingDoorway {
@@ -358,30 +364,37 @@ export class BlueprintMapLoader {
     // 3. Expand Simple Boxes & Cover Props (if defined in JSON)
     if (data.boxes) {
       data.boxes.forEach((box) => {
-        const hex = box.color || '#718096';
-        const isMetal = box.kind === 'container' || box.kind === 'metal' || box.kind === 'cont';
-        // Keep legacy arena metal values unchanged; warehouse metal uses a coated,
-        // matte industrial finish unless a part explicitly overrides it.
-        const defaultRoughness = isMetal ? (mapId === 'warehouse' ? 0.58 : 0.35) : 0.8;
-        const defaultMetalness = isMetal ? (mapId === 'warehouse' ? 0.38 : 0.85) : 0.15;
-        const mat = getMaterial(
-          hex,
-          box.roughness ?? defaultRoughness,
-          box.metalness ?? defaultMetalness
-        );
-
         const [w, h, d] = box.size;
         const [cx, cy, cz] = box.center;
-
-        const geom = new THREE.BoxGeometry(w, h, d);
-        const mesh = new THREE.Mesh(geom, mat);
-        mesh.position.set(cx, cy, cz);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mapGroup.add(mesh);
-
         const isRoof = box.kind === 'roof';
         const isWalkable = box.kind === 'stairs' || box.kind === 'stair' || box.kind === 'platform';
+
+        // Invisible collider-only volumes remain in the collision list but do not render.
+        // Shape-aware parts share the existing material cache and map lifecycle.
+        if (box.visible !== false) {
+          const hex = box.color || '#718096';
+          const isMetal = box.kind === 'container' || box.kind === 'metal' ||
+            box.kind === 'cont' || box.kind === 'vehicle-part';
+          const defaultRoughness = isMetal ? (mapId === 'warehouse' ? 0.58 : 0.35) : 0.8;
+          const defaultMetalness = isMetal ? (mapId === 'warehouse' ? 0.38 : 0.85) : 0.15;
+          const mat = getMaterial(hex, box.roughness ?? defaultRoughness, box.metalness ?? defaultMetalness);
+          let geom: THREE.BufferGeometry;
+          if (box.shape === 'cylinder') {
+            const radius = Math.max(0.01, Math.min(w, d) / 2);
+            geom = new THREE.CylinderGeometry(radius, radius, h, 12);
+          } else if (box.shape === 'cone') {
+            const radius = Math.max(0.01, Math.min(w, d) / 2);
+            geom = new THREE.ConeGeometry(radius, h, 9);
+          } else {
+            geom = new THREE.BoxGeometry(w, h, d);
+          }
+          const mesh = new THREE.Mesh(geom, mat);
+          mesh.position.set(cx, cy, cz);
+          if (box.rotation) mesh.rotation.set(box.rotation[0], box.rotation[1], box.rotation[2]);
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+          mapGroup.add(mesh);
+        }
 
         if (!isRoof && box.collision !== false) {
           colliders.push({

@@ -5,7 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright';
 
 const baseUrl = 'http://127.0.0.1:5173';
-const outputDir = 'artifacts/warehouse-sections-1-2';
+const outputDir = 'artifacts/warehouse-section-2-redesign';
 await mkdir(outputDir, { recursive: true });
 
 let server;
@@ -221,27 +221,27 @@ try {
   jumpResults.push(await runJumpCheck(page, 'Section 1 jump beside crate load', { x: 14.88, z: 16.0 }));
 
   const section2RouteResults = [];
-  section2RouteResults.push(await runRoute(page, 'Section 2 Route 1 — enter and traverse Aisle 1', [
-    { x: -15.0, z: 6.0 }, { x: -15.0, z: 12.0 }, { x: -16.8, z: 12.0 }, { x: -16.8, z: 27.0 },
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 1 — enter cross-rack loading bay', [
+    { x: -8.8, z: 14.0 }, { x: -30.0, z: 14.0 },
   ]));
-  section2RouteResults.push(await runRoute(page, 'Section 2 Route 2 — north rack-end connector', [
-    { x: -16.8, z: 27.0 }, { x: -22.8, z: 27.0 },
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 2 — lower cross-rack aisle', [
+    { x: -30.0, z: 14.0 }, { x: -30.0, z: 17.4 },
   ]));
-  section2RouteResults.push(await runRoute(page, 'Section 2 Route 3 — traverse Aisle 2 and round Rack 3', [
-    { x: -22.8, z: 27.0 }, { x: -22.8, z: 12.0 }, { x: -28.8, z: 12.0 },
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 3 — west cross-aisle around rack ends', [
+    { x: -30.0, z: 17.4 }, { x: -14.0, z: 17.4 },
   ]));
-  section2RouteResults.push(await runRoute(page, 'Section 2 Route 4 — reach outer service lane', [
-    { x: -28.8, z: 12.0 }, { x: -28.8, z: 27.0 }, { x: -33.4, z: 27.0 },
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 4 — move into upper aisle', [
+    { x: -14.0, z: 17.4 }, { x: -13.6, z: 17.4 }, { x: -13.6, z: 20.6 },
   ]));
-  section2RouteResults.push(await runRoute(page, 'Section 2 Route 5 — traverse mirrored inner aisle', [
-    { x: -15.0, z: 13.5 }, { x: -11.8, z: 13.5 }, { x: -11.8, z: 28.0 },
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 5 — upper aisle and loading lane', [
+    { x: -13.6, z: 20.6 }, { x: -8.8, z: 20.6 }, { x: -8.8, z: 23.5 },
   ]));
   section2RouteResults.push(await runRoute(page, 'Section 2 Route 6 — exit into central corridor', [
-    { x: -11.8, z: 24.5 }, { x: 0.0, z: 24.5 },
+    { x: -8.8, z: 23.5 }, { x: 0.0, z: 23.5 },
   ]));
   const section2JumpResults = [];
-  section2JumpResults.push(await runJumpCheck(page, 'Section 2 jump beside rack upright', { x: -14.88, z: 15.0 }));
-  section2JumpResults.push(await runJumpCheck(page, 'Section 2 jump beside crate load', { x: -14.88, z: 16.0 }));
+  section2JumpResults.push(await runJumpCheck(page, 'Section 2 jump beside cross-rack upright', { x: -29.3, z: 12.8 }));
+  section2JumpResults.push(await runJumpCheck(page, 'Section 2 jump beside cross-rack crate', { x: -31.15, z: 12.7 }));
 
   await page.evaluate(() => {
     const app = window.__fpsApp;
@@ -299,7 +299,24 @@ try {
   await page.waitForTimeout(350);
   await page.screenshot({ path: `${outputDir}/03-warehouse-section-2-racks.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
-  // Return to the real player camera and capture the Section 1 aisle.
+  // Angled view of the forklift, marked parking bay and loading-bay props.
+  await page.evaluate(() => {
+    const app = window.__fpsApp;
+    const camera = app.camera;
+    const controls = app.controls;
+    controls.update = () => {
+      camera.position.set(-8.6, 7.2, 22.0);
+      camera.up.set(0, 1, 0);
+      camera.lookAt(-10.8, 0.95, 17.5);
+      camera.fov = 52;
+      camera.updateProjectionMatrix();
+    };
+    if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = false;
+  });
+  await page.waitForTimeout(350);
+  await page.screenshot({ path: `${outputDir}/04-warehouse-section-2-forklift-detail.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
+
+  // Return to player controls and capture the redesigned Section 2 at eye level.
   await page.evaluate(() => {
     const app = window.__fpsApp;
     const controls = app.controls;
@@ -309,13 +326,13 @@ try {
     controls.forceReleaseKeys();
     if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = true;
     controls.pitch = 0;
-    controls.setPosition(22, 1.7, 11.5, Math.PI);
+    controls.setPosition(-8.8, 1.7, 20.5, 2.13);
     controls.update(1 / 60);
     const hud = document.querySelector('#fps-hud');
     if (hud instanceof HTMLElement) hud.style.display = '';
   });
   await page.waitForTimeout(250);
-  await page.screenshot({ path: `${outputDir}/04-warehouse-section-1-first-person.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
+  await page.screenshot({ path: `${outputDir}/05-warehouse-section-2-first-person.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
   assert.deepEqual(pageErrors, [], `Browser runtime errors: ${pageErrors.join('; ')}`);
   console.log(JSON.stringify({
@@ -333,7 +350,8 @@ try {
       `${outputDir}/01-warehouse-layout-topdown.png`,
       `${outputDir}/02-warehouse-section-1-racks.png`,
       `${outputDir}/03-warehouse-section-2-racks.png`,
-      `${outputDir}/04-warehouse-section-1-first-person.png`,
+      `${outputDir}/04-warehouse-section-2-forklift-detail.png`,
+      `${outputDir}/05-warehouse-section-2-first-person.png`,
     ],
   }, null, 2));
 } catch (error) {
