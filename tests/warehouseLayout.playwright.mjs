@@ -83,6 +83,7 @@ try {
     const camera = app.camera;
     const controls = app.controls;
     controls.forceReleaseKeys();
+    controls.__warehouseOriginalUpdate = controls.update.bind(controls);
     controls.update = () => {
       camera.position.set(0, 116, 0);
       camera.up.set(0, 0, 1);
@@ -102,7 +103,8 @@ try {
   await page.evaluate(() => {
     const app = window.__fpsApp;
     const controls = app.controls;
-    controls.update = controls.update.bind(controls);
+    controls.update = controls.__warehouseOriginalUpdate;
+    delete controls.__warehouseOriginalUpdate;
     controls.forceReleaseKeys();
     controls.pitch = 0;
     controls.setPosition(0, 1.7, -39.5, Math.PI);
