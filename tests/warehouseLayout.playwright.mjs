@@ -305,9 +305,9 @@ try {
     const camera = app.camera;
     const controls = app.controls;
     controls.update = () => {
-      camera.position.set(-39.0, 6.2, 22.3);
+      camera.position.set(-32.5, 6.2, 14.5);
       camera.up.set(0, 1, 0);
-      camera.lookAt(-40.0, 0.95, 17.5);
+      camera.lookAt(-35.5, 0.95, 18.0);
       camera.fov = 48;
       camera.updateProjectionMatrix();
     };
@@ -326,7 +326,7 @@ try {
     controls.forceReleaseKeys();
     if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = true;
     controls.pitch = 0;
-    controls.setPosition(-34.0, 1.7, 17.5, Math.PI / 2);
+    controls.setPosition(-31.5, 1.7, 17.4, Math.PI / 2);
     controls.update(1 / 60);
     const hud = document.querySelector('#fps-hud');
     if (hud instanceof HTMLElement) hud.style.display = '';

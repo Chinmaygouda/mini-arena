@@ -24,7 +24,7 @@
     ],
     "version": 8,
     "layoutStage": "section-1-detail-section-2-cross-rack-loading-bay",
-    "note": "Section 1 keeps four long north-south rack runs. Section 2 is deliberately different: three crosswise east-west rack rows, a static low-poly forklift with wheels, mast, forks and overhead guard parked in the wide outer staging lane, a correctly sized marked parking bay, industrial drums, safety cones, staged spare pallets and a utility workbench. The original 202-wall shell is unchanged. Sections 3–4 and central hall remain props-free.",
+    "note": "Section 1 keeps four long north-south rack runs. Section 2 is deliberately different: three crosswise east-west rack rows, a static low-poly forklift with wheels, mast, forks and overhead guard parked inside the outer staging lane, a correctly sized marked parking bay, industrial drums, safety cones, staged spare pallets and a utility workbench. The original 202-wall shell is unchanged. Sections 3–4 and central hall remain props-free.",
     "wallSegmentCount": 202,
     "sectionArchitecture": "Each numbered quadrant has an enclosing chamber, recessed entry returns, two cross-corridor links, one side-aisle link, and three auxiliary service bays. All quadrant wall geometry is mirrored on both axes.",
     "propCount": 599,
@@ -80,9 +80,9 @@
       "driveable": false,
       "facing": "+X toward the inner route",
       "bodyCenter": [
-        -40,
+        -35.5,
         0.7,
-        17.5
+        18
       ],
       "footprint": [
         4.15,
@@ -12445,9 +12445,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.35,
+        -35.85,
         0.49,
-        17.5
+        18
       ],
       "size": [
         2.22,
@@ -12464,9 +12464,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.42,
+        -36.92,
         0.83,
-        17.5
+        18
       ],
       "size": [
         0.72,
@@ -12483,9 +12483,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.28,
+        -35.78,
         0.86,
-        17.5
+        18
       ],
       "size": [
         0.94,
@@ -12502,9 +12502,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.18,
+        -35.68,
         0.78,
-        17.5
+        18
       ],
       "size": [
         0.84,
@@ -12521,9 +12521,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.83,
+        -36.33,
         1.12,
-        17.5
+        18
       ],
       "size": [
         0.38,
@@ -12540,9 +12540,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.02,
+        -36.52,
         1.36,
-        17.5
+        18
       ],
       "size": [
         0.14,
@@ -12559,9 +12559,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.03,
+        -35.53,
         1.09,
-        17.5
+        18
       ],
       "size": [
         0.34,
@@ -12578,9 +12578,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.92,
+        -35.42,
         1.22,
-        17.5
+        18
       ],
       "size": [
         0.11,
@@ -12597,9 +12597,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.89,
+        -35.39,
         1.43,
-        17.5
+        18
       ],
       "size": [
         0.28,
@@ -12622,9 +12622,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.02,
+        -36.52,
         1.77,
-        16.99
+        17.49
       ],
       "size": [
         0.09,
@@ -12641,9 +12641,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.02,
+        -36.52,
         1.77,
-        18.01
+        18.51
       ],
       "size": [
         0.09,
@@ -12660,9 +12660,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.88,
+        -35.38,
         1.77,
-        16.99
+        17.49
       ],
       "size": [
         0.09,
@@ -12679,9 +12679,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.88,
+        -35.38,
         1.77,
-        18.01
+        18.51
       ],
       "size": [
         0.09,
@@ -12698,9 +12698,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.45,
+        -35.95,
         2.53,
-        16.99
+        17.49
       ],
       "size": [
         1.3,
@@ -12717,9 +12717,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.1,
+        -36.6,
         2.53,
-        17.5
+        18
       ],
       "size": [
         0.09,
@@ -12736,9 +12736,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.28,
+        -34.78,
         1.31,
-        17.03
+        17.53
       ],
       "size": [
         0.1,
@@ -12755,9 +12755,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -38.6,
+        -34.1,
         0.2,
-        17.18
+        17.68
       ],
       "size": [
         1.35,
@@ -12774,9 +12774,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.45,
+        -35.95,
         2.53,
-        18.01
+        18.51
       ],
       "size": [
         1.3,
@@ -12793,9 +12793,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.8,
+        -35.3,
         2.53,
-        17.5
+        18
       ],
       "size": [
         0.09,
@@ -12812,9 +12812,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.28,
+        -34.78,
         1.31,
-        17.97
+        18.47
       ],
       "size": [
         0.1,
@@ -12831,9 +12831,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -38.6,
+        -34.1,
         0.2,
-        17.82
+        18.32
       ],
       "size": [
         1.35,
@@ -12850,9 +12850,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.28,
+        -34.78,
         0.52,
-        17.5
+        18
       ],
       "size": [
         0.11,
@@ -12869,9 +12869,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.28,
+        -34.78,
         1.08,
-        17.5
+        18
       ],
       "size": [
         0.11,
@@ -12888,9 +12888,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.28,
+        -34.78,
         1.57,
-        17.5
+        18
       ],
       "size": [
         0.11,
@@ -12907,9 +12907,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.18,
+        -34.68,
         0.72,
-        17.5
+        18
       ],
       "size": [
         0.14,
@@ -12926,9 +12926,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.35,
+        -36.85,
         0.35,
-        16.86
+        17.36
       ],
       "size": [
         0.66,
@@ -12951,9 +12951,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.35,
+        -36.85,
         0.35,
-        16.73
+        17.23
       ],
       "size": [
         0.28,
@@ -12976,9 +12976,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.35,
+        -36.85,
         0.35,
-        18.14
+        18.64
       ],
       "size": [
         0.66,
@@ -13001,9 +13001,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.35,
+        -36.85,
         0.35,
-        18.27
+        18.77
       ],
       "size": [
         0.28,
@@ -13026,9 +13026,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.1,
+        -35.6,
         0.35,
-        16.86
+        17.36
       ],
       "size": [
         0.66,
@@ -13051,9 +13051,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.1,
+        -35.6,
         0.35,
-        16.73
+        17.23
       ],
       "size": [
         0.28,
@@ -13076,9 +13076,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.1,
+        -35.6,
         0.35,
-        18.14
+        18.64
       ],
       "size": [
         0.66,
@@ -13101,9 +13101,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -40.1,
+        -35.6,
         0.35,
-        18.27
+        18.77
       ],
       "size": [
         0.28,
@@ -13126,9 +13126,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.9,
+        -35.4,
         1.08,
-        17.14
+        17.64
       ],
       "size": [
         0.1,
@@ -13145,9 +13145,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.82,
+        -37.32,
         0.91,
-        17.14
+        17.64
       ],
       "size": [
         0.08,
@@ -13164,9 +13164,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -39.9,
+        -35.4,
         1.08,
-        17.86
+        18.36
       ],
       "size": [
         0.1,
@@ -13183,9 +13183,9 @@
       "zone": "section2",
       "kind": "vehicle-part",
       "center": [
-        -41.82,
+        -37.32,
         0.91,
-        17.86
+        18.36
       ],
       "size": [
         0.08,
@@ -13202,9 +13202,9 @@
       "zone": "section2",
       "kind": "vehicle-collider",
       "center": [
-        -39.94,
+        -35.44,
         1.23,
-        17.5
+        18
       ],
       "size": [
         4.1,
@@ -13220,9 +13220,9 @@
       "zone": "section2",
       "kind": "marking",
       "center": [
-        -39.85,
+        -35.35,
         0.018,
-        18.68
+        19.18
       ],
       "size": [
         4.35,
@@ -13239,9 +13239,9 @@
       "zone": "section2",
       "kind": "marking",
       "center": [
-        -39.85,
+        -35.35,
         0.018,
-        16.32
+        16.82
       ],
       "size": [
         4.35,
@@ -13258,9 +13258,9 @@
       "zone": "section2",
       "kind": "marking",
       "center": [
-        -42.05,
+        -37.55,
         0.018,
-        17.5
+        18
       ],
       "size": [
         0.065,
@@ -13277,9 +13277,9 @@
       "zone": "section2",
       "kind": "marking",
       "center": [
-        -37.75,
+        -33.25,
         0.018,
-        17.5
+        18
       ],
       "size": [
         0.065,
