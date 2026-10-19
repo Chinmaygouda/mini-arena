@@ -11,6 +11,8 @@ const map = JSON.parse(read('public/maps/warehouse_layout.json'));
 
 test('Warehouse base layout has exact outer and playable dimensions', () => {
   assert.equal(map.meta.theme, 'warehouse');
+  assert.equal(map.meta.name, 'Warehouse — Section 1');
+  assert.match(map.meta.mode, /Section 1 storage rack build/);
   assert.deepEqual(map.meta.size, [96, 96], 'outer dimensions are 96m x 96m');
   assert.deepEqual(map.meta.playableSize, [92, 92], 'player bounds are 92m x 92m');
   assert.equal(map.meta.wallHeight, 6);
