@@ -43,7 +43,7 @@ try {
     headless: true,
     args: ['--no-sandbox', '--enable-webgl', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
   });
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1440 } });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 1024 } });
   const pageErrors = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
 
@@ -98,7 +98,7 @@ try {
     controls.forceReleaseKeys();
     controls.__warehouseOriginalUpdate = controls.update.bind(controls);
     controls.update = () => {
-      camera.position.set(0, 88, 0);
+      camera.position.set(0, 130, 0);
       camera.up.set(0, 0, 1);
       camera.lookAt(0, 0, 0);
       camera.fov = 45;
@@ -112,7 +112,7 @@ try {
     if (intro instanceof HTMLElement) intro.style.display = 'none';
   });
   await page.waitForTimeout(800);
-  await page.screenshot({ path: `${outputDir}/01-warehouse-layout-topdown.png`, fullPage: true });
+  await page.screenshot({ path: `${outputDir}/01-warehouse-layout-topdown.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
   // Zoom into Section 1 so its four rack runs, pallet bases and crate loads can be inspected.
   await page.evaluate(() => {
@@ -129,7 +129,7 @@ try {
     };
   });
   await page.waitForTimeout(350);
-  await page.screenshot({ path: `${outputDir}/02-warehouse-section-1-racks.png`, fullPage: true });
+  await page.screenshot({ path: `${outputDir}/02-warehouse-section-1-racks.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
   // Return to the real player camera and capture rack visibility from the spawn lane.
   await page.evaluate(() => {
@@ -147,7 +147,7 @@ try {
     if (hud instanceof HTMLElement) hud.style.display = '';
   });
   await page.waitForTimeout(250);
-  await page.screenshot({ path: `${outputDir}/03-warehouse-section-1-first-person.png`, fullPage: true });
+  await page.screenshot({ path: `${outputDir}/03-warehouse-section-1-first-person.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
   assert.deepEqual(pageErrors, [], `Browser runtime errors: ${pageErrors.join('; ')}`);
   console.log(JSON.stringify({
