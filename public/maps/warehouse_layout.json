@@ -22,9 +22,11 @@
       13.5,
       13.5
     ],
-    "version": 1,
+    "version": 2,
     "layoutStage": "walls-only",
-    "note": "No storage racks, crates, pallets, containers, vehicles, furniture, props, or building models. Only perimeter/partition walls, concrete floor layout markings, spawn metadata and point lighting are included."
+    "note": "Walls-only Stage 1 follows the reference blueprint: four substantial, stepped warehouse chambers with multiple doorways, small perimeter-side service bays, a central combat hall, clear 4m cross-corridors, side loading-dock openings, spawn alcoves, concrete floor markings, and a 4x4 lighting grid. No racks, crates, pallets, containers, vehicles, furniture, roof, or decorative props.",
+    "wallSegmentCount": 202,
+    "sectionArchitecture": "Each numbered quadrant has an enclosing chamber, recessed entry returns, two cross-corridor links, one side-aisle link, and three auxiliary service bays. All quadrant wall geometry is mirrored on both axes."
   },
   "zones": [
     {
@@ -32,12 +34,12 @@
       "number": 1,
       "name": "North-West Warehouse Section",
       "min": [
-        -42,
-        2
+        -38,
+        8
       ],
       "max": [
-        -2,
-        42
+        -7,
+        31
       ]
     },
     {
@@ -45,12 +47,12 @@
       "number": 2,
       "name": "North-East Warehouse Section",
       "min": [
-        2,
-        2
+        7,
+        8
       ],
       "max": [
-        42,
-        42
+        38,
+        31
       ]
     },
     {
@@ -58,12 +60,12 @@
       "number": 3,
       "name": "South-West Warehouse Section",
       "min": [
-        -42,
-        -42
+        -38,
+        -31
       ],
       "max": [
-        -2,
-        -2
+        -7,
+        -8
       ]
     },
     {
@@ -71,12 +73,12 @@
       "number": 4,
       "name": "South-East Warehouse Section",
       "min": [
-        2,
-        -42
+        7,
+        -31
       ],
       "max": [
-        42,
-        -2
+        38,
+        -8
       ]
     },
     {
@@ -1196,6 +1198,2182 @@
         12
       ],
       "color": "#5b91b5"
+    },
+    {
+      "id": "section-1-inner-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -7.5,
+        3,
+        10.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-inner-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -7.5,
+        3,
+        19.5
+      ],
+      "size": [
+        1.5,
+        6,
+        6
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-inner-chamber-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -7.5,
+        3,
+        28.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-outer-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -37.5,
+        3,
+        12.25
+      ],
+      "size": [
+        1.5,
+        6,
+        7.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-outer-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -37.5,
+        3,
+        25.25
+      ],
+      "size": [
+        1.5,
+        6,
+        10.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-chamber-south-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -10.25,
+        3,
+        8.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-chamber-south-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -22,
+        3,
+        8.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-chamber-south-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -34.25,
+        3,
+        8.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-chamber-north-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -10.25,
+        3,
+        30.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-chamber-north-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -22,
+        3,
+        30.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-chamber-north-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -34.25,
+        3,
+        30.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-1-inner-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -9,
+        3,
+        12.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-inner-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -9,
+        3,
+        16.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-inner-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -9,
+        3,
+        22.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-inner-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -9,
+        3,
+        26.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-south-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -13,
+        3,
+        10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-north-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -13,
+        3,
+        29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-south-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -17,
+        3,
+        10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-north-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -17,
+        3,
+        29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-south-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -27,
+        3,
+        10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-north-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -27,
+        3,
+        29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-south-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -31,
+        3,
+        10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-north-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -31,
+        3,
+        29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-outer-entry-return-south",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -36,
+        3,
+        16
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-outer-entry-return-north",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -36,
+        3,
+        20
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-1-service-bay-divider-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -10.75,
+        3,
+        35.5
+      ],
+      "size": [
+        4.5,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-1-service-bay-divider-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -22,
+        3,
+        35.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-1-service-bay-divider-03",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -36.125,
+        3,
+        35.5
+      ],
+      "size": [
+        10.25,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-1-service-bay-partition-west-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -18.5,
+        3,
+        36.125
+      ],
+      "size": [
+        1.5,
+        6,
+        1.25
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-1-service-bay-partition-west-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -18.5,
+        3,
+        39.125
+      ],
+      "size": [
+        1.5,
+        6,
+        0.75
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-1-service-bay-partition-east-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -29.5,
+        3,
+        36.125
+      ],
+      "size": [
+        1.5,
+        6,
+        1.25
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-1-service-bay-partition-east-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -29.5,
+        3,
+        39.125
+      ],
+      "size": [
+        1.5,
+        6,
+        0.75
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-1-south-approach-dogleg-west",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -12,
+        3,
+        7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-1-south-approach-dogleg-east",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -18,
+        3,
+        7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-2-inner-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        10.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-inner-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        19.5
+      ],
+      "size": [
+        1.5,
+        6,
+        6
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-inner-chamber-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        28.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-outer-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        37.5,
+        3,
+        12.25
+      ],
+      "size": [
+        1.5,
+        6,
+        7.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-outer-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        37.5,
+        3,
+        25.25
+      ],
+      "size": [
+        1.5,
+        6,
+        10.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-chamber-south-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        10.25,
+        3,
+        8.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-chamber-south-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        22,
+        3,
+        8.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-chamber-south-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        34.25,
+        3,
+        8.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-chamber-north-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        10.25,
+        3,
+        30.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-chamber-north-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        22,
+        3,
+        30.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-chamber-north-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        34.25,
+        3,
+        30.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-2-inner-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        12.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-inner-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        16.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-inner-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        22.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-inner-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        26.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-south-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        13,
+        3,
+        10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-north-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        13,
+        3,
+        29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-south-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        17,
+        3,
+        10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-north-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        17,
+        3,
+        29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-south-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        27,
+        3,
+        10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-north-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        27,
+        3,
+        29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-south-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        31,
+        3,
+        10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-north-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        31,
+        3,
+        29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-outer-entry-return-south",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        36,
+        3,
+        16
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-outer-entry-return-north",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        36,
+        3,
+        20
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-2-service-bay-divider-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        10.75,
+        3,
+        35.5
+      ],
+      "size": [
+        4.5,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-2-service-bay-divider-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        22,
+        3,
+        35.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-2-service-bay-divider-03",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        36.125,
+        3,
+        35.5
+      ],
+      "size": [
+        10.25,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-2-service-bay-partition-west-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        18.5,
+        3,
+        36.125
+      ],
+      "size": [
+        1.5,
+        6,
+        1.25
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-2-service-bay-partition-west-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        18.5,
+        3,
+        39.125
+      ],
+      "size": [
+        1.5,
+        6,
+        0.75
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-2-service-bay-partition-east-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        29.5,
+        3,
+        36.125
+      ],
+      "size": [
+        1.5,
+        6,
+        1.25
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-2-service-bay-partition-east-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        29.5,
+        3,
+        39.125
+      ],
+      "size": [
+        1.5,
+        6,
+        0.75
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-2-south-approach-dogleg-west",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        12,
+        3,
+        7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-2-south-approach-dogleg-east",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        18,
+        3,
+        7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-inner-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -7.5,
+        3,
+        -10.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-inner-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -7.5,
+        3,
+        -19.5
+      ],
+      "size": [
+        1.5,
+        6,
+        6
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-inner-chamber-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -7.5,
+        3,
+        -28.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-outer-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -37.5,
+        3,
+        -12.25
+      ],
+      "size": [
+        1.5,
+        6,
+        7.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-outer-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -37.5,
+        3,
+        -25.25
+      ],
+      "size": [
+        1.5,
+        6,
+        10.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-south-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -10.25,
+        3,
+        -8.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-south-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -22,
+        3,
+        -8.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-south-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -34.25,
+        3,
+        -8.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-north-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -10.25,
+        3,
+        -30.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-north-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -22,
+        3,
+        -30.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-north-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        -34.25,
+        3,
+        -30.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-inner-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -9,
+        3,
+        -12.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-inner-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -9,
+        3,
+        -16.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-inner-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -9,
+        3,
+        -22.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-inner-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -9,
+        3,
+        -26.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-south-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -13,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-north-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -13,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-south-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -17,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-north-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -17,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-south-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -27,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-north-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -27,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-south-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -31,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-north-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -31,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-outer-entry-return-south",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -36,
+        3,
+        -16
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-outer-entry-return-north",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -36,
+        3,
+        -20
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-service-bay-divider-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -10.75,
+        3,
+        -35.5
+      ],
+      "size": [
+        4.5,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-divider-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -22,
+        3,
+        -35.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-divider-03",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -36.125,
+        3,
+        -35.5
+      ],
+      "size": [
+        10.25,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-partition-west-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -18.5,
+        3,
+        -36.125
+      ],
+      "size": [
+        1.5,
+        6,
+        1.25
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-partition-west-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -18.5,
+        3,
+        -39.125
+      ],
+      "size": [
+        1.5,
+        6,
+        0.75
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-partition-east-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -29.5,
+        3,
+        -36.125
+      ],
+      "size": [
+        1.5,
+        6,
+        1.25
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-partition-east-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -29.5,
+        3,
+        -39.125
+      ],
+      "size": [
+        1.5,
+        6,
+        0.75
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-south-approach-dogleg-west",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -12,
+        3,
+        -7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-south-approach-dogleg-east",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        -18,
+        3,
+        -7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-4-inner-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        -10.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-inner-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        -19.5
+      ],
+      "size": [
+        1.5,
+        6,
+        6
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-inner-chamber-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        -28.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-outer-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        37.5,
+        3,
+        -12.25
+      ],
+      "size": [
+        1.5,
+        6,
+        7.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-outer-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        37.5,
+        3,
+        -25.25
+      ],
+      "size": [
+        1.5,
+        6,
+        10.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-chamber-south-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        10.25,
+        3,
+        -8.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-chamber-south-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        22,
+        3,
+        -8.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-chamber-south-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        34.25,
+        3,
+        -8.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-chamber-north-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        10.25,
+        3,
+        -30.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-chamber-north-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        22,
+        3,
+        -30.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-chamber-north-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        34.25,
+        3,
+        -30.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-4-inner-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        -12.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-inner-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        -16.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-inner-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        -22.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-inner-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        -26.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-south-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        13,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-north-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        13,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-south-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        17,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-north-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        17,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-south-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        27,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-north-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        27,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-south-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        31,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-north-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        31,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-outer-entry-return-south",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        36,
+        3,
+        -16
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-outer-entry-return-north",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        36,
+        3,
+        -20
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-4-service-bay-divider-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        10.75,
+        3,
+        -35.5
+      ],
+      "size": [
+        4.5,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-4-service-bay-divider-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        22,
+        3,
+        -35.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-4-service-bay-divider-03",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        36.125,
+        3,
+        -35.5
+      ],
+      "size": [
+        10.25,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-4-service-bay-partition-west-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        18.5,
+        3,
+        -36.125
+      ],
+      "size": [
+        1.5,
+        6,
+        1.25
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-4-service-bay-partition-west-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        18.5,
+        3,
+        -39.125
+      ],
+      "size": [
+        1.5,
+        6,
+        0.75
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-4-service-bay-partition-east-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        29.5,
+        3,
+        -36.125
+      ],
+      "size": [
+        1.5,
+        6,
+        1.25
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-4-service-bay-partition-east-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        29.5,
+        3,
+        -39.125
+      ],
+      "size": [
+        1.5,
+        6,
+        0.75
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-4-south-approach-dogleg-west",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        12,
+        3,
+        -7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-4-south-approach-dogleg-east",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        18,
+        3,
+        -7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
     }
   ],
   "lighting": {
