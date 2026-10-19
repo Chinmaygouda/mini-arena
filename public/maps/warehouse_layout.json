@@ -4,7 +4,7 @@
     "mode": "Symmetrical 2v2 warehouse layout — stage 1 walls and lighting only",
     "theme": "warehouse",
     "units": "meters",
-    "axes": "x east, z north, y up; origin at map center; north is +Z",
+    "axes": "Three.js X/Z world axes, Y up. In the top-down reference render, positive X appears toward screen-left and positive Z toward screen-top; numbered sections follow that visible blueprint orientation.",
     "size": [
       96,
       96
@@ -22,9 +22,9 @@
       13.5,
       13.5
     ],
-    "version": 3,
+    "version": 4,
     "layoutStage": "section-1-detail",
-    "note": "Stage 2 is restricted to Section 1 (north-west): four parallel industrial pallet-rack runs, visible steel uprights/crossbeams, lower slatted pallets, upper shelf decks and varied crate loads. Section 2, Section 3, Section 4 and the central hall remain props-free. No vehicles, forklifts, roof, machinery or decorative dressing in this pass.",
+    "note": "Stage 2 is restricted to visible Section 1 (upper-left in the top-down layout): four parallel industrial pallet-rack runs, visible steel uprights/crossbeams, lower slatted pallets, upper shelf decks and varied crate loads. Section 2, Section 3, Section 4 and the central hall remain props-free. No vehicles, forklifts, roof, machinery or decorative dressing in this pass.",
     "wallSegmentCount": 202,
     "sectionArchitecture": "Each numbered quadrant has an enclosing chamber, recessed entry returns, two cross-corridor links, one side-aisle link, and three auxiliary service bays. All quadrant wall geometry is mirrored on both axes.",
     "propCount": 272,
@@ -44,11 +44,11 @@
       "number": 1,
       "name": "North-West Warehouse Section",
       "min": [
-        -38,
+        7,
         8
       ],
       "max": [
-        -7,
+        38,
         31
       ],
       "contentStage": "racks-pallets-crates",
@@ -64,11 +64,11 @@
       "number": 2,
       "name": "North-East Warehouse Section",
       "min": [
-        7,
+        -38,
         8
       ],
       "max": [
-        38,
+        -7,
         31
       ]
     },
@@ -77,11 +77,11 @@
       "number": 3,
       "name": "South-West Warehouse Section",
       "min": [
-        -38,
+        7,
         -31
       ],
       "max": [
-        -7,
+        38,
         -8
       ]
     },
@@ -90,11 +90,11 @@
       "number": 4,
       "name": "South-East Warehouse Section",
       "min": [
-        7,
+        -38,
         -31
       ],
       "max": [
-        38,
+        -7,
         -8
       ]
     },
@@ -1217,491 +1217,11 @@
       "color": "#5b91b5"
     },
     {
-      "id": "section-1-inner-chamber-edge-01",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -7.5,
-        3,
-        10.5
-      ],
-      "size": [
-        1.5,
-        6,
-        4
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-inner-chamber-edge-02",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -7.5,
-        3,
-        19.5
-      ],
-      "size": [
-        1.5,
-        6,
-        6
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-inner-chamber-edge-03",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -7.5,
-        3,
-        28.5
-      ],
-      "size": [
-        1.5,
-        6,
-        4
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-outer-chamber-edge-01",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -37.5,
-        3,
-        12.25
-      ],
-      "size": [
-        1.5,
-        6,
-        7.5
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-outer-chamber-edge-02",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -37.5,
-        3,
-        25.25
-      ],
-      "size": [
-        1.5,
-        6,
-        10.5
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-chamber-south-edge-01",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -10.25,
-        3,
-        8.5
-      ],
-      "size": [
-        5.5,
-        6,
-        1.5
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-chamber-south-edge-02",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -22,
-        3,
-        8.5
-      ],
-      "size": [
-        10,
-        6,
-        1.5
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-chamber-south-edge-03",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -34.25,
-        3,
-        8.5
-      ],
-      "size": [
-        6.5,
-        6,
-        1.5
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-chamber-north-edge-01",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -10.25,
-        3,
-        30.5
-      ],
-      "size": [
-        5.5,
-        6,
-        1.5
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-chamber-north-edge-02",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -22,
-        3,
-        30.5
-      ],
-      "size": [
-        10,
-        6,
-        1.5
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-chamber-north-edge-03",
-      "zone": "quadrant-wall",
-      "kind": "wall",
-      "center": [
-        -34.25,
-        3,
-        30.5
-      ],
-      "size": [
-        6.5,
-        6,
-        1.5
-      ],
-      "color": "#78838b"
-    },
-    {
-      "id": "section-1-inner-entry-return-1",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -9,
-        3,
-        12.5
-      ],
-      "size": [
-        3,
-        6,
-        1.5
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-inner-entry-return-2",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -9,
-        3,
-        16.5
-      ],
-      "size": [
-        3,
-        6,
-        1.5
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-inner-entry-return-3",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -9,
-        3,
-        22.5
-      ],
-      "size": [
-        3,
-        6,
-        1.5
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-inner-entry-return-4",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -9,
-        3,
-        26.5
-      ],
-      "size": [
-        3,
-        6,
-        1.5
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-south-entry-return-1",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -13,
-        3,
-        10
-      ],
-      "size": [
-        1.5,
-        6,
-        3
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-north-entry-return-1",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -13,
-        3,
-        29
-      ],
-      "size": [
-        1.5,
-        6,
-        3
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-south-entry-return-2",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -17,
-        3,
-        10
-      ],
-      "size": [
-        1.5,
-        6,
-        3
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-north-entry-return-2",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -17,
-        3,
-        29
-      ],
-      "size": [
-        1.5,
-        6,
-        3
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-south-entry-return-3",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -27,
-        3,
-        10
-      ],
-      "size": [
-        1.5,
-        6,
-        3
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-north-entry-return-3",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -27,
-        3,
-        29
-      ],
-      "size": [
-        1.5,
-        6,
-        3
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-south-entry-return-4",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -31,
-        3,
-        10
-      ],
-      "size": [
-        1.5,
-        6,
-        3
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-north-entry-return-4",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -31,
-        3,
-        29
-      ],
-      "size": [
-        1.5,
-        6,
-        3
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-outer-entry-return-south",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -36,
-        3,
-        16
-      ],
-      "size": [
-        3,
-        6,
-        1.5
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-outer-entry-return-north",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -36,
-        3,
-        20
-      ],
-      "size": [
-        3,
-        6,
-        1.5
-      ],
-      "color": "#687780"
-    },
-    {
-      "id": "section-1-service-bay-divider-01",
-      "zone": "service-bay",
-      "kind": "wall",
-      "center": [
-        -10.75,
-        3,
-        35.5
-      ],
-      "size": [
-        4.5,
-        6,
-        1.5
-      ],
-      "color": "#6f7b84"
-    },
-    {
-      "id": "section-1-service-bay-divider-02",
-      "zone": "service-bay",
-      "kind": "wall",
-      "center": [
-        -22,
-        3,
-        35.5
-      ],
-      "size": [
-        10,
-        6,
-        1.5
-      ],
-      "color": "#6f7b84"
-    },
-    {
-      "id": "section-1-service-bay-divider-03",
-      "zone": "service-bay",
-      "kind": "wall",
-      "center": [
-        -36.125,
-        3,
-        35.5
-      ],
-      "size": [
-        10.25,
-        6,
-        1.5
-      ],
-      "color": "#6f7b84"
-    },
-    {
-      "id": "section-1-south-approach-dogleg-west",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -12,
-        3,
-        7.5
-      ],
-      "size": [
-        3,
-        6,
-        1.5
-      ],
-      "color": "#6f7b84"
-    },
-    {
-      "id": "section-1-south-approach-dogleg-east",
-      "zone": "door-return",
-      "kind": "wall",
-      "center": [
-        -18,
-        3,
-        7.5
-      ],
-      "size": [
-        3,
-        6,
-        1.5
-      ],
-      "color": "#6f7b84"
-    },
-    {
       "id": "section-2-inner-chamber-edge-01",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        7.5,
+        -7.5,
         3,
         10.5
       ],
@@ -1717,7 +1237,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        7.5,
+        -7.5,
         3,
         19.5
       ],
@@ -1733,7 +1253,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        7.5,
+        -7.5,
         3,
         28.5
       ],
@@ -1749,7 +1269,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        37.5,
+        -37.5,
         3,
         12.25
       ],
@@ -1765,7 +1285,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        37.5,
+        -37.5,
         3,
         25.25
       ],
@@ -1781,7 +1301,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        10.25,
+        -10.25,
         3,
         8.5
       ],
@@ -1797,7 +1317,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        22,
+        -22,
         3,
         8.5
       ],
@@ -1813,7 +1333,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        34.25,
+        -34.25,
         3,
         8.5
       ],
@@ -1829,7 +1349,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        10.25,
+        -10.25,
         3,
         30.5
       ],
@@ -1845,7 +1365,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        22,
+        -22,
         3,
         30.5
       ],
@@ -1861,7 +1381,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        34.25,
+        -34.25,
         3,
         30.5
       ],
@@ -1877,7 +1397,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        9,
+        -9,
         3,
         12.5
       ],
@@ -1893,7 +1413,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        9,
+        -9,
         3,
         16.5
       ],
@@ -1909,7 +1429,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        9,
+        -9,
         3,
         22.5
       ],
@@ -1925,7 +1445,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        9,
+        -9,
         3,
         26.5
       ],
@@ -1941,7 +1461,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        13,
+        -13,
         3,
         10
       ],
@@ -1957,7 +1477,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        13,
+        -13,
         3,
         29
       ],
@@ -1973,7 +1493,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        17,
+        -17,
         3,
         10
       ],
@@ -1989,7 +1509,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        17,
+        -17,
         3,
         29
       ],
@@ -2005,7 +1525,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        27,
+        -27,
         3,
         10
       ],
@@ -2021,7 +1541,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        27,
+        -27,
         3,
         29
       ],
@@ -2037,7 +1557,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        31,
+        -31,
         3,
         10
       ],
@@ -2053,7 +1573,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        31,
+        -31,
         3,
         29
       ],
@@ -2069,7 +1589,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        36,
+        -36,
         3,
         16
       ],
@@ -2085,7 +1605,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        36,
+        -36,
         3,
         20
       ],
@@ -2101,7 +1621,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        10.75,
+        -10.75,
         3,
         35.5
       ],
@@ -2117,7 +1637,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        22,
+        -22,
         3,
         35.5
       ],
@@ -2133,7 +1653,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        36.125,
+        -36.125,
         3,
         35.5
       ],
@@ -2149,7 +1669,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        12,
+        -12,
         3,
         7.5
       ],
@@ -2165,7 +1685,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        18,
+        -18,
         3,
         7.5
       ],
@@ -2177,13 +1697,13 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-3-inner-chamber-edge-01",
+      "id": "section-1-inner-chamber-edge-01",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -7.5,
+        7.5,
         3,
-        -10.5
+        10.5
       ],
       "size": [
         1.5,
@@ -2193,13 +1713,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-inner-chamber-edge-02",
+      "id": "section-1-inner-chamber-edge-02",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -7.5,
+        7.5,
         3,
-        -19.5
+        19.5
       ],
       "size": [
         1.5,
@@ -2209,13 +1729,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-inner-chamber-edge-03",
+      "id": "section-1-inner-chamber-edge-03",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -7.5,
+        7.5,
         3,
-        -28.5
+        28.5
       ],
       "size": [
         1.5,
@@ -2225,13 +1745,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-outer-chamber-edge-01",
+      "id": "section-1-outer-chamber-edge-01",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -37.5,
+        37.5,
         3,
-        -12.25
+        12.25
       ],
       "size": [
         1.5,
@@ -2241,13 +1761,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-outer-chamber-edge-02",
+      "id": "section-1-outer-chamber-edge-02",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -37.5,
+        37.5,
         3,
-        -25.25
+        25.25
       ],
       "size": [
         1.5,
@@ -2257,13 +1777,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-chamber-south-edge-01",
+      "id": "section-1-chamber-south-edge-01",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -10.25,
+        10.25,
         3,
-        -8.5
+        8.5
       ],
       "size": [
         5.5,
@@ -2273,13 +1793,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-chamber-south-edge-02",
+      "id": "section-1-chamber-south-edge-02",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -22,
+        22,
         3,
-        -8.5
+        8.5
       ],
       "size": [
         10,
@@ -2289,13 +1809,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-chamber-south-edge-03",
+      "id": "section-1-chamber-south-edge-03",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -34.25,
+        34.25,
         3,
-        -8.5
+        8.5
       ],
       "size": [
         6.5,
@@ -2305,13 +1825,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-chamber-north-edge-01",
+      "id": "section-1-chamber-north-edge-01",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -10.25,
+        10.25,
         3,
-        -30.5
+        30.5
       ],
       "size": [
         5.5,
@@ -2321,13 +1841,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-chamber-north-edge-02",
+      "id": "section-1-chamber-north-edge-02",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -22,
+        22,
         3,
-        -30.5
+        30.5
       ],
       "size": [
         10,
@@ -2337,13 +1857,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-chamber-north-edge-03",
+      "id": "section-1-chamber-north-edge-03",
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        -34.25,
+        34.25,
         3,
-        -30.5
+        30.5
       ],
       "size": [
         6.5,
@@ -2353,13 +1873,13 @@
       "color": "#78838b"
     },
     {
-      "id": "section-3-inner-entry-return-1",
+      "id": "section-1-inner-entry-return-1",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -9,
+        9,
         3,
-        -12.5
+        12.5
       ],
       "size": [
         3,
@@ -2369,13 +1889,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-inner-entry-return-2",
+      "id": "section-1-inner-entry-return-2",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -9,
+        9,
         3,
-        -16.5
+        16.5
       ],
       "size": [
         3,
@@ -2385,13 +1905,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-inner-entry-return-3",
+      "id": "section-1-inner-entry-return-3",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -9,
+        9,
         3,
-        -22.5
+        22.5
       ],
       "size": [
         3,
@@ -2401,13 +1921,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-inner-entry-return-4",
+      "id": "section-1-inner-entry-return-4",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -9,
+        9,
         3,
-        -26.5
+        26.5
       ],
       "size": [
         3,
@@ -2417,13 +1937,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-south-entry-return-1",
+      "id": "section-1-south-entry-return-1",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -13,
+        13,
         3,
-        -10
+        10
       ],
       "size": [
         1.5,
@@ -2433,13 +1953,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-north-entry-return-1",
+      "id": "section-1-north-entry-return-1",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -13,
+        13,
         3,
-        -29
+        29
       ],
       "size": [
         1.5,
@@ -2449,13 +1969,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-south-entry-return-2",
+      "id": "section-1-south-entry-return-2",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -17,
+        17,
         3,
-        -10
+        10
       ],
       "size": [
         1.5,
@@ -2465,13 +1985,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-north-entry-return-2",
+      "id": "section-1-north-entry-return-2",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -17,
+        17,
         3,
-        -29
+        29
       ],
       "size": [
         1.5,
@@ -2481,13 +2001,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-south-entry-return-3",
+      "id": "section-1-south-entry-return-3",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -27,
+        27,
         3,
-        -10
+        10
       ],
       "size": [
         1.5,
@@ -2497,13 +2017,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-north-entry-return-3",
+      "id": "section-1-north-entry-return-3",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -27,
+        27,
         3,
-        -29
+        29
       ],
       "size": [
         1.5,
@@ -2513,13 +2033,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-south-entry-return-4",
+      "id": "section-1-south-entry-return-4",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -31,
+        31,
         3,
-        -10
+        10
       ],
       "size": [
         1.5,
@@ -2529,13 +2049,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-north-entry-return-4",
+      "id": "section-1-north-entry-return-4",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -31,
+        31,
         3,
-        -29
+        29
       ],
       "size": [
         1.5,
@@ -2545,13 +2065,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-outer-entry-return-south",
+      "id": "section-1-outer-entry-return-south",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -36,
+        36,
         3,
-        -16
+        16
       ],
       "size": [
         3,
@@ -2561,13 +2081,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-outer-entry-return-north",
+      "id": "section-1-outer-entry-return-north",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -36,
+        36,
         3,
-        -20
+        20
       ],
       "size": [
         3,
@@ -2577,13 +2097,13 @@
       "color": "#687780"
     },
     {
-      "id": "section-3-service-bay-divider-01",
+      "id": "section-1-service-bay-divider-01",
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        -10.75,
+        10.75,
         3,
-        -35.5
+        35.5
       ],
       "size": [
         4.5,
@@ -2593,13 +2113,13 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-3-service-bay-divider-02",
+      "id": "section-1-service-bay-divider-02",
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        -22,
+        22,
         3,
-        -35.5
+        35.5
       ],
       "size": [
         10,
@@ -2609,13 +2129,13 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-3-service-bay-divider-03",
+      "id": "section-1-service-bay-divider-03",
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        -36.125,
+        36.125,
         3,
-        -35.5
+        35.5
       ],
       "size": [
         10.25,
@@ -2625,13 +2145,13 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-3-south-approach-dogleg-west",
+      "id": "section-1-south-approach-dogleg-west",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -12,
+        12,
         3,
-        -7.5
+        7.5
       ],
       "size": [
         3,
@@ -2641,13 +2161,13 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-3-south-approach-dogleg-east",
+      "id": "section-1-south-approach-dogleg-east",
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        -18,
+        18,
         3,
-        -7.5
+        7.5
       ],
       "size": [
         3,
@@ -2661,7 +2181,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        7.5,
+        -7.5,
         3,
         -10.5
       ],
@@ -2677,7 +2197,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        7.5,
+        -7.5,
         3,
         -19.5
       ],
@@ -2693,7 +2213,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        7.5,
+        -7.5,
         3,
         -28.5
       ],
@@ -2709,7 +2229,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        37.5,
+        -37.5,
         3,
         -12.25
       ],
@@ -2725,7 +2245,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        37.5,
+        -37.5,
         3,
         -25.25
       ],
@@ -2741,7 +2261,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        10.25,
+        -10.25,
         3,
         -8.5
       ],
@@ -2757,7 +2277,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        22,
+        -22,
         3,
         -8.5
       ],
@@ -2773,7 +2293,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        34.25,
+        -34.25,
         3,
         -8.5
       ],
@@ -2789,7 +2309,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        10.25,
+        -10.25,
         3,
         -30.5
       ],
@@ -2805,7 +2325,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        22,
+        -22,
         3,
         -30.5
       ],
@@ -2821,7 +2341,7 @@
       "zone": "quadrant-wall",
       "kind": "wall",
       "center": [
-        34.25,
+        -34.25,
         3,
         -30.5
       ],
@@ -2837,7 +2357,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        9,
+        -9,
         3,
         -12.5
       ],
@@ -2853,7 +2373,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        9,
+        -9,
         3,
         -16.5
       ],
@@ -2869,7 +2389,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        9,
+        -9,
         3,
         -22.5
       ],
@@ -2885,7 +2405,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        9,
+        -9,
         3,
         -26.5
       ],
@@ -2901,7 +2421,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        13,
+        -13,
         3,
         -10
       ],
@@ -2917,7 +2437,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        13,
+        -13,
         3,
         -29
       ],
@@ -2933,7 +2453,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        17,
+        -17,
         3,
         -10
       ],
@@ -2949,7 +2469,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        17,
+        -17,
         3,
         -29
       ],
@@ -2965,7 +2485,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        27,
+        -27,
         3,
         -10
       ],
@@ -2981,7 +2501,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        27,
+        -27,
         3,
         -29
       ],
@@ -2997,7 +2517,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        31,
+        -31,
         3,
         -10
       ],
@@ -3013,7 +2533,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        31,
+        -31,
         3,
         -29
       ],
@@ -3029,7 +2549,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        36,
+        -36,
         3,
         -16
       ],
@@ -3045,7 +2565,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        36,
+        -36,
         3,
         -20
       ],
@@ -3061,7 +2581,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        10.75,
+        -10.75,
         3,
         -35.5
       ],
@@ -3077,7 +2597,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        22,
+        -22,
         3,
         -35.5
       ],
@@ -3093,7 +2613,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        36.125,
+        -36.125,
         3,
         -35.5
       ],
@@ -3109,7 +2629,7 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
-        12,
+        -12,
         3,
         -7.5
       ],
@@ -3125,6 +2645,486 @@
       "zone": "door-return",
       "kind": "wall",
       "center": [
+        -18,
+        3,
+        -7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-inner-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        -10.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-inner-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        -19.5
+      ],
+      "size": [
+        1.5,
+        6,
+        6
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-inner-chamber-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        -28.5
+      ],
+      "size": [
+        1.5,
+        6,
+        4
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-outer-chamber-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        37.5,
+        3,
+        -12.25
+      ],
+      "size": [
+        1.5,
+        6,
+        7.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-outer-chamber-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        37.5,
+        3,
+        -25.25
+      ],
+      "size": [
+        1.5,
+        6,
+        10.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-south-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        10.25,
+        3,
+        -8.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-south-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        22,
+        3,
+        -8.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-south-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        34.25,
+        3,
+        -8.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-north-edge-01",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        10.25,
+        3,
+        -30.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-north-edge-02",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        22,
+        3,
+        -30.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-chamber-north-edge-03",
+      "zone": "quadrant-wall",
+      "kind": "wall",
+      "center": [
+        34.25,
+        3,
+        -30.5
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "section-3-inner-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        -12.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-inner-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        -16.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-inner-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        -22.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-inner-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        9,
+        3,
+        -26.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-south-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        13,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-north-entry-return-1",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        13,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-south-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        17,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-north-entry-return-2",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        17,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-south-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        27,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-north-entry-return-3",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        27,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-south-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        31,
+        3,
+        -10
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-north-entry-return-4",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        31,
+        3,
+        -29
+      ],
+      "size": [
+        1.5,
+        6,
+        3
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-outer-entry-return-south",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        36,
+        3,
+        -16
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-outer-entry-return-north",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        36,
+        3,
+        -20
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#687780"
+    },
+    {
+      "id": "section-3-service-bay-divider-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        10.75,
+        3,
+        -35.5
+      ],
+      "size": [
+        4.5,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-divider-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        22,
+        3,
+        -35.5
+      ],
+      "size": [
+        10,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-divider-03",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        36.125,
+        3,
+        -35.5
+      ],
+      "size": [
+        10.25,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-south-approach-dogleg-west",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
+        12,
+        3,
+        -7.5
+      ],
+      "size": [
+        3,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-south-approach-dogleg-east",
+      "zone": "door-return",
+      "kind": "wall",
+      "center": [
         18,
         3,
         -7.5
@@ -3137,75 +3137,11 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-1-service-bay-partition-west-01",
-      "zone": "service-bay",
-      "kind": "wall",
-      "center": [
-        -18.5,
-        3,
-        36.25
-      ],
-      "size": [
-        1.5,
-        6,
-        1.5
-      ],
-      "color": "#6f7b84"
-    },
-    {
-      "id": "section-1-service-bay-partition-west-02",
-      "zone": "service-bay",
-      "kind": "wall",
-      "center": [
-        -18.5,
-        3,
-        39.75
-      ],
-      "size": [
-        1.5,
-        6,
-        1.5
-      ],
-      "color": "#6f7b84"
-    },
-    {
-      "id": "section-1-service-bay-partition-east-01",
-      "zone": "service-bay",
-      "kind": "wall",
-      "center": [
-        -29.5,
-        3,
-        36.25
-      ],
-      "size": [
-        1.5,
-        6,
-        1.5
-      ],
-      "color": "#6f7b84"
-    },
-    {
-      "id": "section-1-service-bay-partition-east-02",
-      "zone": "service-bay",
-      "kind": "wall",
-      "center": [
-        -29.5,
-        3,
-        39.75
-      ],
-      "size": [
-        1.5,
-        6,
-        1.5
-      ],
-      "color": "#6f7b84"
-    },
-    {
       "id": "section-2-service-bay-partition-west-01",
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        18.5,
+        -18.5,
         3,
         36.25
       ],
@@ -3221,7 +3157,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        18.5,
+        -18.5,
         3,
         39.75
       ],
@@ -3237,7 +3173,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        29.5,
+        -29.5,
         3,
         36.25
       ],
@@ -3253,7 +3189,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        29.5,
+        -29.5,
         3,
         39.75
       ],
@@ -3265,13 +3201,13 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-3-service-bay-partition-west-01",
+      "id": "section-1-service-bay-partition-west-01",
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        -18.5,
+        18.5,
         3,
-        -36.25
+        36.25
       ],
       "size": [
         1.5,
@@ -3281,13 +3217,13 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-3-service-bay-partition-west-02",
+      "id": "section-1-service-bay-partition-west-02",
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        -18.5,
+        18.5,
         3,
-        -39.75
+        39.75
       ],
       "size": [
         1.5,
@@ -3297,13 +3233,13 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-3-service-bay-partition-east-01",
+      "id": "section-1-service-bay-partition-east-01",
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        -29.5,
+        29.5,
         3,
-        -36.25
+        36.25
       ],
       "size": [
         1.5,
@@ -3313,13 +3249,13 @@
       "color": "#6f7b84"
     },
     {
-      "id": "section-3-service-bay-partition-east-02",
+      "id": "section-1-service-bay-partition-east-02",
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        -29.5,
+        29.5,
         3,
-        -39.75
+        39.75
       ],
       "size": [
         1.5,
@@ -3333,7 +3269,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        18.5,
+        -18.5,
         3,
         -36.25
       ],
@@ -3349,7 +3285,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        18.5,
+        -18.5,
         3,
         -39.75
       ],
@@ -3365,7 +3301,7 @@
       "zone": "service-bay",
       "kind": "wall",
       "center": [
-        29.5,
+        -29.5,
         3,
         -36.25
       ],
@@ -3378,6 +3314,70 @@
     },
     {
       "id": "section-4-service-bay-partition-east-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        -29.5,
+        3,
+        -39.75
+      ],
+      "size": [
+        1.5,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-partition-west-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        18.5,
+        3,
+        -36.25
+      ],
+      "size": [
+        1.5,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-partition-west-02",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        18.5,
+        3,
+        -39.75
+      ],
+      "size": [
+        1.5,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-partition-east-01",
+      "zone": "service-bay",
+      "kind": "wall",
+      "center": [
+        29.5,
+        3,
+        -36.25
+      ],
+      "size": [
+        1.5,
+        6,
+        1.5
+      ],
+      "color": "#6f7b84"
+    },
+    {
+      "id": "section-3-service-bay-partition-east-02",
       "zone": "service-bay",
       "kind": "wall",
       "center": [
@@ -3397,7 +3397,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -14.42,
+        14.42,
         1.7,
         15
       ],
@@ -3413,7 +3413,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -14.42,
+        14.42,
         1.7,
         17
       ],
@@ -3429,7 +3429,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -14.42,
+        14.42,
         1.7,
         19
       ],
@@ -3445,7 +3445,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -14.42,
+        14.42,
         1.7,
         21
       ],
@@ -3461,7 +3461,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -14.42,
+        14.42,
         1.7,
         23
       ],
@@ -3477,7 +3477,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -14.42,
+        14.42,
         1.7,
         25
       ],
@@ -3493,7 +3493,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.18,
+        13.18,
         1.7,
         15
       ],
@@ -3509,7 +3509,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.18,
+        13.18,
         1.7,
         17
       ],
@@ -3525,7 +3525,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.18,
+        13.18,
         1.7,
         19
       ],
@@ -3541,7 +3541,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.18,
+        13.18,
         1.7,
         21
       ],
@@ -3557,7 +3557,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.18,
+        13.18,
         1.7,
         23
       ],
@@ -3573,7 +3573,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.18,
+        13.18,
         1.7,
         25
       ],
@@ -3589,7 +3589,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         0.62,
         15
       ],
@@ -3605,7 +3605,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.94,
         15
       ],
@@ -3621,7 +3621,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         3.16,
         15
       ],
@@ -3637,7 +3637,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         0.62,
         17
       ],
@@ -3653,7 +3653,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.94,
         17
       ],
@@ -3669,7 +3669,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         3.16,
         17
       ],
@@ -3685,7 +3685,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         0.62,
         19
       ],
@@ -3701,7 +3701,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.94,
         19
       ],
@@ -3717,7 +3717,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         3.16,
         19
       ],
@@ -3733,7 +3733,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         0.62,
         21
       ],
@@ -3749,7 +3749,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.94,
         21
       ],
@@ -3765,7 +3765,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         3.16,
         21
       ],
@@ -3781,7 +3781,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         0.62,
         23
       ],
@@ -3797,7 +3797,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.94,
         23
       ],
@@ -3813,7 +3813,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         3.16,
         23
       ],
@@ -3829,7 +3829,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         0.62,
         25
       ],
@@ -3845,7 +3845,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.94,
         25
       ],
@@ -3861,7 +3861,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         3.16,
         25
       ],
@@ -3877,7 +3877,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         15.66
       ],
@@ -3894,7 +3894,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         16
       ],
@@ -3911,7 +3911,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         16.34
       ],
@@ -3928,7 +3928,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -14.14,
+        14.14,
         0.58,
         16
       ],
@@ -3945,7 +3945,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.46,
+        13.46,
         0.58,
         16
       ],
@@ -3962,7 +3962,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -13.87,
+        13.87,
         1.11,
         16
       ],
@@ -3978,7 +3978,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -13.73,
+        13.73,
         2.39,
         16
       ],
@@ -3994,7 +3994,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.98,
         16
       ],
@@ -4011,7 +4011,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         17.66
       ],
@@ -4028,7 +4028,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         18
       ],
@@ -4045,7 +4045,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         18.34
       ],
@@ -4062,7 +4062,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -14.14,
+        14.14,
         0.58,
         18
       ],
@@ -4079,7 +4079,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.46,
+        13.46,
         0.58,
         18
       ],
@@ -4096,7 +4096,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -13.73,
+        13.73,
         1.11,
         18
       ],
@@ -4112,7 +4112,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.98,
         18
       ],
@@ -4129,7 +4129,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         19.66
       ],
@@ -4146,7 +4146,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         20
       ],
@@ -4163,7 +4163,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         20.34
       ],
@@ -4180,7 +4180,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -14.14,
+        14.14,
         0.58,
         20
       ],
@@ -4197,7 +4197,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.46,
+        13.46,
         0.58,
         20
       ],
@@ -4214,7 +4214,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -13.87,
+        13.87,
         1.11,
         20
       ],
@@ -4230,7 +4230,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -13.73,
+        13.73,
         2.39,
         20
       ],
@@ -4246,7 +4246,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.98,
         20
       ],
@@ -4263,7 +4263,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         21.66
       ],
@@ -4280,7 +4280,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         22
       ],
@@ -4297,7 +4297,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         22.34
       ],
@@ -4314,7 +4314,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -14.14,
+        14.14,
         0.58,
         22
       ],
@@ -4331,7 +4331,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.46,
+        13.46,
         0.58,
         22
       ],
@@ -4348,7 +4348,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -13.73,
+        13.73,
         1.11,
         22
       ],
@@ -4364,7 +4364,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.98,
         22
       ],
@@ -4381,7 +4381,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         23.66
       ],
@@ -4398,7 +4398,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         24
       ],
@@ -4415,7 +4415,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.8,
+        13.8,
         0.7,
         24.34
       ],
@@ -4432,7 +4432,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -14.14,
+        14.14,
         0.58,
         24
       ],
@@ -4449,7 +4449,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -13.46,
+        13.46,
         0.58,
         24
       ],
@@ -4466,7 +4466,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -13.87,
+        13.87,
         1.11,
         24
       ],
@@ -4482,7 +4482,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -13.73,
+        13.73,
         2.39,
         24
       ],
@@ -4498,7 +4498,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -13.8,
+        13.8,
         1.98,
         24
       ],
@@ -4515,7 +4515,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -20.42,
+        20.42,
         1.7,
         15
       ],
@@ -4531,7 +4531,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -20.42,
+        20.42,
         1.7,
         17
       ],
@@ -4547,7 +4547,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -20.42,
+        20.42,
         1.7,
         19
       ],
@@ -4563,7 +4563,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -20.42,
+        20.42,
         1.7,
         21
       ],
@@ -4579,7 +4579,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -20.42,
+        20.42,
         1.7,
         23
       ],
@@ -4595,7 +4595,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -20.42,
+        20.42,
         1.7,
         25
       ],
@@ -4611,7 +4611,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.18,
+        19.18,
         1.7,
         15
       ],
@@ -4627,7 +4627,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.18,
+        19.18,
         1.7,
         17
       ],
@@ -4643,7 +4643,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.18,
+        19.18,
         1.7,
         19
       ],
@@ -4659,7 +4659,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.18,
+        19.18,
         1.7,
         21
       ],
@@ -4675,7 +4675,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.18,
+        19.18,
         1.7,
         23
       ],
@@ -4691,7 +4691,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.18,
+        19.18,
         1.7,
         25
       ],
@@ -4707,7 +4707,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         0.62,
         15
       ],
@@ -4723,7 +4723,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.94,
         15
       ],
@@ -4739,7 +4739,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         3.16,
         15
       ],
@@ -4755,7 +4755,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         0.62,
         17
       ],
@@ -4771,7 +4771,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.94,
         17
       ],
@@ -4787,7 +4787,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         3.16,
         17
       ],
@@ -4803,7 +4803,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         0.62,
         19
       ],
@@ -4819,7 +4819,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.94,
         19
       ],
@@ -4835,7 +4835,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         3.16,
         19
       ],
@@ -4851,7 +4851,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         0.62,
         21
       ],
@@ -4867,7 +4867,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.94,
         21
       ],
@@ -4883,7 +4883,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         3.16,
         21
       ],
@@ -4899,7 +4899,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         0.62,
         23
       ],
@@ -4915,7 +4915,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.94,
         23
       ],
@@ -4931,7 +4931,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         3.16,
         23
       ],
@@ -4947,7 +4947,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         0.62,
         25
       ],
@@ -4963,7 +4963,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.94,
         25
       ],
@@ -4979,7 +4979,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         3.16,
         25
       ],
@@ -4995,7 +4995,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         15.66
       ],
@@ -5012,7 +5012,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         16
       ],
@@ -5029,7 +5029,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         16.34
       ],
@@ -5046,7 +5046,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -20.14,
+        20.14,
         0.58,
         16
       ],
@@ -5063,7 +5063,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.46,
+        19.46,
         0.58,
         16
       ],
@@ -5080,7 +5080,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -19.73,
+        19.73,
         1.11,
         16
       ],
@@ -5096,7 +5096,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -19.87,
+        19.87,
         2.39,
         16
       ],
@@ -5112,7 +5112,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.98,
         16
       ],
@@ -5129,7 +5129,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         17.66
       ],
@@ -5146,7 +5146,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         18
       ],
@@ -5163,7 +5163,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         18.34
       ],
@@ -5180,7 +5180,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -20.14,
+        20.14,
         0.58,
         18
       ],
@@ -5197,7 +5197,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.46,
+        19.46,
         0.58,
         18
       ],
@@ -5214,7 +5214,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -19.87,
+        19.87,
         1.11,
         18
       ],
@@ -5230,7 +5230,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.98,
         18
       ],
@@ -5247,7 +5247,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         19.66
       ],
@@ -5264,7 +5264,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         20
       ],
@@ -5281,7 +5281,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         20.34
       ],
@@ -5298,7 +5298,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -20.14,
+        20.14,
         0.58,
         20
       ],
@@ -5315,7 +5315,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.46,
+        19.46,
         0.58,
         20
       ],
@@ -5332,7 +5332,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -19.73,
+        19.73,
         1.11,
         20
       ],
@@ -5348,7 +5348,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -19.87,
+        19.87,
         2.39,
         20
       ],
@@ -5364,7 +5364,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.98,
         20
       ],
@@ -5381,7 +5381,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         21.66
       ],
@@ -5398,7 +5398,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         22
       ],
@@ -5415,7 +5415,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         22.34
       ],
@@ -5432,7 +5432,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -20.14,
+        20.14,
         0.58,
         22
       ],
@@ -5449,7 +5449,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.46,
+        19.46,
         0.58,
         22
       ],
@@ -5466,7 +5466,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -19.87,
+        19.87,
         1.11,
         22
       ],
@@ -5482,7 +5482,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.98,
         22
       ],
@@ -5499,7 +5499,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         23.66
       ],
@@ -5516,7 +5516,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         24
       ],
@@ -5533,7 +5533,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.8,
+        19.8,
         0.7,
         24.34
       ],
@@ -5550,7 +5550,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -20.14,
+        20.14,
         0.58,
         24
       ],
@@ -5567,7 +5567,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -19.46,
+        19.46,
         0.58,
         24
       ],
@@ -5584,7 +5584,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -19.73,
+        19.73,
         1.11,
         24
       ],
@@ -5600,7 +5600,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -19.87,
+        19.87,
         2.39,
         24
       ],
@@ -5616,7 +5616,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -19.8,
+        19.8,
         1.98,
         24
       ],
@@ -5633,7 +5633,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -26.42,
+        26.42,
         1.7,
         15
       ],
@@ -5649,7 +5649,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -26.42,
+        26.42,
         1.7,
         17
       ],
@@ -5665,7 +5665,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -26.42,
+        26.42,
         1.7,
         19
       ],
@@ -5681,7 +5681,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -26.42,
+        26.42,
         1.7,
         21
       ],
@@ -5697,7 +5697,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -26.42,
+        26.42,
         1.7,
         23
       ],
@@ -5713,7 +5713,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -26.42,
+        26.42,
         1.7,
         25
       ],
@@ -5729,7 +5729,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.18,
+        25.18,
         1.7,
         15
       ],
@@ -5745,7 +5745,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.18,
+        25.18,
         1.7,
         17
       ],
@@ -5761,7 +5761,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.18,
+        25.18,
         1.7,
         19
       ],
@@ -5777,7 +5777,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.18,
+        25.18,
         1.7,
         21
       ],
@@ -5793,7 +5793,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.18,
+        25.18,
         1.7,
         23
       ],
@@ -5809,7 +5809,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.18,
+        25.18,
         1.7,
         25
       ],
@@ -5825,7 +5825,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         0.62,
         15
       ],
@@ -5841,7 +5841,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.94,
         15
       ],
@@ -5857,7 +5857,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         3.16,
         15
       ],
@@ -5873,7 +5873,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         0.62,
         17
       ],
@@ -5889,7 +5889,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.94,
         17
       ],
@@ -5905,7 +5905,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         3.16,
         17
       ],
@@ -5921,7 +5921,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         0.62,
         19
       ],
@@ -5937,7 +5937,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.94,
         19
       ],
@@ -5953,7 +5953,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         3.16,
         19
       ],
@@ -5969,7 +5969,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         0.62,
         21
       ],
@@ -5985,7 +5985,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.94,
         21
       ],
@@ -6001,7 +6001,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         3.16,
         21
       ],
@@ -6017,7 +6017,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         0.62,
         23
       ],
@@ -6033,7 +6033,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.94,
         23
       ],
@@ -6049,7 +6049,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         3.16,
         23
       ],
@@ -6065,7 +6065,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         0.62,
         25
       ],
@@ -6081,7 +6081,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.94,
         25
       ],
@@ -6097,7 +6097,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         3.16,
         25
       ],
@@ -6113,7 +6113,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         15.66
       ],
@@ -6130,7 +6130,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         16
       ],
@@ -6147,7 +6147,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         16.34
       ],
@@ -6164,7 +6164,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -26.14,
+        26.14,
         0.58,
         16
       ],
@@ -6181,7 +6181,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.46,
+        25.46,
         0.58,
         16
       ],
@@ -6198,7 +6198,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -25.87,
+        25.87,
         1.11,
         16
       ],
@@ -6214,7 +6214,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -25.73,
+        25.73,
         2.39,
         16
       ],
@@ -6230,7 +6230,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.98,
         16
       ],
@@ -6247,7 +6247,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         17.66
       ],
@@ -6264,7 +6264,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         18
       ],
@@ -6281,7 +6281,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         18.34
       ],
@@ -6298,7 +6298,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -26.14,
+        26.14,
         0.58,
         18
       ],
@@ -6315,7 +6315,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.46,
+        25.46,
         0.58,
         18
       ],
@@ -6332,7 +6332,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -25.73,
+        25.73,
         1.11,
         18
       ],
@@ -6348,7 +6348,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.98,
         18
       ],
@@ -6365,7 +6365,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         19.66
       ],
@@ -6382,7 +6382,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         20
       ],
@@ -6399,7 +6399,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         20.34
       ],
@@ -6416,7 +6416,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -26.14,
+        26.14,
         0.58,
         20
       ],
@@ -6433,7 +6433,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.46,
+        25.46,
         0.58,
         20
       ],
@@ -6450,7 +6450,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -25.87,
+        25.87,
         1.11,
         20
       ],
@@ -6466,7 +6466,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -25.73,
+        25.73,
         2.39,
         20
       ],
@@ -6482,7 +6482,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.98,
         20
       ],
@@ -6499,7 +6499,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         21.66
       ],
@@ -6516,7 +6516,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         22
       ],
@@ -6533,7 +6533,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         22.34
       ],
@@ -6550,7 +6550,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -26.14,
+        26.14,
         0.58,
         22
       ],
@@ -6567,7 +6567,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.46,
+        25.46,
         0.58,
         22
       ],
@@ -6584,7 +6584,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -25.73,
+        25.73,
         1.11,
         22
       ],
@@ -6600,7 +6600,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.98,
         22
       ],
@@ -6617,7 +6617,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         23.66
       ],
@@ -6634,7 +6634,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         24
       ],
@@ -6651,7 +6651,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.8,
+        25.8,
         0.7,
         24.34
       ],
@@ -6668,7 +6668,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -26.14,
+        26.14,
         0.58,
         24
       ],
@@ -6685,7 +6685,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -25.46,
+        25.46,
         0.58,
         24
       ],
@@ -6702,7 +6702,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -25.87,
+        25.87,
         1.11,
         24
       ],
@@ -6718,7 +6718,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -25.73,
+        25.73,
         2.39,
         24
       ],
@@ -6734,7 +6734,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -25.8,
+        25.8,
         1.98,
         24
       ],
@@ -6751,7 +6751,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -32.42,
+        32.42,
         1.7,
         15
       ],
@@ -6767,7 +6767,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -32.42,
+        32.42,
         1.7,
         17
       ],
@@ -6783,7 +6783,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -32.42,
+        32.42,
         1.7,
         19
       ],
@@ -6799,7 +6799,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -32.42,
+        32.42,
         1.7,
         21
       ],
@@ -6815,7 +6815,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -32.42,
+        32.42,
         1.7,
         23
       ],
@@ -6831,7 +6831,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -32.42,
+        32.42,
         1.7,
         25
       ],
@@ -6847,7 +6847,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.18,
+        31.18,
         1.7,
         15
       ],
@@ -6863,7 +6863,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.18,
+        31.18,
         1.7,
         17
       ],
@@ -6879,7 +6879,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.18,
+        31.18,
         1.7,
         19
       ],
@@ -6895,7 +6895,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.18,
+        31.18,
         1.7,
         21
       ],
@@ -6911,7 +6911,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.18,
+        31.18,
         1.7,
         23
       ],
@@ -6927,7 +6927,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.18,
+        31.18,
         1.7,
         25
       ],
@@ -6943,7 +6943,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         0.62,
         15
       ],
@@ -6959,7 +6959,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.94,
         15
       ],
@@ -6975,7 +6975,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         3.16,
         15
       ],
@@ -6991,7 +6991,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         0.62,
         17
       ],
@@ -7007,7 +7007,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.94,
         17
       ],
@@ -7023,7 +7023,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         3.16,
         17
       ],
@@ -7039,7 +7039,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         0.62,
         19
       ],
@@ -7055,7 +7055,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.94,
         19
       ],
@@ -7071,7 +7071,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         3.16,
         19
       ],
@@ -7087,7 +7087,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         0.62,
         21
       ],
@@ -7103,7 +7103,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.94,
         21
       ],
@@ -7119,7 +7119,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         3.16,
         21
       ],
@@ -7135,7 +7135,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         0.62,
         23
       ],
@@ -7151,7 +7151,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.94,
         23
       ],
@@ -7167,7 +7167,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         3.16,
         23
       ],
@@ -7183,7 +7183,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         0.62,
         25
       ],
@@ -7199,7 +7199,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.94,
         25
       ],
@@ -7215,7 +7215,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         3.16,
         25
       ],
@@ -7231,7 +7231,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         15.66
       ],
@@ -7248,7 +7248,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         16
       ],
@@ -7265,7 +7265,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         16.34
       ],
@@ -7282,7 +7282,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -32.14,
+        32.14,
         0.58,
         16
       ],
@@ -7299,7 +7299,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.46,
+        31.46,
         0.58,
         16
       ],
@@ -7316,7 +7316,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -31.73,
+        31.73,
         1.11,
         16
       ],
@@ -7332,7 +7332,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -31.87,
+        31.87,
         2.39,
         16
       ],
@@ -7348,7 +7348,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.98,
         16
       ],
@@ -7365,7 +7365,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         17.66
       ],
@@ -7382,7 +7382,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         18
       ],
@@ -7399,7 +7399,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         18.34
       ],
@@ -7416,7 +7416,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -32.14,
+        32.14,
         0.58,
         18
       ],
@@ -7433,7 +7433,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.46,
+        31.46,
         0.58,
         18
       ],
@@ -7450,7 +7450,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -31.87,
+        31.87,
         1.11,
         18
       ],
@@ -7466,7 +7466,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.98,
         18
       ],
@@ -7483,7 +7483,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         19.66
       ],
@@ -7500,7 +7500,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         20
       ],
@@ -7517,7 +7517,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         20.34
       ],
@@ -7534,7 +7534,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -32.14,
+        32.14,
         0.58,
         20
       ],
@@ -7551,7 +7551,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.46,
+        31.46,
         0.58,
         20
       ],
@@ -7568,7 +7568,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -31.73,
+        31.73,
         1.11,
         20
       ],
@@ -7584,7 +7584,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -31.87,
+        31.87,
         2.39,
         20
       ],
@@ -7600,7 +7600,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.98,
         20
       ],
@@ -7617,7 +7617,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         21.66
       ],
@@ -7634,7 +7634,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         22
       ],
@@ -7651,7 +7651,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         22.34
       ],
@@ -7668,7 +7668,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -32.14,
+        32.14,
         0.58,
         22
       ],
@@ -7685,7 +7685,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.46,
+        31.46,
         0.58,
         22
       ],
@@ -7702,7 +7702,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -31.87,
+        31.87,
         1.11,
         22
       ],
@@ -7718,7 +7718,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.98,
         22
       ],
@@ -7735,7 +7735,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         23.66
       ],
@@ -7752,7 +7752,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         24
       ],
@@ -7769,7 +7769,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.8,
+        31.8,
         0.7,
         24.34
       ],
@@ -7786,7 +7786,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -32.14,
+        32.14,
         0.58,
         24
       ],
@@ -7803,7 +7803,7 @@
       "zone": "section1",
       "kind": "pallet",
       "center": [
-        -31.46,
+        31.46,
         0.58,
         24
       ],
@@ -7820,7 +7820,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -31.73,
+        31.73,
         1.11,
         24
       ],
@@ -7836,7 +7836,7 @@
       "zone": "section1",
       "kind": "crate",
       "center": [
-        -31.87,
+        31.87,
         2.39,
         24
       ],
@@ -7852,7 +7852,7 @@
       "zone": "section1",
       "kind": "metal",
       "center": [
-        -31.8,
+        31.8,
         1.98,
         24
       ],
