@@ -1,7 +1,7 @@
 {
   "meta": {
-    "name": "Warehouse — Walls-Only Blockout",
-    "mode": "Symmetrical 2v2 warehouse layout — stage 1 walls and lighting only",
+    "name": "Warehouse — Section 1",
+    "mode": "Symmetrical 2v2 warehouse layout — Section 1 storage rack build",
     "theme": "warehouse",
     "units": "meters",
     "axes": "Three.js X/Z world axes, Y up. In the top-down reference render, positive X appears toward screen-left and positive Z toward screen-top; numbered sections follow that visible blueprint orientation.",
@@ -22,7 +22,7 @@
       13.5,
       13.5
     ],
-    "version": 4,
+    "version": 5,
     "layoutStage": "section-1-detail",
     "note": "Stage 2 is restricted to visible Section 1 (upper-left in the top-down layout): four parallel industrial pallet-rack runs, visible steel uprights/crossbeams, lower slatted pallets, upper shelf decks and varied crate loads. Section 2, Section 3, Section 4 and the central hall remain props-free. No vehicles, forklifts, roof, machinery or decorative dressing in this pass.",
     "wallSegmentCount": 202,
