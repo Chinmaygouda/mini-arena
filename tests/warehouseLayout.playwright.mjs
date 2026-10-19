@@ -28,6 +28,98 @@ async function waitForServer(timeoutMs = 20000) {
   throw new Error(`Vite did not start: ${lastError}`);
 }
 
+async function moveSegment(page, from, to, routeName) {
+  const result = await page.evaluate(({ from, to }) => {
+    const app = window.__fpsApp;
+    const controls = app?.controls;
+    if (!controls) throw new Error('FPS controls are unavailable');
+    const dx = to.x - from.x;
+    const dz = to.z - from.z;
+    if (Math.abs(dx) > 0.001 && Math.abs(dz) > 0.001) {
+      throw new Error('Movement helper requires axis-aligned waypoints');
+    }
+    const yaw = Math.abs(dx) > 0.001
+      ? (dx > 0 ? -Math.PI / 2 : Math.PI / 2)
+      : (dz > 0 ? Math.PI : 0);
+    controls.forceReleaseKeys();
+    controls.setPosition(from.x, 1.7, from.z, yaw);
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyW', bubbles: true }));
+    const axis = Math.abs(dx) > 0.001 ? 'x' : 'z';
+    const target = axis === 'x' ? to.x : to.z;
+    const start = axis === 'x' ? from.x : from.z;
+    const direction = Math.sign(target - start);
+    const maxFrames = Math.ceil(Math.abs(target - start) * 60 / 4.8) + 150;
+    let reached = false;
+    for (let frame = 0; frame < maxFrames; frame++) {
+      controls.update(1 / 60);
+      const value = axis === 'x' ? controls.position.x : controls.position.z;
+      if (direction > 0 ? value >= target - 0.03 : value <= target + 0.03) {
+        reached = true;
+        break;
+      }
+    }
+    window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyW', bubbles: true }));
+    controls.forceReleaseKeys();
+    return {
+      reached,
+      from,
+      to,
+      final: {
+        x: controls.position.x,
+        z: controls.position.z,
+        eyeY: controls.position.y,
+      },
+      requiredDistance: Math.abs(target - start),
+      actualDistance: Math.abs((axis === 'x' ? controls.position.x : controls.position.z) - start),
+      grounded: controls.isGrounded,
+      collidingCount: controls.getCollidingCount(),
+    };
+  }, { from, to });
+  assert.ok(
+    result.reached,
+    `${routeName}: player stalled before waypoint ${JSON.stringify(to)}; final=${JSON.stringify(result.final)}`
+  );
+  assert.ok(
+    result.actualDistance >= result.requiredDistance - 0.15,
+    `${routeName}: actual travel ${result.actualDistance.toFixed(2)}m is shorter than expected ${result.requiredDistance.toFixed(2)}m`
+  );
+  return { route: routeName, ...result };
+}
+
+async function runRoute(page, name, points) {
+  const segments = [];
+  for (let i = 1; i < points.length; i++) {
+    segments.push(await moveSegment(page, points[i - 1], points[i], `${name} segment ${i}`));
+  }
+  return { name, segments };
+}
+
+async function runJumpCheck(page, name, start) {
+  const result = await page.evaluate(({ start }) => {
+    const controls = window.__fpsApp?.controls;
+    if (!controls) throw new Error('FPS controls are unavailable');
+    controls.forceReleaseKeys();
+    controls.setPosition(start.x, 1.7, start.z, Math.PI);
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space', bubbles: true }));
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyW', bubbles: true }));
+    for (let frame = 0; frame < 72; frame++) controls.update(1 / 60);
+    window.dispatchEvent(new KeyboardEvent('keyup', { code: 'Space', bubbles: true }));
+    window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyW', bubbles: true }));
+    controls.forceReleaseKeys();
+    return {
+      start,
+      final: { x: controls.position.x, z: controls.position.z, eyeY: controls.position.y },
+      forwardTravel: controls.position.z - start.z,
+      grounded: controls.isGrounded,
+      collidingCount: controls.getCollidingCount(),
+    };
+  }, { start });
+  assert.ok(result.forwardTravel > 1.5, `${name}: jump/movement stalled; result=${JSON.stringify(result)}`);
+  assert.ok(result.grounded, `${name}: player did not land back on the floor`);
+  assert.ok(Math.abs(result.final.eyeY - 1.7) < 0.2, `${name}: unexpected landing eye height ${result.final.eyeY}`);
+  return { name, ...result };
+}
+
 try {
   server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5173', '--strictPort'], {
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -90,6 +182,43 @@ try {
   assert.equal(runtime.bounds.maxX, 46);
   assert.equal(runtime.bounds.minZ, -46);
   assert.equal(runtime.bounds.maxZ, 46);
+
+  // Exercise six real controller paths through Section 1. Each leg stops at its
+  // waypoint or fails if collision geometry prevents reaching it.
+  const routeResults = [];
+  routeResults.push(await runRoute(page, 'Route 1 — enter south doorway and traverse Aisle 1', [
+    { x: 15.0, z: 6.0 },
+    { x: 15.0, z: 12.0 },
+    { x: 16.8, z: 12.0 },
+    { x: 16.8, z: 27.0 },
+  ]));
+  routeResults.push(await runRoute(page, 'Route 2 — north rack-end connector into Aisle 2', [
+    { x: 16.8, z: 27.0 },
+    { x: 22.8, z: 27.0 },
+  ]));
+  routeResults.push(await runRoute(page, 'Route 3 — traverse Aisle 2 and round Rack 3 south end', [
+    { x: 22.8, z: 27.0 },
+    { x: 22.8, z: 12.0 },
+    { x: 28.8, z: 12.0 },
+  ]));
+  routeResults.push(await runRoute(page, 'Route 4 — traverse Aisle 3 and reach east service lane', [
+    { x: 28.8, z: 12.0 },
+    { x: 28.8, z: 27.0 },
+    { x: 33.4, z: 27.0 },
+  ]));
+  routeResults.push(await runRoute(page, 'Route 5 — walk full length of west inner aisle', [
+    { x: 15.0, z: 13.5 },
+    { x: 11.8, z: 13.5 },
+    { x: 11.8, z: 28.0 },
+  ]));
+  routeResults.push(await runRoute(page, 'Route 6 — exit through west doorway into central corridor', [
+    { x: 11.8, z: 24.5 },
+    { x: 0.0, z: 24.5 },
+  ]));
+
+  const jumpResults = [];
+  jumpResults.push(await runJumpCheck(page, 'Jump beside rack upright', { x: 14.88, z: 15.0 }));
+  jumpResults.push(await runJumpCheck(page, 'Jump beside crate load', { x: 14.88, z: 16.0 }));
 
   await page.evaluate(() => {
     const app = window.__fpsApp;
@@ -154,6 +283,9 @@ try {
     ok: true,
     map: runtime.mapId,
     runtime,
+    routeCount: routeResults.length,
+    routeResults,
+    jumpResults,
     browserErrors: pageErrors.length,
     screenshots: [
       `${outputDir}/01-warehouse-layout-topdown.png`,
