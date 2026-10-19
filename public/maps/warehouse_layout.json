@@ -27,7 +27,7 @@
     "note": "Section 1 storage and Section 2 loading bay preserved. Section 3 is redesigned as a parcel sortation and dispatch cell: elevated belt conveyors, branch sort lanes, barcode scan arch, induction/exception stations, destination roll cages, packing bench, safety markings and equipment. Section 4 and central hall unchanged.",
     "wallSegmentCount": 202,
     "sectionArchitecture": "Each numbered quadrant has an enclosing chamber, recessed entry returns, two cross-corridor links, one side-aisle link, and three auxiliary service bays. All quadrant wall geometry is mirrored on both axes.",
-    "propCount": 1004,
+    "propCount": 802,
     "physicalBoxCount": 1004,
     "sectionProgress": {
       "section1": "long north-south pallet-rack aisles; 20 pallet bases and 32 crate loads",
@@ -74,7 +74,7 @@
         2
       ]
     },
-    "visiblePropCount": 1004,
+    "visiblePropCount": 802,
     "section2Vehicle": {
       "type": "forklift",
       "driveable": false,
