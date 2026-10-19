@@ -16,6 +16,10 @@ on:
       - "package-lock.json"
       - ".github/workflows/warehouse-layout-checks.yml"
 
+concurrency:
+  group: warehouse-layout-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-warehouse-layout:
     runs-on: ubuntu-latest
