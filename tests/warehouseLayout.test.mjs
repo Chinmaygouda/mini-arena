@@ -11,8 +11,8 @@ const map = JSON.parse(read('public/maps/warehouse_layout.json'));
 
 test('Warehouse base layout has exact outer and playable dimensions', () => {
   assert.equal(map.meta.theme, 'warehouse');
-  assert.equal(map.meta.name, 'Warehouse — Section 2 Loading Bay');
-  assert.match(map.meta.mode, /Section 1 long aisles, Section 2 cross-rack loading bay/);
+  assert.equal(map.meta.name, 'Warehouse — Section 3 Offset Storage Maze');
+  assert.match(map.meta.mode, /Section 1 long aisles, Section 2 cross-rack loading bay, Section 3 offset storage maze/);
   assert.deepEqual(map.meta.size, [96, 96], 'outer dimensions are 96m x 96m');
   assert.deepEqual(map.meta.playableSize, [92, 92], 'player bounds are 92m x 92m');
   assert.equal(map.meta.wallHeight, 6);
@@ -24,7 +24,7 @@ test('Warehouse base layout has exact outer and playable dimensions', () => {
 });
 
 test('Sections 1 and 2 are detailed while preserving all original walls', () => {
-  assert.equal(map.meta.layoutStage, 'section-1-detail-section-2-cross-rack-loading-bay');
+  assert.equal(map.meta.layoutStage, 'section-1-detail-section-2-cross-rack-loading-bay-section-3-offset-storage-maze');
   assert.ok(map.boxes.length > 202, 'rack assemblies add physical parts to the original shell');
   assert.equal(new Set(map.boxes.map((box) => box.id)).size, map.boxes.length, 'all object IDs are unique');
   const walls = map.boxes.filter((box) => box.kind === 'wall');
@@ -38,7 +38,7 @@ test('Sections 1 and 2 are detailed while preserving all original walls', () => 
   assert.equal(props.filter((box) => box.zone === 'section2').length,
     map.zones.find((zone) => zone.id === 'section2').propsSummary.propParts);
   assert.ok(props.every((box) => [
-    'metal', 'crate', 'pallet', 'vehicle-part', 'vehicle-collider', 'barrel', 'safety', 'marking', 'prop-collider'
+    'metal', 'crate', 'pallet', 'vehicle-part', 'vehicle-collider', 'barrel', 'safety', 'marking', 'prop-collider', 'rack-upright', 'rack-beam', 'rack-deck', 'crate-lid', 'crate-band', 'pallet-slat', 'drum', 'drum-rim', 'safety-cone', 'safety-cone-collar', 'floor-marking'
   ].includes(box.kind)), 'props use known rack, loading-bay, safety and vehicle kinds');
   assert.equal(map.buildings, undefined, 'no building models yet');
   assert.equal(map.nature, undefined, 'no nature props yet');
@@ -195,10 +195,10 @@ test('Warehouse shelf decks have dark matte coated-steel material values', () =>
   assert.ok(loader.includes("mapId === 'warehouse' ? 0.58 : 0.35"));
   assert.ok(loader.includes("mapId === 'warehouse' ? 0.38 : 0.85"));
 });
-test('Props remain confined to Sections 1 and 2', () => {
+test('Props remain inside their declared warehouse zones', () => {
   const props = map.boxes.filter((box) => box.kind !== 'wall');
   assert.equal(props.length, map.meta.propCount);
-  assert.ok(props.every((box) => ['section1', 'section2'].includes(box.zone)));
+  assert.ok(props.every((box) => ['section1', 'section2', 'section3'].includes(box.zone)));
   for (const prop of props) {
     const zone = map.zones.find((item) => item.id === prop.zone);
     assert.ok(zone, `${prop.id} resolves to its zone`);
@@ -210,6 +210,12 @@ test('Props remain confined to Sections 1 and 2', () => {
   assert.ok(props.every((box) => box.collision === false || ['metal', 'crate', 'barrel', 'vehicle-collider', 'prop-collider'].includes(box.kind)));
   assert.equal(props.filter((box) => box.zone === 'section1').length, 272);
   assert.equal(props.filter((box) => box.zone === 'section2').length, map.zones.find((zone) => zone.id === 'section2').propsSummary.propParts);
+  const section3 = props.filter((box) => box.zone === 'section3');
+  assert.equal(section3.length, 204, 'Section 3 has the complete offset maze prop set');
+  const section3Kinds = new Set(section3.map((box) => box.kind));
+  for (const kind of ['rack-upright', 'rack-beam', 'rack-deck', 'crate', 'crate-lid', 'crate-band', 'pallet', 'pallet-slat', 'drum', 'drum-rim', 'safety-cone', 'safety-cone-collar', 'floor-marking']) {
+    assert.ok(section3Kinds.has(kind), `Section 3 includes ${kind}`);
+  }
   assert.equal(map.boxes.filter((box) => box.kind === 'wall').length, 202);
 });
 
@@ -286,3 +292,24 @@ test('Warehouse is registered in the loader, map selector and industrial atmosph
   assert.match(loader, /ctx\.rotate\(Math\.PI\)/, 'quadrant numerals are oriented upright in the top-down render');
 });
 
+
+test('Section 3 is a distinct offset storage maze with valid geometry and no out-of-zone props', () => {
+  const section3 = map.boxes.filter((box) => box.zone === 'section3');
+  const zone = map.zones.find((item) => item.id === 'section3');
+  assert.ok(zone, 'Section 3 zone exists');
+  assert.equal(zone.number, 3);
+  assert.deepEqual(zone.min, [7, -31]);
+  assert.deepEqual(zone.max, [38, -8]);
+  assert.equal(section3.length, 204);
+  for (const box of section3) {
+    assert.ok(box.size.every((n) => Number.isFinite(n) && n > 0), `${box.id} has positive finite dimensions`);
+    assert.ok(box.center.every(Number.isFinite), `${box.id} has a finite center`);
+    assert.ok(box.center[0] - box.size[0] / 2 >= zone.min[0] - 0.001, `${box.id} west bound`);
+    assert.ok(box.center[0] + box.size[0] / 2 <= zone.max[0] + 0.001, `${box.id} east bound`);
+    assert.ok(box.center[2] - box.size[2] / 2 >= zone.min[1] - 0.001, `${box.id} south bound`);
+    assert.ok(box.center[2] + box.size[2] / 2 <= zone.max[1] + 0.001, `${box.id} north bound`);
+  }
+  assert.equal(map.meta.physicalBoxCount, map.boxes.length);
+  assert.equal(map.meta.propCount, map.boxes.filter((box) => box.kind !== 'wall').length);
+  assert.equal(map.meta.visiblePropCount, map.boxes.filter((box) => box.kind !== 'wall' && box.visible !== false).length);
+});
