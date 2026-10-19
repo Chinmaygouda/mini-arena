@@ -18,6 +18,8 @@ export interface BlueprintBox {
   center: [number, number, number];
   size: [number, number, number];
   color: string;
+  /** Render-only parts such as pallet slats and shelf decks can opt out of collision. */
+  collision?: boolean;
 }
 
 export interface BuildingDoorway {
@@ -200,7 +202,7 @@ export const MAP_INFO: Record<MapId, { name: string; file?: string }> = {
   dustline: { name: 'Dustline Village', file: '/maps/Dustline Village.json' },
   overpass: { name: 'Overpass Arena', file: '/maps/Overpass.json' },
   neighborhood: { name: 'Neighborhood District', file: '/maps/neighborhood.json' },
-  warehouse: { name: 'Warehouse — Walls Only', file: '/maps/warehouse_layout.json' },
+  warehouse: { name: 'Warehouse — Section 1', file: '/maps/warehouse_layout.json' },
 };
 
 export class BlueprintMapLoader {
@@ -367,7 +369,7 @@ export class BlueprintMapLoader {
         const isRoof = box.kind === 'roof';
         const isWalkable = box.kind === 'stairs' || box.kind === 'stair' || box.kind === 'platform';
 
-        if (!isRoof) {
+        if (!isRoof && box.collision !== false) {
           colliders.push({
             minX: cx - w / 2,
             maxX: cx + w / 2,
