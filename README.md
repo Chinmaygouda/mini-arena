@@ -31,13 +31,14 @@ npm run preview
 - **[4] SPAS-12 Combat Shotgun**: 12-gauge 8-pellet buckshot spread with animated grooved pump action and shell reload.
 - **[5] AW-50 Heavy Sniper Rifle**: .50 BMG heavy penetrator with high-magnification telescopic optic, mil-dot scope overlay, and cycling bolt.
 
-## Map Arenas (6 Tactical Environments)
+## Map Arenas (7 Playable Map Options)
 - **Tactical Shooting Range**: Outdoor ballistic proving ground with reactive steel silhouette targets at 8m–60m.
 - **Foundry Yard**: Golden hour industrial arena with warehouses, corridors, and central yard.
 - **Cul-de-Sac**: Suburban tactical combat layout.
 - **Dustline Village**: Arid tactical compound with close-quarters alleys.
 - **Overpass Arena**: Two-tier elevated highway and combat structure.
 - **Neighborhood District**: Stylized low-poly suburb with enterable homes, three-floor apartments and accessible rooftops, balconies, fenced gardens, a corner market, bus stop, parking, central playground, low-poly trees, flying birds, and shootable perched birds; includes mirrored 4-player spawn-slot metadata per team for future multiplayer integration.
+- **Warehouse — Walls-Only Blockout**: Stage-one 96m × 96m warehouse shell with 92m × 92m playable bounds, four numbered sections, 4m central cross-corridors, 3m inner service lanes, two side loading-bay openings, a central hall, and a 4×4 point-light layout. No racks, crates, pallets, containers, vehicles, or decorative props are added in this stage.
 
 ## Keybindings
 - **W, A, S, D**: Movement
