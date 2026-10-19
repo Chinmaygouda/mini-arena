@@ -14,13 +14,18 @@ const outDir = path.join(root, 'artifacts/crouch-verification');
 fs.mkdirSync(outDir, { recursive: true });
 
 async function getActiveGameUrl() {
-  for (const port of [5173, 5174, 5175]) {
+  for (const port of [5177, 5174, 5173, 5175]) {
     try {
       const res = await fetch(`http://localhost:${port}/`);
-      if (res.ok) return `http://localhost:${port}/?map=warehouse&quality=high`;
+      if (res.ok) {
+        const html = await res.text();
+        if (html.includes('/src/main.ts') || html.includes('frist-person-shooter')) {
+          return `http://localhost:${port}/?map=warehouse&quality=high`;
+        }
+      }
     } catch (_) {}
   }
-  return 'http://localhost:5173/?map=warehouse&quality=high';
+  return 'http://localhost:5177/?map=warehouse&quality=high';
 }
 
 async function run() {

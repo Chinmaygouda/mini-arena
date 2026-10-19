@@ -715,6 +715,12 @@ class FPSApp {
 }
 
 // Instantiate FPS Engine
-window.addEventListener('DOMContentLoaded', () => {
+function bootFPSApp() {
   new FPSApp();
-});
+}
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', bootFPSApp);
+} else {
+  bootFPSApp();
+}
