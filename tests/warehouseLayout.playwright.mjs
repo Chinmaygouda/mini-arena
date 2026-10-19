@@ -5,7 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright';
 
 const baseUrl = 'http://127.0.0.1:5173';
-const outputDir = 'artifacts/warehouse-section-1';
+const outputDir = 'artifacts/warehouse-sections-1-2';
 await mkdir(outputDir, { recursive: true });
 
 let server;
@@ -217,8 +217,31 @@ try {
   ]));
 
   const jumpResults = [];
-  jumpResults.push(await runJumpCheck(page, 'Jump beside rack upright', { x: 14.88, z: 15.0 }));
-  jumpResults.push(await runJumpCheck(page, 'Jump beside crate load', { x: 14.88, z: 16.0 }));
+  jumpResults.push(await runJumpCheck(page, 'Section 1 jump beside rack upright', { x: 14.88, z: 15.0 }));
+  jumpResults.push(await runJumpCheck(page, 'Section 1 jump beside crate load', { x: 14.88, z: 16.0 }));
+
+  const section2RouteResults = [];
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 1 — enter and traverse Aisle 1', [
+    { x: -15.0, z: 6.0 }, { x: -15.0, z: 12.0 }, { x: -16.8, z: 12.0 }, { x: -16.8, z: 27.0 },
+  ]));
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 2 — north rack-end connector', [
+    { x: -16.8, z: 27.0 }, { x: -22.8, z: 27.0 },
+  ]));
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 3 — traverse Aisle 2 and round Rack 3', [
+    { x: -22.8, z: 27.0 }, { x: -22.8, z: 12.0 }, { x: -28.8, z: 12.0 },
+  ]));
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 4 — reach outer service lane', [
+    { x: -28.8, z: 12.0 }, { x: -28.8, z: 27.0 }, { x: -33.4, z: 27.0 },
+  ]));
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 5 — traverse mirrored inner aisle', [
+    { x: -15.0, z: 13.5 }, { x: -11.8, z: 13.5 }, { x: -11.8, z: 28.0 },
+  ]));
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 6 — exit into central corridor', [
+    { x: -11.8, z: 24.5 }, { x: 0.0, z: 24.5 },
+  ]));
+  const section2JumpResults = [];
+  section2JumpResults.push(await runJumpCheck(page, 'Section 2 jump beside rack upright', { x: -14.88, z: 15.0 }));
+  section2JumpResults.push(await runJumpCheck(page, 'Section 2 jump beside crate load', { x: -14.88, z: 16.0 }));
 
   await page.evaluate(() => {
     const app = window.__fpsApp;
@@ -260,7 +283,23 @@ try {
   await page.waitForTimeout(350);
   await page.screenshot({ path: `${outputDir}/02-warehouse-section-1-racks.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
-  // Return to the real player camera and capture rack visibility from the spawn lane.
+  // Capture Section 2 at the same scale for a direct mirrored-layout comparison.
+  await page.evaluate(() => {
+    const app = window.__fpsApp;
+    const camera = app.camera;
+    const controls = app.controls;
+    controls.update = () => {
+      camera.position.set(-22, 48, 20);
+      camera.up.set(0, 0, 1);
+      camera.lookAt(-22, 0, 20);
+      camera.fov = 43;
+      camera.updateProjectionMatrix();
+    };
+  });
+  await page.waitForTimeout(350);
+  await page.screenshot({ path: `${outputDir}/03-warehouse-section-2-racks.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
+
+  // Return to the real player camera and capture the Section 1 aisle.
   await page.evaluate(() => {
     const app = window.__fpsApp;
     const controls = app.controls;
@@ -276,7 +315,7 @@ try {
     if (hud instanceof HTMLElement) hud.style.display = '';
   });
   await page.waitForTimeout(250);
-  await page.screenshot({ path: `${outputDir}/03-warehouse-section-1-first-person.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
+  await page.screenshot({ path: `${outputDir}/04-warehouse-section-1-first-person.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
   assert.deepEqual(pageErrors, [], `Browser runtime errors: ${pageErrors.join('; ')}`);
   console.log(JSON.stringify({
@@ -286,11 +325,15 @@ try {
     routeCount: routeResults.length,
     routeResults,
     jumpResults,
+    section2RouteCount: section2RouteResults.length,
+    section2RouteResults,
+    section2JumpResults,
     browserErrors: pageErrors.length,
     screenshots: [
       `${outputDir}/01-warehouse-layout-topdown.png`,
       `${outputDir}/02-warehouse-section-1-racks.png`,
-      `${outputDir}/03-warehouse-section-1-first-person.png`,
+      `${outputDir}/03-warehouse-section-2-racks.png`,
+      `${outputDir}/04-warehouse-section-1-first-person.png`,
     ],
   }, null, 2));
 } catch (error) {

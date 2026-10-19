@@ -38,7 +38,7 @@ npm run preview
 - **Dustline Village**: Arid tactical compound with close-quarters alleys.
 - **Overpass Arena**: Two-tier elevated highway and combat structure.
 - **Neighborhood District**: Stylized low-poly suburb with enterable homes, three-floor apartments and accessible rooftops, balconies, fenced gardens, a corner market, bus stop, parking, central playground, low-poly trees, flying birds, and shootable perched birds; includes mirrored 4-player spawn-slot metadata per team for future multiplayer integration.
-- **Warehouse — Section 1 In Progress**: 96m × 96m outer shell with 92m × 92m playable bounds, four symmetric warehouse chambers, 4m central cross-corridors, 3m inner service lanes, two side loading-bay openings, and a 4×4 point-light layout. Stage 2 adds four pallet-rack runs, 20 pallets, and 32 crate loads in Section 1 only; Sections 2–4 remain walls-only for staged review.
+- **Warehouse — Sections 1–2 In Progress**: 96m × 96m outer shell with 92m × 92m playable bounds, four symmetric warehouse chambers, 4m central cross-corridors, 3m inner service lanes, two side loading-bay openings, and a 4×4 point-light layout. Sections 1 and 2 contain mirrored four-run pallet-rack systems, 20 pallets and 32 crate loads each; Sections 3–4 and the central hall remain props-free for staged review.
 
 ## Keybindings
 - **W, A, S, D**: Movement
