@@ -11,8 +11,8 @@ const map = JSON.parse(read('public/maps/warehouse_layout.json'));
 
 test('Warehouse base layout has exact outer and playable dimensions', () => {
   assert.equal(map.meta.theme, 'warehouse');
-  assert.equal(map.meta.name, 'Warehouse — Section 3 Offset Storage Maze');
-  assert.match(map.meta.mode, /Section 1 long aisles, Section 2 cross-rack loading bay, Section 3 offset storage maze/);
+  assert.equal(map.meta.name, 'Warehouse — Section 3 Parcel Sortation & Dispatch Cell');
+  assert.match(map.meta.mode, /Section 1 pallet storage, Section 2 loading bay, Section 3 parcel sortation and dispatch/);
   assert.deepEqual(map.meta.size, [96, 96], 'outer dimensions are 96m x 96m');
   assert.deepEqual(map.meta.playableSize, [92, 92], 'player bounds are 92m x 92m');
   assert.equal(map.meta.wallHeight, 6);
@@ -24,7 +24,7 @@ test('Warehouse base layout has exact outer and playable dimensions', () => {
 });
 
 test('Sections 1 and 2 are detailed while preserving all original walls', () => {
-  assert.equal(map.meta.layoutStage, 'section-1-detail-section-2-cross-rack-loading-bay-section-3-offset-storage-maze');
+  assert.equal(map.meta.layoutStage, 'section-1-pallet-storage-section-2-loading-bay-section-3-parcel-sortation-dispatch');
   assert.ok(map.boxes.length > 202, 'rack assemblies add physical parts to the original shell');
   assert.equal(new Set(map.boxes.map((box) => box.id)).size, map.boxes.length, 'all object IDs are unique');
   const walls = map.boxes.filter((box) => box.kind === 'wall');
@@ -38,7 +38,7 @@ test('Sections 1 and 2 are detailed while preserving all original walls', () => 
   assert.equal(props.filter((box) => box.zone === 'section2').length,
     map.zones.find((zone) => zone.id === 'section2').propsSummary.propParts);
   assert.ok(props.every((box) => [
-    'metal', 'crate', 'pallet', 'vehicle-part', 'vehicle-collider', 'barrel', 'safety', 'marking', 'prop-collider', 'rack-upright', 'rack-beam', 'rack-deck', 'crate-lid', 'crate-band', 'pallet-slat', 'drum', 'drum-rim', 'safety-cone', 'safety-cone-collar', 'floor-marking'
+    'metal', 'crate', 'pallet', 'vehicle-part', 'vehicle-collider', 'barrel', 'safety', 'marking', 'prop-collider', 'rack-upright', 'rack-beam', 'rack-deck', 'crate-lid', 'crate-band', 'pallet-slat', 'drum', 'drum-rim', 'safety-cone', 'safety-cone-collar', 'floor-marking', 'conveyor-frame', 'conveyor-belt', 'conveyor-support', 'conveyor-roller', 'conveyor-side-rail', 'sorter-branch-frame', 'sorter-branch-belt', 'sort-destination-base', 'sort-destination-bin', 'wire-cage-post', 'scanner-post', 'barcode-scanner-arch', 'scanner-light-bar', 'parcel-carton', 'parcel-tape', 'induction-table', 'induction-screen-post', 'induction-monitor', 'induction-screen', 'induction-control-panel', 'exception-sort-table', 'exception-bin', 'exception-sign', 'shipping-pallet', 'workbench-leg', 'packing-bench', 'parcel-scale', 'scale-display', 'tape-dispenser', 'packing-carton', 'roll-cage-base', 'roll-cage-post', 'roll-cage-handle', 'safety-bollard', 'bollard-band', 'floor-lane-marking', 'zone-sign-post', 'zone-sign-board', 'zone-sign-face', 'maintenance-cabinet', 'fire-extinguisher', 'extinguisher-handle', 'conveyor-control-cabinet', 'overhead-cable-tray', 'cable-drop', 'pallet-jack-forks', 'pallet-jack-body', 'pallet-jack-handle', 'pallet-jack-grip'
   ].includes(box.kind)), 'props use known rack, loading-bay, safety and vehicle kinds');
   assert.equal(map.buildings, undefined, 'no building models yet');
   assert.equal(map.nature, undefined, 'no nature props yet');
@@ -211,9 +211,9 @@ test('Props remain inside their declared warehouse zones', () => {
   assert.equal(props.filter((box) => box.zone === 'section1').length, 272);
   assert.equal(props.filter((box) => box.zone === 'section2').length, map.zones.find((zone) => zone.id === 'section2').propsSummary.propParts);
   const section3 = props.filter((box) => box.zone === 'section3');
-  assert.equal(section3.length, 204, 'Section 3 has the complete offset maze prop set');
+  assert.equal(section3.length, 203, 'Section 3 has the parcel sortation and dispatch prop set');
   const section3Kinds = new Set(section3.map((box) => box.kind));
-  for (const kind of ['rack-upright', 'rack-beam', 'rack-deck', 'crate', 'crate-lid', 'crate-band', 'pallet', 'pallet-slat', 'drum', 'drum-rim', 'safety-cone', 'safety-cone-collar', 'floor-marking']) {
+  for (const kind of ['conveyor-frame', 'conveyor-belt', 'sorter-branch-frame', 'barcode-scanner-arch', 'induction-table', 'exception-sort-table', 'sort-destination-bin', 'roll-cage-base', 'packing-bench', 'parcel-scale', 'safety-bollard', 'floor-lane-marking']) {
     assert.ok(section3Kinds.has(kind), `Section 3 includes ${kind}`);
   }
   assert.equal(map.boxes.filter((box) => box.kind === 'wall').length, 202);
@@ -278,7 +278,7 @@ test('Warehouse is registered in the loader, map selector and industrial atmosph
   const hud = read('src/ui/fpsHUD.ts');
   const atmosphere = read('src/environment/atmosphereManager.ts');
   assert.match(loader, /'warehouse';/);
-  assert.match(loader, /warehouse:\s*\{\s*name:\s*'Warehouse — Section 2 Loading Bay',\s*file:\s*'\/maps\/warehouse_layout\.json'/);
+  assert.match(loader, /warehouse:\s*\{\s*name:\s*'Warehouse — Parcel Sortation & Dispatch',\s*file:\s*'\/maps\/warehouse_layout\.json'/);
   assert.match(loader, /data\.meta\.playableSize \|\| data\.meta\.size/);
   assert.match(loader, /warehouse-fixture-/);
   assert.match(loader, /box\.collision !== false/);
@@ -293,7 +293,7 @@ test('Warehouse is registered in the loader, map selector and industrial atmosph
 });
 
 
-test('Section 3 is a distinct offset storage maze with valid geometry and no out-of-zone props', () => {
+test('Section 3 is a distinct parcel sortation cell with valid geometry and no out-of-zone props', () => {
   const section3 = map.boxes.filter((box) => box.zone === 'section3');
   const zone = map.zones.find((item) => item.id === 'section3');
   assert.ok(zone, 'Section 3 zone exists');
