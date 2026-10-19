@@ -332,7 +332,7 @@ export class BlueprintMapLoader {
     ) => {
       // Material color alone is not a sufficient cache key: two parts may share
       // a color while requiring different surface finishes.
-      const cacheKey = `${hex.toLowerCase()}|${roughness.toFixed(3)}|${metalness.toFixed(3)}|${emissive || ''}|${emissiveIntensity ?? 0}`;
+      const cacheKey = `${hex.toLowerCase()}|${roughness.toFixed(3)}|${metalness.toFixed(3)}`;
       let m = materialCache.get(cacheKey);
       if (!m) {
         m = new THREE.MeshStandardMaterial({
