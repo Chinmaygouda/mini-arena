@@ -90,7 +90,7 @@ test('Team spawns are opposite, balanced 2v2 positions inside the playable bound
   assert.ok(map.teamSpawns.teamB.every((slot) =>
     Math.abs(slot.position[0]) < 8 && slot.position[1] < -34 && slot.position[1] > -46));
   assert.ok(map.teamSpawns.teamA.every((slot) => slot.facingYaw === 0));
-  assert.ok(map.teamSpawns.teamB.every((slot) => Math.abs(slot.facingYaw - Math.PI) < 0.001);
+  assert.ok(map.teamSpawns.teamB.every((slot) => Math.abs(slot.facingYaw - Math.PI) < 0.001));
 });
 
 test('Warehouse lighting is a symmetric 4-by-4 grid of 16 point lights', () => {
