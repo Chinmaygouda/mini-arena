@@ -28,7 +28,7 @@
     "wallSegmentCount": 202,
     "sectionArchitecture": "Each numbered quadrant has an enclosing chamber, recessed entry returns, two cross-corridor links, one side-aisle link, and three auxiliary service bays. All quadrant wall geometry is mirrored on both axes.",
     "propCount": 803,
-    "physicalBoxCount": 911,
+    "physicalBoxCount": 1005,
     "sectionProgress": {
       "section1": "long north-south pallet-rack aisles; 20 pallet bases and 32 crate loads",
       "section2": "unique east-west cross-racks; static forklift loading bay; drums, safety cones, spare pallets and workbench",
