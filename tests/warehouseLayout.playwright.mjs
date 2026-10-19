@@ -221,8 +221,8 @@ try {
   jumpResults.push(await runJumpCheck(page, 'Section 1 jump beside crate load', { x: 14.88, z: 16.0 }));
 
   const section2RouteResults = [];
-  section2RouteResults.push(await runRoute(page, 'Section 2 Route 1 — enter cross-rack loading bay', [
-    { x: -8.8, z: 14.0 }, { x: -30.0, z: 14.0 },
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 1 — enter and pass north of the forklift', [
+    { x: -8.8, z: 14.0 }, { x: -11.1, z: 14.0 }, { x: -11.1, z: 16.5 }, { x: -30.0, z: 16.5 },
   ]));
   section2RouteResults.push(await runRoute(page, 'Section 2 Route 2 — lower cross-rack aisle', [
     { x: -30.0, z: 14.0 }, { x: -30.0, z: 17.4 },
@@ -305,9 +305,9 @@ try {
     const camera = app.camera;
     const controls = app.controls;
     controls.update = () => {
-      camera.position.set(-32.5, 6.2, 14.5);
+      camera.position.set(-28.0, 6.2, 17.0);
       camera.up.set(0, 1, 0);
-      camera.lookAt(-35.5, 0.95, 18.0);
+      camera.lookAt(-22.0, 0.95, 14.5);
       camera.fov = 48;
       camera.updateProjectionMatrix();
     };
@@ -326,7 +326,7 @@ try {
     controls.forceReleaseKeys();
     if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = true;
     controls.pitch = 0;
-    controls.setPosition(-31.5, 1.7, 17.4, Math.PI / 2);
+    controls.setPosition(-27.5, 1.7, 14.5, -Math.PI / 2);
     controls.update(1 / 60);
     const hud = document.querySelector('#fps-hud');
     if (hud instanceof HTMLElement) hud.style.display = '';

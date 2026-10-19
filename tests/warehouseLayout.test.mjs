@@ -236,7 +236,7 @@ test('Section 2 is a unique cross-rack loading bay with a static forklift', () =
 test('Forklift and parking bay sit clear of wall returns and rack geometry', () => {
   const forklift = map.boxes.find((box) => box.id === 's2-forklift-collider');
   assert.ok(forklift);
-  assert.deepEqual(map.meta.section2Vehicle.bodyCenter, [-35.5, 0.7, 18.0]);
+  assert.deepEqual(map.meta.section2Vehicle.bodyCenter, [-22, 0.7, 14.5]);
   const overlapsXZ = (a, b) =>
     Math.abs(a.center[0] - b.center[0]) < (a.size[0] + b.size[0]) / 2 &&
     Math.abs(a.center[2] - b.center[2]) < (a.size[2] + b.size[2]) / 2;
@@ -248,10 +248,12 @@ test('Forklift and parking bay sit clear of wall returns and rack geometry', () 
   );
   assert.deepEqual(obstructions.map((box) => box.id), [],
     'the forklift footprint must not overlap wall returns, rack structures, barrels or crates');
-  assert.ok(forklift.center[0] - forklift.size[0] / 2 >= -38,
-    'forklift remains inside Section 2 west bounds');
-  assert.ok(forklift.center[0] + forklift.size[0] / 2 < -33.06,
-    'forklift stays west of rack ends with a clear gap');
+  assert.ok(forklift.center[0] - forklift.size[0] / 2 >= -38);
+  assert.ok(forklift.center[0] + forklift.size[0] / 2 <= -7);
+  assert.ok(forklift.center[2] - forklift.size[2] / 2 > 12.12,
+    'forklift stays north of the Section 2 row A rack footprint');
+  assert.ok(forklift.center[2] + forklift.size[2] / 2 < 18.38,
+    'forklift stays south of the Section 2 row B rack footprint');
 });
 
 test('Renderer supports cylinders, cones, rotations and hidden collider volumes', () => {
