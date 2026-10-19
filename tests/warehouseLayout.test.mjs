@@ -111,5 +111,9 @@ test('Warehouse is registered in the loader, map selector and industrial atmosph
   assert.match(loader, /warehouse-fixture-/);
   assert.match(hud, /'warehouse'\]/);
   assert.match(atmosphere, /mapId === 'warehouse'\s*\?\s*'industrial'/);
+  assert.match(atmosphere, /if \(mapId !== 'warehouse'\)/, 'warehouse suppresses outdoor sky and clouds');
+  assert.match(atmosphere, /this.scene.background = new THREE.Color\('#1a222a'\)/, 'warehouse uses a neutral indoor backdrop');
+  assert.match(loader, /ctx\.fillText\('1', toPx\(22\), toPx\(22\)\)/, 'zone 1 is visibly placed north-west');
+  assert.match(loader, /ctx\.fillText\('2', toPx\(-22\), toPx\(22\)\)/, 'zone 2 is visibly placed north-east');
 });
 
