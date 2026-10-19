@@ -1,4 +1,4 @@
-name: Warehouse Unique Section 2 Loading Bay Checks
+name: Warehouse Sections 1–3 Layout Verification
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: warehouse-section-2-loading-bay
+          name: warehouse-section-3-offset-maze
           path: artifacts/warehouse-section-2-redesign/
           if-no-files-found: warn
           retention-days: 7
