@@ -48,12 +48,16 @@ try {
   page.on('pageerror', (error) => pageErrors.push(error.message));
 
   await page.goto(`${baseUrl}/?map=warehouse&quality=low&time=overcast`, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => {
+  const layoutResponse = await page.request.get(`${baseUrl}/maps/warehouse_layout.json`);
+  assert.ok(layoutResponse.ok(), 'warehouse layout JSON should be reachable');
+  const expectedLayout = await layoutResponse.json();
+  const expectedWallCount = expectedLayout.boxes.length;
+  await page.waitForFunction((expectedWallCount) => {
     const app = window.__fpsApp;
     return app?.mapLoader?.currentMapId === 'warehouse' &&
       Array.isArray(app?.controls?.colliders) &&
-      app.controls.colliders.length === 66;
-  }, null, { timeout: 20000 });
+      app.controls.colliders.length === expectedWallCount;
+  }, expectedWallCount, { timeout: 20000 });
 
   const runtime = await page.evaluate(() => {
     const app = window.__fpsApp;
@@ -70,7 +74,7 @@ try {
     };
   });
   assert.equal(runtime.mapId, 'warehouse');
-  assert.equal(runtime.colliderCount, 66, 'the collision set should contain only the 66 wall segments');
+  assert.equal(runtime.colliderCount, expectedWallCount, 'each wall in the revised blueprint should become one collider');
   assert.equal(runtime.loadedBuildingCount, 0, 'stage one should contain no building models');
   assert.equal(runtime.fixtureCount, 16, 'the 4x4 lighting grid should render 16 fixtures');
   assert.equal(runtime.bounds.minX, -46);
