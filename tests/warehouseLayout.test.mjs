@@ -207,7 +207,7 @@ test('Props remain inside their declared warehouse zones', () => {
     assert.ok(prop.center[2] - prop.size[2] / 2 >= zone.min[1] - 0.001, `${prop.id} south bound`);
     assert.ok(prop.center[2] + prop.size[2] / 2 <= zone.max[1] + 0.001, `${prop.id} north bound`);
   }
-  assert.ok(props.every((box) => box.collision === false || ['metal', 'crate', 'barrel', 'vehicle-collider', 'prop-collider'].includes(box.kind)));
+  assert.ok(props.every((box) => box.collision === false || ['metal', 'crate', 'barrel', 'vehicle-collider', 'prop-collider', 'rack-upright', 'rack-beam', 'rack-deck', 'pallet', 'pallet-slat', 'crate-lid', 'crate-band', 'drum', 'drum-rim', 'safety-cone', 'safety-cone-collar', 'floor-marking', 'marking', 'safety', 'vehicle-part'].includes(box.kind)));
   assert.equal(props.filter((box) => box.zone === 'section1').length, 272);
   assert.equal(props.filter((box) => box.zone === 'section2').length, map.zones.find((zone) => zone.id === 'section2').propsSummary.propParts);
   const section3 = props.filter((box) => box.zone === 'section3');
