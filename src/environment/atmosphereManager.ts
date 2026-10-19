@@ -292,17 +292,14 @@ export class AtmosphereManager {
     // 1. Lighting Rig (Single shadow-casting directional light + ambient hemisphere)
     this.setupLighting(cfg);
 
-    // 2. Panoramic Procedural Sky Dome
-    this.createSkyDome(group, cfg);
-
-    // 3. Sun/Moon Celestial Disc
-    this.createCelestialDisc(group, cfg);
-
-    // 4. Instanced Drifting Cumulus Clouds
-    if (!cfg.isNight) {
-      this.createDriftingClouds(group, cfg);
-    } else {
-      this.createStarField(group);
+    // Outdoor sky, sun/moon discs and clouds are omitted from the warehouse
+    // walls-only blockout. Until the roof is added in a later stage, the space
+    // above the 6m perimeter walls uses a neutral industrial background.
+    if (mapId !== 'warehouse') {
+      this.createSkyDome(group, cfg);
+      this.createCelestialDisc(group, cfg);
+      if (!cfg.isNight) this.createDriftingClouds(group, cfg);
+      else this.createStarField(group);
     }
 
     // 5. Outdoor scenery is omitted from the warehouse blockout. The roof is intentionally
@@ -317,9 +314,14 @@ export class AtmosphereManager {
     if (mapId === 'neighborhood') this.createNeighborhoodParkGrass(group);
     else if (mapId !== 'warehouse') this.createWindGrass(group, resolvedTheme);
 
-    // 9. Scene Fog
-    this.scene.fog = new THREE.Fog(cfg.fogColor, cfg.fogNear, cfg.fogFar);
-    this.scene.background = new THREE.Color(cfg.fogColor);
+    // Keep the unfinished warehouse shell readable without exposing an outdoor horizon.
+    if (mapId === 'warehouse') {
+      this.scene.fog = new THREE.Fog(0x1a222a, 95, 180);
+      this.scene.background = new THREE.Color('#1a222a');
+    } else {
+      this.scene.fog = new THREE.Fog(cfg.fogColor, cfg.fogNear, cfg.fogFar);
+      this.scene.background = new THREE.Color(cfg.fogColor);
+    }
 
     this.targetAudioVolume = mapId === 'warehouse' ? 0 : cfg.ambientBirdVolume;
     if (this.audioElement && !this.isMuted) {
