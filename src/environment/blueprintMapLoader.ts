@@ -647,17 +647,31 @@ export class BlueprintMapLoader {
       ctx.fillRect(dockStart, dockMinZ, dockEnd - dockStart, dockMaxZ - dockMinZ);
       ctx.fillRect(toPx(39.5), dockMinZ, toPx(46.5) - toPx(39.5), dockMaxZ - dockMinZ);
 
-      // Numbered section labels make the planned four-part build sequence visible.
-      ctx.fillStyle = 'rgba(177, 218, 240, 0.28)';
-      ctx.font = '700 58px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      // CanvasTexture appears X-mirrored after the ground plane is rotated into XZ.
-      // Invert label X only so the visible floor labels read 1/2 across the north and 3/4 across the south.
-      ctx.fillText('1', toPx(22), toPx(22));
-      ctx.fillText('2', toPx(-22), toPx(22));
-      ctx.fillText('3', toPx(22), toPx(-22));
-      ctx.fillText('4', toPx(-22), toPx(-22));
+      // Numbered section markers make the planned four-part build sequence visible.
+      // CanvasTexture appears X-mirrored after the ground plane is rotated into XZ,
+      // so label positions are assigned on the opposite world-X side.
+      const sectionMarks = [
+        { label: '1', x: 22, z: 22 },
+        { label: '2', x: -22, z: 22 },
+        { label: '3', x: 22, z: -22 },
+        { label: '4', x: -22, z: -22 },
+      ];
+      for (const mark of sectionMarks) {
+        const px = toPx(mark.x);
+        const pz = toPx(mark.z);
+        ctx.beginPath();
+        ctx.arc(px, pz, 50, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(26, 71, 94, 0.38)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(64, 188, 239, 0.78)';
+        ctx.lineWidth = 3.5;
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(226, 245, 255, 0.78)';
+        ctx.font = '800 58px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(mark.label, px, pz);
+      }
     } else {
       // Legacy tiled terrain used by the existing arenas.
       ctx.fillStyle = isArid ? 'rgba(168, 142, 105, 0.45)' : 'rgba(55, 48, 38, 0.45)';
