@@ -1,0 +1,1388 @@
+{
+  "meta": {
+    "name": "Warehouse — Walls-Only Blockout",
+    "mode": "Symmetrical 2v2 warehouse layout — stage 1 walls and lighting only",
+    "theme": "warehouse",
+    "units": "meters",
+    "axes": "x east, z north, y up; origin at map center; north is +Z",
+    "size": [
+      96,
+      96
+    ],
+    "playableSize": [
+      92,
+      92
+    ],
+    "wallHeight": 6,
+    "outerWallThickness": 1.5,
+    "interiorWallThickness": 1.5,
+    "mainCorridorClearWidth": 4,
+    "serviceCorridorClearWidth": 3,
+    "centralHallClearSize": [
+      13.5,
+      13.5
+    ],
+    "version": 1,
+    "layoutStage": "walls-only",
+    "note": "No storage racks, crates, pallets, containers, vehicles, furniture, props, or building models. Only perimeter/partition walls, concrete floor layout markings, spawn metadata and point lighting are included."
+  },
+  "zones": [
+    {
+      "id": "section1",
+      "number": 1,
+      "name": "North-West Warehouse Section",
+      "min": [
+        -42,
+        2
+      ],
+      "max": [
+        -2,
+        42
+      ]
+    },
+    {
+      "id": "section2",
+      "number": 2,
+      "name": "North-East Warehouse Section",
+      "min": [
+        2,
+        2
+      ],
+      "max": [
+        42,
+        42
+      ]
+    },
+    {
+      "id": "section3",
+      "number": 3,
+      "name": "South-West Warehouse Section",
+      "min": [
+        -42,
+        -42
+      ],
+      "max": [
+        -2,
+        -2
+      ]
+    },
+    {
+      "id": "section4",
+      "number": 4,
+      "name": "South-East Warehouse Section",
+      "min": [
+        2,
+        -42
+      ],
+      "max": [
+        42,
+        -2
+      ]
+    },
+    {
+      "id": "centralHall",
+      "name": "Central Combat Hall",
+      "min": [
+        -6.75,
+        -6.75
+      ],
+      "max": [
+        6.75,
+        6.75
+      ]
+    },
+    {
+      "id": "teamA",
+      "name": "Team A Spawn — North",
+      "min": [
+        -7.75,
+        35.25
+      ],
+      "max": [
+        7.75,
+        46.5
+      ]
+    },
+    {
+      "id": "teamB",
+      "name": "Team B Spawn — South",
+      "min": [
+        -7.75,
+        -46.5
+      ],
+      "max": [
+        7.75,
+        -35.25
+      ]
+    },
+    {
+      "id": "loadingWest",
+      "name": "West Loading Dock Opening",
+      "min": [
+        -46,
+        -8
+      ],
+      "max": [
+        -39,
+        8
+      ]
+    },
+    {
+      "id": "loadingEast",
+      "name": "East Loading Dock Opening",
+      "min": [
+        39,
+        -8
+      ],
+      "max": [
+        46,
+        8
+      ]
+    }
+  ],
+  "boxes": [
+    {
+      "id": "outer-north-01",
+      "zone": "outer",
+      "kind": "wall",
+      "center": [
+        0,
+        3,
+        47.25
+      ],
+      "size": [
+        94.5,
+        6,
+        1.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "outer-south-01",
+      "zone": "outer",
+      "kind": "wall",
+      "center": [
+        0,
+        3,
+        -47.25
+      ],
+      "size": [
+        94.5,
+        6,
+        1.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "outer-west-01",
+      "zone": "outer",
+      "kind": "wall",
+      "center": [
+        -47.25,
+        3,
+        -28
+      ],
+      "size": [
+        1.5,
+        6,
+        38.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "outer-west-02",
+      "zone": "outer",
+      "kind": "wall",
+      "center": [
+        -47.25,
+        3,
+        28
+      ],
+      "size": [
+        1.5,
+        6,
+        38.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "outer-east-01",
+      "zone": "outer",
+      "kind": "wall",
+      "center": [
+        47.25,
+        3,
+        -28
+      ],
+      "size": [
+        1.5,
+        6,
+        38.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "outer-east-02",
+      "zone": "outer",
+      "kind": "wall",
+      "center": [
+        47.25,
+        3,
+        28
+      ],
+      "size": [
+        1.5,
+        6,
+        38.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "dock-west-side-south",
+      "zone": "loading-dock",
+      "kind": "wall",
+      "center": [
+        -43.375,
+        3,
+        -8.75
+      ],
+      "size": [
+        7.75,
+        6,
+        1.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "dock-west-side-north",
+      "zone": "loading-dock",
+      "kind": "wall",
+      "center": [
+        -43.375,
+        3,
+        8.75
+      ],
+      "size": [
+        7.75,
+        6,
+        1.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "dock-east-side-south",
+      "zone": "loading-dock",
+      "kind": "wall",
+      "center": [
+        43.375,
+        3,
+        -8.75
+      ],
+      "size": [
+        7.75,
+        6,
+        1.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "dock-east-side-north",
+      "zone": "loading-dock",
+      "kind": "wall",
+      "center": [
+        43.375,
+        3,
+        8.75
+      ],
+      "size": [
+        7.75,
+        6,
+        1.5
+      ],
+      "color": "#8c969e"
+    },
+    {
+      "id": "service-west-01",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        -42.75,
+        3,
+        -32.875
+      ],
+      "size": [
+        1.5,
+        6,
+        19.75
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-west-02",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        -42.75,
+        3,
+        -13.375
+      ],
+      "size": [
+        1.5,
+        6,
+        9.25
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-west-03",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        -42.75,
+        3,
+        13.375
+      ],
+      "size": [
+        1.5,
+        6,
+        9.25
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-west-04",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        -42.75,
+        3,
+        32.875
+      ],
+      "size": [
+        1.5,
+        6,
+        19.75
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-east-01",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        42.75,
+        3,
+        -32.875
+      ],
+      "size": [
+        1.5,
+        6,
+        19.75
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-east-02",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        42.75,
+        3,
+        -13.375
+      ],
+      "size": [
+        1.5,
+        6,
+        9.25
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-east-03",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        42.75,
+        3,
+        13.375
+      ],
+      "size": [
+        1.5,
+        6,
+        9.25
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-east-04",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        42.75,
+        3,
+        32.875
+      ],
+      "size": [
+        1.5,
+        6,
+        19.75
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-north-01",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        -33.875,
+        3,
+        42.75
+      ],
+      "size": [
+        17.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-north-02",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        -14.125,
+        3,
+        42.75
+      ],
+      "size": [
+        9.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-north-03",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        14.125,
+        3,
+        42.75
+      ],
+      "size": [
+        9.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-north-04",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        33.875,
+        3,
+        42.75
+      ],
+      "size": [
+        17.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-south-01",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        -33.875,
+        3,
+        -42.75
+      ],
+      "size": [
+        17.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-south-02",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        -14.125,
+        3,
+        -42.75
+      ],
+      "size": [
+        9.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-south-03",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        14.125,
+        3,
+        -42.75
+      ],
+      "size": [
+        9.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "service-south-04",
+      "zone": "service-corridor",
+      "kind": "wall",
+      "center": [
+        33.875,
+        3,
+        -42.75
+      ],
+      "size": [
+        17.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-west-north-01",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        -2.75,
+        3,
+        9.25
+      ],
+      "size": [
+        1.5,
+        6,
+        3.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-west-north-02",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        -2.75,
+        3,
+        19
+      ],
+      "size": [
+        1.5,
+        6,
+        6
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-west-north-03",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        -2.75,
+        3,
+        30.75
+      ],
+      "size": [
+        1.5,
+        6,
+        7.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-east-north-01",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        2.75,
+        3,
+        9.25
+      ],
+      "size": [
+        1.5,
+        6,
+        3.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-east-north-02",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        2.75,
+        3,
+        19
+      ],
+      "size": [
+        1.5,
+        6,
+        6
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-east-north-03",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        2.75,
+        3,
+        30.75
+      ],
+      "size": [
+        1.5,
+        6,
+        7.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-west-south-01",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        -2.75,
+        3,
+        -30.75
+      ],
+      "size": [
+        1.5,
+        6,
+        7.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-west-south-02",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        -2.75,
+        3,
+        -19
+      ],
+      "size": [
+        1.5,
+        6,
+        6
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-west-south-03",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        -2.75,
+        3,
+        -9.25
+      ],
+      "size": [
+        1.5,
+        6,
+        3.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-east-south-01",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        2.75,
+        3,
+        -30.75
+      ],
+      "size": [
+        1.5,
+        6,
+        7.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-east-south-02",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        2.75,
+        3,
+        -19
+      ],
+      "size": [
+        1.5,
+        6,
+        6
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spine-east-south-03",
+      "zone": "spine",
+      "kind": "wall",
+      "center": [
+        2.75,
+        3,
+        -9.25
+      ],
+      "size": [
+        1.5,
+        6,
+        3.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-south-west-01",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        -36.875,
+        3,
+        -2.75
+      ],
+      "size": [
+        11.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-south-west-02",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        -22.5,
+        3,
+        -2.75
+      ],
+      "size": [
+        7,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-south-west-03",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        -10.75,
+        3,
+        -2.75
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-south-east-01",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        10.75,
+        3,
+        -2.75
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-south-east-02",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        22.5,
+        3,
+        -2.75
+      ],
+      "size": [
+        7,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-south-east-03",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        36.875,
+        3,
+        -2.75
+      ],
+      "size": [
+        11.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-north-west-01",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        -36.875,
+        3,
+        2.75
+      ],
+      "size": [
+        11.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-north-west-02",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        -22.5,
+        3,
+        2.75
+      ],
+      "size": [
+        7,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-north-west-03",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        -10.75,
+        3,
+        2.75
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-north-east-01",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        10.75,
+        3,
+        2.75
+      ],
+      "size": [
+        6.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-north-east-02",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        22.5,
+        3,
+        2.75
+      ],
+      "size": [
+        7,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "cross-boundary-north-east-03",
+      "zone": "cross-corridor",
+      "kind": "wall",
+      "center": [
+        36.875,
+        3,
+        2.75
+      ],
+      "size": [
+        11.75,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "central-hall-south-01",
+      "zone": "central-hall",
+      "kind": "wall",
+      "center": [
+        -4.75,
+        3,
+        -7.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "central-hall-south-02",
+      "zone": "central-hall",
+      "kind": "wall",
+      "center": [
+        4.75,
+        3,
+        -7.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "central-hall-north-01",
+      "zone": "central-hall",
+      "kind": "wall",
+      "center": [
+        -4.75,
+        3,
+        7.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "central-hall-north-02",
+      "zone": "central-hall",
+      "kind": "wall",
+      "center": [
+        4.75,
+        3,
+        7.5
+      ],
+      "size": [
+        5.5,
+        6,
+        1.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "central-hall-west-01",
+      "zone": "central-hall",
+      "kind": "wall",
+      "center": [
+        -7.5,
+        3,
+        -4.75
+      ],
+      "size": [
+        1.5,
+        6,
+        5.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "central-hall-west-02",
+      "zone": "central-hall",
+      "kind": "wall",
+      "center": [
+        -7.5,
+        3,
+        4.75
+      ],
+      "size": [
+        1.5,
+        6,
+        5.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "central-hall-east-01",
+      "zone": "central-hall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        -4.75
+      ],
+      "size": [
+        1.5,
+        6,
+        5.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "central-hall-east-02",
+      "zone": "central-hall",
+      "kind": "wall",
+      "center": [
+        7.5,
+        3,
+        4.75
+      ],
+      "size": [
+        1.5,
+        6,
+        5.5
+      ],
+      "color": "#78838b"
+    },
+    {
+      "id": "spawn-front-team-b-01",
+      "zone": "spawn",
+      "kind": "wall",
+      "center": [
+        -6.375,
+        3,
+        -34.5
+      ],
+      "size": [
+        4.25,
+        6,
+        1.5
+      ],
+      "color": "#a76666"
+    },
+    {
+      "id": "spawn-front-team-b-02",
+      "zone": "spawn",
+      "kind": "wall",
+      "center": [
+        6.375,
+        3,
+        -34.5
+      ],
+      "size": [
+        4.25,
+        6,
+        1.5
+      ],
+      "color": "#a76666"
+    },
+    {
+      "id": "spawn-side-left-team-b",
+      "zone": "spawn",
+      "kind": "wall",
+      "center": [
+        -8.5,
+        3,
+        -40.5
+      ],
+      "size": [
+        1.5,
+        6,
+        12
+      ],
+      "color": "#a76666"
+    },
+    {
+      "id": "spawn-side-right-team-b",
+      "zone": "spawn",
+      "kind": "wall",
+      "center": [
+        8.5,
+        3,
+        -40.5
+      ],
+      "size": [
+        1.5,
+        6,
+        12
+      ],
+      "color": "#a76666"
+    },
+    {
+      "id": "spawn-front-team-a-01",
+      "zone": "spawn",
+      "kind": "wall",
+      "center": [
+        -6.375,
+        3,
+        34.5
+      ],
+      "size": [
+        4.25,
+        6,
+        1.5
+      ],
+      "color": "#5b91b5"
+    },
+    {
+      "id": "spawn-front-team-a-02",
+      "zone": "spawn",
+      "kind": "wall",
+      "center": [
+        6.375,
+        3,
+        34.5
+      ],
+      "size": [
+        4.25,
+        6,
+        1.5
+      ],
+      "color": "#5b91b5"
+    },
+    {
+      "id": "spawn-side-left-team-a",
+      "zone": "spawn",
+      "kind": "wall",
+      "center": [
+        -8.5,
+        3,
+        40.5
+      ],
+      "size": [
+        1.5,
+        6,
+        12
+      ],
+      "color": "#5b91b5"
+    },
+    {
+      "id": "spawn-side-right-team-a",
+      "zone": "spawn",
+      "kind": "wall",
+      "center": [
+        8.5,
+        3,
+        40.5
+      ],
+      "size": [
+        1.5,
+        6,
+        12
+      ],
+      "color": "#5b91b5"
+    }
+  ],
+  "lighting": {
+    "hemisphere": {
+      "sky": "#b8c6d5",
+      "ground": "#292f35",
+      "intensity": 0.75
+    },
+    "points": [
+      {
+        "id": "warehouse-light-1-1",
+        "x": -30,
+        "y": 5.35,
+        "z": -30,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-1-2",
+        "x": -30,
+        "y": 5.35,
+        "z": -10,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-1-3",
+        "x": -30,
+        "y": 5.35,
+        "z": 10,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-1-4",
+        "x": -30,
+        "y": 5.35,
+        "z": 30,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-2-1",
+        "x": -10,
+        "y": 5.35,
+        "z": -30,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-2-2",
+        "x": -10,
+        "y": 5.35,
+        "z": -10,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-2-3",
+        "x": -10,
+        "y": 5.35,
+        "z": 10,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-2-4",
+        "x": -10,
+        "y": 5.35,
+        "z": 30,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-3-1",
+        "x": 10,
+        "y": 5.35,
+        "z": -30,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-3-2",
+        "x": 10,
+        "y": 5.35,
+        "z": -10,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-3-3",
+        "x": 10,
+        "y": 5.35,
+        "z": 10,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-3-4",
+        "x": 10,
+        "y": 5.35,
+        "z": 30,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-4-1",
+        "x": 30,
+        "y": 5.35,
+        "z": -30,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-4-2",
+        "x": 30,
+        "y": 5.35,
+        "z": -10,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-4-3",
+        "x": 30,
+        "y": 5.35,
+        "z": 10,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      },
+      {
+        "id": "warehouse-light-4-4",
+        "x": 30,
+        "y": 5.35,
+        "z": 30,
+        "color": "#ffe3b0",
+        "intensity": 1.55,
+        "range": 26
+      }
+    ]
+  },
+  "teamSpawns": {
+    "teamA": [
+      {
+        "position": [
+          -2.2,
+          39.5
+        ],
+        "facingYaw": 0
+      },
+      {
+        "position": [
+          2.2,
+          39.5
+        ],
+        "facingYaw": 0
+      }
+    ],
+    "teamB": [
+      {
+        "position": [
+          2.2,
+          -39.5
+        ],
+        "facingYaw": 3.141592653589793
+      },
+      {
+        "position": [
+          -2.2,
+          -39.5
+        ],
+        "facingYaw": 3.141592653589793
+      }
+    ]
+  }
+}
