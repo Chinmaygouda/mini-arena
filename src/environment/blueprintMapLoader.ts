@@ -9,7 +9,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { TargetManager, FX_NON_RAYCAST_LAYER } from './targets';
 import type { BoxCollider, MapBounds } from '../player/firstPersonControls';
 
-export type MapId = 'range' | 'foundry' | 'culdesac' | 'dustline' | 'overpass' | 'neighborhood';
+export type MapId = 'range' | 'foundry' | 'culdesac' | 'dustline' | 'overpass' | 'neighborhood' | 'warehouse';
 
 export interface BlueprintBox {
   id: string;
@@ -115,8 +115,26 @@ export interface BlueprintMapData {
     name: string;
     mode?: string;
     theme?: string;
+    /** Outer world span; warehouse uses 96m while its playableSize is 92m. */
     size?: [number, number];
+    playableSize?: [number, number];
+    wallHeight?: number;
+    outerWallThickness?: number;
+    interiorWallThickness?: number;
+    mainCorridorClearWidth?: number;
+    serviceCorridorClearWidth?: number;
+    centralHallClearSize?: [number, number];
+    version?: number;
+    layoutStage?: string;
+    note?: string;
   };
+  zones?: Array<{
+    id: string;
+    name: string;
+    number?: number;
+    min: [number, number];
+    max: [number, number];
+  }>;
   buildings?: BuildingDef[];
   boxes?: BlueprintBox[];
   nature?: {
@@ -171,6 +189,7 @@ export interface LoadedMapResult {
   bounds: MapBounds;
   colliders: BoxCollider[];
   buildings: BuildingDef[];
+  zones?: BlueprintMapData['zones'];
   teamSpawns?: BlueprintMapData['teamSpawns'];
 }
 
@@ -181,6 +200,7 @@ export const MAP_INFO: Record<MapId, { name: string; file?: string }> = {
   dustline: { name: 'Dustline Village', file: '/maps/Dustline Village.json' },
   overpass: { name: 'Overpass Arena', file: '/maps/Overpass.json' },
   neighborhood: { name: 'Neighborhood District', file: '/maps/neighborhood.json' },
+  warehouse: { name: 'Warehouse — Walls Only', file: '/maps/warehouse_layout.json' },
 };
 
 export class BlueprintMapLoader {
@@ -299,8 +319,11 @@ export class BlueprintMapLoader {
       return m;
     };
 
-    // 1. Procedural High-Detail Ground Plane
-    const groundSpan = data.meta.size ? Math.max(data.meta.size[0], data.meta.size[1]) * 1.5 : 120;
+    // 1. Procedural ground plane. Warehouse is an indoor 96m shell, so do not
+    // extend its concrete floor into a large outdoor apron as the legacy arenas do.
+    const groundSpan = data.meta.size
+      ? Math.max(data.meta.size[0], data.meta.size[1]) * (mapId === 'warehouse' ? 1 : 1.5)
+      : 120;
     const groundTexture = this.generateProceduralGroundTexture(data.meta.theme || 'arid', groundSpan);
     const groundMat = new THREE.MeshStandardMaterial({
       map: groundTexture,
@@ -358,6 +381,39 @@ export class BlueprintMapLoader {
       });
     }
 
+    // 3.5. Warehouse base-stage industrial point lights. Fixture meshes are
+    // emissive and non-colliding; actual point lights are grouped so map changes cleanly remove them.
+    if (mapId === 'warehouse' && data.lighting?.points) {
+      const fixtureGeometry = new THREE.BoxGeometry(1.35, 0.08, 0.32);
+      const fixtureMaterial = new THREE.MeshStandardMaterial({
+        color: '#f2e7d2',
+        emissive: '#ffe3b0',
+        emissiveIntensity: 1.45,
+        roughness: 0.42,
+        metalness: 0.08,
+      });
+      data.lighting.points.forEach((lightData) => {
+        const light = new THREE.PointLight(
+          lightData.color,
+          lightData.intensity,
+          lightData.range,
+          2
+        );
+        light.name = `warehouse-light-${lightData.id}`;
+        light.position.set(lightData.x, lightData.y, lightData.z);
+        light.castShadow = false;
+        lightsGroup.add(light);
+
+        const fixture = new THREE.Mesh(fixtureGeometry, fixtureMaterial);
+        fixture.name = `warehouse-fixture-${lightData.id}`;
+        fixture.position.set(lightData.x, lightData.y + 0.35, lightData.z);
+        fixture.userData.ignoreRaycast = true;
+        fixture.castShadow = false;
+        fixture.receiveShadow = false;
+        mapGroup.add(fixture);
+      });
+    }
+
     // 4. Expand Nature: Trees, Rocks, Earthen Mounds
     if (data.nature) {
       this.expandNature(data.nature, colliders, mapGroup, getMaterial);
@@ -388,9 +444,11 @@ export class BlueprintMapLoader {
     this.currentMapGroup = mapGroup;
     this.currentLightsGroup = lightsGroup;
 
-    // 6. Calculate Map Bounds & Spawn Points
-    const halfW = data.meta.size ? data.meta.size[0] / 2 : 45;
-    const halfD = data.meta.size ? data.meta.size[1] / 2 : 45;
+    // 6. Playable bounds can be smaller than the outer architecture (warehouse
+    // has 96m external dimensions but a 92m player-playable interior).
+    const boundSize = data.meta.playableSize || data.meta.size;
+    const halfW = boundSize ? boundSize[0] / 2 : 45;
+    const halfD = boundSize ? boundSize[1] / 2 : 45;
     const bounds: MapBounds = {
       minX: -halfW,
       maxX: halfW,
@@ -422,6 +480,10 @@ export class BlueprintMapLoader {
       spawnX = 0;
       spawnZ = -42.0;
       spawnYaw = Math.PI;
+    } else if (mapId === 'warehouse') {
+      spawnX = 0;
+      spawnZ = -39.5;
+      spawnYaw = Math.PI;
     }
 
     // 7. Tactical Reactive Targets
@@ -451,6 +513,7 @@ export class BlueprintMapLoader {
       bounds,
       colliders,
       buildings: this.loadedBuildings,
+      zones: data.zones,
       teamSpawns: data.teamSpawns,
     };
   }
@@ -468,20 +531,23 @@ export class BlueprintMapLoader {
     // align with actual blocks instead of repeating a generic cross-road tile.
     const isArid = theme === 'arid' || theme === 'desert';
     const isNeighborhood = theme === 'neighborhood';
-    ctx.fillStyle = isNeighborhood ? '#78935a' : (isArid ? '#cbb58c' : '#3e4836');
+    const isWarehouse = theme === 'warehouse';
+    ctx.fillStyle = isWarehouse ? '#5e656b' : (isNeighborhood ? '#78935a' : (isArid ? '#cbb58c' : '#3e4836'));
     ctx.fillRect(0, 0, 1024, 1024);
 
     // Low-poly ground variation; texture is generated once per map load.
-    for (let i = 0; i < (isNeighborhood ? 6500 : 8000); i++) {
+    for (let i = 0; i < (isNeighborhood ? 6500 : (isWarehouse ? 4200 : 8000)); i++) {
       const x = Math.random() * 1024;
       const y = Math.random() * 1024;
-      const size = 1 + Math.random() * (isNeighborhood ? 5 : 4);
+      const size = 1 + Math.random() * (isNeighborhood ? 5 : (isWarehouse ? 3 : 4));
       const bright = Math.random() > 0.5;
       ctx.fillStyle = isNeighborhood
         ? (bright ? 'rgba(192, 202, 129, 0.18)' : 'rgba(56, 94, 47, 0.16)')
-        : (bright
-          ? (isArid ? 'rgba(235, 220, 190, 0.25)' : 'rgba(90, 110, 80, 0.25)')
-          : (isArid ? 'rgba(150, 125, 90, 0.25)' : 'rgba(40, 50, 35, 0.25)'));
+        : isWarehouse
+          ? (bright ? 'rgba(230, 235, 239, 0.055)' : 'rgba(20, 26, 31, 0.075)')
+          : (bright
+            ? (isArid ? 'rgba(235, 220, 190, 0.25)' : 'rgba(90, 110, 80, 0.25)')
+            : (isArid ? 'rgba(150, 125, 90, 0.25)' : 'rgba(40, 50, 35, 0.25)'));
       ctx.fillRect(x, y, size, size);
     }
 
@@ -547,6 +613,49 @@ export class BlueprintMapLoader {
           ctx.fillRect(toPx(16) - roadHalf, p - roadHalf + offset, roadHalf * 2, stripe);
         }
       }
+    } else if (isWarehouse) {
+      const toPx = (world: number) => ((world + groundSpan / 2) / groundSpan) * 1024;
+
+      // Concrete expansion joints on a 6m grid; these are painted floor details,
+      // not extra physical objects, so the stage remains a walls-only blockout.
+      ctx.strokeStyle = 'rgba(224, 231, 236, 0.14)';
+      ctx.lineWidth = 1.25;
+      for (let axis = -45; axis <= 45; axis += 6) {
+        const px = toPx(axis);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, 1024); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, px); ctx.lineTo(1024, px); ctx.stroke();
+      }
+
+      // A subtle painted guide line marks the centre of the 4m cross-corridor.
+      ctx.strokeStyle = 'rgba(232, 193, 96, 0.52)';
+      ctx.lineWidth = Math.max(1.5, 0.06 / groundSpan * 1024);
+      ctx.setLineDash([toPx(1.5) - toPx(0), toPx(2.5) - toPx(0)]);
+      const mid = toPx(0);
+      ctx.beginPath(); ctx.moveTo(mid, 0); ctx.lineTo(mid, 1024); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(1024, mid); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Spawn pads and side loading-bay safety zones are painted onto the concrete.
+      ctx.fillStyle = 'rgba(50, 145, 220, 0.16)';
+      ctx.fillRect(toPx(-7.5), Math.min(toPx(34.5), toPx(46.5)), toPx(7.5) - toPx(-7.5), Math.abs(toPx(34.5) - toPx(46.5)));
+      ctx.fillStyle = 'rgba(220, 65, 76, 0.14)';
+      ctx.fillRect(toPx(-7.5), Math.min(toPx(-34.5), toPx(-46.5)), toPx(7.5) - toPx(-7.5), Math.abs(toPx(-34.5) - toPx(-46.5)));
+
+      ctx.fillStyle = 'rgba(230, 186, 71, 0.24)';
+      const dockStart = toPx(-46.5), dockEnd = toPx(-39.5);
+      const dockMinZ = toPx(-8), dockMaxZ = toPx(8);
+      ctx.fillRect(dockStart, dockMinZ, dockEnd - dockStart, dockMaxZ - dockMinZ);
+      ctx.fillRect(toPx(39.5), dockMinZ, toPx(46.5) - toPx(39.5), dockMaxZ - dockMinZ);
+
+      // Numbered section labels make the planned four-part build sequence visible.
+      ctx.fillStyle = 'rgba(177, 218, 240, 0.28)';
+      ctx.font = '700 58px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('1', toPx(-22), toPx(22));
+      ctx.fillText('2', toPx(22), toPx(22));
+      ctx.fillText('3', toPx(-22), toPx(-22));
+      ctx.fillText('4', toPx(22), toPx(-22));
     } else {
       // Legacy tiled terrain used by the existing arenas.
       ctx.fillStyle = isArid ? 'rgba(168, 142, 105, 0.45)' : 'rgba(55, 48, 38, 0.45)';
@@ -559,7 +668,7 @@ export class BlueprintMapLoader {
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(isNeighborhood ? 1 : 8, isNeighborhood ? 1 : 8);
+    texture.repeat.set(isNeighborhood || isWarehouse ? 1 : 8, isNeighborhood || isWarehouse ? 1 : 8);
     return texture;
   }
 
