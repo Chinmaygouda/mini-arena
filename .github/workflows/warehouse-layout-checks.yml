@@ -1,0 +1,48 @@
+name: Warehouse Layout Stage 1 Checks
+
+on:
+  push:
+    branches:
+      - maps
+  pull_request:
+    paths:
+      - "public/maps/warehouse_layout.json"
+      - "src/environment/blueprintMapLoader.ts"
+      - "src/environment/atmosphereManager.ts"
+      - "src/ui/fpsHUD.ts"
+      - "tests/warehouseLayout.test.mjs"
+      - "tests/warehouseLayout.playwright.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/warehouse-layout-checks.yml"
+
+jobs:
+  validate-warehouse-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Compile and bundle
+        run: npm run build
+      - name: Run warehouse geometry tests
+        run: node --experimental-strip-types --test tests/warehouseLayout.test.mjs
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Render real warehouse map in Chromium
+        run: node tests/warehouseLayout.playwright.mjs
+      - name: Upload warehouse layout screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: warehouse-layout-stage-1
+          path: artifacts/warehouse-layout/
+          if-no-files-found: warn
+          retention-days: 7
