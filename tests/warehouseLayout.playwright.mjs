@@ -114,9 +114,9 @@ try {
     const controls = app.controls;
     controls.__warehouseSectionUpdate = controls.update;
     controls.update = () => {
-      camera.position.set(-22, 48, 20);
+      camera.position.set(22, 48, 20);
       camera.up.set(0, 0, 1);
-      camera.lookAt(-22, 0, 20);
+      camera.lookAt(22, 0, 20);
       camera.fov = 43;
       camera.updateProjectionMatrix();
     };
@@ -134,7 +134,7 @@ try {
     controls.forceReleaseKeys();
     if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = true;
     controls.pitch = 0;
-    controls.setPosition(-22, 1.7, 11.5, Math.PI / 2);
+    controls.setPosition(22, 1.7, 11.5, Math.PI);
     controls.update(1 / 60);
     const hud = document.querySelector('#fps-hud');
     if (hud instanceof HTMLElement) hud.style.display = '';
