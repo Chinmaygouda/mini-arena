@@ -85,12 +85,14 @@ try {
     controls.forceReleaseKeys();
     controls.__warehouseOriginalUpdate = controls.update.bind(controls);
     controls.update = () => {
-      camera.position.set(0, 116, 0);
+      camera.position.set(0, 88, 0);
       camera.up.set(0, 0, 1);
       camera.lookAt(0, 0, 0);
-      camera.fov = 50;
+      camera.fov = 45;
       camera.updateProjectionMatrix();
     };
+    // Hide the first-person weapon model only during the overhead layout evidence capture.
+    if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = false;
     const hud = document.querySelector('#fps-hud');
     if (hud instanceof HTMLElement) hud.style.display = 'none';
     const intro = document.querySelector('#instructions-overlay');
@@ -106,6 +108,7 @@ try {
     controls.update = controls.__warehouseOriginalUpdate;
     delete controls.__warehouseOriginalUpdate;
     controls.forceReleaseKeys();
+    if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = true;
     controls.pitch = 0;
     controls.setPosition(0, 1.7, -39.5, Math.PI);
     controls.update(1 / 60);
