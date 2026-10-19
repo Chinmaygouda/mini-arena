@@ -233,11 +233,11 @@ try {
   section2RouteResults.push(await runRoute(page, 'Section 2 Route 4 — move into upper aisle', [
     { x: -14.0, z: 17.4 }, { x: -13.6, z: 17.4 }, { x: -13.6, z: 20.6 },
   ]));
-  section2RouteResults.push(await runRoute(page, 'Section 2 Route 5 — upper aisle and loading lane', [
-    { x: -13.6, z: 20.6 }, { x: -8.8, z: 20.6 }, { x: -8.8, z: 23.5 },
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 5 — upper aisle to the inner doorway approach', [
+    { x: -13.6, z: 20.6 }, { x: -8.8, z: 20.6 }, { x: -11.8, z: 20.6 }, { x: -11.8, z: 24.5 },
   ]));
-  section2RouteResults.push(await runRoute(page, 'Section 2 Route 6 — exit into central corridor', [
-    { x: -8.8, z: 23.5 }, { x: 0.0, z: 23.5 },
+  section2RouteResults.push(await runRoute(page, 'Section 2 Route 6 — pass through the intended inner doorway to central corridor', [
+    { x: -11.8, z: 24.5 }, { x: 0.0, z: 24.5 },
   ]));
   const section2JumpResults = [];
   section2JumpResults.push(await runJumpCheck(page, 'Section 2 jump beside cross-rack upright', { x: -29.3, z: 12.8 }));
