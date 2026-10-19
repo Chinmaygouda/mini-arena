@@ -159,6 +159,34 @@ test('Section 1 contains four storage rack runs, pallet loads and crates', () =>
   assert.equal(section1.filter((box) => box.kind === 'metal' && box.id.includes('beam')).length, 72);
   assert.equal(section1.filter((box) => box.id.includes('upper-deck')).length, 20);
   assert.equal(map.zones.find((zone) => zone.id === 'section1').propsSummary.rackRuns, 4);
+
+  const expectedUpperBays = {
+    '01': [1, 3, 5],
+    '02': [2, 4, 5],
+    '03': [1, 2, 4],
+    '04': [1, 3, 4],
+  };
+  for (const [rack, expectedBays] of Object.entries(expectedUpperBays)) {
+    const actualBays = section1
+      .filter((box) => box.id.startsWith(`s1-rack-${rack}-crate-upper-`))
+      .map((box) => Number(box.id.match(/crate-upper-(\\d+)/)?.[1]))
+      .sort((a, b) => a - b);
+    assert.deepEqual(actualBays, expectedBays, `Rack ${rack} uses its staggered upper crate pattern`);
+  }
+});
+
+test('Warehouse shelf decks have dark matte coated-steel material values', () => {
+  const decks = map.boxes.filter((box) => box.id.includes('-upper-deck-'));
+  assert.equal(decks.length, 20);
+  assert.ok(decks.every((deck) => deck.color.toLowerCase() === '#47535b'));
+  assert.ok(decks.every((deck) => deck.roughness === 0.65));
+  assert.ok(decks.every((deck) => deck.metalness === 0.25));
+  const loader = read('src/environment/blueprintMapLoader.ts');
+  assert.match(loader, /roughness\?: number/);
+  assert.match(loader, /metalness\?: number/);
+  assert.match(loader, /box\.roughness \\?\\? defaultRoughness/);
+  assert.match(loader, /box\.metalness \\?\\? defaultMetalness/);
+  assert.match(loader, /const cacheKey = `\\$\\{hex\\.toLowerCase\\(\\)\\}\\|\\$\\{roughness\\.toFixed\\(3\\)\\}\\|\\$\\{metalness\\.toFixed\\(3\\)\\}`/);
 });
 
 test('Only Section 1 has props; Sections 2, 3, 4 and central hall remain empty', () => {
