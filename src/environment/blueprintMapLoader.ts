@@ -670,7 +670,13 @@ export class BlueprintMapLoader {
         ctx.font = '800 58px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(mark.label, px, pz);
+        // The floor UVs invert the glyph vertically in the top-down view; rotate
+        // each glyph in texture space so the visible in-game number reads upright.
+        ctx.save();
+        ctx.translate(px, pz);
+        ctx.rotate(Math.PI);
+        ctx.fillText(mark.label, 0, 0);
+        ctx.restore();
       }
     } else {
       // Legacy tiled terrain used by the existing arenas.
