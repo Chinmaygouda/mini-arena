@@ -13,8 +13,11 @@ const root = path.resolve(here, '..');
 const outDir = path.join(root, 'artifacts/warehouse-section-4');
 fs.mkdirSync(outDir, { recursive: true });
 
+const port = process.env.PORT || '5177';
+const url = `http://127.0.0.1:${port}/?map=warehouse&quality=high&time=overcast`;
+
 async function run() {
-  console.log('Connecting to running FPS game at http://localhost:5173/?map=warehouse&quality=high&time=overcast ...');
+  console.log(`Connecting to running FPS game at ${url} ...`);
 
   const browser = await chromium.launch({
     headless: true,
@@ -26,7 +29,7 @@ async function run() {
   const pageErrors = [];
   page.on('pageerror', (err) => pageErrors.push(err.message));
 
-  await page.goto('http://localhost:5173/?map=warehouse&quality=high&time=overcast', { waitUntil: 'domcontentloaded' });
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
 
   // Wait for map and colliders
   await page.waitForFunction(() => {

@@ -196,7 +196,7 @@ test('Warehouse shelf decks have dark matte coated-steel material values', () =>
 test('Props remain inside their declared warehouse zones', () => {
   const props = map.boxes.filter((box) => box.kind !== 'wall');
   assert.equal(props.length, map.meta.propCount);
-  assert.ok(props.every((box) => ['section1', 'section2', 'section3'].includes(box.zone)));
+  assert.ok(props.every((box) => ['section1', 'section2', 'section3', 'section4'].includes(box.zone)));
   for (const prop of props) {
     const zone = map.zones.find((item) => item.id === prop.zone);
     assert.ok(zone, `${prop.id} resolves to its zone`);
@@ -214,6 +214,8 @@ test('Props remain inside their declared warehouse zones', () => {
   for (const kind of ['conveyor-frame', 'conveyor-belt', 'sorter-branch-frame', 'barcode-scanner-arch', 'induction-table', 'exception-sort-table', 'sort-destination-bin', 'roll-cage-base', 'packing-bench', 'parcel-scale', 'safety-bollard', 'floor-lane-marking']) {
     assert.ok(section3Kinds.has(kind), `Section 3 includes ${kind}`);
   }
+  const section4 = props.filter((box) => box.zone === 'section4');
+  assert.equal(section4.length, 93, 'Section 4 contains the IT & Logistics Hub prop set');
   assert.equal(map.boxes.filter((box) => box.kind === 'wall').length, 202);
 });
 
@@ -311,3 +313,43 @@ test('Section 3 is a distinct parcel sortation cell with valid geometry and no o
   assert.equal(map.meta.propCount, map.boxes.filter((box) => box.kind !== 'wall').length);
   assert.equal(map.meta.visiblePropCount, map.boxes.filter((box) => box.kind !== 'wall' && box.visible !== false).length);
 });
+
+test('Section 4 is a distinct IT & logistics network hub with valid geometry and shootable server gaps', () => {
+  const section4 = map.boxes.filter((box) => box.zone === 'section4');
+  const zone = map.zones.find((item) => item.id === 'section4');
+  assert.ok(zone, 'Section 4 zone exists');
+  assert.equal(zone.number, 4);
+  assert.deepEqual(zone.min, [-38, -31]);
+  assert.deepEqual(zone.max, [-7, -8]);
+  assert.equal(section4.length, 93, 'Section 4 contains 93 IT & Logistics Hub props');
+
+  for (const box of section4) {
+    assert.ok(box.size.every((n) => Number.isFinite(n) && n > 0), `${box.id} has positive finite dimensions`);
+    assert.ok(box.center.every(Number.isFinite), `${box.id} has a finite center`);
+    assert.ok(box.center[0] - box.size[0] / 2 >= zone.min[0] - 0.05, `${box.id} west bound`);
+    assert.ok(box.center[0] + box.size[0] / 2 <= zone.max[0] + 0.05, `${box.id} east bound`);
+    assert.ok(box.center[2] - box.size[2] / 2 >= zone.min[1] - 0.05, `${box.id} south bound`);
+    assert.ok(box.center[2] + box.size[2] / 2 <= zone.max[1] + 0.05, `${box.id} north bound`);
+  }
+
+  // 8 Server racks with clear shootable gaps
+  const servers = section4.filter((b) => b.id.includes('server-') && b.id.includes('cabinet'));
+  assert.equal(servers.length, 8, '8 server rack cabinets');
+  assert.ok(section4.filter((b) => b.id.includes('cable-runway')).length >= 2, 'overhead cable runways');
+
+  // Dispatch workstations & monitors
+  assert.ok(section4.some((b) => b.id.includes('dispatch-desk')), 'dispatch desk present');
+  assert.ok(section4.filter((b) => b.id.includes('monitor-')).length >= 4, 'screens and stands');
+
+  // Storage cage
+  assert.ok(section4.filter((b) => b.id.includes('cage-post')).length >= 4, 'cage posts');
+  assert.ok(section4.filter((b) => b.id.includes('cage-locker')).length >= 2, 'cage lockers');
+
+  // Pallets & crates
+  assert.ok(section4.filter((b) => b.kind === 'pallet').length >= 6, 'hardware pallets');
+  assert.ok(section4.filter((b) => b.kind === 'crate').length >= 8, 'hardware shipping cartons');
+
+  // Overhead warehouse lighting
+  assert.ok(section4.filter((b) => b.id.includes('light-') && b.id.includes('tube')).length >= 5, 'overhead lights');
+});
+

@@ -17,14 +17,14 @@ const root = path.resolve(here, '..');
 const mapPath = path.join(root, 'public/maps/warehouse_layout.json');
 const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
 
-// Preserve all original 202 walls, Section 1 props (272), Section 2 props (248)
 const existingBoxes = map.boxes.filter((b) => b.zone !== 'section4');
 const originalWalls = existingBoxes.filter((b) => b.kind === 'wall');
 const s1Props = existingBoxes.filter((b) => b.zone === 'section1');
 const s2Props = existingBoxes.filter((b) => b.zone === 'section2');
+const s3Props = existingBoxes.filter((b) => b.zone === 'section3');
 
 console.log(
-  `Preserving ${originalWalls.length} walls | ${s1Props.length} S1 props | ${s2Props.length} S2 props.`
+  `Preserving ${originalWalls.length} walls | ${s1Props.length} S1 props | ${s2Props.length} S2 props | ${s3Props.length} S3 props.`
 );
 
 const s4Props = [];
@@ -512,6 +512,21 @@ for (const p of s4Props) {
   }
 }
 
+// Assign explicit collision categories and walkable surface flags
+for (const b of s4Props) {
+  if (b.collision === false) {
+    b.category = 'DECORATIVE';
+  } else if (b.id.includes('cage-post') || (b.id.includes('bollard') && b.id.includes('post'))) {
+    b.category = 'SUPPORT';
+  } else if (b.id.includes('pallet') || b.id.includes('desk-top') || b.id.includes('techcase')) {
+    b.category = 'SOLID';
+    b.walkable = true;
+    b.isWalkable = true;
+  } else {
+    b.category = 'SOLID';
+  }
+}
+
 // Check ID uniqueness across entire map
 const allNewBoxes = [...existingBoxes, ...s4Props];
 const idSet = new Set();
@@ -523,12 +538,13 @@ for (const b of allNewBoxes) {
   idSet.add(b.id);
 }
 
-// Update metadata
-map.meta.name = 'Warehouse — Section 1, 2 & 4 (IT & Logistics Hub)';
-map.meta.mode = 'Symmetrical 2v2 warehouse layout — S1 Storage | S2 Loading Bay | S4 IT Logistics Hub';
-map.meta.layoutStage = 'section-4-detail';
+// Update metadata preserving all sections (S1 pallet storage, S2 loading bay, S3 parcel sortation, S4 IT logistics hub)
+map.meta.name = 'Warehouse — Section 3 Parcel Sortation & Dispatch Cell';
+map.meta.mode = 'Distinct warehouse functions — Section 1 pallet storage, Section 2 loading bay, Section 3 conveyor parcel sortation and dispatch, Section 4 IT & logistics dispatch hub';
+map.meta.layoutStage = 'section-1-pallet-storage-section-2-loading-bay-section-3-parcel-sortation-dispatch';
 map.meta.propCount = allNewBoxes.filter((b) => b.kind !== 'wall').length;
 map.meta.physicalBoxCount = allNewBoxes.length;
+map.meta.visiblePropCount = allNewBoxes.filter((b) => b.kind !== 'wall' && b.visible !== false).length;
 map.meta.sectionProgress = {
   ...map.meta.sectionProgress,
   section4: 'warehouse-it-logistics-hub-optimized',
@@ -552,5 +568,5 @@ map.boxes = allNewBoxes;
 fs.writeFileSync(mapPath, JSON.stringify(map, null, 2), 'utf8');
 console.log(`✓ Updated ${mapPath}`);
 console.log(
-  `  Total boxes: ${allNewBoxes.length} (202 walls | S1: ${s1Props.length} | S2: ${s2Props.length} | S4: ${s4Props.length})`
+  `  Total boxes: ${allNewBoxes.length} (202 walls | S1: ${s1Props.length} | S2: ${s2Props.length} | S3: ${s3Props.length} | S4: ${s4Props.length})`
 );
