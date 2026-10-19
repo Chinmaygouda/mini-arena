@@ -714,7 +714,8 @@ export class WeaponManager {
     mouseDelta: { x: number; y: number },
     isMoving: boolean,
     isSprinting: boolean,
-    horizontalSpeed: number = 0
+    horizontalSpeed: number = 0,
+    isCrouching: boolean = false
   ) {
     this.lastDelta = delta;
     this.state.isMoving = isMoving;
@@ -798,9 +799,12 @@ export class WeaponManager {
     this.pistol.slideGroup.position.z = THREE.MathUtils.lerp(this.pistol.slideGroup.position.z, 0, delta * 30);
     this.smg.boltCarrierGroup.position.z = THREE.MathUtils.lerp(this.smg.boltCarrierGroup.position.z, -0.02, delta * 40);
 
-    // Spread Decay
-    const minSpread = this.state.isScoped ? cur.spreadBase * 0.35 : cur.spreadBase;
-    this.state.spreadRadius = THREE.MathUtils.lerp(this.state.spreadRadius, minSpread, delta * cur.spreadDecayRate * 25);
+    // Spread Decay with Crouch Stability Bonus
+    const minSpread = this.state.isScoped
+      ? cur.spreadBase * 0.35
+      : (isCrouching ? cur.spreadBase * 0.70 : cur.spreadBase);
+    const decayMultiplier = isCrouching ? 1.35 : 1.0;
+    this.state.spreadRadius = THREE.MathUtils.lerp(this.state.spreadRadius, minSpread, delta * cur.spreadDecayRate * 25 * decayMultiplier);
 
     // 3. Mouse Look Inertia Sway
     const targetSwayX = -mouseDelta.x * 0.00045;
@@ -963,6 +967,8 @@ export class WeaponManager {
           if (this.reloadStage === 0) {
             this.reloadStage = 1;
             sound.playAKMagOut();
+            this.recoil.pitchX += 0.010;
+            this.recoil.rollZ += 0.012;
           }
           const p = (progress - 0.20) / 0.24;
           reloadPosY = -0.09;
@@ -1000,7 +1006,8 @@ export class WeaponManager {
           if (progress >= 0.62 && this.reloadStage === 1) {
             this.reloadStage = 2;
             sound.playAKMagIn();
-            this.recoil.kickZ += 0.024;
+            this.recoil.kickZ += 0.026;
+            this.recoil.pitchX += 0.014;
             reloadPosY += 0.012;
             this.ak47.magazineGroup.rotation.set(0, 0, 0);
           }
@@ -1019,7 +1026,8 @@ export class WeaponManager {
                 this.reloadStage = 3;
                 sound.playAKBoltRack();
                 this.ak47.boltCarrierGroup.position.z = 0.02;
-                this.recoil.kickZ += 0.018;
+                this.recoil.kickZ += 0.020;
+                this.recoil.pitchX -= 0.016;
               }
             }
           } else {
@@ -1122,7 +1130,8 @@ export class WeaponManager {
               this.state.reserveAmmo = curAmmo.reserve;
               this.schedulerState.ammoInClip = curAmmo.clip;
               this.notifyState();
-              this.recoil.kickZ += 0.014;
+              this.recoil.kickZ += 0.018;
+              this.recoil.pitchX += 0.009;
             }
 
             if (progress >= st.commit + 0.05 && (curAmmo.clip >= cur.magCapacity || curAmmo.reserve <= 0)) {
@@ -1166,6 +1175,7 @@ export class WeaponManager {
               if (progress >= 0.88 && this.reloadStage === 4) {
                 this.reloadStage = 5;
                 sound.playShotgunPumpBack();
+                this.recoil.kickZ += 0.020;
               }
             } else {
               const p = (progress - 0.93) / 0.07;
@@ -1175,6 +1185,8 @@ export class WeaponManager {
               if (progress >= 0.95 && this.reloadStage === 5) {
                 this.reloadStage = 6;
                 sound.playShotgunPumpForward();
+                this.recoil.kickZ -= 0.016;
+                this.recoil.pitchX -= 0.012;
               }
             }
           } else {
@@ -1240,9 +1252,11 @@ export class WeaponManager {
           if (progress >= 0.08 && this.reloadStage === 0) {
             this.reloadStage = 1;
             sound.playSniperBoltUnlock();
+            this.recoil.rollZ -= 0.016;
           } else if (progress >= 0.16 && this.reloadStage === 1) {
             this.reloadStage = 2;
             sound.playSniperBoltPull();
+            this.recoil.kickZ += 0.020;
           }
         } else {
           this.sniper.boltCarrierGroup.position.set(0.028, 0.032, 0.01);
@@ -1261,6 +1275,7 @@ export class WeaponManager {
           if (progress >= 0.32 && this.reloadStage === 2) {
             this.reloadStage = 3;
             sound.playSniperMagOut();
+            this.recoil.pitchX += 0.010;
           }
         } else if (progress >= 0.44 && progress < 0.72) {
           const p = (progress - 0.44) / 0.28;
@@ -1275,7 +1290,8 @@ export class WeaponManager {
           if (progress >= 0.65 && this.reloadStage === 3) {
             this.reloadStage = 4;
             sound.playSniperMagIn();
-            this.recoil.kickZ += 0.018;
+            this.recoil.kickZ += 0.026;
+            this.recoil.pitchX += 0.014;
           }
         } else if (progress >= 0.72) {
           this.sniper.magazineGroup.position.set(0, -0.08, -0.06);
@@ -1283,10 +1299,12 @@ export class WeaponManager {
             if (progress >= 0.80 && this.reloadStage === 4) {
               this.reloadStage = 5;
               sound.playSniperBoltPush();
+              this.recoil.kickZ -= 0.016;
             } else if (progress >= 0.90 && this.reloadStage === 5) {
               this.reloadStage = 6;
               sound.playSniperBoltLock();
-              this.recoil.kickZ += 0.012;
+              this.recoil.rollZ += 0.018;
+              this.recoil.pitchX -= 0.012;
             }
           }
         }
@@ -1319,6 +1337,8 @@ export class WeaponManager {
         if (progress >= 0.10 && this.reloadStage === 0) {
           this.reloadStage = 1;
           sound.playPistolMagOut();
+          this.recoil.pitchX += 0.009;
+          this.recoil.rollZ -= 0.008;
         }
 
         if (progress < 0.22) {
@@ -1357,7 +1377,8 @@ export class WeaponManager {
           if (progress >= 0.63 && this.reloadStage === 1) {
             this.reloadStage = 2;
             sound.playPistolMagIn();
-            this.recoil.kickZ += 0.022;
+            this.recoil.kickZ += 0.026;
+            this.recoil.pitchX += 0.012;
             reloadPosY += 0.012;
           }
         } else if (progress < 0.80) {
@@ -1367,7 +1388,8 @@ export class WeaponManager {
               this.reloadStage = 3;
               sound.playPistolSlideRelease();
               this.pistol.slideGroup.position.z = 0;
-              this.recoil.kickZ += 0.018;
+              this.recoil.kickZ -= 0.018;
+              this.recoil.pitchX -= 0.014;
             }
           }
         } else {
@@ -1410,6 +1432,7 @@ export class WeaponManager {
         if (progress >= 0.10 && this.reloadStage === 0) {
           this.reloadStage = 1;
           sound.playSMGMagOut();
+          this.recoil.pitchX += 0.009;
         }
 
         if (progress < 0.18) {
@@ -1442,7 +1465,8 @@ export class WeaponManager {
           if (progress >= 0.63 && this.reloadStage === 1) {
             this.reloadStage = 2;
             sound.playSMGMagIn();
-            this.recoil.kickZ += 0.024;
+            this.recoil.kickZ += 0.026;
+            this.recoil.pitchX += 0.012;
             reloadPosY += 0.014;
           }
         } else if (progress < 0.82) {
@@ -1459,7 +1483,8 @@ export class WeaponManager {
                 this.reloadStage = 3;
                 sound.playSMGBolt();
                 this.smg.boltCarrierGroup.position.z = -0.02;
-                this.recoil.kickZ += 0.016;
+                this.recoil.kickZ -= 0.016;
+                this.recoil.pitchX -= 0.012;
               }
             }
           } else {
@@ -1479,6 +1504,14 @@ export class WeaponManager {
           );
         }
       }
+
+      // Add subtle organic operator breathing & holding tension during reload workspace
+      const breathPhase = this.idleBreathTimer * 3.2;
+      const organicReloadTremorY = Math.sin(breathPhase) * 0.0016;
+      const organicReloadTremorZ = Math.cos(breathPhase * 0.8) * 0.0024;
+      const workspaceWeight = Math.sin(progress * Math.PI);
+      reloadPosY += organicReloadTremorY * workspaceWeight;
+      reloadRotZ += organicReloadTremorZ * workspaceWeight;
 
       if (progress >= 1) {
         this.state.isReloading = false;

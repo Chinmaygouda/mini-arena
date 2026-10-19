@@ -60,6 +60,9 @@ class FPSApp {
   public activeTracers: ActiveTracer[] = [];
   private isDebugMode: boolean = false;
   private debugRaycaster = new THREE.Raycaster();
+  private debugVisualizerGroup = new THREE.Group();
+  private playerColliderBoxHelper?: THREE.Box3Helper;
+  private playerBox3 = new THREE.Box3();
   private scratchCameraDir = new THREE.Vector3();
   private scratchTracerHead = new THREE.Vector3();
   private scratchTracerTail = new THREE.Vector3();
@@ -389,6 +392,8 @@ class FPSApp {
       } else if (e.code === 'KeyU') {
         const next = !this.weaponManager.isDebugMuzzleMarkerEnabled();
         this.weaponManager.setDebugMuzzleMarker(next);
+      } else if (e.code === 'KeyB') {
+        this.isDebugMode = !this.isDebugMode;
       }
     };
 
@@ -563,6 +568,9 @@ class FPSApp {
     // Controls & Locomotion Update
     this.controls.update(delta);
 
+    // Stance update in HUD
+    this.hud.updateStance(this.controls.isCrouching, this.controls.isOverheadBlocked);
+
     // Bullet Tracers Advance & Decay (High-velocity dynamic projectile bolts)
     // Advance pre-existing active tracers BEFORE updating weapons so that newly created shots
     // render emerging from the actual muzzle point on their first rendered frame without a 1-frame advance offset.
@@ -629,7 +637,8 @@ class FPSApp {
       this.controls.mouseDelta,
       this.controls.isMoving,
       this.controls.isSprinting,
-      this.controls.getHorizontalSpeed()
+      this.controls.getHorizontalSpeed(),
+      this.controls.isCrouching
     );
 
     // Target Physics & Wobble Update
@@ -663,6 +672,9 @@ class FPSApp {
       } else {
         this.hud.updateDebugRangefinder(null, 0, 0, false, curDef.name);
       }
+      this.updateDebugVisuals();
+    } else if (this.debugVisualizerGroup.parent) {
+      this.debugVisualizerGroup.visible = false;
     }
 
     // Pointer-Lock Sync with HUD
@@ -671,6 +683,35 @@ class FPSApp {
     // Primary Scene Rendering
     this.renderer.render(this.scene, this.camera);
   };
+
+  private updateDebugVisuals() {
+    if (!this.debugVisualizerGroup.parent) {
+      this.scene.add(this.debugVisualizerGroup);
+    }
+    this.debugVisualizerGroup.visible = true;
+
+    const feetY = this.controls.position.y - this.controls.getEyeHeight();
+    const headY = this.controls.position.y + 0.15;
+    const r = 0.35;
+    this.playerBox3.min.set(this.controls.position.x - r, feetY, this.controls.position.z - r);
+    this.playerBox3.max.set(this.controls.position.x + r, headY, this.controls.position.z + r);
+
+    if (!this.playerColliderBoxHelper) {
+      this.playerColliderBoxHelper = new THREE.Box3Helper(this.playerBox3, new THREE.Color(0x00ff88));
+      this.playerColliderBoxHelper.layers.set(FX_NON_RAYCAST_LAYER);
+      (this.playerColliderBoxHelper as any).userData = { ignoreRaycast: true };
+      this.debugVisualizerGroup.add(this.playerColliderBoxHelper);
+    }
+
+    const boxMat = this.playerColliderBoxHelper.material as THREE.LineBasicMaterial;
+    if (this.controls.isOverheadBlocked) {
+      boxMat.color.setHex(0xffaa00);
+    } else if (this.controls.isCrouching) {
+      boxMat.color.setHex(0x00ffff);
+    } else {
+      boxMat.color.setHex(0x00ff88);
+    }
+  }
 }
 
 // Instantiate FPS Engine

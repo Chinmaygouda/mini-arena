@@ -2,6 +2,12 @@
 // High-fidelity procedural 3D model of the AK-47 Vanguard Assault Rifle with articulated components
 
 import * as THREE from 'three';
+import {
+  applyPBRTexture,
+  getWoodGrainTextures,
+  getBrushedSteelTextures,
+  getTacticalFabricTextures,
+} from './weaponTextures.ts';
 
 export interface AK47Components {
   root: THREE.Group;
@@ -26,18 +32,25 @@ export function createAK47Model(): AK47Components {
   const gunMeshGroup = new THREE.Group();
   root.add(gunMeshGroup);
 
+  // Procedural PBR Textures
+  const woodTex = getWoodGrainTextures();
+  const steelTex = getBrushedSteelTextures();
+  const fabricTex = getTacticalFabricTextures();
+
   // Materials
   const metalReceiverMat = new THREE.MeshStandardMaterial({
     color: 0x363c42,
-    metalness: 0.85,
-    roughness: 0.28,
+    metalness: 0.82,
+    roughness: 0.32,
   });
+  applyPBRTexture(metalReceiverMat, steelTex, 0.002);
 
   const darkSteelMat = new THREE.MeshStandardMaterial({
     color: 0x22262a,
-    metalness: 0.92,
-    roughness: 0.22,
+    metalness: 0.90,
+    roughness: 0.26,
   });
+  applyPBRTexture(darkSteelMat, steelTex, 0.0015);
 
   const polishedBoltMat = new THREE.MeshStandardMaterial({
     color: 0xe0e6ed,
@@ -46,34 +59,39 @@ export function createAK47Model(): AK47Components {
   });
 
   const woodStockMat = new THREE.MeshStandardMaterial({
-    color: 0x933b19,
-    roughness: 0.45,
-    metalness: 0.08,
+    color: 0xa8481e,
+    roughness: 0.38,
+    metalness: 0.05,
   });
+  applyPBRTexture(woodStockMat, woodTex, 0.003);
 
   const woodHandguardMat = new THREE.MeshStandardMaterial({
-    color: 0xa8481e,
-    roughness: 0.42,
-    metalness: 0.08,
+    color: 0xb24e22,
+    roughness: 0.36,
+    metalness: 0.05,
   });
+  applyPBRTexture(woodHandguardMat, woodTex, 0.003);
 
   const magazineSteelMat = new THREE.MeshStandardMaterial({
     color: 0x2b3035,
     metalness: 0.88,
-    roughness: 0.3,
+    roughness: 0.32,
   });
+  applyPBRTexture(magazineSteelMat, steelTex, 0.0025);
 
   const gloveMat = new THREE.MeshStandardMaterial({
     color: 0x2a333d,
-    roughness: 0.75,
-    metalness: 0.15,
+    roughness: 0.72,
+    metalness: 0.12,
   });
+  applyPBRTexture(gloveMat, fabricTex, 0.002);
 
   const sleeveMat = new THREE.MeshStandardMaterial({
     color: 0x181f26,
     roughness: 0.85,
     metalness: 0.05,
   });
+  applyPBRTexture(sleeveMat, fabricTex, 0.002);
 
   // 1. Receiver (Main Lower & Stamped Top Cover)
   const receiver = new THREE.Mesh(new THREE.BoxGeometry(0.052, 0.082, 0.34), metalReceiverMat);

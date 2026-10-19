@@ -245,6 +245,8 @@ export class TargetManager {
     const obj = hit.object;
     if (
       obj.userData?.ignoreRaycast ||
+      obj.userData?.collision === false ||
+      obj.userData?.isPenetrable ||
       obj.userData?.isViewmodel ||
       obj.userData?.isTracer ||
       obj.userData?.isDecal ||
@@ -259,6 +261,17 @@ export class TargetManager {
     ) {
       return false;
     }
+
+    // Transparent mediums (glass, holograms, see-through screens) allow bullets to pass through
+    if (obj instanceof THREE.Mesh) {
+      const mat = obj.material;
+      if (Array.isArray(mat)) {
+        if (mat.some((m) => m && m.transparent && m.opacity < 0.8)) return false;
+      } else if (mat && mat.transparent && mat.opacity < 0.8) {
+        return false;
+      }
+    }
+
     return true;
   }
 

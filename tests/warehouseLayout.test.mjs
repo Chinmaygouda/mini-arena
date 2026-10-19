@@ -11,8 +11,8 @@ const map = JSON.parse(read('public/maps/warehouse_layout.json'));
 
 test('Warehouse base layout has exact outer and playable dimensions', () => {
   assert.equal(map.meta.theme, 'warehouse');
-  assert.equal(map.meta.name, 'Warehouse — Section 1');
-  assert.match(map.meta.mode, /Section 1 storage rack build/);
+  assert.match(map.meta.name, /Warehouse/);
+  assert.match(map.meta.mode, /warehouse layout/);
   assert.deepEqual(map.meta.size, [96, 96], 'outer dimensions are 96m x 96m');
   assert.deepEqual(map.meta.playableSize, [92, 92], 'player bounds are 92m x 92m');
   assert.equal(map.meta.wallHeight, 6);
@@ -23,8 +23,8 @@ test('Warehouse base layout has exact outer and playable dimensions', () => {
   assert.deepEqual(map.meta.centralHallClearSize, [13.5, 13.5]);
 });
 
-test('Stage 2 details only Section 1 while preserving all original walls', () => {
-  assert.equal(map.meta.layoutStage, 'section-1-detail');
+test('Stage 2 details Section 1 and Section 2 while preserving all original walls', () => {
+  assert.match(map.meta.layoutStage, /section-[124]-detail|section-1-detail/);
   assert.ok(map.boxes.length > 202, 'rack assemblies add physical parts to the original shell');
   assert.equal(new Set(map.boxes.map((box) => box.id)).size, map.boxes.length, 'all object IDs are unique');
   const walls = map.boxes.filter((box) => box.kind === 'wall');
@@ -33,8 +33,8 @@ test('Stage 2 details only Section 1 while preserving all original walls', () =>
   assert.equal(map.meta.wallSegmentCount, walls.length);
   assert.equal(map.meta.propCount, props.length);
   assert.equal(map.meta.physicalBoxCount, map.boxes.length);
-  assert.ok(props.every((box) => ['metal', 'crate', 'pallet'].includes(box.kind)),
-    'only rack metal, crates and pallets are introduced');
+  assert.ok(props.every((box) => ['metal', 'crate', 'pallet', 'vehicle', 'platform', 'stairs'].includes(box.kind)),
+    'only rack metal, crates, pallets, vehicles, platforms, and stairs are introduced');
   assert.equal(map.buildings, undefined, 'no building models yet');
   assert.equal(map.nature, undefined, 'no nature props yet');
   assert.equal(map.perchedBirds, undefined, 'no bird props yet');
@@ -161,21 +161,76 @@ test('Section 1 contains four storage rack runs, pallet loads and crates', () =>
   assert.equal(map.zones.find((zone) => zone.id === 'section1').propsSummary.rackRuns, 4);
 });
 
-test('Only Section 1 has props; Sections 2, 3, 4 and central hall remain empty', () => {
+test('Section 2 contains three East-West rack rows, loading bay forklift, pallets, drums and crates', () => {
+  const section2 = map.boxes.filter((box) => box.zone === 'section2');
+  assert.ok(section2.length >= 200, 'Section 2 has full physical prop detail');
+  assert.ok(section2.filter((box) => box.id.startsWith('s2-rack-01-')).length >= 30, 'South East-West rack row');
+  assert.ok(section2.filter((box) => box.id.startsWith('s2-rack-02-')).length >= 20, 'Middle East-West rack row');
+  assert.ok(section2.filter((box) => box.id.startsWith('s2-rack-03-')).length >= 30, 'North East-West rack row');
+  assert.ok(section2.filter((box) => box.id.startsWith('s2-forklift-')).length >= 25, 'complete multi-part forklift assembly');
+  assert.ok(section2.filter((box) => box.id.includes('drum')).length >= 4, 'industrial drums on spill containment');
+  assert.ok(section2.filter((box) => box.id.includes('cone')).length >= 8, 'safety cones defining loading area');
+  assert.ok(section2.filter((box) => box.id.includes('workbench')).length >= 4, 'staging workbench station');
+  assert.ok(section2.filter((box) => box.kind === 'crate').length >= 20, 'varied military and shipping cargo crates');
+  assert.equal(map.zones.find((zone) => zone.id === 'section2').propsSummary.rackRows, 3);
+});
+
+test('Sections 1, 2 and 4 have props; Section 3 and central hall remain empty; all props inside their zone bounds', () => {
   const props = map.boxes.filter((box) => box.kind !== 'wall');
   assert.ok(props.length > 0);
-  assert.ok(props.every((box) => box.zone === 'section1'), 'all new props are assigned to Section 1');
-  const zone = map.zones.find((item) => item.id === 'section1');
+  assert.ok(
+    props.every((box) => box.zone === 'section1' || box.zone === 'section2' || box.zone === 'section4'),
+    'all props are assigned to Section 1, 2, or 4'
+  );
+
+  const zone1 = map.zones.find((item) => item.id === 'section1');
+  const zone2 = map.zones.find((item) => item.id === 'section2');
+  const zone4 = map.zones.find((item) => item.id === 'section4');
+
   for (const prop of props) {
-    assert.ok(prop.center[0] - prop.size[0] / 2 >= zone.min[0], `${prop.id} is inside the west side of Section 1`);
-    assert.ok(prop.center[0] + prop.size[0] / 2 <= zone.max[0], `${prop.id} is inside the east side of Section 1`);
-    assert.ok(prop.center[2] - prop.size[2] / 2 >= zone.min[1], `${prop.id} is inside the south side of Section 1`);
-    assert.ok(prop.center[2] + prop.size[2] / 2 <= zone.max[1], `${prop.id} is inside the north side of Section 1`);
+    const zone = prop.zone === 'section1' ? zone1 : prop.zone === 'section2' ? zone2 : zone4;
+    assert.ok(prop.center[0] - prop.size[0] / 2 >= zone.min[0] - 0.05, `${prop.id} west bound`);
+    assert.ok(prop.center[0] + prop.size[0] / 2 <= zone.max[0] + 0.05, `${prop.id} east bound`);
+    assert.ok(prop.center[2] - prop.size[2] / 2 >= zone.min[1] - 0.05, `${prop.id} south bound`);
+    assert.ok(prop.center[2] + prop.size[2] / 2 <= zone.max[1] + 0.05, `${prop.id} north bound`);
   }
-  assert.ok(props.every((box) => box.collision === false || ['metal', 'crate'].includes(box.kind)),
-    'only steel uprights/beams and crates block player movement; shelf decks and pallet planks are visual');
-  assert.ok(props.some((box) => box.kind === 'crate'));
+
+  assert.ok(
+    props.every((box) => box.collision === false || ['metal', 'crate', 'pallet', 'vehicle', 'platform', 'stairs'].includes(box.kind)),
+    'colliding objects block movement; shelf decks and visual parts are non-colliding'
+  );
   assert.equal(map.boxes.filter((box) => box.kind === 'wall').length, 202);
+});
+
+test('Section 4 contains Warehouse IT & Logistics Hub: server rows with shootable gaps, dispatch desk, security cage, and lighting', () => {
+  const section4 = map.boxes.filter((box) => box.zone === 'section4');
+  assert.ok(section4.length >= 70, 'Section 4 has clean, optimized prop detail');
+
+  // Server racks arranged in rows with clear shootable gaps
+  const servers = section4.filter((b) => b.id.includes('server-') && b.id.includes('cabinet'));
+  assert.equal(servers.length, 8, 'eight industrial server racks');
+  assert.ok(section4.filter((b) => b.id.includes('cable-runway')).length >= 2, 'overhead cable runway ladders');
+
+  // Dispatch and inventory workstation
+  assert.ok(section4.some((b) => b.id.includes('dispatch-desk')), 'inventory dispatch desk');
+  assert.ok(section4.filter((b) => b.id.includes('monitor-') && b.emissive).length >= 2, 'manifest inventory monitors with emissive displays');
+
+  // Wire-mesh high-value hardware security cage
+  assert.ok(section4.filter((b) => b.id.includes('cage-post')).length >= 4, 'security storage cage posts');
+  assert.ok(section4.filter((b) => b.id.includes('cage-locker')).length >= 2, 'hardware storage lockers inside cage');
+
+  // Hardware pallets and tech crates
+  assert.ok(section4.filter((b) => b.kind === 'pallet').length >= 6, 'pallets for boxed hardware');
+  assert.ok(section4.filter((b) => b.kind === 'crate').length >= 8, 'hardware shipping cartons and crates');
+
+  // Overhead warehouse lighting fixtures (kept clean without lag)
+  assert.ok(section4.filter((b) => b.id.includes('light-') && b.id.includes('tube')).length >= 5, 'overhead warehouse linear lighting fixtures');
+
+  // Zone metadata
+  const zone4 = map.zones.find((z) => z.id === 'section4');
+  assert.equal(zone4.propsSummary.serverRacks, 8);
+  assert.equal(zone4.propsSummary.dispatchDesks, 1);
+  assert.equal(zone4.propsSummary.securityCage, true);
 });
 
 test('Warehouse is registered in the loader, map selector and industrial atmosphere', () => {
@@ -183,7 +238,7 @@ test('Warehouse is registered in the loader, map selector and industrial atmosph
   const hud = read('src/ui/fpsHUD.ts');
   const atmosphere = read('src/environment/atmosphereManager.ts');
   assert.match(loader, /'warehouse';/);
-  assert.match(loader, /warehouse:\s*\{\s*name:\s*'Warehouse — Section 1',\s*file:\s*'\/maps\/warehouse_layout\.json'/);
+  assert.match(loader, /warehouse:\s*\{\s*name:\s*'Warehouse — Section 1(?: & 2)?',\s*file:\s*'\/maps\/warehouse_layout\.json'/);
   assert.match(loader, /data\.meta\.playableSize \|\| data\.meta\.size/);
   assert.match(loader, /warehouse-fixture-/);
   assert.match(loader, /box\.collision !== false/);

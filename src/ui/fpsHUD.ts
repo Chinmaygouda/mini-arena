@@ -22,6 +22,25 @@ export class FPSHUD {
   private oobBanner: HTMLDivElement;
   private rangefinder: HTMLDivElement | null = null;
 
+  private ammoWeaponTitle!: HTMLDivElement;
+  private ammoWeaponCaliber!: HTMLDivElement;
+  private ammoWeaponMode!: HTMLDivElement;
+  private ammoCounterVal!: HTMLSpanElement;
+  private ammoReserveVal!: HTMLSpanElement;
+  private ammoGaugeFill!: HTMLDivElement;
+  private reloadBtn!: HTMLButtonElement;
+  private reloadStatusText!: HTMLDivElement;
+  private reloadReticle!: HTMLDivElement;
+  private reloadReticleCircle!: SVGCircleElement;
+  private reloadReticleText!: HTMLDivElement;
+  private reloadReadyAlert!: HTMLDivElement;
+  private stanceBadge!: HTMLDivElement;
+
+  private lastAmmoInClip: number = -1;
+  private lastWeaponId: string = '';
+  private lastStatusText: string = '';
+  private wasReloading: boolean = false;
+
   public isTuningOpen: boolean = false;
   public isMapModalOpen: boolean = false;
   public isDismissed: boolean = false;
@@ -72,6 +91,30 @@ export class FPSHUD {
     `;
     stampEl.textContent = BUILD_STAMP;
     this.container.appendChild(stampEl);
+
+    // 0.05 Stance Badge
+    this.stanceBadge = document.createElement('div');
+    this.stanceBadge.id = 'hud-stance-badge';
+    this.stanceBadge.style.cssText = `
+      position: absolute;
+      top: 14px;
+      left: 170px;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.75);
+      background: rgba(10, 16, 22, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      padding: 4px 10px;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      pointer-events: none;
+      transition: all 0.15s ease;
+    `;
+    this.stanceBadge.textContent = 'STANCE: STAND [C]';
+    this.container.appendChild(this.stanceBadge);
 
     // 0.1 Map Selector Badge (Top Center)
     this.mapBadge = document.createElement('div');
@@ -151,7 +194,45 @@ export class FPSHUD {
     `;
     this.container.appendChild(this.crosshair);
 
-    // 1.2 Debug Rangefinder Overlay (?debug=1)
+    // 1.1 Center Tactical Reload Reticle Indicator
+    this.reloadReticle = document.createElement('div');
+    this.reloadReticle.id = 'hud-reload-reticle';
+    this.reloadReticle.innerHTML = `
+      <svg width="96" height="96" viewBox="0 0 96 96" style="display:block;">
+        <circle cx="48" cy="48" r="38" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="3" />
+        <circle id="reload-ring-circle" class="reload-reticle-ring" cx="48" cy="48" r="38" fill="none" stroke="#ffaa00" stroke-width="3.5" stroke-dasharray="238.76" stroke-dashoffset="238.76" stroke-linecap="round" />
+      </svg>
+      <div id="reload-reticle-text" style="position:absolute;top:calc(50% + 44px);left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',Consolas,monospace;font-size:11px;font-weight:800;letter-spacing:1px;color:#ffaa00;white-space:nowrap;text-shadow:0 0 10px rgba(255,170,0,0.65);text-transform:uppercase;">
+        RELOADING
+      </div>
+    `;
+    this.reloadReticleCircle = this.reloadReticle.querySelector('#reload-ring-circle') as SVGCircleElement;
+    this.reloadReticleText = this.reloadReticle.querySelector('#reload-reticle-text') as HTMLDivElement;
+    this.container.appendChild(this.reloadReticle);
+
+    // 1.2 Center Reload Ready Flash Alert
+    this.reloadReadyAlert = document.createElement('div');
+    this.reloadReadyAlert.id = 'hud-reload-ready-alert';
+    this.reloadReadyAlert.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 2.5px;
+      color: #00ff88;
+      text-shadow: 0 0 14px #00ff88, 0 0 28px rgba(0,255,136,0.6);
+      pointer-events: none;
+      display: none;
+      z-index: 121;
+      white-space: nowrap;
+    `;
+    this.reloadReadyAlert.textContent = 'READY';
+    this.container.appendChild(this.reloadReadyAlert);
+
+    // 1.3 Debug Rangefinder Overlay (?debug=1)
     const isDebugUrl = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1';
     if (isDebugUrl) {
       this.rangefinder = document.createElement('div');
@@ -245,6 +326,72 @@ export class FPSHUD {
       box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
       pointer-events: auto;
     `;
+    this.ammoCard.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+        <div>
+          <div id="ammo-weapon-title" style="font-weight: 900; font-size: 15px; letter-spacing: 0.5px; transition: transform 0.2s ease;">AK-47</div>
+          <div id="ammo-weapon-caliber" style="font-size: 11px; color: rgba(255,255,255,0.5);">7.62x39mm</div>
+        </div>
+        <div id="ammo-weapon-mode" style="font-size: 10px; font-weight: 800; background: rgba(0,255,136,0.15); border: 1px solid rgba(0,255,136,0.3); color: #00ff88; padding: 3px 8px; border-radius: 6px; text-transform: uppercase;">
+          AUTO
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: baseline; gap: 8px; margin: 10px 0 6px 0;">
+        <span id="ammo-counter" style="font-size: 46px; font-weight: 900; line-height: 1; color: #ffffff; font-variant-numeric: tabular-nums; display: inline-block;">
+          30
+        </span>
+        <span id="ammo-reserve" style="font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.4);">
+          / 90
+        </span>
+      </div>
+
+      <!-- Tactical Phase Status Ticker -->
+      <div id="hud-reload-status" style="font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); font-family: 'JetBrains Mono', Consolas, monospace; letter-spacing: 0.8px; margin-bottom: 6px; height: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+        STATUS: READY
+      </div>
+
+      <!-- Capacity Gauge Bar -->
+      <div id="ammo-gauge-track" style="width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-bottom: 8px; position: relative;">
+        <div id="ammo-gauge-fill" style="width: 100%; height: 100%; background: #00ff88; transition: width 0.12s ease-out, background 0.2s;"></div>
+      </div>
+
+      <!-- Interactive Tactical Reload Button -->
+      <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+        <button id="hud-reload-btn" class="hud-reload-action" style="
+          background: rgba(0,255,136,0.18);
+          border: 1px solid rgba(0,255,136,0.45);
+          color: #00ff88;
+          padding: 6px 14px;
+          border-radius: 8px;
+          font-family: inherit;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.8px;
+          text-transform: uppercase;
+          cursor: pointer;
+          pointer-events: auto;
+          transition: all 0.15s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 0 10px rgba(0,255,136,0.15);
+        ">
+          [R] RELOAD
+        </button>
+        <span style="font-size: 10px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', Consolas, monospace;">PRESS [R]</span>
+      </div>
+    `;
+
+    this.ammoWeaponTitle = this.ammoCard.querySelector('#ammo-weapon-title') as HTMLDivElement;
+    this.ammoWeaponCaliber = this.ammoCard.querySelector('#ammo-weapon-caliber') as HTMLDivElement;
+    this.ammoWeaponMode = this.ammoCard.querySelector('#ammo-weapon-mode') as HTMLDivElement;
+    this.ammoCounterVal = this.ammoCard.querySelector('#ammo-counter') as HTMLSpanElement;
+    this.ammoReserveVal = this.ammoCard.querySelector('#ammo-reserve') as HTMLSpanElement;
+    this.ammoGaugeFill = this.ammoCard.querySelector('#ammo-gauge-fill') as HTMLDivElement;
+    this.reloadBtn = this.ammoCard.querySelector('#hud-reload-btn') as HTMLButtonElement;
+    this.reloadStatusText = this.ammoCard.querySelector('#hud-reload-status') as HTMLDivElement;
+
     this.ammoCard.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
       if (target && (target.id === 'hud-reload-btn' || target.closest('#hud-reload-btn') || target.classList.contains('hud-reload-action') || target.closest('.hud-reload-action'))) {
@@ -280,6 +427,7 @@ export class FPSHUD {
         }
       }
     });
+    this.renderHotbar();
     this.container.appendChild(this.hotbar);
 
     // 4.1 Out-Of-Bounds Tactical Alert Banner (Center Screen)
@@ -426,6 +574,7 @@ export class FPSHUD {
 
   private renderMapModal() {
     const maps: MapId[] = ['range', 'foundry', 'culdesac', 'dustline', 'overpass', 'neighborhood', 'warehouse'];
+    // Registered tactical map selector suites: ['neighborhood'] and ['warehouse']
     this.mapModal.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
         <span style="font-weight: 800; color: #00ff88; font-size: 13px;">TACTICAL MAP ARENA SELECTOR</span>
@@ -504,6 +653,72 @@ export class FPSHUD {
     }, 80);
   }
 
+  private renderHotbar() {
+    const hotbarSlots = [
+      { key: '1', id: 'ak47', label: 'AK-47' },
+      { key: '2', id: 'pistol', label: 'M9 PISTOL' },
+      { key: '3', id: 'smg', label: 'CYCLONE-9' },
+      { key: '4', id: 'shotgun', label: 'SPAS-12' },
+      { key: '5', id: 'sniper', label: 'AW-50' },
+    ];
+
+    this.hotbar.innerHTML = hotbarSlots
+      .map((slot) => `
+        <div data-weapon-id="${slot.id}" style="padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; display:flex; align-items:center; gap:5px; cursor: pointer; pointer-events: auto; user-select: none; transition: all 0.15s ease; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.04);">
+          <span style="font-size:10px;opacity:0.7;">[${slot.key}]</span> ${slot.label}
+        </div>
+      `)
+      .join('');
+  }
+
+  private getTacticalStatusText(
+    weaponId: WeaponId,
+    progress: number,
+    isReloading: boolean,
+    ammoInClip: number,
+    magCapacity: number
+  ): string {
+    if (isReloading) {
+      const pct = Math.round(progress * 100);
+      switch (weaponId) {
+        case 'ak47':
+          if (progress < 0.20) return `WORKSPACE TILT & RELEASE (${pct}%)`;
+          if (progress < 0.44) return `EJECTING BANANA MAG (${pct}%)`;
+          if (progress < 0.68) return `INSERTING FRESH 30-RD MAG (${pct}%)`;
+          if (ammoInClip === 0 || progress < 0.85) return `CYCLING CHARGING HANDLE (${pct}%)`;
+          return `RETURNING TO FOREGRIP (${pct}%)`;
+        case 'shotgun':
+          return `FEEDING 12-GAUGE SHELL (${pct}%)`;
+        case 'sniper':
+          if (progress < 0.20) return `UNLOCKING .50 BMG BOLT (${pct}%)`;
+          if (progress < 0.44) return `REMOVING BOX MAG (${pct}%)`;
+          if (progress < 0.72) return `SEATING HEAVY .50 BMG MAG (${pct}%)`;
+          return `CHAMBERING & BOLT LOCK (${pct}%)`;
+        case 'pistol':
+          if (progress < 0.22) return `RETRIEVING COMBAT MAG (${pct}%)`;
+          if (progress < 0.68) return `SEATING 15-RD MAG (${pct}%)`;
+          return `TACTICAL SLIDE RELEASE (${pct}%)`;
+        case 'smg':
+          if (progress < 0.20) return `STRIPPING STICK MAG (${pct}%)`;
+          if (progress < 0.68) return `SLAPPING 30-RD STICK (${pct}%)`;
+          return `RACKING CHARGING HANDLE (${pct}%)`;
+        default:
+          return `TACTICAL RELOAD (${pct}%)`;
+      }
+    }
+
+    if (ammoInClip === 0) {
+      return 'CRITICAL: EMPTY - PRESS [R]';
+    }
+    if (ammoInClip <= 3) {
+      return 'WARNING: LOW AMMO ADVISORY';
+    }
+    if (ammoInClip >= magCapacity) {
+      return 'STATUS: FULL / READY';
+    }
+    return 'STATUS: WEAPON HOT';
+  }
+
   public update(state: WeaponState, def: WeaponDef) {
     // 1. Crosshair Bloom & Sniper Scope Overlay
     if (def.isSniperScope && state.isScoped) {
@@ -521,94 +736,160 @@ export class FPSHUD {
       this.crosshair.style.height = `${size}px`;
     }
 
-    // 2. Ammo Card Content
+    // 2. Weapon Switch Detection & Text Reveal
+    if (state.currentWeaponId !== this.lastWeaponId) {
+      this.lastWeaponId = state.currentWeaponId;
+      this.ammoWeaponTitle.textContent = def.name;
+      this.ammoWeaponCaliber.textContent = def.caliber;
+      this.ammoWeaponMode.textContent = def.fireMode;
+
+      this.ammoWeaponTitle.classList.remove('weapon-title-reveal');
+      void this.ammoWeaponTitle.offsetWidth; // trigger reflow
+      this.ammoWeaponTitle.classList.add('weapon-title-reveal');
+
+      this.ammoWeaponCaliber.classList.remove('caliber-slide-reveal');
+      void this.ammoWeaponCaliber.offsetWidth;
+      this.ammoWeaponCaliber.classList.add('caliber-slide-reveal');
+
+      this.ammoWeaponMode.classList.remove('badge-pop-reveal');
+      void this.ammoWeaponMode.offsetWidth;
+      this.ammoWeaponMode.classList.add('badge-pop-reveal');
+
+      // Update hotbar selection
+      const slots = this.hotbar.querySelectorAll('[data-weapon-id]');
+      slots.forEach((slot) => {
+        const wid = slot.getAttribute('data-weapon-id');
+        const isSel = wid === state.currentWeaponId;
+        (slot as HTMLElement).style.background = isSel ? '#00ff88' : 'rgba(255,255,255,0.04)';
+        (slot as HTMLElement).style.color = isSel ? '#000000' : 'rgba(255,255,255,0.6)';
+        (slot as HTMLElement).style.boxShadow = isSel ? '0 0 16px rgba(0,255,136,0.4)' : 'none';
+        (slot as HTMLElement).style.transform = isSel ? 'translateY(-1px)' : 'none';
+      });
+    }
+
+    // 3. Kinetic Ammo Counter Animation on Shot & Reload Commit
+    if (this.lastAmmoInClip !== -1) {
+      if (state.ammoInClip < this.lastAmmoInClip) {
+        this.ammoCounterVal.classList.remove('ammo-punch');
+        this.ammoCounterVal.classList.remove('ammo-restock-bloom');
+        void this.ammoCounterVal.offsetWidth; // trigger reflow
+        this.ammoCounterVal.classList.add('ammo-punch');
+      } else if (state.ammoInClip > this.lastAmmoInClip) {
+        this.ammoCounterVal.classList.remove('ammo-punch');
+        this.ammoCounterVal.classList.remove('ammo-restock-bloom');
+        void this.ammoCounterVal.offsetWidth;
+        this.ammoCounterVal.classList.add('ammo-restock-bloom');
+      }
+    }
+    this.lastAmmoInClip = state.ammoInClip;
+
+    this.ammoCounterVal.textContent = `${state.ammoInClip}`;
+    this.ammoReserveVal.textContent = `/ ${state.reserveAmmo}`;
+
+    // 4. Low Ammo & Critical Alert Typography
+    if (state.ammoInClip === 0) {
+      this.ammoCounterVal.style.color = '#ff3b30';
+      this.ammoCounterVal.classList.remove('ammo-low-pulse');
+      this.ammoCounterVal.classList.add('hud-empty-flash');
+    } else if (state.ammoInClip <= 3) {
+      this.ammoCounterVal.classList.remove('hud-empty-flash');
+      this.ammoCounterVal.classList.add('ammo-low-pulse');
+    } else {
+      this.ammoCounterVal.classList.remove('ammo-low-pulse');
+      this.ammoCounterVal.classList.remove('hud-empty-flash');
+      this.ammoCounterVal.style.color = '#ffffff';
+    }
+
+    // 5. Gauge Bar Fill & Shimmer Effect
     const pct = Math.max(0, Math.min(100, (state.ammoInClip / def.magCapacity) * 100));
-    const barColor = state.ammoInClip <= 3 ? '#ff3b30' : '#00ff88';
+    this.ammoGaugeFill.style.width = `${pct}%`;
 
-    this.ammoCard.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-        <div>
-          <div style="font-weight: 900; font-size: 15px; letter-spacing: 0.5px;">${def.name}</div>
-          <div style="font-size: 11px; color: rgba(255,255,255,0.5);">${def.caliber}</div>
-        </div>
-        <div style="font-size: 10px; font-weight: 800; background: rgba(0,255,136,0.15); border: 1px solid rgba(0,255,136,0.3); color: #00ff88; padding: 3px 8px; border-radius: 6px; text-transform: uppercase;">
-          ${def.fireMode}
-        </div>
-      </div>
+    if (state.isReloading) {
+      this.ammoGaugeFill.classList.add('reload-shimmer-bar');
+    } else {
+      this.ammoGaugeFill.classList.remove('reload-shimmer-bar');
+      this.ammoGaugeFill.style.background = state.ammoInClip <= 3 ? '#ff3b30' : '#00ff88';
+      this.ammoGaugeFill.style.boxShadow = state.ammoInClip <= 3 ? '0 0 8px rgba(255,59,48,0.5)' : '0 0 8px rgba(0,255,136,0.4)';
+    }
 
-      <div style="display: flex; align-items: baseline; gap: 8px; margin: 12px 0 8px 0;">
-        <span id="ammo-counter" style="font-size: 44px; font-weight: 900; line-height: 1; color: ${state.ammoInClip === 0 ? '#ff3b30' : '#ffffff'}; font-variant-numeric: tabular-nums;">
-          ${state.ammoInClip}
-        </span>
-        <span style="font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.4);">
-          / ${state.reserveAmmo}
-        </span>
-      </div>
+    // 6. Tactical Status Text Ticker with Smooth Phase Swap
+    const statusText = this.getTacticalStatusText(
+      state.currentWeaponId,
+      state.reloadProgress,
+      state.isReloading,
+      state.ammoInClip,
+      def.magCapacity
+    );
+    if (statusText !== this.lastStatusText) {
+      this.lastStatusText = statusText;
+      this.reloadStatusText.textContent = statusText;
+      this.reloadStatusText.classList.remove('status-ticker-swap');
+      void this.reloadStatusText.offsetWidth;
+      this.reloadStatusText.classList.add('status-ticker-swap');
+    }
+    if (state.isReloading) {
+      this.reloadStatusText.style.color = '#ffaa00';
+    } else if (state.ammoInClip === 0) {
+      this.reloadStatusText.style.color = '#ff4455';
+    } else if (state.ammoInClip <= 3) {
+      this.reloadStatusText.style.color = '#ffaa00';
+    } else {
+      this.reloadStatusText.style.color = 'rgba(255,255,255,0.45)';
+    }
 
-      <!-- Capacity Gauge Bar -->
-      <div style="width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-bottom: 8px;">
-        <div style="width: ${pct}%; height: 100%; background: ${barColor}; transition: width 0.1s ease-out, background 0.2s;"></div>
-      </div>
+    // 7. Tactical Reload Button State
+    if (state.isReloading) {
+      this.reloadBtn.style.background = 'rgba(255,170,0,0.22)';
+      this.reloadBtn.style.borderColor = '#ffaa00';
+      this.reloadBtn.style.color = '#ffaa00';
+      this.reloadBtn.style.boxShadow = '0 0 12px rgba(255,170,0,0.3)';
+      this.reloadBtn.style.cursor = 'default';
+      this.reloadBtn.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#ffaa00;"></span> RELOADING (${Math.round(state.reloadProgress * 100)}%)`;
+    } else if (state.ammoInClip === 0) {
+      this.reloadBtn.style.background = 'rgba(255,59,48,0.28)';
+      this.reloadBtn.style.borderColor = '#ff3b30';
+      this.reloadBtn.style.color = '#ff6677';
+      this.reloadBtn.style.boxShadow = '0 0 14px rgba(255,59,48,0.4)';
+      this.reloadBtn.style.cursor = 'pointer';
+      this.reloadBtn.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff3b30;"></span> [R] RELOAD NOW`;
+    } else if (state.ammoInClip >= def.magCapacity) {
+      this.reloadBtn.style.background = 'rgba(255,255,255,0.06)';
+      this.reloadBtn.style.borderColor = 'rgba(255,255,255,0.15)';
+      this.reloadBtn.style.color = 'rgba(255,255,255,0.5)';
+      this.reloadBtn.style.boxShadow = 'none';
+      this.reloadBtn.style.cursor = 'pointer';
+      this.reloadBtn.textContent = 'FULL [R]';
+    } else {
+      this.reloadBtn.style.background = 'rgba(0,255,136,0.18)';
+      this.reloadBtn.style.borderColor = 'rgba(0,255,136,0.45)';
+      this.reloadBtn.style.color = '#00ff88';
+      this.reloadBtn.style.boxShadow = '0 0 10px rgba(0,255,136,0.15)';
+      this.reloadBtn.style.cursor = 'pointer';
+      this.reloadBtn.textContent = '[R] RELOAD';
+    }
 
-      <!-- Interactive Tactical Reload Button -->
-      <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
-        <button id="hud-reload-btn" class="hud-reload-action" style="
-          background: ${state.isReloading ? 'rgba(255,170,0,0.22)' : state.ammoInClip === 0 ? 'rgba(255,59,48,0.28)' : state.ammoInClip >= def.magCapacity ? 'rgba(255,255,255,0.06)' : 'rgba(0,255,136,0.18)'};
-          border: 1px solid ${state.isReloading ? '#ffaa00' : state.ammoInClip === 0 ? '#ff3b30' : state.ammoInClip >= def.magCapacity ? 'rgba(255,255,255,0.15)' : 'rgba(0,255,136,0.45)'};
-          color: ${state.isReloading ? '#ffaa00' : state.ammoInClip === 0 ? '#ff6677' : state.ammoInClip >= def.magCapacity ? 'rgba(255,255,255,0.5)' : '#00ff88'};
-          padding: 6px 14px;
-          border-radius: 8px;
-          font-family: inherit;
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 0.8px;
-          text-transform: uppercase;
-          cursor: ${state.isReloading ? 'default' : 'pointer'};
-          pointer-events: auto;
-          transition: all 0.15s ease;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          box-shadow: ${state.isReloading ? '0 0 12px rgba(255,170,0,0.3)' : state.ammoInClip === 0 ? '0 0 14px rgba(255,59,48,0.4)' : '0 0 10px rgba(0,255,136,0.15)'};
-        ">
-          ${
-            state.isReloading
-              ? `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#ffaa00;"></span> RELOADING (${Math.round(state.reloadProgress * 100)}%)`
-              : state.ammoInClip === 0
-              ? `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#ff3b30;"></span> [R] RELOAD NOW`
-              : state.ammoInClip >= def.magCapacity
-              ? `FULL [R]`
-              : `[R] RELOAD`
-          }
-        </button>
-        <span style="font-size: 10px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', Consolas, monospace;">PRESS [R]</span>
-      </div>
-    `;
+    // 8. Center-Screen Tactical Reload Reticle Indicator
+    if (state.isReloading) {
+      this.reloadReticle.classList.add('active');
+      const circumference = 238.76;
+      const offset = circumference * (1 - state.reloadProgress);
+      this.reloadReticleCircle.style.strokeDashoffset = `${offset.toFixed(1)}`;
+      this.reloadReticleText.textContent = `${Math.round(state.reloadProgress * 100)}%`;
+    } else {
+      this.reloadReticle.classList.remove('active');
+    }
 
-    // 3. Hotbar: 5 Weapons
-    const active = state.currentWeaponId;
-    const hotbarSlots = [
-      { key: '1', id: 'ak47', label: 'AK-47' },
-      { key: '2', id: 'pistol', label: 'M9 PISTOL' },
-      { key: '3', id: 'smg', label: 'CYCLONE-9' },
-      { key: '4', id: 'shotgun', label: 'SPAS-12' },
-      { key: '5', id: 'sniper', label: 'AW-50' },
-    ];
-
-    this.hotbar.innerHTML = hotbarSlots
-      .map((slot) => {
-        const isSel = active === slot.id;
-        return `
-          <div data-weapon-id="${slot.id}" style="padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; display:flex; align-items:center; gap:5px; cursor: pointer; pointer-events: auto; user-select: none; transition: all 0.15s ease; ${
-            isSel
-              ? 'background: #00ff88; color: #000; box-shadow: 0 0 16px rgba(0,255,136,0.4); transform: translateY(-1px);'
-              : 'color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.04);'
-          }">
-            <span style="font-size:10px;opacity:0.7;">[${slot.key}]</span> ${slot.label}
-          </div>
-        `;
-      })
-      .join('');
+    // Flash READY banner when reload finishes
+    if (this.wasReloading && !state.isReloading) {
+      this.reloadReadyAlert.style.display = 'block';
+      this.reloadReadyAlert.classList.remove('reload-ready-banner');
+      void this.reloadReadyAlert.offsetWidth;
+      this.reloadReadyAlert.classList.add('reload-ready-banner');
+      setTimeout(() => {
+        this.reloadReadyAlert.style.display = 'none';
+      }, 650);
+    }
+    this.wasReloading = state.isReloading;
   }
 
   public showOOBWarning(remainingSec: number) {
@@ -644,6 +925,28 @@ export class FPSHUD {
       this.rangefinder.textContent = `DST: ${distance.toFixed(1)}m | DMG: ${damage} (${pct}%) ${weaponName ? '[' + weaponName + ']' : ''}`;
       this.rangefinder.style.color = multiplier === 1.0 ? '#00ff88' : (multiplier > 0.4 ? '#ffcc00' : '#ff8844');
       this.rangefinder.style.borderColor = multiplier === 1.0 ? 'rgba(0, 255, 136, 0.35)' : 'rgba(255, 204, 0, 0.4)';
+    }
+  }
+
+  public updateStance(isCrouching: boolean, isOverheadBlocked: boolean) {
+    if (!this.stanceBadge) return;
+    if (isCrouching) {
+      if (isOverheadBlocked) {
+        this.stanceBadge.textContent = 'STANCE: CROUCH [CEILING BLOCKED]';
+        this.stanceBadge.style.color = '#ffaa00';
+        this.stanceBadge.style.borderColor = 'rgba(255, 170, 0, 0.6)';
+        this.stanceBadge.style.background = 'rgba(35, 22, 8, 0.85)';
+      } else {
+        this.stanceBadge.textContent = 'STANCE: CROUCH [C]';
+        this.stanceBadge.style.color = '#00ff88';
+        this.stanceBadge.style.borderColor = 'rgba(0, 255, 136, 0.5)';
+        this.stanceBadge.style.background = 'rgba(10, 24, 16, 0.8)';
+      }
+    } else {
+      this.stanceBadge.textContent = 'STANCE: STAND [C]';
+      this.stanceBadge.style.color = 'rgba(255, 255, 255, 0.75)';
+      this.stanceBadge.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      this.stanceBadge.style.background = 'rgba(10, 16, 22, 0.65)';
     }
   }
 }

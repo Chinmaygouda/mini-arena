@@ -3,6 +3,12 @@
 // open U-notch tritium sights, ergonomic grip, and articulated arms.
 
 import * as THREE from 'three';
+import {
+  applyPBRTexture,
+  getBrushedSteelTextures,
+  getStippledPolymerTextures,
+  getTacticalFabricTextures,
+} from './weaponTextures.ts';
 
 export interface PistolComponents {
   root: THREE.Group;
@@ -24,18 +30,25 @@ export function createPistolModel(): PistolComponents {
   const gunMeshGroup = new THREE.Group();
   root.add(gunMeshGroup);
 
+  // Procedural PBR Textures
+  const steelTex = getBrushedSteelTextures();
+  const polymerTex = getStippledPolymerTextures();
+  const fabricTex = getTacticalFabricTextures();
+
   // Materials: Tactical Graphite, Anodized Titanium, and Textured Polymer
   const frameMat = new THREE.MeshStandardMaterial({
     color: 0x3e454d,
     metalness: 0.72,
     roughness: 0.38,
   });
+  applyPBRTexture(frameMat, steelTex, 0.0015);
 
   const slideMat = new THREE.MeshStandardMaterial({
     color: 0x4a525b,
     metalness: 0.82,
     roughness: 0.28,
   });
+  applyPBRTexture(slideMat, steelTex, 0.002);
 
   const barrelMat = new THREE.MeshStandardMaterial({
     color: 0x5e6874,
@@ -45,9 +58,10 @@ export function createPistolModel(): PistolComponents {
 
   const gripMat = new THREE.MeshStandardMaterial({
     color: 0x22272d,
-    roughness: 0.85,
+    roughness: 0.82,
     metalness: 0.12,
   });
+  applyPBRTexture(gripMat, polymerTex, 0.003);
 
   const tritiumGlowMat = new THREE.MeshBasicMaterial({
     color: 0x00ff88,
@@ -55,15 +69,17 @@ export function createPistolModel(): PistolComponents {
 
   const gloveMat = new THREE.MeshStandardMaterial({
     color: 0x1e242b,
-    roughness: 0.85,
+    roughness: 0.75,
     metalness: 0.10,
   });
+  applyPBRTexture(gloveMat, fabricTex, 0.002);
 
   const sleeveMat = new THREE.MeshStandardMaterial({
     color: 0x272d35,
     roughness: 0.88,
     metalness: 0.05,
   });
+  applyPBRTexture(sleeveMat, fabricTex, 0.002);
 
   // 1. Lower Tactical Polymer Frame
   const frame = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.030, 0.20), frameMat);

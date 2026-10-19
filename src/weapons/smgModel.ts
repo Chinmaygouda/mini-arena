@@ -4,6 +4,12 @@
 // ported muzzle brake, tritium glow sights, and seamless anatomical arms/gloves.
 
 import * as THREE from 'three';
+import {
+  applyPBRTexture,
+  getBrushedSteelTextures,
+  getStippledPolymerTextures,
+  getTacticalFabricTextures,
+} from './weaponTextures.ts';
 
 export interface SMGComponents {
   root: THREE.Group;
@@ -26,24 +32,32 @@ export function createSMGModel(): SMGComponents {
   const gunMeshGroup = new THREE.Group();
   root.add(gunMeshGroup);
 
+  // Procedural PBR Textures
+  const steelTex = getBrushedSteelTextures();
+  const polymerTex = getStippledPolymerTextures();
+  const fabricTex = getTacticalFabricTextures();
+
   // Materials: Tactical Anodized Matte Gunmetal and Ergonomic Carbon-Polymer
   const receiverMat = new THREE.MeshStandardMaterial({
     color: 0x464c54,
     metalness: 0.75,
     roughness: 0.35,
   });
+  applyPBRTexture(receiverMat, steelTex, 0.0018);
 
   const upperReceiverMat = new THREE.MeshStandardMaterial({
     color: 0x58606a,
     metalness: 0.82,
     roughness: 0.28,
   });
+  applyPBRTexture(upperReceiverMat, steelTex, 0.002);
 
   const polymerGripMat = new THREE.MeshStandardMaterial({
     color: 0x24282e,
     roughness: 0.82,
     metalness: 0.12,
   });
+  applyPBRTexture(polymerGripMat, polymerTex, 0.0028);
 
   const chromeBoltMat = new THREE.MeshStandardMaterial({
     color: 0xe6edf4,
@@ -56,6 +70,7 @@ export function createSMGModel(): SMGComponents {
     metalness: 0.78,
     roughness: 0.30,
   });
+  applyPBRTexture(magazineMat, steelTex, 0.002);
 
   const barrelMat = new THREE.MeshStandardMaterial({
     color: 0x5c6570,
@@ -69,15 +84,17 @@ export function createSMGModel(): SMGComponents {
 
   const gloveMat = new THREE.MeshStandardMaterial({
     color: 0x1a2026,
-    roughness: 0.85,
+    roughness: 0.75,
     metalness: 0.10,
   });
+  applyPBRTexture(gloveMat, fabricTex, 0.002);
 
   const sleeveMat = new THREE.MeshStandardMaterial({
     color: 0x242a30,
     roughness: 0.88,
     metalness: 0.05,
   });
+  applyPBRTexture(sleeveMat, fabricTex, 0.002);
 
   // 1. Lower Receiver & Magazine Well
   const lowerReceiver = new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.065, 0.24), receiverMat);

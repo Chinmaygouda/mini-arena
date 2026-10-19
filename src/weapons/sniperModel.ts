@@ -12,6 +12,12 @@
 // - First-person operator arms with tactical gloves and field watch
 
 import * as THREE from 'three';
+import {
+  applyPBRTexture,
+  getBrushedSteelTextures,
+  getCarbonFiberTextures,
+  getTacticalFabricTextures,
+} from './weaponTextures.ts';
 
 export interface SniperComponents {
   root: THREE.Group;
@@ -88,30 +94,39 @@ export function createSniperModel(): SniperComponents {
   gunMeshGroup.name = 'Sniper_GunMesh';
   root.add(gunMeshGroup);
 
+  // Procedural PBR Textures
+  const steelTex = getBrushedSteelTextures();
+  const carbonTex = getCarbonFiberTextures();
+  const fabricTex = getTacticalFabricTextures();
+
   // --- Tactical PBR Materials (Matching AW-50 Design Sheet v2 Palette) ---
   const stockMat = new THREE.MeshStandardMaterial({
     color: 0x566544, // Olive green tactical polymer chassis
     roughness: 0.65,
     metalness: 0.15,
   });
+  applyPBRTexture(stockMat, carbonTex, 0.002);
 
   const stockDarkMat = new THREE.MeshStandardMaterial({
     color: 0x3f4b32, // Darker olive green for cheek riser comb
     roughness: 0.58,
     metalness: 0.18,
   });
+  applyPBRTexture(stockDarkMat, carbonTex, 0.002);
 
   const steelMat = new THREE.MeshStandardMaterial({
     color: 0x2b2f35, // Tactical gunmetal steel (barrel, guard, mounts)
     roughness: 0.30,
     metalness: 0.88,
   });
+  applyPBRTexture(steelMat, steelTex, 0.002);
 
   const midSteelMat = new THREE.MeshStandardMaterial({
     color: 0x3d434b, // Ordnance mid-tone steel (receiver, brake body, turrets)
     roughness: 0.35,
     metalness: 0.82,
   });
+  applyPBRTexture(midSteelMat, steelTex, 0.0018);
 
   const lightMetalMat = new THREE.MeshStandardMaterial({
     color: 0x9099a3, // Silver/aluminum (bolt body, trigger, bipod pivots, mag floorplate)
@@ -130,6 +145,7 @@ export function createSniperModel(): SniperComponents {
     roughness: 0.40,
     metalness: 0.75,
   });
+  applyPBRTexture(railMat, steelTex, 0.0015);
 
   const brassMat = new THREE.MeshStandardMaterial({
     color: 0xc9a24a, // Polished brass .50 BMG cartridges
@@ -150,12 +166,14 @@ export function createSniperModel(): SniperComponents {
     roughness: 0.88,
     metalness: 0.05,
   });
+  applyPBRTexture(sleeveMat, fabricTex, 0.002);
 
   const gloveMat = new THREE.MeshStandardMaterial({
     color: 0x1b2024, // Dark tactical glove fabric
-    roughness: 0.85,
+    roughness: 0.75,
     metalness: 0.12,
   });
+  applyPBRTexture(gloveMat, fabricTex, 0.002);
 
   const knuckleArmorMat = new THREE.MeshStandardMaterial({
     color: 0x111417, // Polycarbonate knuckle guard

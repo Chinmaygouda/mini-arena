@@ -3,6 +3,12 @@
 // ribbed barrel, front bead sight, shell loading port, and anatomical arms.
 
 import * as THREE from 'three';
+import {
+  applyPBRTexture,
+  getBrushedSteelTextures,
+  getStippledPolymerTextures,
+  getTacticalFabricTextures,
+} from './weaponTextures.ts';
 
 export interface ShotgunComponents {
   root: THREE.Group;
@@ -26,24 +32,32 @@ export function createShotgunModel(): ShotgunComponents {
   const gunMeshGroup = new THREE.Group();
   root.add(gunMeshGroup);
 
+  // Procedural PBR Textures
+  const steelTex = getBrushedSteelTextures();
+  const polymerTex = getStippledPolymerTextures();
+  const fabricTex = getTacticalFabricTextures();
+
   // --- PBR Materials ---
   const parkerizedSteelMat = new THREE.MeshStandardMaterial({
     color: 0x22262c,
     roughness: 0.35,
     metalness: 0.85,
   });
+  applyPBRTexture(parkerizedSteelMat, steelTex, 0.002);
 
   const polymerStockMat = new THREE.MeshStandardMaterial({
     color: 0x14171b,
     roughness: 0.75,
     metalness: 0.2,
   });
+  applyPBRTexture(polymerStockMat, polymerTex, 0.0025);
 
   const groovedPumpMat = new THREE.MeshStandardMaterial({
     color: 0x101317,
     roughness: 0.8,
     metalness: 0.2,
   });
+  applyPBRTexture(groovedPumpMat, polymerTex, 0.003);
 
   const shellHullMat = new THREE.MeshStandardMaterial({
     color: 0xd32f2f, // Vibrant 12-gauge red plastic hull
@@ -72,12 +86,14 @@ export function createShotgunModel(): ShotgunComponents {
     roughness: 0.85,
     metalness: 0.05,
   });
+  applyPBRTexture(sleeveMat, fabricTex, 0.002);
 
   const gloveMat = new THREE.MeshStandardMaterial({
     color: 0x1a211e,
     roughness: 0.85,
     metalness: 0.15,
   });
+  applyPBRTexture(gloveMat, fabricTex, 0.002);
 
   const strapMat = new THREE.MeshStandardMaterial({
     color: 0x14181c,

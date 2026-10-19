@@ -20,6 +20,12 @@ export interface BlueprintBox {
   color: string;
   /** Render-only parts such as pallet slats and shelf decks can opt out of collision. */
   collision?: boolean;
+  roughness?: number;
+  metalness?: number;
+  shape?: 'box' | 'cylinder' | 'sphere';
+  emissive?: string;
+  emissiveIntensity?: number;
+  rotation?: [number, number, number];
 }
 
 export interface BuildingDoorway {
@@ -202,7 +208,7 @@ export const MAP_INFO: Record<MapId, { name: string; file?: string }> = {
   dustline: { name: 'Dustline Village', file: '/maps/Dustline Village.json' },
   overpass: { name: 'Overpass Arena', file: '/maps/Overpass.json' },
   neighborhood: { name: 'Neighborhood District', file: '/maps/neighborhood.json' },
-  warehouse: { name: 'Warehouse — Section 1', file: '/maps/warehouse_layout.json' },
+  warehouse: { name: 'Warehouse — Section 1 & 2', file: '/maps/warehouse_layout.json' },
 };
 
 export class BlueprintMapLoader {
@@ -312,11 +318,24 @@ export class BlueprintMapLoader {
     const colliders: BoxCollider[] = [];
     const materialCache = new Map<string, THREE.MeshStandardMaterial>();
 
-    const getMaterial = (hex: string, roughness = 0.85, metalness = 0.1) => {
-      let m = materialCache.get(hex);
+    const getMaterial = (
+      hex: string,
+      roughness = 0.85,
+      metalness = 0.1,
+      emissive?: string,
+      emissiveIntensity?: number
+    ) => {
+      const key = `${hex}_${roughness}_${metalness}_${emissive || ''}_${emissiveIntensity ?? 0}`;
+      let m = materialCache.get(key);
       if (!m) {
-        m = new THREE.MeshStandardMaterial({ color: hex, roughness, metalness });
-        materialCache.set(hex, m);
+        m = new THREE.MeshStandardMaterial({
+          color: hex,
+          roughness,
+          metalness,
+          emissive: emissive ? new THREE.Color(emissive) : 0x000000,
+          emissiveIntensity: emissive ? (emissiveIntensity ?? 1.5) : 0,
+        });
+        materialCache.set(key, m);
       }
       return m;
     };
@@ -353,17 +372,40 @@ export class BlueprintMapLoader {
     if (data.boxes) {
       data.boxes.forEach((box) => {
         const hex = box.color || '#718096';
-        const isMetal = box.kind === 'container' || box.kind === 'metal' || box.kind === 'cont';
-        const mat = getMaterial(hex, isMetal ? 0.35 : 0.8, isMetal ? 0.85 : 0.15);
+        const isMetal = box.kind === 'container' || box.kind === 'metal' || box.kind === 'cont' || box.kind === 'vehicle';
+        const roughness = box.roughness !== undefined ? box.roughness : (isMetal ? 0.58 : 0.8);
+        const metalness = box.metalness !== undefined ? box.metalness : (isMetal ? 0.38 : 0.15);
+        const mat = getMaterial(hex, roughness, metalness, box.emissive, box.emissiveIntensity);
 
         const [w, h, d] = box.size;
         const [cx, cy, cz] = box.center;
 
-        const geom = new THREE.BoxGeometry(w, h, d);
+        let geom: THREE.BufferGeometry;
+        if (box.shape === 'cylinder') {
+          const radiusTop = w / 2;
+          const radiusBottom = (d !== undefined ? d : w) / 2;
+          geom = new THREE.CylinderGeometry(radiusTop, radiusBottom, h, 14);
+        } else if (box.shape === 'sphere') {
+          geom = new THREE.SphereGeometry(w / 2, 10, 8);
+        } else {
+          geom = new THREE.BoxGeometry(w, h, d);
+        }
+
         const mesh = new THREE.Mesh(geom, mat);
         mesh.position.set(cx, cy, cz);
+        if (box.rotation) {
+          mesh.rotation.set(box.rotation[0], box.rotation[1], box.rotation[2]);
+        }
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+
+        // If non-colliding (shelf decks, visual accents, wires, markers), DO NOT block bullets!
+        if (box.collision === false) {
+          mesh.userData.ignoreRaycast = true;
+          mesh.userData.collision = false;
+          mesh.layers.set(FX_NON_RAYCAST_LAYER);
+        }
+
         mapGroup.add(mesh);
 
         const isRoof = box.kind === 'roof';
@@ -648,6 +690,69 @@ export class BlueprintMapLoader {
       const dockMinZ = toPx(-8), dockMaxZ = toPx(8);
       ctx.fillRect(dockStart, dockMinZ, dockEnd - dockStart, dockMaxZ - dockMinZ);
       ctx.fillRect(toPx(39.5), dockMinZ, toPx(46.5) - toPx(39.5), dockMaxZ - dockMinZ);
+
+      // Section 2 Marked Forklift Parking Stall (world X: [-30.8, -26.2], Z: [16.0, 20.0])
+      const fBayX1 = toPx(-30.8);
+      const fBayX2 = toPx(-26.2);
+      const fBayZ1 = toPx(16.0);
+      const fBayZ2 = toPx(20.0);
+      const fBayW = fBayX2 - fBayX1;
+      const fBayH = fBayZ2 - fBayZ1;
+
+      ctx.fillStyle = 'rgba(234, 179, 8, 0.12)';
+      ctx.fillRect(fBayX1, fBayZ1, fBayW, fBayH);
+
+      ctx.strokeStyle = 'rgba(234, 179, 8, 0.75)';
+      ctx.lineWidth = 3.0;
+      ctx.strokeRect(fBayX1, fBayZ1, fBayW, fBayH);
+
+      // Diagonal safety hazard stripes inside forklift bay
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(fBayX1, fBayZ1, fBayW, fBayH);
+      ctx.clip();
+      ctx.strokeStyle = 'rgba(234, 179, 8, 0.22)';
+      ctx.lineWidth = 2.5;
+      for (let s = -fBayH; s <= fBayW + fBayH; s += 14) {
+        ctx.beginPath();
+        ctx.moveTo(fBayX1 + s, fBayZ1);
+        ctx.lineTo(fBayX1 + s + fBayH, fBayZ2);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      ctx.fillStyle = 'rgba(234, 179, 8, 0.75)';
+      ctx.font = '700 13px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('FORKLIFT BAY', (fBayX1 + fBayX2) / 2, fBayZ1 - 4);
+
+      // Section 4 Warehouse IT & Network Floor Markings (world bounds: X=[-31.5, -15.5], Z=[-26.5, -14.5])
+      const itX1 = toPx(-31.5);
+      const itX2 = toPx(-15.5);
+      const itZ1 = toPx(-26.5);
+      const itZ2 = toPx(-14.5);
+      const itW = itX2 - itX1;
+      const itH = itZ2 - itZ1;
+
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.08)';
+      ctx.fillRect(itX1, itZ1, itW, itH);
+
+      ctx.setLineDash([10, 8]);
+      ctx.strokeStyle = 'rgba(234, 179, 8, 0.70)';
+      ctx.lineWidth = 2.0;
+      ctx.strokeRect(itX1, itZ1, itW, itH);
+      ctx.setLineDash([]);
+
+      ctx.save();
+      ctx.translate((itX1 + itX2) / 2, itZ1 - 6);
+      ctx.rotate(Math.PI);
+      ctx.fillStyle = 'rgba(234, 179, 8, 0.85)';
+      ctx.font = '700 13px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('WAREHOUSE IT & NETWORK // ZONE 04', 0, 0);
+      ctx.restore();
 
       // Numbered section markers make the planned four-part build sequence visible.
       // CanvasTexture appears X-mirrored after the ground plane is rotated into XZ,

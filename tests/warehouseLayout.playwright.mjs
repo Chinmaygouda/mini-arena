@@ -29,8 +29,10 @@ async function waitForServer(timeoutMs = 20000) {
 }
 
 try {
-  server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5173', '--strictPort'], {
+  const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  server = spawn(npmCmd, ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5173', '--strictPort'], {
     stdio: ['ignore', 'pipe', 'pipe'],
+    shell: process.platform === 'win32',
     env: { ...process.env, BROWSER: 'none' },
     detached: process.platform !== 'win32',
   });
@@ -170,10 +172,14 @@ try {
   if (browser) await browser.close().catch(() => {});
   if (server?.pid) {
     try {
-      if (process.platform !== 'win32') process.kill(-server.pid, 'SIGTERM');
-      else if (!server.killed) server.kill('SIGTERM');
+      if (process.platform !== 'win32') {
+        process.kill(-server.pid, 'SIGTERM');
+      } else {
+        spawn('taskkill', ['/F', '/T', '/PID', String(server.pid)], { stdio: 'ignore' });
+      }
     } catch {
       // Process group may already have exited.
     }
   }
+  process.exit(process.exitCode || 0);
 }

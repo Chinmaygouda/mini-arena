@@ -11,6 +11,7 @@ export interface PlayerInputState {
   right: boolean;
   sprint: boolean;
   jump: boolean;
+  crouch: boolean;
 }
 
 export interface MapBounds {
@@ -30,13 +31,18 @@ export interface BoxCollider {
   isWalkable?: boolean;
 }
 
-// ── Stair/step constants ──────────────────────────────────────────────────
-const PLAYER_RADIUS   = 0.35;  // horizontal capsule radius
-const PLAYER_EYE_H   = 1.7;   // eye-level above feet
-const PLAYER_HEAD_M  = 0.15;  // extra margin above eye
-const STEP_UP_MAX    = 0.45;  // tallest step we autostep onto (~3 stair risers)
-const STEP_DOWN_MAX  = 0.55;  // how far below feet we snap down (smooth descent)
-const GROUND_MARGIN  = 0.04;  // feetY tolerance for ground detection
+// ── Player & Locomotion constants ──────────────────────────────────────────
+export const PLAYER_RADIUS        = 0.35;  // horizontal capsule radius
+export const PLAYER_EYE_H         = 1.7;   // eye-level above feet (standing)
+export const PLAYER_CROUCH_EYE_H  = 1.0;   // eye-level above feet (crouched)
+export const PLAYER_HEAD_M        = 0.15;  // extra margin above eye (total standing 1.85m, crouched 1.15m)
+export const STEP_UP_MAX          = 0.45;  // tallest step we autostep onto (~3 stair risers)
+export const STEP_DOWN_MAX        = 0.55;  // how far below feet we snap down (smooth descent)
+export const GROUND_MARGIN        = 0.04;  // feetY tolerance for ground detection
+export const PLAYER_WALK_SPEED    = 4.8;
+export const PLAYER_SPRINT_SPEED  = 8.5;
+export const PLAYER_CROUCH_SPEED  = 2.4;
+export const CROUCH_LERP_SPEED    = 14.0;  // smooth ergonomic crouch transition (~0.18s)
 
 export class FirstPersonControls {
   public camera: THREE.PerspectiveCamera;
@@ -47,6 +53,11 @@ export class FirstPersonControls {
   public isGrounded: boolean = true;
   public isMoving: boolean = false;
   public isSprinting: boolean = false;
+  public isCrouching: boolean = false;
+  public isCrouchTransitioning: boolean = false;
+  public isOverheadBlocked: boolean = false;
+  public crouchMode: 'hold' | 'toggle' = 'hold';
+  public isCrouchToggled: boolean = false;
 
   public mouseDelta = { x: 0, y: 0 };
   public isLocked: boolean = false;
@@ -76,6 +87,7 @@ export class FirstPersonControls {
     right: false,
     sprint: false,
     jump: false,
+    crouch: false,
   };
 
   private sensitivity: number = 0.002;
@@ -127,6 +139,8 @@ export class FirstPersonControls {
     this.input.right = false;
     this.input.sprint = false;
     this.input.jump = false;
+    this.input.crouch = false;
+    this.isCrouchToggled = false;
     this.velocity.x = 0;
     this.velocity.z = 0;
   }
@@ -162,6 +176,10 @@ export class FirstPersonControls {
         case 'ShiftLeft':
         case 'ShiftRight': this.input.sprint = true; break;
         case 'Space': this.input.jump = true; break;
+        case 'KeyC':
+          this.input.crouch = true;
+          this.isCrouchToggled = !this.isCrouchToggled;
+          break;
       }
     });
 
@@ -174,6 +192,9 @@ export class FirstPersonControls {
         case 'ShiftLeft':
         case 'ShiftRight': this.input.sprint = false; break;
         case 'Space': this.input.jump = false; break;
+        case 'KeyC':
+          this.input.crouch = false;
+          break;
       }
     });
   }
@@ -263,7 +284,63 @@ export class FirstPersonControls {
     return this.getCollidingHits().length;
   }
 
+  /**
+   * Tests whether solid geometry overhead prevents the player from standing up.
+   * Checks whether the volume from the current crouched head to the standing head
+   * overlaps any solid collider.
+   */
+  public hasOverheadObstruction(
+    px: number = this.position.x,
+    pz: number = this.position.z,
+    feetY: number = this.position.y - this.eyeHeight
+  ): boolean {
+    const r = PLAYER_RADIUS;
+    const currentHeadY = feetY + this.eyeHeight + PLAYER_HEAD_M;
+    const standingHeadY = feetY + PLAYER_EYE_H + PLAYER_HEAD_M;
+
+    for (const c of this.colliders) {
+      if (
+        px + r > c.minX && px - r < c.maxX &&
+        pz + r > c.minZ && pz - r < c.maxZ
+      ) {
+        // If collider starts below standing head top and ends above current head level
+        if (c.minY < standingHeadY && c.maxY > currentHeadY - 0.04) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public getEyeHeight(): number {
+    return this.eyeHeight;
+  }
+
+  public getEffectiveColliderHeight(): number {
+    return this.eyeHeight + PLAYER_HEAD_M;
+  }
+
   public update(delta: number) {
+    // 0. Crouch Stance & Overhead Clearance Safeguard
+    const currentFeetY = this.position.y - this.eyeHeight;
+    const isObstructed = this.hasOverheadObstruction(this.position.x, this.position.z, currentFeetY);
+    this.isOverheadBlocked = isObstructed;
+
+    const wantsCrouch = (this.crouchMode === 'toggle') ? this.isCrouchToggled : this.input.crouch;
+    // Player remains crouched if actively holding/toggled crouch OR if overhead clearance is blocked
+    const shouldCrouch = wantsCrouch || isObstructed;
+    this.isCrouching = shouldCrouch;
+
+    const targetEyeHeight = shouldCrouch ? PLAYER_CROUCH_EYE_H : PLAYER_EYE_H;
+    const prevEyeHeight = this.eyeHeight;
+    this.eyeHeight = THREE.MathUtils.lerp(this.eyeHeight, targetEyeHeight, Math.min(1, delta * CROUCH_LERP_SPEED));
+
+    // Smoothly shift position.y by the eyeHeight delta so player's feet stay firmly grounded
+    const dEye = this.eyeHeight - prevEyeHeight;
+    this.position.y += dEye;
+
+    this.isCrouchTransitioning = Math.abs(this.eyeHeight - targetEyeHeight) > 0.005;
+
     // 1. Recover Camera Recoil
     this.cameraRecoilPitch = THREE.MathUtils.lerp(this.cameraRecoilPitch, 0, delta * 12);
     this.cameraRecoilYaw   = THREE.MathUtils.lerp(this.cameraRecoilYaw,   0, delta * 12);
@@ -290,10 +367,16 @@ export class FirstPersonControls {
     // Physically coupled locomotion states:
     // isMoving is true if actively inputting movement OR physically decelerating above 0.15 m/s
     this.isMoving = hasMoveInput || horizontalSpeed > 0.15;
-    // isSprinting requires commanding forward + sprint AND actually moving at sprint velocity (>3.0 m/s)
-    this.isSprinting = hasMoveInput && this.input.sprint && this.input.forward && horizontalSpeed > 3.0;
 
-    const speed = (this.input.sprint && this.input.forward) ? 8.5 : 4.8;
+    let speed: number;
+    if (this.isCrouching) {
+      speed = PLAYER_CROUCH_SPEED;
+      this.isSprinting = false; // Strictly disallowed while crouched
+    } else {
+      const canSprint = this.input.sprint && this.input.forward;
+      speed = canSprint ? PLAYER_SPRINT_SPEED : PLAYER_WALK_SPEED;
+      this.isSprinting = hasMoveInput && canSprint && horizontalSpeed > 3.0;
+    }
 
     const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
     const right   = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
@@ -306,9 +389,23 @@ export class FirstPersonControls {
 
     // 3. Jump & Gravity
     if (this.input.jump && this.isGrounded) {
-      this.velocity.y  = 5.2;
-      this.isGrounded  = false;
-      this.input.jump  = false; // consume to avoid multi-jump on held Space
+      if (this.isCrouching) {
+        if (!this.isOverheadBlocked) {
+          // If clearance exists, jumping uncrouches
+          this.isCrouchToggled = false;
+          this.input.crouch = false;
+          this.velocity.y  = 5.2;
+          this.isGrounded  = false;
+          this.input.jump  = false;
+        } else {
+          // Overhead obstruction suppresses jump
+          this.input.jump = false;
+        }
+      } else {
+        this.velocity.y  = 5.2;
+        this.isGrounded  = false;
+        this.input.jump  = false; // consume to avoid multi-jump on held Space
+      }
     }
 
     if (!this.isGrounded) {
@@ -461,13 +558,27 @@ export class FirstPersonControls {
 
     const isActuallyMoving = this.isGrounded && horizontalSpeed > 0.15;
     if (isActuallyMoving) {
-      // Natural human stride cadence: ~1.85 Hz walking (11.6 rad/s), ~3.2 Hz sprinting (20.1 rad/s)
-      const bobRate = this.isSprinting ? 20.0 : 11.6;
-      const speedScale = Math.min(1.2, horizontalSpeed / (this.isSprinting ? 8.5 : 4.8));
+      // Natural human stride cadence:
+      // ~1.3 Hz crouch walk (8.2 rad/s)
+      // ~1.85 Hz walking (11.6 rad/s)
+      // ~3.2 Hz sprinting (20.1 rad/s)
+      let bobRate: number;
+      let targetAmp: number;
+      if (this.isCrouching) {
+        bobRate = 8.2;
+        targetAmp = 0.008;
+      } else if (this.isSprinting) {
+        bobRate = 20.0;
+        targetAmp = 0.030;
+      } else {
+        bobRate = 11.6;
+        targetAmp = 0.016;
+      }
+      const baseSpeed = this.isCrouching ? PLAYER_CROUCH_SPEED : (this.isSprinting ? PLAYER_SPRINT_SPEED : PLAYER_WALK_SPEED);
+      const speedScale = Math.min(1.2, horizontalSpeed / baseSpeed);
       this.headBobTimer += delta * bobRate * speedScale;
 
-      const targetAmp = (this.isSprinting ? 0.030 : 0.016) * speedScale;
-      const targetBob = Math.sin(this.headBobTimer) * targetAmp;
+      const targetBob = Math.sin(this.headBobTimer) * targetAmp * speedScale;
       this.cameraBobOffset = THREE.MathUtils.lerp(this.cameraBobOffset, targetBob, Math.min(1, delta * 15));
     } else {
       // Smoothly decay head-bob offset to zero on stop — NEVER an instantaneous jump

@@ -1,7 +1,7 @@
 {
   "meta": {
-    "name": "Warehouse — Section 1",
-    "mode": "Symmetrical 2v2 warehouse layout — Section 1 storage rack build",
+    "name": "Warehouse — Section 1, 2 & 4 (IT & Logistics Hub)",
+    "mode": "Symmetrical 2v2 warehouse layout — S1 Storage | S2 Loading Bay | S4 IT Logistics Hub",
     "theme": "warehouse",
     "units": "meters",
     "axes": "Three.js X/Z world axes, Y up. In the top-down reference render, positive X appears toward screen-left and positive Z toward screen-top; numbered sections follow that visible blueprint orientation.",
@@ -23,17 +23,17 @@
       13.5
     ],
     "version": 5,
-    "layoutStage": "section-1-detail",
+    "layoutStage": "section-4-detail",
     "note": "Stage 2 is restricted to visible Section 1 (upper-left in the top-down layout): four parallel industrial pallet-rack runs, visible steel uprights/crossbeams, lower slatted pallets, upper shelf decks and varied crate loads. Section 2, Section 3, Section 4 and the central hall remain props-free. No vehicles, forklifts, roof, machinery or decorative dressing in this pass.",
     "wallSegmentCount": 202,
     "sectionArchitecture": "Each numbered quadrant has an enclosing chamber, recessed entry returns, two cross-corridor links, one side-aisle link, and three auxiliary service bays. All quadrant wall geometry is mirrored on both axes.",
-    "propCount": 272,
-    "physicalBoxCount": 474,
+    "propCount": 613,
+    "physicalBoxCount": 815,
     "sectionProgress": {
       "section1": "stage-2 racks, pallets and crate loads implemented",
-      "section2": "walls only",
+      "section2": "stage-2 cross-rack rows, loading bay, forklift and industrial props implemented",
       "section3": "walls only",
-      "section4": "walls only",
+      "section4": "warehouse-it-logistics-hub-optimized",
       "centralHall": "walls and floor markings only",
       "spawns": "two reserved positions per team"
     }
@@ -70,7 +70,15 @@
       "max": [
         -7,
         31
-      ]
+      ],
+      "contentStage": "cross-racks-loading-bay-forklift",
+      "propsSummary": {
+        "rackRows": 3,
+        "pallets": 19,
+        "crates": 27,
+        "vehicleParts": 14,
+        "totalProps": 248
+      }
     },
     {
       "id": "section3",
@@ -88,7 +96,7 @@
     {
       "id": "section4",
       "number": 4,
-      "name": "South-East Warehouse Section",
+      "name": "Warehouse IT & Logistics Dispatch Hub",
       "min": [
         -38,
         -31
@@ -96,7 +104,18 @@
       "max": [
         -7,
         -8
-      ]
+      ],
+      "contentStage": "warehouse-it-logistics-hub",
+      "propsSummary": {
+        "theme": "Warehouse IT & Logistics Hub",
+        "serverRacks": 8,
+        "serverGapsMeters": 1.4,
+        "dispatchDesks": 1,
+        "securityCage": true,
+        "hardwarePallets": 6,
+        "lightingFixtures": 5,
+        "totalProps": 93
+      }
     },
     {
       "id": "centralHall",
@@ -4003,8 +4022,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-01-pallet-02-deck-1",
@@ -4121,8 +4142,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-01-pallet-03-deck-1",
@@ -4255,8 +4278,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-01-pallet-04-deck-1",
@@ -4373,8 +4398,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-01-pallet-05-deck-1",
@@ -4507,8 +4534,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-02-upright-L-01",
@@ -5092,13 +5121,13 @@
       "color": "#c49a62"
     },
     {
-      "id": "s1-rack-02-crate-upper-01",
+      "id": "s1-rack-02-crate-upper-02",
       "zone": "section1",
       "kind": "crate",
       "center": [
-        19.87,
+        19.73,
         2.39,
-        16
+        18
       ],
       "size": [
         0.82,
@@ -5121,8 +5150,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-02-pallet-02-deck-1",
@@ -5239,8 +5270,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-02-pallet-03-deck-1",
@@ -5344,13 +5377,13 @@
       "color": "#b58a58"
     },
     {
-      "id": "s1-rack-02-crate-upper-03",
+      "id": "s1-rack-02-crate-upper-04",
       "zone": "section1",
       "kind": "crate",
       "center": [
         19.87,
         2.39,
-        20
+        22
       ],
       "size": [
         0.82,
@@ -5373,8 +5406,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-02-pallet-04-deck-1",
@@ -5491,8 +5526,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-02-pallet-05-deck-1",
@@ -5625,8 +5662,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-03-upright-L-01",
@@ -6239,8 +6278,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-03-pallet-02-deck-1",
@@ -6357,8 +6398,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-03-pallet-03-deck-1",
@@ -6462,13 +6505,13 @@
       "color": "#9b7045"
     },
     {
-      "id": "s1-rack-03-crate-upper-03",
+      "id": "s1-rack-03-crate-upper-02",
       "zone": "section1",
       "kind": "crate",
       "center": [
-        25.73,
+        25.87,
         2.39,
-        20
+        18
       ],
       "size": [
         0.82,
@@ -6491,8 +6534,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-03-pallet-04-deck-1",
@@ -6609,8 +6654,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-03-pallet-05-deck-1",
@@ -6714,13 +6761,13 @@
       "color": "#a77a4b"
     },
     {
-      "id": "s1-rack-03-crate-upper-05",
+      "id": "s1-rack-03-crate-upper-04",
       "zone": "section1",
       "kind": "crate",
       "center": [
         25.73,
         2.39,
-        24
+        22
       ],
       "size": [
         0.82,
@@ -6743,8 +6790,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-04-upright-L-01",
@@ -7357,8 +7406,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-04-pallet-02-deck-1",
@@ -7475,8 +7526,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-04-pallet-03-deck-1",
@@ -7609,8 +7662,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-04-pallet-04-deck-1",
@@ -7727,8 +7782,10 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
-      "collision": false
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
     },
     {
       "id": "s1-rack-04-pallet-05-deck-1",
@@ -7832,13 +7889,13 @@
       "color": "#b98650"
     },
     {
-      "id": "s1-rack-04-crate-upper-05",
+      "id": "s1-rack-04-crate-upper-04",
       "zone": "section1",
       "kind": "crate",
       "center": [
-        31.87,
+        31.73,
         2.39,
-        24
+        22
       ],
       "size": [
         0.82,
@@ -7861,7 +7918,6180 @@
         0.1,
         1.62
       ],
-      "color": "#667c86",
+      "color": "#47535b",
+      "collision": false,
+      "roughness": 0.65,
+      "metalness": 0.25
+    },
+    {
+      "id": "s2-rack-01-upright-F-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        1.7,
+        15.18
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-upright-B-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        1.7,
+        14.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-tie-1-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        0.62,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-2-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        1.94,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-3-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        3.32,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-upright-F-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        1.7,
+        15.18
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-upright-B-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        1.7,
+        14.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-tie-1-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        0.62,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-2-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        1.94,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-3-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        3.32,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-upright-F-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        1.7,
+        15.18
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-upright-B-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        1.7,
+        14.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-tie-1-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        0.62,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-2-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        1.94,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-3-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        3.32,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-upright-F-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        1.7,
+        15.18
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-upright-B-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        1.7,
+        14.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-tie-1-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        0.62,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-2-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        1.94,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-3-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        3.32,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-upright-F-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        1.7,
+        15.18
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-upright-B-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        1.7,
+        14.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-tie-1-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        0.62,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-2-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        1.94,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-3-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        3.32,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-upright-F-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.7,
+        15.18
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-upright-B-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.7,
+        14.02
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-01-tie-1-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        0.62,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-2-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.94,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-tie-3-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        3.32,
+        14.6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-01-beam-1F-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        0.62,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-1B-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        0.62,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2F-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        1.94,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2B-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        1.94,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-deck-upper-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        1.98,
+        14.6
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-01-pallet-lower-01",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -23.35,
+        0.06,
+        14.6
+      ],
+      "size": [
+        1.66,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-01-crate-lower-01",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -23.35,
+        0.445,
+        14.6
+      ],
+      "size": [
+        1.5,
+        0.65,
+        0.9
+      ],
+      "color": "#3f4f34",
+      "roughness": 0.6,
+      "metalness": 0.25
+    },
+    {
+      "id": "s2-rack-01-crate-upper-01",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -23.35,
+        2.385,
+        14.6
+      ],
+      "size": [
+        1.4,
+        0.75,
+        0.85
+      ],
+      "color": "#4d5d42",
+      "roughness": 0.65,
+      "metalness": 0.2
+    },
+    {
+      "id": "s2-rack-01-beam-1F-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        0.62,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-1B-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        0.62,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2F-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        1.94,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2B-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        1.94,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-deck-upper-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        1.98,
+        14.6
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-01-pallet-lower-02",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -21.05,
+        0.06,
+        14.6
+      ],
+      "size": [
+        1.66,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-01-crate-lower-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -21.05,
+        0.395,
+        14.6
+      ],
+      "size": [
+        1.4,
+        0.55,
+        0.9
+      ],
+      "color": "#92400e",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-01-crate-lower-stack2-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -21.05,
+        0.92,
+        14.6
+      ],
+      "size": [
+        1.2,
+        0.5,
+        0.85
+      ],
+      "color": "#78350f",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-01-crate-upper-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -21.05,
+        2.3099999999999996,
+        14.6
+      ],
+      "size": [
+        1.2,
+        0.6,
+        0.85
+      ],
+      "color": "#a16207",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-01-beam-1F-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        0.62,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-1B-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        0.62,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2F-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        1.94,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2B-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        1.94,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-deck-upper-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        1.98,
+        14.6
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-01-pallet-lower-03",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -18.75,
+        0.06,
+        14.6
+      ],
+      "size": [
+        1.66,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-01-crate-lower-03",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -18.75,
+        0.595,
+        14.6
+      ],
+      "size": [
+        1.6,
+        0.95,
+        0.92
+      ],
+      "color": "#57534e",
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s2-rack-01-beam-1F-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        0.62,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-1B-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        0.62,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2F-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        1.94,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2B-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        1.94,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-deck-upper-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        1.98,
+        14.6
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-01-pallet-lower-04",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -16.45,
+        0.06,
+        14.6
+      ],
+      "size": [
+        1.66,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-01-crate-lower-04",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -16.45,
+        0.445,
+        14.6
+      ],
+      "size": [
+        1.3,
+        0.65,
+        0.88
+      ],
+      "color": "#d97706",
+      "roughness": 0.85,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-01-crate-upper-04",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -16.45,
+        2.2849999999999997,
+        14.6
+      ],
+      "size": [
+        1.5,
+        0.55,
+        0.85
+      ],
+      "color": "#b45309",
+      "roughness": 0.85,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-01-beam-1F-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        0.62,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-1B-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        0.62,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2F-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        1.94,
+        15.18
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-beam-2B-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        1.94,
+        14.02
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-01-deck-upper-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        1.98,
+        14.6
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-01-crate-upper-05",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -14.15,
+        2.36,
+        14.6
+      ],
+      "size": [
+        1.6,
+        0.7,
+        0.9
+      ],
+      "color": "#334155",
+      "roughness": 0.55,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-upright-F-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.8,
+        1.7,
+        20.08
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-02-upright-B-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.8,
+        1.7,
+        18.92
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-02-tie-1-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.8,
+        0.62,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-tie-2-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.8,
+        1.94,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-tie-3-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.8,
+        3.32,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-upright-F-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19,
+        1.7,
+        20.08
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-02-upright-B-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19,
+        1.7,
+        18.92
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-02-tie-1-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19,
+        0.62,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-tie-2-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19,
+        1.94,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-tie-3-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19,
+        3.32,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-upright-F-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.2,
+        1.7,
+        20.08
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-02-upright-B-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.2,
+        1.7,
+        18.92
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-02-tie-1-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.2,
+        0.62,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-tie-2-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.2,
+        1.94,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-tie-3-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.2,
+        3.32,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-upright-F-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13.4,
+        1.7,
+        20.08
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-02-upright-B-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13.4,
+        1.7,
+        18.92
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-02-tie-1-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13.4,
+        0.62,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-tie-2-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13.4,
+        1.94,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-tie-3-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13.4,
+        3.32,
+        19.5
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-beam-1F-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.4,
+        0.62,
+        20.08
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-1B-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.4,
+        0.62,
+        18.92
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-2F-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.4,
+        1.94,
+        20.08
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-2B-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.4,
+        1.94,
+        18.92
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-deck-upper-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -20.4,
+        1.98,
+        19.5
+      ],
+      "size": [
+        2.76,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-02-pallet-lower-01",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -20.4,
+        0.06,
+        19.5
+      ],
+      "size": [
+        2.02,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-02-crate-lower-01",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -20.4,
+        0.52,
+        19.5
+      ],
+      "size": [
+        1.8,
+        0.8,
+        0.95
+      ],
+      "color": "#1e3a8a",
+      "roughness": 0.5,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-02-crate-upper-01",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -20.4,
+        2.335,
+        19.5
+      ],
+      "size": [
+        1.6,
+        0.65,
+        0.9
+      ],
+      "color": "#1f2937",
+      "roughness": 0.55,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-1F-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        0.62,
+        20.08
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-1B-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        0.62,
+        18.92
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-2F-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        1.94,
+        20.08
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-2B-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        1.94,
+        18.92
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-deck-upper-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        1.98,
+        19.5
+      ],
+      "size": [
+        2.76,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-02-pallet-lower-02",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -17.6,
+        0.06,
+        19.5
+      ],
+      "size": [
+        2.02,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-02-crate-lower-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -17.6,
+        0.41,
+        19.5
+      ],
+      "size": [
+        1.6,
+        0.58,
+        0.92
+      ],
+      "color": "#854d0e",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-02-crate-lower-stack2-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -17.6,
+        0.96,
+        19.5
+      ],
+      "size": [
+        1.4,
+        0.52,
+        0.88
+      ],
+      "color": "#a16207",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-02-crate-upper-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -17.6,
+        2.3099999999999996,
+        19.5
+      ],
+      "size": [
+        1.7,
+        0.6,
+        0.88
+      ],
+      "color": "#78350f",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-02-beam-1F-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.8,
+        0.62,
+        20.08
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-1B-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.8,
+        0.62,
+        18.92
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-2F-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.8,
+        1.94,
+        20.08
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-beam-2B-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.8,
+        1.94,
+        18.92
+      ],
+      "size": [
+        2.76,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-02-deck-upper-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.8,
+        1.98,
+        19.5
+      ],
+      "size": [
+        2.76,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-02-pallet-lower-03",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -14.8,
+        0.06,
+        19.5
+      ],
+      "size": [
+        2.02,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-02-crate-lower-03",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -14.8,
+        0.5700000000000001,
+        19.5
+      ],
+      "size": [
+        1.9,
+        0.9,
+        0.95
+      ],
+      "color": "#44403c",
+      "roughness": 0.65,
+      "metalness": 0.25
+    },
+    {
+      "id": "s2-rack-03-upright-F-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        1.7,
+        24.98
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-upright-B-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        1.7,
+        23.82
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-tie-1-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        0.62,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-2-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        1.94,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-3-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -24.5,
+        3.32,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-upright-F-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        1.7,
+        24.98
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-upright-B-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        1.7,
+        23.82
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-tie-1-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        0.62,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-2-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        1.94,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-3-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -22.2,
+        3.32,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-upright-F-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        1.7,
+        24.98
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-upright-B-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        1.7,
+        23.82
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-tie-1-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        0.62,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-2-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        1.94,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-3-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -19.9,
+        3.32,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-upright-F-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        1.7,
+        24.98
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-upright-B-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        1.7,
+        23.82
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-tie-1-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        0.62,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-2-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        1.94,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-3-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -17.6,
+        3.32,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-upright-F-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        1.7,
+        24.98
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-upright-B-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        1.7,
+        23.82
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-tie-1-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        0.62,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-2-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        1.94,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-3-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -15.3,
+        3.32,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-upright-F-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.7,
+        24.98
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-upright-B-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.7,
+        23.82
+      ],
+      "size": [
+        0.12,
+        3.4,
+        0.12
+      ],
+      "color": "#2b3542",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-rack-03-tie-1-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        0.62,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-2-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.94,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-tie-3-06",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -13,
+        3.32,
+        24.4
+      ],
+      "size": [
+        0.12,
+        0.08,
+        1.04
+      ],
+      "color": "#2b3542",
+      "collision": false,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-beam-1F-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        0.62,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-1B-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        0.62,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2F-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        1.94,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2B-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        1.94,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-deck-upper-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -23.35,
+        1.98,
+        24.4
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-pallet-lower-01",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -23.35,
+        0.06,
+        24.4
+      ],
+      "size": [
+        1.66,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-03-crate-lower-01",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -23.35,
+        0.47,
+        24.4
+      ],
+      "size": [
+        1.4,
+        0.7,
+        0.9
+      ],
+      "color": "#475569",
+      "roughness": 0.5,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-crate-upper-01",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -23.35,
+        2.335,
+        24.4
+      ],
+      "size": [
+        1.3,
+        0.65,
+        0.85
+      ],
+      "color": "#334155",
+      "roughness": 0.5,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-rack-03-beam-1F-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        0.62,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-1B-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        0.62,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2F-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        1.94,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2B-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        1.94,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-deck-upper-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -21.05,
+        1.98,
+        24.4
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-pallet-lower-02",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -21.05,
+        0.06,
+        24.4
+      ],
+      "size": [
+        1.66,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-03-crate-lower-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -21.05,
+        0.38,
+        24.4
+      ],
+      "size": [
+        1.3,
+        0.52,
+        0.85
+      ],
+      "color": "#b45309",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-crate-lower-stack2-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -21.05,
+        0.88,
+        24.4
+      ],
+      "size": [
+        1.1,
+        0.48,
+        0.8
+      ],
+      "color": "#d97706",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-crate-upper-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -21.05,
+        2.2849999999999997,
+        24.4
+      ],
+      "size": [
+        1.4,
+        0.55,
+        0.85
+      ],
+      "color": "#a16207",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-beam-1F-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        0.62,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-1B-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        0.62,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2F-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        1.94,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2B-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        1.94,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-deck-upper-03",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -18.75,
+        1.98,
+        24.4
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-crate-upper-03",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -18.75,
+        2.385,
+        24.4
+      ],
+      "size": [
+        1.5,
+        0.75,
+        0.88
+      ],
+      "color": "#3f4f34",
+      "roughness": 0.65,
+      "metalness": 0.2
+    },
+    {
+      "id": "s2-rack-03-beam-1F-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        0.62,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-1B-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        0.62,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2F-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        1.94,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2B-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        1.94,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-deck-upper-04",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -16.45,
+        1.98,
+        24.4
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-pallet-lower-04",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -16.45,
+        0.06,
+        24.4
+      ],
+      "size": [
+        1.66,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-03-crate-lower-04",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -16.45,
+        0.5449999999999999,
+        24.4
+      ],
+      "size": [
+        1.6,
+        0.85,
+        0.92
+      ],
+      "color": "#78350f",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-beam-1F-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        0.62,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-1B-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        0.62,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2F-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        1.94,
+        24.98
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-beam-2B-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        1.94,
+        23.82
+      ],
+      "size": [
+        2.26,
+        0.12,
+        0.1
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-rack-03-deck-upper-05",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -14.15,
+        1.98,
+        24.4
+      ],
+      "size": [
+        2.26,
+        0.06,
+        1.08
+      ],
+      "color": "#1a202c",
+      "collision": false,
+      "roughness": 0.85,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-pallet-lower-05",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -14.15,
+        0.06,
+        24.4
+      ],
+      "size": [
+        1.66,
+        0.12,
+        0.95
+      ],
+      "color": "#854d0e",
+      "collision": false,
+      "roughness": 0.9,
+      "metalness": 0.05
+    },
+    {
+      "id": "s2-rack-03-crate-lower-05",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -14.15,
+        0.46,
+        24.4
+      ],
+      "size": [
+        1.4,
+        0.68,
+        0.88
+      ],
+      "color": "#92400e",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-rack-03-crate-upper-05",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -14.15,
+        2.3,
+        24.4
+      ],
+      "size": [
+        1.3,
+        0.58,
+        0.82
+      ],
+      "color": "#854d0e",
+      "roughness": 0.75,
+      "metalness": 0.15
+    },
+    {
+      "id": "s2-forklift-chassis-main",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.5,
+        0.44,
+        18
+      ],
+      "size": [
+        1.38,
+        0.56,
+        1.04
+      ],
+      "color": "#d97706",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-forklift-counterweight",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -29.28,
+        0.48,
+        18
+      ],
+      "size": [
+        0.46,
+        0.64,
+        1.02
+      ],
+      "color": "#1f2937",
+      "roughness": 0.75,
+      "metalness": 0.5
+    },
+    {
+      "id": "s2-forklift-front-cowl",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -27.88,
+        0.56,
+        18
+      ],
+      "size": [
+        0.32,
+        0.42,
+        0.96
+      ],
+      "color": "#d97706",
+      "roughness": 0.45,
+      "metalness": 0.35
+    },
+    {
+      "id": "s2-forklift-side-step-L",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.5,
+        0.18,
+        18.56
+      ],
+      "size": [
+        0.85,
+        0.06,
+        0.16
+      ],
+      "color": "#111827",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-side-step-R",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.5,
+        0.18,
+        17.44
+      ],
+      "size": [
+        0.85,
+        0.06,
+        0.16
+      ],
+      "color": "#111827",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-wheel-FL",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.02,
+        0.28,
+        18.55
+      ],
+      "size": [
+        0.56,
+        0.56,
+        0.22
+      ],
+      "color": "#111827",
+      "roughness": 0.9,
+      "metalness": 0.1
+    },
+    {
+      "id": "s2-forklift-wheel-FR",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.02,
+        0.28,
+        17.45
+      ],
+      "size": [
+        0.56,
+        0.56,
+        0.22
+      ],
+      "color": "#111827",
+      "roughness": 0.9,
+      "metalness": 0.1
+    },
+    {
+      "id": "s2-forklift-wheel-RL",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -29.12,
+        0.24,
+        18.53
+      ],
+      "size": [
+        0.48,
+        0.48,
+        0.2
+      ],
+      "color": "#111827",
+      "roughness": 0.9,
+      "metalness": 0.1
+    },
+    {
+      "id": "s2-forklift-wheel-RR",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -29.12,
+        0.24,
+        17.47
+      ],
+      "size": [
+        0.48,
+        0.48,
+        0.2
+      ],
+      "color": "#111827",
+      "roughness": 0.9,
+      "metalness": 0.1
+    },
+    {
+      "id": "s2-forklift-hub-FL",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -28.02,
+        0.28,
+        18.64
+      ],
+      "size": [
+        0.26,
+        0.26,
+        0.05
+      ],
+      "color": "#64748b",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-hub-FR",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -28.02,
+        0.28,
+        17.36
+      ],
+      "size": [
+        0.26,
+        0.26,
+        0.05
+      ],
+      "color": "#64748b",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-seat-cushion",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.62,
+        0.78,
+        18
+      ],
+      "size": [
+        0.42,
+        0.12,
+        0.44
+      ],
+      "color": "#111827",
+      "roughness": 0.85,
+      "metalness": 0.1
+    },
+    {
+      "id": "s2-forklift-seat-back",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.81,
+        1.02,
+        18
+      ],
+      "size": [
+        0.1,
+        0.42,
+        0.42
+      ],
+      "color": "#111827",
+      "roughness": 0.85,
+      "metalness": 0.1
+    },
+    {
+      "id": "s2-forklift-steering-column",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.18,
+        0.88,
+        18
+      ],
+      "size": [
+        0.08,
+        0.36,
+        0.08
+      ],
+      "color": "#334155",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-steering-wheel",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.22,
+        1.08,
+        18
+      ],
+      "size": [
+        0.28,
+        0.05,
+        0.28
+      ],
+      "color": "#1e293b",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-control-levers",
+      "zone": "section2",
+      "kind": "vehicle",
+      "center": [
+        -28.28,
+        0.94,
+        18.28
+      ],
+      "size": [
+        0.06,
+        0.18,
+        0.12
+      ],
+      "color": "#94a3b8",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-pillar-FL",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -28.05,
+        1.42,
+        18.42
+      ],
+      "size": [
+        0.07,
+        1.34,
+        0.07
+      ],
+      "color": "#1f2937"
+    },
+    {
+      "id": "s2-forklift-pillar-FR",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -28.05,
+        1.42,
+        17.58
+      ],
+      "size": [
+        0.07,
+        1.34,
+        0.07
+      ],
+      "color": "#1f2937"
+    },
+    {
+      "id": "s2-forklift-pillar-RL",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -29.05,
+        1.42,
+        18.42
+      ],
+      "size": [
+        0.07,
+        1.34,
+        0.07
+      ],
+      "color": "#1f2937"
+    },
+    {
+      "id": "s2-forklift-pillar-RR",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -29.05,
+        1.42,
+        17.58
+      ],
+      "size": [
+        0.07,
+        1.34,
+        0.07
+      ],
+      "color": "#1f2937"
+    },
+    {
+      "id": "s2-forklift-roof-frame",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -28.55,
+        2.08,
+        18
+      ],
+      "size": [
+        1.14,
+        0.06,
+        0.92
+      ],
+      "color": "#111827"
+    },
+    {
+      "id": "s2-forklift-roof-slat-1",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -28.82,
+        2.09,
+        18
+      ],
+      "size": [
+        0.04,
+        0.04,
+        0.86
+      ],
+      "color": "#1f2937",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-roof-slat-2",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -28.55,
+        2.09,
+        18
+      ],
+      "size": [
+        0.04,
+        0.04,
+        0.86
+      ],
+      "color": "#1f2937",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-roof-slat-3",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -28.28,
+        2.09,
+        18
+      ],
+      "size": [
+        0.04,
+        0.04,
+        0.86
+      ],
+      "color": "#1f2937",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-beacon",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -29,
+        2.18,
+        18
+      ],
+      "size": [
+        0.12,
+        0.14,
+        0.12
+      ],
+      "color": "#f59e0b",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-mast-L",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.62,
+        1.25,
+        18.34
+      ],
+      "size": [
+        0.1,
+        2.3,
+        0.08
+      ],
+      "color": "#1e293b",
+      "roughness": 0.5,
+      "metalness": 0.5
+    },
+    {
+      "id": "s2-forklift-mast-R",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.62,
+        1.25,
+        17.66
+      ],
+      "size": [
+        0.1,
+        2.3,
+        0.08
+      ],
+      "color": "#1e293b",
+      "roughness": 0.5,
+      "metalness": 0.5
+    },
+    {
+      "id": "s2-forklift-mast-brace-top",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.62,
+        2.34,
+        18
+      ],
+      "size": [
+        0.1,
+        0.08,
+        0.72
+      ],
+      "color": "#1e293b",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-mast-brace-mid",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.62,
+        1.35,
+        18
+      ],
+      "size": [
+        0.1,
+        0.08,
+        0.72
+      ],
+      "color": "#1e293b",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-hydraulic-ram",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.64,
+        1.05,
+        18
+      ],
+      "size": [
+        0.08,
+        1.7,
+        0.08
+      ],
+      "color": "#475569",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-carriage-plate",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.54,
+        0.42,
+        18
+      ],
+      "size": [
+        0.06,
+        0.55,
+        0.88
+      ],
+      "color": "#334155"
+    },
+    {
+      "id": "s2-forklift-headlight-L",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.6,
+        1.75,
+        18.34
+      ],
+      "size": [
+        0.08,
+        0.1,
+        0.1
+      ],
+      "color": "#fef08a",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-headlight-R",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.6,
+        1.75,
+        17.66
+      ],
+      "size": [
+        0.08,
+        0.1,
+        0.1
+      ],
+      "color": "#fef08a",
+      "collision": false
+    },
+    {
+      "id": "s2-forklift-fork-shank-L",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.49,
+        0.32,
+        18.25
+      ],
+      "size": [
+        0.05,
+        0.52,
+        0.09
+      ],
+      "color": "#475569",
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s2-forklift-fork-tine-L",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -26.88,
+        0.035,
+        18.25
+      ],
+      "size": [
+        1.22,
+        0.045,
+        0.09
+      ],
+      "color": "#475569",
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s2-forklift-fork-shank-R",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -27.49,
+        0.32,
+        17.75
+      ],
+      "size": [
+        0.05,
+        0.52,
+        0.09
+      ],
+      "color": "#475569",
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s2-forklift-fork-tine-R",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -26.88,
+        0.035,
+        17.75
+      ],
+      "size": [
+        1.22,
+        0.045,
+        0.09
+      ],
+      "color": "#475569",
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s2-forklift-carried-pallet",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -26.95,
+        0.11,
+        18
+      ],
+      "size": [
+        1.1,
+        0.11,
+        0.92
+      ],
+      "color": "#92400e",
+      "collision": true
+    },
+    {
+      "id": "s2-forklift-carried-crate",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -26.95,
+        0.56,
+        18
+      ],
+      "size": [
+        0.95,
+        0.78,
+        0.85
+      ],
+      "color": "#3f4f34",
+      "roughness": 0.65,
+      "metalness": 0.2
+    },
+    {
+      "id": "s2-spill-containment-pallet",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -34.5,
+        0.08,
+        12.8
+      ],
+      "size": [
+        1.35,
+        0.16,
+        1.35
+      ],
+      "color": "#374151",
+      "collision": true
+    },
+    {
+      "id": "s2-drum-blue-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -34.2,
+        0.56,
+        12.5
+      ],
+      "size": [
+        0.58,
+        0.88,
+        0.58
+      ],
+      "color": "#1d4ed8",
+      "roughness": 0.45,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-drum-blue-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -34.8,
+        0.56,
+        12.5
+      ],
+      "size": [
+        0.58,
+        0.88,
+        0.58
+      ],
+      "color": "#1e40af",
+      "roughness": 0.45,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-drum-red-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -34.2,
+        0.56,
+        13.1
+      ],
+      "size": [
+        0.58,
+        0.88,
+        0.58
+      ],
+      "color": "#dc2626",
+      "roughness": 0.45,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-drum-yellow-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -34.8,
+        0.56,
+        13.1
+      ],
+      "size": [
+        0.58,
+        0.88,
+        0.58
+      ],
+      "color": "#ca8a04",
+      "roughness": 0.45,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-drum-dock-01",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -35,
+        0.48,
+        22
+      ],
+      "size": [
+        0.58,
+        0.88,
+        0.58
+      ],
+      "color": "#1d4ed8",
+      "roughness": 0.45,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-drum-dock-02",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -35,
+        0.48,
+        22.7
+      ],
+      "size": [
+        0.58,
+        0.88,
+        0.58
+      ],
+      "color": "#334155",
+      "roughness": 0.55,
+      "metalness": 0.45
+    },
+    {
+      "id": "s2-cone-01-base",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -26,
+        0.025,
+        15.5
+      ],
+      "size": [
+        0.42,
+        0.05,
+        0.42
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-01-body",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -26,
+        0.35,
+        15.5
+      ],
+      "size": [
+        0.32,
+        0.65,
+        0.32
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-01-stripe",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -26,
+        0.38,
+        15.5
+      ],
+      "size": [
+        0.34,
+        0.16,
+        0.34
+      ],
+      "color": "#f8fafc",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-02-base",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -26,
+        0.025,
+        21
+      ],
+      "size": [
+        0.42,
+        0.05,
+        0.42
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-02-body",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -26,
+        0.35,
+        21
+      ],
+      "size": [
+        0.32,
+        0.65,
+        0.32
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-02-stripe",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -26,
+        0.38,
+        21
+      ],
+      "size": [
+        0.34,
+        0.16,
+        0.34
+      ],
+      "color": "#f8fafc",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-03-base",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -32.2,
+        0.025,
+        24.5
+      ],
+      "size": [
+        0.42,
+        0.05,
+        0.42
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-03-body",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -32.2,
+        0.35,
+        24.5
+      ],
+      "size": [
+        0.32,
+        0.65,
+        0.32
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-03-stripe",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -32.2,
+        0.38,
+        24.5
+      ],
+      "size": [
+        0.34,
+        0.16,
+        0.34
+      ],
+      "color": "#f8fafc",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-04-base",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -32.2,
+        0.025,
+        11.2
+      ],
+      "size": [
+        0.42,
+        0.05,
+        0.42
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-04-body",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -32.2,
+        0.35,
+        11.2
+      ],
+      "size": [
+        0.32,
+        0.65,
+        0.32
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s2-cone-04-stripe",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -32.2,
+        0.38,
+        11.2
+      ],
+      "size": [
+        0.34,
+        0.16,
+        0.34
+      ],
+      "color": "#f8fafc",
+      "collision": false
+    },
+    {
+      "id": "s2-pallet-stack-1",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -34.8,
+        0.06,
+        24.5
+      ],
+      "size": [
+        1.15,
+        0.11,
+        0.95
+      ],
+      "color": "#92400e",
+      "collision": true
+    },
+    {
+      "id": "s2-pallet-stack-2",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -34.8,
+        0.18,
+        24.5
+      ],
+      "size": [
+        1.15,
+        0.11,
+        0.95
+      ],
+      "color": "#a16207",
+      "collision": true
+    },
+    {
+      "id": "s2-pallet-stack-3",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -34.8,
+        0.3,
+        24.5
+      ],
+      "size": [
+        1.15,
+        0.11,
+        0.95
+      ],
+      "color": "#92400e",
+      "collision": true
+    },
+    {
+      "id": "s2-pallet-stack-4",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -34.8,
+        0.42,
+        24.5
+      ],
+      "size": [
+        1.15,
+        0.11,
+        0.95
+      ],
+      "color": "#a16207",
+      "collision": true
+    },
+    {
+      "id": "s2-workbench-frame",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -34.6,
+        0.44,
+        15.8
+      ],
+      "size": [
+        0.85,
+        0.84,
+        1.55
+      ],
+      "color": "#334155",
+      "collision": true,
+      "roughness": 0.6,
+      "metalness": 0.4
+    },
+    {
+      "id": "s2-workbench-top",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -34.6,
+        0.89,
+        15.8
+      ],
+      "size": [
+        0.92,
+        0.07,
+        1.62
+      ],
+      "color": "#78350f",
+      "collision": true,
+      "roughness": 0.8,
+      "metalness": 0.1
+    },
+    {
+      "id": "s2-workbench-toolbox",
+      "zone": "section2",
+      "kind": "metal",
+      "center": [
+        -34.7,
+        1.05,
+        15.4
+      ],
+      "size": [
+        0.35,
+        0.24,
+        0.48
+      ],
+      "color": "#1e3a8a",
+      "collision": false
+    },
+    {
+      "id": "s2-workbench-manifest",
+      "zone": "section2",
+      "kind": "pallet",
+      "center": [
+        -34.4,
+        0.94,
+        16.2
+      ],
+      "size": [
+        0.28,
+        0.02,
+        0.38
+      ],
+      "color": "#fef3c7",
+      "collision": false
+    },
+    {
+      "id": "s2-staged-crate-01",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -33.8,
+        0.6,
+        18
+      ],
+      "size": [
+        1.1,
+        1.15,
+        1.1
+      ],
+      "color": "#44403c",
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s2-staged-crate-02",
+      "zone": "section2",
+      "kind": "crate",
+      "center": [
+        -33.8,
+        0.4,
+        19.4
+      ],
+      "size": [
+        0.95,
+        0.75,
+        0.9
+      ],
+      "color": "#854d0e",
+      "roughness": 0.8,
+      "metalness": 0.1
+    },
+    {
+      "id": "s4-server-A1-cabinet",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -30,
+        1.1,
+        -24.5
+      ],
+      "size": [
+        1.1,
+        2.2,
+        0.85
+      ],
+      "color": "#0f172a",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-server-A1-door",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -30,
+        1.1,
+        -24.06
+      ],
+      "size": [
+        0.96,
+        2,
+        0.04
+      ],
+      "color": "#1e293b",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.7
+    },
+    {
+      "id": "s4-server-A1-led",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -29.62,
+        1.1,
+        -24.04
+      ],
+      "size": [
+        0.04,
+        1.8,
+        0.02
+      ],
+      "color": "#0ea5e9",
+      "emissive": "#0ea5e9",
+      "emissiveIntensity": 1.8,
+      "collision": false
+    },
+    {
+      "id": "s4-server-A2-cabinet",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -26.5,
+        1.1,
+        -24.5
+      ],
+      "size": [
+        1.1,
+        2.2,
+        0.85
+      ],
+      "color": "#0f172a",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-server-A2-door",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -26.5,
+        1.1,
+        -24.06
+      ],
+      "size": [
+        0.96,
+        2,
+        0.04
+      ],
+      "color": "#1e293b",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.7
+    },
+    {
+      "id": "s4-server-A2-led",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -26.12,
+        1.1,
+        -24.04
+      ],
+      "size": [
+        0.04,
+        1.8,
+        0.02
+      ],
+      "color": "#10b981",
+      "emissive": "#10b981",
+      "emissiveIntensity": 1.8,
+      "collision": false
+    },
+    {
+      "id": "s4-server-A3-cabinet",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -23,
+        1.1,
+        -24.5
+      ],
+      "size": [
+        1.1,
+        2.2,
+        0.85
+      ],
+      "color": "#0f172a",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-server-A3-door",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -23,
+        1.1,
+        -24.06
+      ],
+      "size": [
+        0.96,
+        2,
+        0.04
+      ],
+      "color": "#1e293b",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.7
+    },
+    {
+      "id": "s4-server-A3-led",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -22.62,
+        1.1,
+        -24.04
+      ],
+      "size": [
+        0.04,
+        1.8,
+        0.02
+      ],
+      "color": "#38bdf8",
+      "emissive": "#38bdf8",
+      "emissiveIntensity": 1.8,
+      "collision": false
+    },
+    {
+      "id": "s4-server-A4-cabinet",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -19.5,
+        1.1,
+        -24.5
+      ],
+      "size": [
+        1.1,
+        2.2,
+        0.85
+      ],
+      "color": "#0f172a",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-server-A4-door",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -19.5,
+        1.1,
+        -24.06
+      ],
+      "size": [
+        0.96,
+        2,
+        0.04
+      ],
+      "color": "#1e293b",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.7
+    },
+    {
+      "id": "s4-server-A4-led",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -19.12,
+        1.1,
+        -24.04
+      ],
+      "size": [
+        0.04,
+        1.8,
+        0.02
+      ],
+      "color": "#0ea5e9",
+      "emissive": "#0ea5e9",
+      "emissiveIntensity": 1.8,
+      "collision": false
+    },
+    {
+      "id": "s4-server-B1-cabinet",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -29,
+        1.1,
+        -16.5
+      ],
+      "size": [
+        1.1,
+        2.2,
+        0.85
+      ],
+      "color": "#0f172a",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-server-B1-door",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -29,
+        1.1,
+        -16.06
+      ],
+      "size": [
+        0.96,
+        2,
+        0.04
+      ],
+      "color": "#1e293b",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.7
+    },
+    {
+      "id": "s4-server-B1-led",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -28.62,
+        1.1,
+        -16.04
+      ],
+      "size": [
+        0.04,
+        1.8,
+        0.02
+      ],
+      "color": "#10b981",
+      "emissive": "#10b981",
+      "emissiveIntensity": 1.8,
+      "collision": false
+    },
+    {
+      "id": "s4-server-B2-cabinet",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -25,
+        1.1,
+        -16.5
+      ],
+      "size": [
+        1.1,
+        2.2,
+        0.85
+      ],
+      "color": "#0f172a",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-server-B2-door",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -25,
+        1.1,
+        -16.06
+      ],
+      "size": [
+        0.96,
+        2,
+        0.04
+      ],
+      "color": "#1e293b",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.7
+    },
+    {
+      "id": "s4-server-B2-led",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -24.62,
+        1.1,
+        -16.04
+      ],
+      "size": [
+        0.04,
+        1.8,
+        0.02
+      ],
+      "color": "#38bdf8",
+      "emissive": "#38bdf8",
+      "emissiveIntensity": 1.8,
+      "collision": false
+    },
+    {
+      "id": "s4-server-B3-cabinet",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -21,
+        1.1,
+        -16.5
+      ],
+      "size": [
+        1.1,
+        2.2,
+        0.85
+      ],
+      "color": "#0f172a",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-server-B3-door",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -21,
+        1.1,
+        -16.06
+      ],
+      "size": [
+        0.96,
+        2,
+        0.04
+      ],
+      "color": "#1e293b",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.7
+    },
+    {
+      "id": "s4-server-B3-led",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -20.62,
+        1.1,
+        -16.04
+      ],
+      "size": [
+        0.04,
+        1.8,
+        0.02
+      ],
+      "color": "#0ea5e9",
+      "emissive": "#0ea5e9",
+      "emissiveIntensity": 1.8,
+      "collision": false
+    },
+    {
+      "id": "s4-server-B4-cabinet",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -17,
+        1.1,
+        -16.5
+      ],
+      "size": [
+        1.1,
+        2.2,
+        0.85
+      ],
+      "color": "#0f172a",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-server-B4-door",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -17,
+        1.1,
+        -16.06
+      ],
+      "size": [
+        0.96,
+        2,
+        0.04
+      ],
+      "color": "#1e293b",
+      "collision": false,
+      "roughness": 0.4,
+      "metalness": 0.7
+    },
+    {
+      "id": "s4-server-B4-led",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -16.62,
+        1.1,
+        -16.04
+      ],
+      "size": [
+        0.04,
+        1.8,
+        0.02
+      ],
+      "color": "#10b981",
+      "emissive": "#10b981",
+      "emissiveIntensity": 1.8,
+      "collision": false
+    },
+    {
+      "id": "s4-cable-runway-A",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -24.75,
+        2.8,
+        -24.5
+      ],
+      "size": [
+        12,
+        0.08,
+        0.45
+      ],
+      "color": "#334155",
+      "collision": false
+    },
+    {
+      "id": "s4-cable-runway-B",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -23,
+        2.8,
+        -16.5
+      ],
+      "size": [
+        13,
+        0.08,
+        0.45
+      ],
+      "color": "#334155",
+      "collision": false
+    },
+    {
+      "id": "s4-cable-runway-bridge",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -24,
+        2.8,
+        -20.5
+      ],
+      "size": [
+        0.45,
+        0.08,
+        8
+      ],
+      "color": "#334155",
+      "collision": false
+    },
+    {
+      "id": "s4-dispatch-desk-body",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -13,
+        0.45,
+        -20.5
+      ],
+      "size": [
+        1.1,
+        0.9,
+        3.2
+      ],
+      "color": "#1e293b",
+      "collision": true,
+      "roughness": 0.6,
+      "metalness": 0.5
+    },
+    {
+      "id": "s4-dispatch-desk-top",
+      "zone": "section4",
+      "kind": "pallet",
+      "center": [
+        -13,
+        0.92,
+        -20.5
+      ],
+      "size": [
+        1.2,
+        0.06,
+        3.3
+      ],
+      "color": "#334155",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.3
+    },
+    {
+      "id": "s4-monitor-1-stand",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.15,
+        -21.4
+      ],
+      "size": [
+        0.15,
+        0.4,
+        0.15
+      ],
+      "color": "#0f172a",
+      "collision": false
+    },
+    {
+      "id": "s4-monitor-1-screen",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.45,
+        -21.4
+      ],
+      "size": [
+        0.08,
+        0.48,
+        0.72
+      ],
+      "color": "#0284c7",
+      "emissive": "#38bdf8",
+      "emissiveIntensity": 1.6,
+      "collision": false
+    },
+    {
+      "id": "s4-monitor-2-stand",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.15,
+        -19.6
+      ],
+      "size": [
+        0.15,
+        0.4,
+        0.15
+      ],
+      "color": "#0f172a",
+      "collision": false
+    },
+    {
+      "id": "s4-monitor-2-screen",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -13,
+        1.45,
+        -19.6
+      ],
+      "size": [
+        0.08,
+        0.48,
+        0.72
+      ],
+      "color": "#059669",
+      "emissive": "#34d399",
+      "emissiveIntensity": 1.6,
+      "collision": false
+    },
+    {
+      "id": "s4-dispatch-chair-1",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -14.2,
+        0.48,
+        -21.4
+      ],
+      "size": [
+        0.55,
+        0.96,
+        0.55
+      ],
+      "color": "#0f172a",
+      "collision": true
+    },
+    {
+      "id": "s4-dispatch-chair-2",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -14.2,
+        0.48,
+        -19.6
+      ],
+      "size": [
+        0.55,
+        0.96,
+        0.55
+      ],
+      "color": "#0f172a",
+      "collision": true
+    },
+    {
+      "id": "s4-cage-post-NW",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -35.5,
+        1.35,
+        -23.5
+      ],
+      "size": [
+        0.15,
+        2.7,
+        0.15
+      ],
+      "color": "#eab308",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-cage-post-NE",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -32.5,
+        1.35,
+        -23.5
+      ],
+      "size": [
+        0.15,
+        2.7,
+        0.15
+      ],
+      "color": "#eab308",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-cage-post-SW",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -35.5,
+        1.35,
+        -17.5
+      ],
+      "size": [
+        0.15,
+        2.7,
+        0.15
+      ],
+      "color": "#eab308",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-cage-post-SE",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -32.5,
+        1.35,
+        -17.5
+      ],
+      "size": [
+        0.15,
+        2.7,
+        0.15
+      ],
+      "color": "#eab308",
+      "collision": true,
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-cage-rail-north",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -34,
+        2.7,
+        -23.5
+      ],
+      "size": [
+        3.1,
+        0.1,
+        0.1
+      ],
+      "color": "#eab308",
+      "collision": false
+    },
+    {
+      "id": "s4-cage-rail-south",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -34,
+        2.7,
+        -17.5
+      ],
+      "size": [
+        3.1,
+        0.1,
+        0.1
+      ],
+      "color": "#eab308",
+      "collision": false
+    },
+    {
+      "id": "s4-cage-rail-east",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -32.5,
+        2.7,
+        -20.5
+      ],
+      "size": [
+        0.1,
+        0.1,
+        6.1
+      ],
+      "color": "#eab308",
+      "collision": false
+    },
+    {
+      "id": "s4-cage-locker-1",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -34.8,
+        1,
+        -21.8
+      ],
+      "size": [
+        0.85,
+        2,
+        1.2
+      ],
+      "color": "#1e293b",
+      "collision": true
+    },
+    {
+      "id": "s4-cage-locker-2",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -34.8,
+        1,
+        -19.2
+      ],
+      "size": [
+        0.85,
+        2,
+        1.2
+      ],
+      "color": "#1e293b",
+      "collision": true
+    },
+    {
+      "id": "s4-hp-01-pallet",
+      "zone": "section4",
+      "kind": "pallet",
+      "center": [
+        -30.5,
+        0.06,
+        -12.5
+      ],
+      "size": [
+        1.2,
+        0.12,
+        1
+      ],
+      "color": "#7c2d12",
+      "collision": true
+    },
+    {
+      "id": "s4-hp-01-box-1",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -30.5,
+        0.5,
+        -12.5
+      ],
+      "size": [
+        1.05,
+        0.76,
+        0.88
+      ],
+      "color": "#78350f",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-hp-01-box-2",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -30.5,
+        1.1600000000000001,
+        -12.5
+      ],
+      "size": [
+        0.95,
+        0.56,
+        0.8
+      ],
+      "color": "#78350f",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-hp-02-pallet",
+      "zone": "section4",
+      "kind": "pallet",
+      "center": [
+        -25.5,
+        0.06,
+        -12.5
+      ],
+      "size": [
+        1.2,
+        0.12,
+        1
+      ],
+      "color": "#7c2d12",
+      "collision": true
+    },
+    {
+      "id": "s4-hp-02-box-1",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -25.5,
+        0.5,
+        -12.5
+      ],
+      "size": [
+        1.05,
+        0.76,
+        0.88
+      ],
+      "color": "#1e3a8a",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-hp-03-pallet",
+      "zone": "section4",
+      "kind": "pallet",
+      "center": [
+        -16.5,
+        0.06,
+        -12.5
+      ],
+      "size": [
+        1.2,
+        0.12,
+        1
+      ],
+      "color": "#7c2d12",
+      "collision": true
+    },
+    {
+      "id": "s4-hp-03-box-1",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -16.5,
+        0.5,
+        -12.5
+      ],
+      "size": [
+        1.05,
+        0.76,
+        0.88
+      ],
+      "color": "#44403c",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-hp-03-box-2",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -16.5,
+        1.1600000000000001,
+        -12.5
+      ],
+      "size": [
+        0.95,
+        0.56,
+        0.8
+      ],
+      "color": "#44403c",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-hp-04-pallet",
+      "zone": "section4",
+      "kind": "pallet",
+      "center": [
+        -33.5,
+        0.06,
+        -27.5
+      ],
+      "size": [
+        1.2,
+        0.12,
+        1
+      ],
+      "color": "#7c2d12",
+      "collision": true
+    },
+    {
+      "id": "s4-hp-04-box-1",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -33.5,
+        0.5,
+        -27.5
+      ],
+      "size": [
+        1.05,
+        0.76,
+        0.88
+      ],
+      "color": "#78350f",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-hp-05-pallet",
+      "zone": "section4",
+      "kind": "pallet",
+      "center": [
+        -28,
+        0.06,
+        -28
+      ],
+      "size": [
+        1.2,
+        0.12,
+        1
+      ],
+      "color": "#7c2d12",
+      "collision": true
+    },
+    {
+      "id": "s4-hp-05-box-1",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -28,
+        0.5,
+        -28
+      ],
+      "size": [
+        1.05,
+        0.76,
+        0.88
+      ],
+      "color": "#1e293b",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-hp-05-box-2",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -28,
+        1.1600000000000001,
+        -28
+      ],
+      "size": [
+        0.95,
+        0.56,
+        0.8
+      ],
+      "color": "#1e293b",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-hp-06-pallet",
+      "zone": "section4",
+      "kind": "pallet",
+      "center": [
+        -16,
+        0.06,
+        -28
+      ],
+      "size": [
+        1.2,
+        0.12,
+        1
+      ],
+      "color": "#7c2d12",
+      "collision": true
+    },
+    {
+      "id": "s4-hp-06-box-1",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -16,
+        0.5,
+        -28
+      ],
+      "size": [
+        1.05,
+        0.76,
+        0.88
+      ],
+      "color": "#3f4f34",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-hp-06-box-2",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -16,
+        1.1600000000000001,
+        -28
+      ],
+      "size": [
+        0.95,
+        0.56,
+        0.8
+      ],
+      "color": "#3f4f34",
+      "collision": true,
+      "roughness": 0.7,
+      "metalness": 0.2
+    },
+    {
+      "id": "s4-techcase-tc-01",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -22.5,
+        0.325,
+        -20.5
+      ],
+      "size": [
+        1,
+        0.65,
+        0.8
+      ],
+      "color": "#334155",
+      "collision": true,
+      "roughness": 0.4,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-techcase-tc-02",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -26.5,
+        0.275,
+        -20.5
+      ],
+      "size": [
+        0.9,
+        0.55,
+        0.75
+      ],
+      "color": "#1e293b",
+      "collision": true,
+      "roughness": 0.4,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-techcase-tc-03",
+      "zone": "section4",
+      "kind": "crate",
+      "center": [
+        -18.5,
+        0.3,
+        -20.5
+      ],
+      "size": [
+        0.95,
+        0.6,
+        0.8
+      ],
+      "color": "#475569",
+      "collision": true,
+      "roughness": 0.4,
+      "metalness": 0.6
+    },
+    {
+      "id": "s4-bollard-01-post",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -36.5,
+        0.55,
+        -15
+      ],
+      "size": [
+        0.24,
+        1.1,
+        0.24
+      ],
+      "color": "#eab308",
+      "collision": true
+    },
+    {
+      "id": "s4-bollard-01-cap",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -36.5,
+        1.12,
+        -15
+      ],
+      "size": [
+        0.28,
+        0.08,
+        0.28
+      ],
+      "color": "#0f172a",
+      "collision": false
+    },
+    {
+      "id": "s4-bollard-02-post",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -36.5,
+        0.55,
+        -17.5
+      ],
+      "size": [
+        0.24,
+        1.1,
+        0.24
+      ],
+      "color": "#eab308",
+      "collision": true
+    },
+    {
+      "id": "s4-bollard-02-cap",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -36.5,
+        1.12,
+        -17.5
+      ],
+      "size": [
+        0.28,
+        0.08,
+        0.28
+      ],
+      "color": "#0f172a",
+      "collision": false
+    },
+    {
+      "id": "s4-bollard-03-post",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -36.5,
+        0.55,
+        -20
+      ],
+      "size": [
+        0.24,
+        1.1,
+        0.24
+      ],
+      "color": "#eab308",
+      "collision": true
+    },
+    {
+      "id": "s4-bollard-03-cap",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -36.5,
+        1.12,
+        -20
+      ],
+      "size": [
+        0.28,
+        0.08,
+        0.28
+      ],
+      "color": "#0f172a",
+      "collision": false
+    },
+    {
+      "id": "s4-bollard-04-post",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -36.5,
+        0.55,
+        -22.5
+      ],
+      "size": [
+        0.24,
+        1.1,
+        0.24
+      ],
+      "color": "#eab308",
+      "collision": true
+    },
+    {
+      "id": "s4-bollard-04-cap",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -36.5,
+        1.12,
+        -22.5
+      ],
+      "size": [
+        0.28,
+        0.08,
+        0.28
+      ],
+      "color": "#0f172a",
+      "collision": false
+    },
+    {
+      "id": "s4-c01-base",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -32,
+        0.025,
+        -14.5
+      ],
+      "size": [
+        0.42,
+        0.05,
+        0.42
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s4-c01-body",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -32,
+        0.35,
+        -14.5
+      ],
+      "size": [
+        0.28,
+        0.65,
+        0.28
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s4-c01-stripe",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -32,
+        0.38,
+        -14.5
+      ],
+      "size": [
+        0.3,
+        0.16,
+        0.3
+      ],
+      "color": "#f8fafc",
+      "collision": false
+    },
+    {
+      "id": "s4-c02-base",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -32,
+        0.025,
+        -26.5
+      ],
+      "size": [
+        0.42,
+        0.05,
+        0.42
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s4-c02-body",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -32,
+        0.35,
+        -26.5
+      ],
+      "size": [
+        0.28,
+        0.65,
+        0.28
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s4-c02-stripe",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -32,
+        0.38,
+        -26.5
+      ],
+      "size": [
+        0.3,
+        0.16,
+        0.3
+      ],
+      "color": "#f8fafc",
+      "collision": false
+    },
+    {
+      "id": "s4-c03-base",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -15,
+        0.025,
+        -14.5
+      ],
+      "size": [
+        0.42,
+        0.05,
+        0.42
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s4-c03-body",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -15,
+        0.35,
+        -14.5
+      ],
+      "size": [
+        0.28,
+        0.65,
+        0.28
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s4-c03-stripe",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -15,
+        0.38,
+        -14.5
+      ],
+      "size": [
+        0.3,
+        0.16,
+        0.3
+      ],
+      "color": "#f8fafc",
+      "collision": false
+    },
+    {
+      "id": "s4-c04-base",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -15,
+        0.025,
+        -26.5
+      ],
+      "size": [
+        0.42,
+        0.05,
+        0.42
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s4-c04-body",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -15,
+        0.35,
+        -26.5
+      ],
+      "size": [
+        0.28,
+        0.65,
+        0.28
+      ],
+      "color": "#ea580c",
+      "collision": false
+    },
+    {
+      "id": "s4-c04-stripe",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -15,
+        0.38,
+        -26.5
+      ],
+      "size": [
+        0.3,
+        0.16,
+        0.3
+      ],
+      "color": "#f8fafc",
+      "collision": false
+    },
+    {
+      "id": "s4-light-01-fixture",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -28,
+        5.85,
+        -24.5
+      ],
+      "size": [
+        2.2,
+        0.1,
+        0.35
+      ],
+      "color": "#1e293b",
+      "collision": false
+    },
+    {
+      "id": "s4-light-01-tube",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -28,
+        5.76,
+        -24.5
+      ],
+      "size": [
+        1.9,
+        0.08,
+        0.18
+      ],
+      "color": "#f8fafc",
+      "emissive": "#f8fafc",
+      "emissiveIntensity": 2.2,
+      "collision": false
+    },
+    {
+      "id": "s4-light-02-fixture",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -20,
+        5.85,
+        -24.5
+      ],
+      "size": [
+        2.2,
+        0.1,
+        0.35
+      ],
+      "color": "#1e293b",
+      "collision": false
+    },
+    {
+      "id": "s4-light-02-tube",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -20,
+        5.76,
+        -24.5
+      ],
+      "size": [
+        1.9,
+        0.08,
+        0.18
+      ],
+      "color": "#f8fafc",
+      "emissive": "#f8fafc",
+      "emissiveIntensity": 2.2,
+      "collision": false
+    },
+    {
+      "id": "s4-light-03-fixture",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -28,
+        5.85,
+        -16.5
+      ],
+      "size": [
+        2.2,
+        0.1,
+        0.35
+      ],
+      "color": "#1e293b",
+      "collision": false
+    },
+    {
+      "id": "s4-light-03-tube",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -28,
+        5.76,
+        -16.5
+      ],
+      "size": [
+        1.9,
+        0.08,
+        0.18
+      ],
+      "color": "#f8fafc",
+      "emissive": "#f8fafc",
+      "emissiveIntensity": 2.2,
+      "collision": false
+    },
+    {
+      "id": "s4-light-04-fixture",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -20,
+        5.85,
+        -16.5
+      ],
+      "size": [
+        2.2,
+        0.1,
+        0.35
+      ],
+      "color": "#1e293b",
+      "collision": false
+    },
+    {
+      "id": "s4-light-04-tube",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -20,
+        5.76,
+        -16.5
+      ],
+      "size": [
+        1.9,
+        0.08,
+        0.18
+      ],
+      "color": "#f8fafc",
+      "emissive": "#f8fafc",
+      "emissiveIntensity": 2.2,
+      "collision": false
+    },
+    {
+      "id": "s4-light-05-fixture",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -13,
+        5.85,
+        -20.5
+      ],
+      "size": [
+        2.2,
+        0.1,
+        0.35
+      ],
+      "color": "#1e293b",
+      "collision": false
+    },
+    {
+      "id": "s4-light-05-tube",
+      "zone": "section4",
+      "kind": "metal",
+      "center": [
+        -13,
+        5.76,
+        -20.5
+      ],
+      "size": [
+        1.9,
+        0.08,
+        0.18
+      ],
+      "color": "#f8fafc",
+      "emissive": "#f8fafc",
+      "emissiveIntensity": 2.2,
       "collision": false
     }
   ],
