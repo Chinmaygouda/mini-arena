@@ -1,7 +1,7 @@
 {
   "meta": {
-    "name": "Warehouse — Section 3 Offset Storage Maze",
-    "mode": "Unique warehouse layouts — Section 1 long aisles, Section 2 cross-rack loading bay, Section 3 offset storage maze",
+    "name": "Warehouse — Section 3 Parcel Sortation & Dispatch Cell",
+    "mode": "Distinct warehouse functions — Section 1 pallet storage, Section 2 loading bay, Section 3 conveyor parcel sortation and dispatch",
     "theme": "warehouse",
     "units": "meters",
     "axes": "Three.js X/Z world axes, Y up. In the top-down reference render, positive X appears toward screen-left and positive Z toward screen-top; numbered sections follow that visible blueprint orientation.",
@@ -22,17 +22,17 @@
       13.5,
       13.5
     ],
-    "version": 9,
-    "layoutStage": "section-1-detail-section-2-cross-rack-loading-bay-section-3-offset-storage-maze",
-    "note": "Section 1 long north-south racks and Section 2 east-west cross-rack loading bay are preserved. Section 3 adds short staggered racks, U-shaped storage islands, offset aisles, small crate clusters, pallets, drums, cones and floor markings. Section 4 and central hall remain unchanged.",
+    "version": 10,
+    "layoutStage": "section-1-pallet-storage-section-2-loading-bay-section-3-parcel-sortation-dispatch",
+    "note": "Section 1 storage and Section 2 loading bay preserved. Section 3 is redesigned as a parcel sortation and dispatch cell: elevated belt conveyors, branch sort lanes, barcode scan arch, induction/exception stations, destination roll cages, packing bench, safety markings and equipment. Section 4 and central hall unchanged.",
     "wallSegmentCount": 202,
     "sectionArchitecture": "Each numbered quadrant has an enclosing chamber, recessed entry returns, two cross-corridor links, one side-aisle link, and three auxiliary service bays. All quadrant wall geometry is mirrored on both axes.",
-    "propCount": 803,
-    "physicalBoxCount": 1005,
+    "propCount": 1004,
+    "physicalBoxCount": 1004,
     "sectionProgress": {
       "section1": "long north-south pallet-rack aisles; 20 pallet bases and 32 crate loads",
       "section2": "unique east-west cross-racks; static forklift loading bay; drums, safety cones, spare pallets and workbench",
-      "section3": "offset short rack rows; U-shaped storage maze; staggered crate clusters; pallets, drums and safety cones",
+      "section3": "conveyor parcel sortation cell with barcode scan arch, branch lanes, destination cages, packing and exception stations",
       "section4": "walls only",
       "centralHall": "walls and floor markings only",
       "spawns": "two reserved positions per team"
@@ -74,7 +74,7 @@
         2
       ]
     },
-    "visiblePropCount": 801,
+    "visiblePropCount": 1004,
     "section2Vehicle": {
       "type": "forklift",
       "driveable": false,
@@ -143,7 +143,7 @@
     {
       "id": "section3",
       "number": 3,
-      "name": "South-West Warehouse Section",
+      "name": "South-West Parcel Sortation & Dispatch Cell",
       "min": [
         7,
         -31
@@ -151,7 +151,19 @@
       "max": [
         38,
         -8
-      ]
+      ],
+      "contentStage": "parcel-sortation-conveyors-dispatch",
+      "propsSummary": {
+        "mainConveyors": 1,
+        "branchSortLanes": 3,
+        "barcodeScannerArches": 1,
+        "inductionStations": 1,
+        "exceptionStations": 1,
+        "destinationCages": 3,
+        "packingBench": 1,
+        "rollCages": 4,
+        "safetyEquipment": 6
+      }
     },
     {
       "id": "section4",
@@ -13924,3665 +13936,3363 @@
       "color": "#936a42"
     },
     {
-      "id": "s3-row-a-upright--2.6--0.525",
+      "id": "s3-main-conveyor-frame",
       "zone": "section3",
-      "kind": "rack-upright",
+      "kind": "conveyor-frame",
       "center": [
-        11.6,
-        1.575,
-        -14.725
+        22,
+        0.78,
+        -19.5
       ],
       "size": [
-        0.12,
-        3.15,
-        0.12
+        19.2,
+        0.28,
+        1.5
       ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
+      "color": "#39434a"
     },
     {
-      "id": "s3-row-a-upright--2.6-0.525",
+      "id": "s3-main-conveyor-belt",
       "zone": "section3",
-      "kind": "rack-upright",
+      "kind": "conveyor-belt",
       "center": [
-        11.6,
-        1.575,
-        -13.674999999999999
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-a-upright-0--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        14.2,
-        1.575,
-        -14.725
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-a-upright-0-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        14.2,
-        1.575,
-        -13.674999999999999
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-a-upright-2.6--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        16.8,
-        1.575,
-        -14.725
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-a-upright-2.6-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        16.8,
-        1.575,
-        -13.674999999999999
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-a-beam-1.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        14.2,
-        1.05,
-        -14.2
-      ],
-      "size": [
-        5.2,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-row-a-beam-2.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        14.2,
-        2.05,
-        -14.2
-      ],
-      "size": [
-        5.2,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-row-a-beam-3",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        14.2,
-        3,
-        -14.2
-      ],
-      "size": [
-        5.2,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-row-a-deck-0.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        14.2,
-        0.75,
-        -14.2
-      ],
-      "size": [
-        5.0200000000000005,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-row-a-deck-1.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        14.2,
-        1.75,
-        -14.2
-      ],
-      "size": [
-        5.0200000000000005,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-row-a-deck-2.7",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        14.2,
-        2.7,
-        -14.2
-      ],
-      "size": [
-        5.0200000000000005,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-row-b-upright--2--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        18.8,
-        1.575,
-        -18.025
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-b-upright--2-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        18.8,
-        1.575,
-        -16.975
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-b-upright-0--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        20.8,
-        1.575,
-        -18.025
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-b-upright-0-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        20.8,
-        1.575,
-        -16.975
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-b-upright-2--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        22.8,
-        1.575,
-        -18.025
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-b-upright-2-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        22.8,
-        1.575,
-        -16.975
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-b-beam-1.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        20.8,
-        1.05,
-        -17.5
-      ],
-      "size": [
-        4,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-row-b-beam-2.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        20.8,
-        2.05,
-        -17.5
-      ],
-      "size": [
-        4,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-row-b-beam-3",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        20.8,
-        3,
-        -17.5
-      ],
-      "size": [
-        4,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-row-b-deck-0.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        20.8,
-        0.75,
-        -17.5
-      ],
-      "size": [
-        3.82,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-row-b-deck-1.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        20.8,
-        1.75,
-        -17.5
-      ],
-      "size": [
-        3.82,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-row-b-deck-2.7",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        20.8,
-        2.7,
-        -17.5
-      ],
-      "size": [
-        3.82,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-row-c-upright--3--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        12.6,
-        1.575,
-        -22.525
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-c-upright--3-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        12.6,
-        1.575,
-        -21.475
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-c-upright-0--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        15.6,
-        1.575,
-        -22.525
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-c-upright-0-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        15.6,
-        1.575,
-        -21.475
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-c-upright-3--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        18.6,
-        1.575,
-        -22.525
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-c-upright-3-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        18.6,
-        1.575,
-        -21.475
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-row-c-beam-1.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        15.6,
-        1.05,
-        -22
-      ],
-      "size": [
-        6,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-row-c-beam-2.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        15.6,
-        2.05,
-        -22
-      ],
-      "size": [
-        6,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-row-c-beam-3",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        15.6,
-        3,
-        -22
-      ],
-      "size": [
-        6,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-row-c-deck-0.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        15.6,
-        0.75,
-        -22
-      ],
-      "size": [
-        5.82,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-row-c-deck-1.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        15.6,
-        1.75,
-        -22
-      ],
-      "size": [
-        5.82,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-row-c-deck-2.7",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        15.6,
-        2.7,
-        -22
-      ],
-      "size": [
-        5.82,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-u-north-upright--0.525--2.25",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        25.675,
-        1.575,
-        -17.05
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-north-upright--0.525-0",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        25.675,
-        1.575,
-        -14.8
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-north-upright--0.525-2.25",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        25.675,
-        1.575,
-        -12.55
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-north-upright-0.525--2.25",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        26.724999999999998,
-        1.575,
-        -17.05
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-north-upright-0.525-0",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        26.724999999999998,
-        1.575,
-        -14.8
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-north-upright-0.525-2.25",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        26.724999999999998,
-        1.575,
-        -12.55
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-north-beam-1.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        26.2,
-        1.05,
-        -14.8
-      ],
-      "size": [
-        0.1,
-        0.12,
-        4.5
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-u-north-beam-2.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        26.2,
-        2.05,
-        -14.8
-      ],
-      "size": [
-        0.1,
-        0.12,
-        4.5
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-u-north-beam-3",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        26.2,
-        3,
-        -14.8
-      ],
-      "size": [
-        0.1,
-        0.12,
-        4.5
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-u-north-deck-0.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        26.2,
-        0.75,
-        -14.8
-      ],
-      "size": [
-        0.89,
-        0.08,
-        4.32
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-u-north-deck-1.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        26.2,
-        1.75,
-        -14.8
-      ],
-      "size": [
-        0.89,
-        0.08,
-        4.32
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-u-north-deck-2.7",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        26.2,
-        2.7,
-        -14.8
-      ],
-      "size": [
-        0.89,
-        0.08,
-        4.32
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-u-east-upright--2.1--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        26.9,
-        1.575,
-        -18.724999999999998
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-east-upright--2.1-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        26.9,
-        1.575,
-        -17.675
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-east-upright-0--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        29,
-        1.575,
-        -18.724999999999998
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-east-upright-0-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        29,
-        1.575,
-        -17.675
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-east-upright-2.1--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        31.1,
-        1.575,
-        -18.724999999999998
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-east-upright-2.1-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        31.1,
-        1.575,
-        -17.675
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-east-beam-1.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        29,
-        1.05,
-        -18.2
-      ],
-      "size": [
-        4.2,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-u-east-beam-2.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        29,
-        2.05,
-        -18.2
-      ],
-      "size": [
-        4.2,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-u-east-beam-3",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        29,
-        3,
-        -18.2
-      ],
-      "size": [
-        4.2,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-u-east-deck-0.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        29,
-        0.75,
-        -18.2
-      ],
-      "size": [
-        4.0200000000000005,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-u-east-deck-1.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        29,
-        1.75,
-        -18.2
-      ],
-      "size": [
-        4.0200000000000005,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-u-east-deck-2.7",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        29,
-        2.7,
-        -18.2
-      ],
-      "size": [
-        4.0200000000000005,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-u-south-upright--0.525--2.25",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        25.675,
-        1.575,
-        -23.25
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-south-upright--0.525-0",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        25.675,
-        1.575,
-        -21
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-south-upright--0.525-2.25",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        25.675,
-        1.575,
-        -18.75
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-south-upright-0.525--2.25",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        26.724999999999998,
-        1.575,
-        -23.25
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-south-upright-0.525-0",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        26.724999999999998,
-        1.575,
-        -21
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-south-upright-0.525-2.25",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        26.724999999999998,
-        1.575,
-        -18.75
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-u-south-beam-1.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        26.2,
-        1.05,
-        -21
-      ],
-      "size": [
-        0.1,
-        0.12,
-        4.5
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-u-south-beam-2.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        26.2,
-        2.05,
-        -21
-      ],
-      "size": [
-        0.1,
-        0.12,
-        4.5
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-u-south-beam-3",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        26.2,
-        3,
-        -21
-      ],
-      "size": [
-        0.1,
-        0.12,
-        4.5
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-u-south-deck-0.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        26.2,
-        0.75,
-        -21
-      ],
-      "size": [
-        0.89,
-        0.08,
-        4.32
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-u-south-deck-1.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        26.2,
-        1.75,
-        -21
-      ],
-      "size": [
-        0.89,
-        0.08,
-        4.32
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-u-south-deck-2.7",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        26.2,
-        2.7,
-        -21
-      ],
-      "size": [
-        0.89,
-        0.08,
-        4.32
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-island-west-upright--0.525--1.55",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        11.174999999999999,
-        1.575,
-        -25.150000000000002
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-upright--0.525-0",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        11.174999999999999,
-        1.575,
-        -23.6
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-upright--0.525-1.55",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        11.174999999999999,
-        1.575,
-        -22.05
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-upright-0.525--1.55",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        12.225,
-        1.575,
-        -25.150000000000002
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-upright-0.525-0",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        12.225,
-        1.575,
-        -23.6
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-upright-0.525-1.55",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        12.225,
-        1.575,
-        -22.05
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-beam-1.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        11.7,
-        1.05,
-        -23.6
-      ],
-      "size": [
-        0.1,
-        0.12,
-        3.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-island-west-beam-2.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        11.7,
-        2.05,
-        -23.6
-      ],
-      "size": [
-        0.1,
-        0.12,
-        3.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-island-west-beam-3",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        11.7,
-        3,
-        -23.6
-      ],
-      "size": [
-        0.1,
-        0.12,
-        3.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-island-west-deck-0.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        11.7,
-        0.75,
-        -23.6
-      ],
-      "size": [
-        0.89,
-        0.08,
-        2.92
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-island-west-deck-1.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        11.7,
-        1.75,
-        -23.6
-      ],
-      "size": [
-        0.89,
-        0.08,
-        2.92
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-island-west-deck-2.7",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        11.7,
-        2.7,
-        -23.6
-      ],
-      "size": [
-        0.89,
-        0.08,
-        2.92
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-island-west-short-upright--1.7--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        12.3,
-        1.575,
-        -25.625
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-short-upright--1.7-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        12.3,
-        1.575,
-        -24.575000000000003
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-short-upright-0--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        14,
-        1.575,
-        -25.625
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-short-upright-0-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        14,
-        1.575,
-        -24.575000000000003
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-short-upright-1.7--0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        15.7,
-        1.575,
-        -25.625
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-short-upright-1.7-0.525",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        15.7,
-        1.575,
-        -24.575000000000003
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-island-west-short-beam-1.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        14,
-        1.05,
-        -25.1
-      ],
-      "size": [
-        3.4,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-island-west-short-beam-2.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        14,
-        2.05,
-        -25.1
-      ],
-      "size": [
-        3.4,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-island-west-short-beam-3",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        14,
-        3,
-        -25.1
-      ],
-      "size": [
-        3.4,
-        0.12,
-        0.1
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-island-west-short-deck-0.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        14,
-        0.75,
-        -25.1
-      ],
-      "size": [
-        3.2199999999999998,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-island-west-short-deck-1.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        14,
-        1.75,
-        -25.1
-      ],
-      "size": [
-        3.2199999999999998,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-island-west-short-deck-2.7",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        14,
-        2.7,
-        -25.1
-      ],
-      "size": [
-        3.2199999999999998,
-        0.08,
-        0.89
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-offset-east-upright--0.525--1.75",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        31.875,
-        1.575,
-        -25.75
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-offset-east-upright--0.525-0",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        31.875,
-        1.575,
-        -24
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-offset-east-upright--0.525-1.75",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        31.875,
-        1.575,
-        -22.25
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-offset-east-upright-0.525--1.75",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        32.925,
-        1.575,
-        -25.75
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-offset-east-upright-0.525-0",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        32.925,
-        1.575,
-        -24
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-offset-east-upright-0.525-1.75",
-      "zone": "section3",
-      "kind": "rack-upright",
-      "center": [
-        32.925,
-        1.575,
-        -22.25
-      ],
-      "size": [
-        0.12,
-        3.15,
-        0.12
-      ],
-      "color": "#344552",
-      "roughness": 0.42,
-      "metalness": 0.62
-    },
-    {
-      "id": "s3-offset-east-beam-1.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        32.4,
-        1.05,
-        -24
-      ],
-      "size": [
-        0.1,
-        0.12,
-        3.5
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-offset-east-beam-2.05",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        32.4,
-        2.05,
-        -24
-      ],
-      "size": [
-        0.1,
-        0.12,
-        3.5
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-offset-east-beam-3",
-      "zone": "section3",
-      "kind": "rack-beam",
-      "center": [
-        32.4,
-        3,
-        -24
-      ],
-      "size": [
-        0.1,
-        0.12,
-        3.5
-      ],
-      "color": "#ca8a04",
-      "roughness": 0.45,
-      "metalness": 0.45
-    },
-    {
-      "id": "s3-offset-east-deck-0.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        32.4,
-        0.75,
-        -24
-      ],
-      "size": [
-        0.89,
-        0.08,
-        3.32
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-offset-east-deck-1.75",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        32.4,
-        1.75,
-        -24
-      ],
-      "size": [
-        0.89,
-        0.08,
-        3.32
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-offset-east-deck-2.7",
-      "zone": "section3",
-      "kind": "rack-deck",
-      "center": [
-        32.4,
-        2.7,
-        -24
-      ],
-      "size": [
-        0.89,
-        0.08,
-        3.32
-      ],
-      "color": "#27323a",
-      "collision": false,
-      "roughness": 0.7,
-      "metalness": 0.2
-    },
-    {
-      "id": "s3-crate-a1-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        13.1,
-        0.58,
-        -14.1
-      ],
-      "size": [
-        0.82,
-        1.05,
-        0.78
-      ],
-      "color": "#93613a",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-crate-a1-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        13.1,
-        1.13,
-        -14.1
-      ],
-      "size": [
-        0.86,
-        0.05,
-        0.8200000000000001
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-a1-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        13.1,
-        0.58,
-        -14.1
-      ],
-      "size": [
-        0.055,
-        1.09,
-        0.8350000000000001
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-a2-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        15.1,
-        0.58,
-        -14.1
-      ],
-      "size": [
-        0.9,
-        1.05,
-        0.82
-      ],
-      "color": "#785034",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-crate-a2-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        15.1,
-        1.13,
-        -14.1
-      ],
-      "size": [
-        0.9400000000000001,
-        0.05,
-        0.86
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-a2-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        15.1,
-        0.58,
-        -14.1
-      ],
-      "size": [
-        0.055,
-        1.09,
-        0.875
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-a3-upper-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        15.1,
-        1.88,
-        -14.1
-      ],
-      "size": [
-        0.82,
-        0.72,
-        0.74
-      ],
-      "color": "#a16b3f",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-crate-a3-upper-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        15.1,
-        2.2649999999999997,
-        -14.1
-      ],
-      "size": [
-        0.86,
-        0.05,
-        0.78
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-a3-upper-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        15.1,
-        1.88,
-        -14.1
-      ],
-      "size": [
-        0.055,
-        0.76,
-        0.795
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-b1-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        19.9,
-        0.58,
-        -17.5
-      ],
-      "size": [
-        0.88,
+        22,
         1,
-        0.82
-      ],
-      "color": "#6f5138",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-crate-b1-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        19.9,
-        1.105,
-        -17.5
+        -19.5
       ],
       "size": [
-        0.92,
-        0.05,
-        0.86
+        18.8,
+        0.12,
+        1.12
       ],
-      "color": "#5f482f",
-      "collision": false,
+      "color": "#171d21",
       "roughness": 0.9
     },
     {
-      "id": "s3-crate-b1-band-x",
+      "id": "s3-main-support-13-a",
       "zone": "section3",
-      "kind": "crate-band",
+      "kind": "conveyor-support",
       "center": [
-        19.9,
-        0.58,
-        -17.5
+        13,
+        0.4,
+        -20.05
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-support-13-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        13,
+        0.4,
+        -18.95
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-rail-13",
+      "zone": "section3",
+      "kind": "conveyor-roller",
+      "center": [
+        13,
+        1.09,
+        -19.5
+      ],
+      "size": [
+        0.1,
+        0.08,
+        1.22
+      ],
+      "color": "#aab2b7",
+      "collision": false,
+      "metalness": 0.7
+    },
+    {
+      "id": "s3-main-support-16-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        16,
+        0.4,
+        -20.05
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-support-16-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        16,
+        0.4,
+        -18.95
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-rail-16",
+      "zone": "section3",
+      "kind": "conveyor-roller",
+      "center": [
+        16,
+        1.09,
+        -19.5
+      ],
+      "size": [
+        0.1,
+        0.08,
+        1.22
+      ],
+      "color": "#aab2b7",
+      "collision": false,
+      "metalness": 0.7
+    },
+    {
+      "id": "s3-main-support-19-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        19,
+        0.4,
+        -20.05
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-support-19-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        19,
+        0.4,
+        -18.95
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-rail-19",
+      "zone": "section3",
+      "kind": "conveyor-roller",
+      "center": [
+        19,
+        1.09,
+        -19.5
+      ],
+      "size": [
+        0.1,
+        0.08,
+        1.22
+      ],
+      "color": "#aab2b7",
+      "collision": false,
+      "metalness": 0.7
+    },
+    {
+      "id": "s3-main-support-22-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        22,
+        0.4,
+        -20.05
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-support-22-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        22,
+        0.4,
+        -18.95
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-rail-22",
+      "zone": "section3",
+      "kind": "conveyor-roller",
+      "center": [
+        22,
+        1.09,
+        -19.5
+      ],
+      "size": [
+        0.1,
+        0.08,
+        1.22
+      ],
+      "color": "#aab2b7",
+      "collision": false,
+      "metalness": 0.7
+    },
+    {
+      "id": "s3-main-support-25-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        25,
+        0.4,
+        -20.05
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-support-25-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        25,
+        0.4,
+        -18.95
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-rail-25",
+      "zone": "section3",
+      "kind": "conveyor-roller",
+      "center": [
+        25,
+        1.09,
+        -19.5
+      ],
+      "size": [
+        0.1,
+        0.08,
+        1.22
+      ],
+      "color": "#aab2b7",
+      "collision": false,
+      "metalness": 0.7
+    },
+    {
+      "id": "s3-main-support-28-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        28,
+        0.4,
+        -20.05
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-support-28-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        28,
+        0.4,
+        -18.95
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-rail-28",
+      "zone": "section3",
+      "kind": "conveyor-roller",
+      "center": [
+        28,
+        1.09,
+        -19.5
+      ],
+      "size": [
+        0.1,
+        0.08,
+        1.22
+      ],
+      "color": "#aab2b7",
+      "collision": false,
+      "metalness": 0.7
+    },
+    {
+      "id": "s3-main-support-31-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        31,
+        0.4,
+        -20.05
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-support-31-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        31,
+        0.4,
+        -18.95
+      ],
+      "size": [
+        0.12,
+        0.8,
+        0.12
+      ],
+      "color": "#6b747b"
+    },
+    {
+      "id": "s3-main-rail-31",
+      "zone": "section3",
+      "kind": "conveyor-roller",
+      "center": [
+        31,
+        1.09,
+        -19.5
+      ],
+      "size": [
+        0.1,
+        0.08,
+        1.22
+      ],
+      "color": "#aab2b7",
+      "collision": false,
+      "metalness": 0.7
+    },
+    {
+      "id": "s3-main-side-rail--20.18",
+      "zone": "section3",
+      "kind": "conveyor-side-rail",
+      "center": [
+        22,
+        1.18,
+        -20.18
+      ],
+      "size": [
+        19,
+        0.22,
+        0.09
+      ],
+      "color": "#e0a52e"
+    },
+    {
+      "id": "s3-main-side-rail--18.82",
+      "zone": "section3",
+      "kind": "conveyor-side-rail",
+      "center": [
+        22,
+        1.18,
+        -18.82
+      ],
+      "size": [
+        19,
+        0.22,
+        0.09
+      ],
+      "color": "#e0a52e"
+    },
+    {
+      "id": "s3-branch-17-frame",
+      "zone": "section3",
+      "kind": "sorter-branch-frame",
+      "center": [
+        17,
+        0.78,
+        -24
+      ],
+      "size": [
+        1.35,
+        0.28,
+        8
+      ],
+      "color": "#46525b"
+    },
+    {
+      "id": "s3-branch-17-belt",
+      "zone": "section3",
+      "kind": "sorter-branch-belt",
+      "center": [
+        17,
+        1,
+        -24
+      ],
+      "size": [
+        1,
+        0.12,
+        7.8
+      ],
+      "color": "#20282d"
+    },
+    {
+      "id": "s3-branch-17-leg--21-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        16.48,
+        0.4,
+        -21
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-17-leg--21-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        17.52,
+        0.4,
+        -21
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-17-leg--24-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        16.48,
+        0.4,
+        -24
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-17-leg--24-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        17.52,
+        0.4,
+        -24
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-17-leg--27-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        16.48,
+        0.4,
+        -27
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-17-leg--27-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        17.52,
+        0.4,
+        -27
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-17-rail-a",
+      "zone": "section3",
+      "kind": "conveyor-side-rail",
+      "center": [
+        16.42,
+        1.16,
+        -24
+      ],
+      "size": [
+        0.08,
+        0.2,
+        7.8
+      ],
+      "color": "#d99c26"
+    },
+    {
+      "id": "s3-branch-17-rail-b",
+      "zone": "section3",
+      "kind": "conveyor-side-rail",
+      "center": [
+        17.58,
+        1.16,
+        -24
+      ],
+      "size": [
+        0.08,
+        0.2,
+        7.8
+      ],
+      "color": "#d99c26"
+    },
+    {
+      "id": "s3-destination-17-base",
+      "zone": "section3",
+      "kind": "sort-destination-base",
+      "center": [
+        17,
+        0.12,
+        -28.4
+      ],
+      "size": [
+        2.3,
+        0.22,
+        1.8
+      ],
+      "color": "#3d4b52"
+    },
+    {
+      "id": "s3-destination-17-bin",
+      "zone": "section3",
+      "kind": "sort-destination-bin",
+      "center": [
+        17,
+        0.85,
+        -28.4
+      ],
+      "size": [
+        2,
+        1.35,
+        1.5
+      ],
+      "color": "#3b6578",
+      "roughness": 0.8
+    },
+    {
+      "id": "s3-destination-17-cage--0.92--0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        16.08,
+        0.88,
+        -29.049999999999997
       ],
       "size": [
         0.055,
-        1.04,
-        0.875
+        1.55,
+        0.055
       ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
+      "color": "#a7b0b5",
+      "metalness": 0.65
     },
     {
-      "id": "s3-crate-b2-body",
+      "id": "s3-destination-17-cage--0.92-0.65",
       "zone": "section3",
-      "kind": "crate",
+      "kind": "wire-cage-post",
       "center": [
-        21.8,
-        0.58,
-        -17.5
+        16.08,
+        0.88,
+        -27.75
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-destination-17-cage-0.92--0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        17.92,
+        0.88,
+        -29.049999999999997
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-destination-17-cage-0.92-0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        17.92,
+        0.88,
+        -27.75
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-branch-23-frame",
+      "zone": "section3",
+      "kind": "sorter-branch-frame",
+      "center": [
+        23,
+        0.78,
+        -14.8
+      ],
+      "size": [
+        1.35,
+        0.28,
+        8
+      ],
+      "color": "#46525b"
+    },
+    {
+      "id": "s3-branch-23-belt",
+      "zone": "section3",
+      "kind": "sorter-branch-belt",
+      "center": [
+        23,
+        1,
+        -14.8
+      ],
+      "size": [
+        1,
+        0.12,
+        7.8
+      ],
+      "color": "#20282d"
+    },
+    {
+      "id": "s3-branch-23-leg--12-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        22.48,
+        0.4,
+        -12
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-23-leg--12-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        23.52,
+        0.4,
+        -12
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-23-leg--15-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        22.48,
+        0.4,
+        -15
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-23-leg--15-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        23.52,
+        0.4,
+        -15
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-23-leg--18-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        22.48,
+        0.4,
+        -18
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-23-leg--18-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        23.52,
+        0.4,
+        -18
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-23-rail-a",
+      "zone": "section3",
+      "kind": "conveyor-side-rail",
+      "center": [
+        22.42,
+        1.16,
+        -14.8
+      ],
+      "size": [
+        0.08,
+        0.2,
+        7.8
+      ],
+      "color": "#d99c26"
+    },
+    {
+      "id": "s3-branch-23-rail-b",
+      "zone": "section3",
+      "kind": "conveyor-side-rail",
+      "center": [
+        23.58,
+        1.16,
+        -14.8
+      ],
+      "size": [
+        0.08,
+        0.2,
+        7.8
+      ],
+      "color": "#d99c26"
+    },
+    {
+      "id": "s3-destination-23-base",
+      "zone": "section3",
+      "kind": "sort-destination-base",
+      "center": [
+        23,
+        0.12,
+        -11.1
+      ],
+      "size": [
+        2.3,
+        0.22,
+        1.8
+      ],
+      "color": "#3d4b52"
+    },
+    {
+      "id": "s3-destination-23-bin",
+      "zone": "section3",
+      "kind": "sort-destination-bin",
+      "center": [
+        23,
+        0.85,
+        -11.1
+      ],
+      "size": [
+        2,
+        1.35,
+        1.5
+      ],
+      "color": "#5c6b3f",
+      "roughness": 0.8
+    },
+    {
+      "id": "s3-destination-23-cage--0.92--0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        22.08,
+        0.88,
+        -11.75
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-destination-23-cage--0.92-0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        22.08,
+        0.88,
+        -10.45
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-destination-23-cage-0.92--0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        23.92,
+        0.88,
+        -11.75
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-destination-23-cage-0.92-0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        23.92,
+        0.88,
+        -10.45
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-branch-29-frame",
+      "zone": "section3",
+      "kind": "sorter-branch-frame",
+      "center": [
+        29,
+        0.78,
+        -24
+      ],
+      "size": [
+        1.35,
+        0.28,
+        8
+      ],
+      "color": "#46525b"
+    },
+    {
+      "id": "s3-branch-29-belt",
+      "zone": "section3",
+      "kind": "sorter-branch-belt",
+      "center": [
+        29,
+        1,
+        -24
+      ],
+      "size": [
+        1,
+        0.12,
+        7.8
+      ],
+      "color": "#20282d"
+    },
+    {
+      "id": "s3-branch-29-leg--21-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        28.48,
+        0.4,
+        -21
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-29-leg--21-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        29.52,
+        0.4,
+        -21
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-29-leg--24-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        28.48,
+        0.4,
+        -24
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-29-leg--24-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        29.52,
+        0.4,
+        -24
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-29-leg--27-a",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        28.48,
+        0.4,
+        -27
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-29-leg--27-b",
+      "zone": "section3",
+      "kind": "conveyor-support",
+      "center": [
+        29.52,
+        0.4,
+        -27
+      ],
+      "size": [
+        0.1,
+        0.8,
+        0.1
+      ],
+      "color": "#69747a"
+    },
+    {
+      "id": "s3-branch-29-rail-a",
+      "zone": "section3",
+      "kind": "conveyor-side-rail",
+      "center": [
+        28.42,
+        1.16,
+        -24
+      ],
+      "size": [
+        0.08,
+        0.2,
+        7.8
+      ],
+      "color": "#d99c26"
+    },
+    {
+      "id": "s3-branch-29-rail-b",
+      "zone": "section3",
+      "kind": "conveyor-side-rail",
+      "center": [
+        29.58,
+        1.16,
+        -24
+      ],
+      "size": [
+        0.08,
+        0.2,
+        7.8
+      ],
+      "color": "#d99c26"
+    },
+    {
+      "id": "s3-destination-29-base",
+      "zone": "section3",
+      "kind": "sort-destination-base",
+      "center": [
+        29,
+        0.12,
+        -28.4
+      ],
+      "size": [
+        2.3,
+        0.22,
+        1.8
+      ],
+      "color": "#3d4b52"
+    },
+    {
+      "id": "s3-destination-29-bin",
+      "zone": "section3",
+      "kind": "sort-destination-bin",
+      "center": [
+        29,
+        0.85,
+        -28.4
+      ],
+      "size": [
+        2,
+        1.35,
+        1.5
+      ],
+      "color": "#7b563d",
+      "roughness": 0.8
+    },
+    {
+      "id": "s3-destination-29-cage--0.92--0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        28.08,
+        0.88,
+        -29.049999999999997
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-destination-29-cage--0.92-0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        28.08,
+        0.88,
+        -27.75
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-destination-29-cage-0.92--0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        29.92,
+        0.88,
+        -29.049999999999997
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-destination-29-cage-0.92-0.65",
+      "zone": "section3",
+      "kind": "wire-cage-post",
+      "center": [
+        29.92,
+        0.88,
+        -27.75
+      ],
+      "size": [
+        0.055,
+        1.55,
+        0.055
+      ],
+      "color": "#a7b0b5",
+      "metalness": 0.65
+    },
+    {
+      "id": "s3-scanner-post-24.5",
+      "zone": "section3",
+      "kind": "scanner-post",
+      "center": [
+        24.5,
+        1.75,
+        -19.5
+      ],
+      "size": [
+        0.12,
+        1.65,
+        0.12
+      ],
+      "color": "#273943",
+      "metalness": 0.55
+    },
+    {
+      "id": "s3-scanner-post-25.5",
+      "zone": "section3",
+      "kind": "scanner-post",
+      "center": [
+        25.5,
+        1.75,
+        -19.5
+      ],
+      "size": [
+        0.12,
+        1.65,
+        0.12
+      ],
+      "color": "#273943",
+      "metalness": 0.55
+    },
+    {
+      "id": "s3-scanner-top",
+      "zone": "section3",
+      "kind": "barcode-scanner-arch",
+      "center": [
+        25,
+        2.55,
+        -19.5
+      ],
+      "size": [
+        1.15,
+        0.14,
+        1.35
+      ],
+      "color": "#344c5a",
+      "metalness": 0.4
+    },
+    {
+      "id": "s3-scanner-light",
+      "zone": "section3",
+      "kind": "scanner-light-bar",
+      "center": [
+        25,
+        2.43,
+        -19.5
+      ],
+      "size": [
+        0.7,
+        0.08,
+        0.12
+      ],
+      "color": "#35c9d0",
+      "collision": false,
+      "emissive": "#16858b"
+    },
+    {
+      "id": "s3-parcel-1",
+      "zone": "section3",
+      "kind": "parcel-carton",
+      "center": [
+        14,
+        1.28,
+        -19.55
+      ],
+      "size": [
+        0.72,
+        0.48,
+        0.62
+      ],
+      "color": "#bd8c54",
+      "roughness": 0.82
+    },
+    {
+      "id": "s3-parcel-2",
+      "zone": "section3",
+      "kind": "parcel-carton",
+      "center": [
+        16.3,
+        1.31,
+        -19.3
+      ],
+      "size": [
+        0.55,
+        0.48,
+        0.7
+      ],
+      "color": "#d2b17b",
+      "roughness": 0.82
+    },
+    {
+      "id": "s3-parcel-3",
+      "zone": "section3",
+      "kind": "parcel-carton",
+      "center": [
+        18.6,
+        1.3,
+        -19.6
+      ],
+      "size": [
+        0.82,
+        0.48,
+        0.62
+      ],
+      "color": "#c49b67",
+      "roughness": 0.82
+    },
+    {
+      "id": "s3-parcel-4",
+      "zone": "section3",
+      "kind": "parcel-carton",
+      "center": [
+        21.2,
+        1.28,
+        -19.4
+      ],
+      "size": [
+        0.62,
+        0.48,
+        0.55
+      ],
+      "color": "#b9824e",
+      "roughness": 0.82
+    },
+    {
+      "id": "s3-parcel-5",
+      "zone": "section3",
+      "kind": "parcel-carton",
+      "center": [
+        23.2,
+        1.31,
+        -19.6
+      ],
+      "size": [
+        0.72,
+        0.48,
+        0.72
+      ],
+      "color": "#d1b88c",
+      "roughness": 0.82
+    },
+    {
+      "id": "s3-parcel-6",
+      "zone": "section3",
+      "kind": "parcel-carton",
+      "center": [
+        27.3,
+        1.3,
+        -19.4
       ],
       "size": [
         0.8,
-        0.95,
-        0.78
+        0.48,
+        0.62
       ],
-      "color": "#9b6840",
-      "roughness": 0.92
+      "color": "#b98a59",
+      "roughness": 0.82
     },
     {
-      "id": "s3-crate-b2-lid",
+      "id": "s3-parcel-7",
       "zone": "section3",
-      "kind": "crate-lid",
+      "kind": "parcel-carton",
       "center": [
-        21.8,
-        1.0799999999999998,
-        -17.5
+        30,
+        1.28,
+        -19.55
       ],
       "size": [
-        0.8400000000000001,
-        0.05,
-        0.8200000000000001
+        0.62,
+        0.48,
+        0.62
       ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
+      "color": "#c9a16b",
+      "roughness": 0.82
     },
     {
-      "id": "s3-crate-b2-band-x",
+      "id": "s3-parcel-8",
       "zone": "section3",
-      "kind": "crate-band",
+      "kind": "parcel-carton",
       "center": [
-        21.8,
-        0.58,
-        -17.5
+        17,
+        1.28,
+        -24.5
       ],
       "size": [
-        0.055,
-        0.99,
-        0.8350000000000001
+        0.62,
+        0.48,
+        0.62
       ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
+      "color": "#5d8b9c",
+      "roughness": 0.82
     },
     {
-      "id": "s3-crate-c1-body",
+      "id": "s3-parcel-9",
       "zone": "section3",
-      "kind": "crate",
+      "kind": "parcel-carton",
       "center": [
-        14.1,
-        0.58,
-        -22
+        23,
+        1.28,
+        -15.5
       ],
       "size": [
-        0.82,
-        1,
-        0.76
+        0.65,
+        0.48,
+        0.65
       ],
-      "color": "#8a5937",
-      "roughness": 0.92
+      "color": "#5d8b9c",
+      "roughness": 0.82
     },
     {
-      "id": "s3-crate-c1-lid",
+      "id": "s3-parcel-10",
       "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        14.1,
-        1.105,
-        -22
-      ],
-      "size": [
-        0.86,
-        0.05,
-        0.8
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-c1-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        14.1,
-        0.58,
-        -22
-      ],
-      "size": [
-        0.055,
-        1.04,
-        0.8150000000000001
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-c2-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        16.2,
-        0.58,
-        -22
-      ],
-      "size": [
-        0.88,
-        1.05,
-        0.82
-      ],
-      "color": "#a06b3f",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-crate-c2-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        16.2,
-        1.13,
-        -22
-      ],
-      "size": [
-        0.92,
-        0.05,
-        0.86
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-c2-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        16.2,
-        0.58,
-        -22
-      ],
-      "size": [
-        0.055,
-        1.09,
-        0.875
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-c3-upper-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        16.2,
-        1.88,
-        -22
-      ],
-      "size": [
-        0.75,
-        0.72,
-        0.72
-      ],
-      "color": "#765238",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-crate-c3-upper-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        16.2,
-        2.2649999999999997,
-        -22
-      ],
-      "size": [
-        0.79,
-        0.05,
-        0.76
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-c3-upper-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        16.2,
-        1.88,
-        -22
-      ],
-      "size": [
-        0.055,
-        0.76,
-        0.775
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-u1-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        26.2,
-        0.58,
-        -14.2
-      ],
-      "size": [
-        0.78,
-        1.05,
-        0.72
-      ],
-      "color": "#7d573a",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-crate-u1-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        26.2,
-        1.13,
-        -14.2
-      ],
-      "size": [
-        0.8200000000000001,
-        0.05,
-        0.76
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-u1-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        26.2,
-        0.58,
-        -14.2
-      ],
-      "size": [
-        0.055,
-        1.09,
-        0.775
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-u2-body",
-      "zone": "section3",
-      "kind": "crate",
+      "kind": "parcel-carton",
       "center": [
         29,
-        0.58,
-        -18.2
+        1.28,
+        -24.4
       ],
       "size": [
-        0.82,
-        0.95,
-        0.8
+        0.6,
+        0.48,
+        0.65
       ],
-      "color": "#99633b",
-      "roughness": 0.92
+      "color": "#c49b67",
+      "roughness": 0.82
     },
     {
-      "id": "s3-crate-u2-lid",
+      "id": "s3-parcel-tape-1",
       "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        29,
-        1.0799999999999998,
-        -18.2
-      ],
-      "size": [
-        0.86,
-        0.05,
-        0.8400000000000001
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-u2-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        29,
-        0.58,
-        -18.2
-      ],
-      "size": [
-        0.055,
-        0.99,
-        0.8550000000000001
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-u3-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        26.2,
-        0.58,
-        -21
-      ],
-      "size": [
-        0.78,
-        0.95,
-        0.72
-      ],
-      "color": "#795238",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-crate-u3-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        26.2,
-        1.0799999999999998,
-        -21
-      ],
-      "size": [
-        0.8200000000000001,
-        0.05,
-        0.76
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-u3-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        26.2,
-        0.58,
-        -21
-      ],
-      "size": [
-        0.055,
-        0.99,
-        0.775
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-west1-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        11.7,
-        0.58,
-        -22.8
-      ],
-      "size": [
-        0.7,
-        0.92,
-        0.7
-      ],
-      "color": "#a36a3d",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-crate-west1-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        11.7,
-        1.065,
-        -22.8
-      ],
-      "size": [
-        0.74,
-        0.05,
-        0.74
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-crate-west1-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        11.7,
-        0.58,
-        -22.8
-      ],
-      "size": [
-        0.055,
-        0.9600000000000001,
-        0.755
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-crate-west2-body",
-      "zone": "section3",
-      "kind": "crate",
+      "kind": "parcel-tape",
       "center": [
         14,
-        0.58,
-        -25.1
+        1.53,
+        -19.55
       ],
       "size": [
-        0.78,
-        1,
-        0.72
+        0.07,
+        0.012,
+        0.64
       ],
-      "color": "#80573a",
-      "roughness": 0.92
+      "color": "#e8d7a5",
+      "collision": false
     },
     {
-      "id": "s3-crate-west2-lid",
+      "id": "s3-parcel-tape-3",
       "zone": "section3",
-      "kind": "crate-lid",
+      "kind": "parcel-tape",
       "center": [
-        14,
-        1.105,
-        -25.1
+        18.6,
+        1.53,
+        -19.6
       ],
       "size": [
-        0.8200000000000001,
-        0.05,
-        0.76
+        0.07,
+        0.012,
+        0.64
       ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
+      "color": "#e8d7a5",
+      "collision": false
     },
     {
-      "id": "s3-crate-west2-band-x",
+      "id": "s3-parcel-tape-5",
       "zone": "section3",
-      "kind": "crate-band",
+      "kind": "parcel-tape",
       "center": [
-        14,
-        0.58,
-        -25.1
+        23.2,
+        1.53,
+        -19.6
       ],
       "size": [
-        0.055,
-        1.04,
-        0.775
+        0.07,
+        0.012,
+        0.64
       ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
+      "color": "#e8d7a5",
+      "collision": false
     },
     {
-      "id": "s3-loose-northwest1-body",
+      "id": "s3-parcel-tape-7",
       "zone": "section3",
-      "kind": "crate",
+      "kind": "parcel-tape",
       "center": [
-        9.8,
-        0.38,
-        -12.3
+        30,
+        1.53,
+        -19.55
+      ],
+      "size": [
+        0.07,
+        0.012,
+        0.64
+      ],
+      "color": "#e8d7a5",
+      "collision": false
+    },
+    {
+      "id": "s3-induction-table",
+      "zone": "section3",
+      "kind": "induction-table",
+      "center": [
+        11.3,
+        0.9,
+        -19.5
+      ],
+      "size": [
+        2.6,
+        0.18,
+        2.2
+      ],
+      "color": "#58646c"
+    },
+    {
+      "id": "s3-induction-screen-post",
+      "zone": "section3",
+      "kind": "induction-screen-post",
+      "center": [
+        10.4,
+        1.55,
+        -18.3
+      ],
+      "size": [
+        0.08,
+        1.25,
+        0.08
+      ],
+      "color": "#2d3a42"
+    },
+    {
+      "id": "s3-induction-monitor",
+      "zone": "section3",
+      "kind": "induction-monitor",
+      "center": [
+        10.4,
+        2.1,
+        -18.3
       ],
       "size": [
         0.72,
-        0.68,
-        0.66
+        0.48,
+        0.12
       ],
-      "color": "#a16b3f",
-      "roughness": 0.92
+      "color": "#1d2b33"
     },
     {
-      "id": "s3-loose-northwest1-lid",
+      "id": "s3-induction-screen",
       "zone": "section3",
-      "kind": "crate-lid",
+      "kind": "induction-screen",
       "center": [
-        9.8,
-        0.745,
-        -12.3
+        10.4,
+        2.1,
+        -18.22
       ],
       "size": [
-        0.76,
-        0.05,
-        0.7000000000000001
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-loose-northwest1-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        9.8,
-        0.38,
-        -12.3
-      ],
-      "size": [
-        0.055,
-        0.7200000000000001,
-        0.7150000000000001
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-loose-northwest2-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        10.5,
-        0.92,
-        -12.6
-      ],
-      "size": [
-        0.64,
         0.55,
-        0.6
+        0.31,
+        0.025
       ],
-      "color": "#785034",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-loose-northwest2-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        10.5,
-        1.22,
-        -12.6
-      ],
-      "size": [
-        0.68,
-        0.05,
-        0.64
-      ],
-      "color": "#5f482f",
+      "color": "#4bc5c7",
       "collision": false,
-      "roughness": 0.9
+      "emissive": "#176d71"
     },
     {
-      "id": "s3-loose-northwest2-band-x",
+      "id": "s3-induction-control",
       "zone": "section3",
-      "kind": "crate-band",
+      "kind": "induction-control-panel",
       "center": [
-        10.5,
-        0.92,
-        -12.6
+        11.3,
+        1.18,
+        -18.3
       ],
       "size": [
-        0.055,
-        0.5900000000000001,
-        0.655
+        0.55,
+        0.2,
+        0.42
       ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
+      "color": "#d1a02d"
     },
     {
-      "id": "s3-loose-southwest1-body",
+      "id": "s3-reject-table",
       "zone": "section3",
-      "kind": "crate",
+      "kind": "exception-sort-table",
       "center": [
-        9.8,
-        0.42,
-        -27.3
+        31.8,
+        0.85,
+        -19.5
       ],
       "size": [
-        0.78,
-        0.75,
-        0.72
+        1.5,
+        0.18,
+        2
       ],
-      "color": "#8a5937",
-      "roughness": 0.92
+      "color": "#4a555d"
     },
     {
-      "id": "s3-loose-southwest1-lid",
+      "id": "s3-reject-bin",
       "zone": "section3",
-      "kind": "crate-lid",
+      "kind": "exception-bin",
       "center": [
-        9.8,
-        0.82,
-        -27.3
+        31.8,
+        0.55,
+        -17.6
       ],
       "size": [
-        0.8200000000000001,
-        0.05,
-        0.76
+        1.1,
+        1,
+        1.2
       ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
+      "color": "#a74737"
     },
     {
-      "id": "s3-loose-southwest1-band-x",
+      "id": "s3-reject-label",
       "zone": "section3",
-      "kind": "crate-band",
+      "kind": "exception-sign",
       "center": [
-        9.8,
-        0.42,
-        -27.3
+        31.8,
+        1.2,
+        -17
       ],
       "size": [
-        0.055,
-        0.79,
-        0.775
+        0.8,
+        0.32,
+        0.08
       ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
+      "color": "#e7d8ad",
+      "collision": false
     },
     {
-      "id": "s3-loose-southwest2-body",
+      "id": "s3-staging-pallet-1",
       "zone": "section3",
-      "kind": "crate",
-      "center": [
-        10.6,
-        0.42,
-        -27.5
-      ],
-      "size": [
-        0.72,
-        0.75,
-        0.68
-      ],
-      "color": "#9b6840",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-loose-southwest2-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        10.6,
-        0.82,
-        -27.5
-      ],
-      "size": [
-        0.76,
-        0.05,
-        0.7200000000000001
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-loose-southwest2-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        10.6,
-        0.42,
-        -27.5
-      ],
-      "size": [
-        0.055,
-        0.79,
-        0.7350000000000001
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-loose-southeast1-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        34.1,
-        0.42,
-        -27
-      ],
-      "size": [
-        0.72,
-        0.75,
-        0.68
-      ],
-      "color": "#7d573a",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-loose-southeast1-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        34.1,
-        0.82,
-        -27
-      ],
-      "size": [
-        0.76,
-        0.05,
-        0.7200000000000001
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-loose-southeast1-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        34.1,
-        0.42,
-        -27
-      ],
-      "size": [
-        0.055,
-        0.79,
-        0.7350000000000001
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-loose-southeast2-body",
-      "zone": "section3",
-      "kind": "crate",
-      "center": [
-        34.8,
-        0.42,
-        -26.8
-      ],
-      "size": [
-        0.68,
-        0.7,
-        0.64
-      ],
-      "color": "#a16b3f",
-      "roughness": 0.92
-    },
-    {
-      "id": "s3-loose-southeast2-lid",
-      "zone": "section3",
-      "kind": "crate-lid",
-      "center": [
-        34.8,
-        0.795,
-        -26.8
-      ],
-      "size": [
-        0.7200000000000001,
-        0.05,
-        0.68
-      ],
-      "color": "#5f482f",
-      "collision": false,
-      "roughness": 0.9
-    },
-    {
-      "id": "s3-loose-southeast2-band-x",
-      "zone": "section3",
-      "kind": "crate-band",
-      "center": [
-        34.8,
-        0.42,
-        -26.8
-      ],
-      "size": [
-        0.055,
-        0.74,
-        0.6950000000000001
-      ],
-      "color": "#4b5148",
-      "collision": false,
-      "metalness": 0.25
-    },
-    {
-      "id": "s3-pallet-1-base",
-      "zone": "section3",
-      "kind": "pallet",
+      "kind": "shipping-pallet",
       "center": [
         12,
         0.12,
-        -11.5
+        -28.5
       ],
       "size": [
-        1.15,
-        0.18,
-        0.9
+        1.25,
+        0.22,
+        1
       ],
-      "color": "#765238",
-      "roughness": 0.94
+      "color": "#826344"
     },
     {
-      "id": "s3-pallet-1-slat-0",
+      "id": "s3-staging-pallet-1-slat-0",
       "zone": "section3",
       "kind": "pallet-slat",
       "center": [
-        11.58,
-        0.23,
-        -11.5
+        11.52,
+        0.25,
+        -28.5
       ],
       "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-1-slat-1",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        11.86,
-        0.23,
-        -11.5
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-1-slat-2",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        12.14,
-        0.23,
-        -11.5
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-1-slat-3",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        12.42,
-        0.23,
-        -11.5
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-2-base",
-      "zone": "section3",
-      "kind": "pallet",
-      "center": [
-        33.5,
-        0.12,
-        -12.4
-      ],
-      "size": [
-        1.15,
-        0.18,
-        0.9
-      ],
-      "color": "#765238",
-      "roughness": 0.94
-    },
-    {
-      "id": "s3-pallet-2-slat-0",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        33.08,
-        0.23,
-        -12.4
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-2-slat-1",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        33.36,
-        0.23,
-        -12.4
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-2-slat-2",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        33.64,
-        0.23,
-        -12.4
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-2-slat-3",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        33.92,
-        0.23,
-        -12.4
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-3-base",
-      "zone": "section3",
-      "kind": "pallet",
-      "center": [
-        35,
-        0.12,
-        -28
-      ],
-      "size": [
-        1.15,
-        0.18,
-        0.9
-      ],
-      "color": "#765238",
-      "roughness": 0.94
-    },
-    {
-      "id": "s3-pallet-3-slat-0",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        34.58,
-        0.23,
-        -28
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-3-slat-1",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        34.86,
-        0.23,
-        -28
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-3-slat-2",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        35.14,
-        0.23,
-        -28
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-pallet-3-slat-3",
-      "zone": "section3",
-      "kind": "pallet-slat",
-      "center": [
-        35.42,
-        0.23,
-        -28
-      ],
-      "size": [
-        0.09,
-        0.06,
-        0.84
-      ],
-      "color": "#a87849",
-      "collision": false
-    },
-    {
-      "id": "s3-drum-1",
-      "zone": "section3",
-      "kind": "drum",
-      "center": [
-        35.2,
-        0.48,
-        -12
-      ],
-      "size": [
-        0.62,
-        0.96,
-        0.62
-      ],
-      "color": "#1f5f91",
-      "shape": "cylinder",
-      "roughness": 0.55,
-      "metalness": 0.35
-    },
-    {
-      "id": "s3-drum-1-rim",
-      "zone": "section3",
-      "kind": "drum-rim",
-      "center": [
-        35.2,
-        0.94,
-        -12
-      ],
-      "size": [
-        0.66,
-        0.07,
-        0.66
-      ],
-      "color": "#58636a",
-      "collision": false,
-      "shape": "cylinder",
-      "metalness": 0.5
-    },
-    {
-      "id": "s3-drum-2",
-      "zone": "section3",
-      "kind": "drum",
-      "center": [
-        36.2,
-        0.48,
-        -12
-      ],
-      "size": [
-        0.62,
-        0.96,
-        0.62
-      ],
-      "color": "#a52a2a",
-      "shape": "cylinder",
-      "roughness": 0.55,
-      "metalness": 0.35
-    },
-    {
-      "id": "s3-drum-2-rim",
-      "zone": "section3",
-      "kind": "drum-rim",
-      "center": [
-        36.2,
-        0.94,
-        -12
-      ],
-      "size": [
-        0.66,
-        0.07,
-        0.66
-      ],
-      "color": "#58636a",
-      "collision": false,
-      "shape": "cylinder",
-      "metalness": 0.5
-    },
-    {
-      "id": "s3-drum-3",
-      "zone": "section3",
-      "kind": "drum",
-      "center": [
-        35.7,
-        0.48,
-        -13
-      ],
-      "size": [
-        0.62,
-        0.96,
-        0.62
-      ],
-      "color": "#c29b20",
-      "shape": "cylinder",
-      "roughness": 0.55,
-      "metalness": 0.35
-    },
-    {
-      "id": "s3-drum-3-rim",
-      "zone": "section3",
-      "kind": "drum-rim",
-      "center": [
-        35.7,
-        0.94,
-        -13
-      ],
-      "size": [
-        0.66,
-        0.07,
-        0.66
-      ],
-      "color": "#58636a",
-      "collision": false,
-      "shape": "cylinder",
-      "metalness": 0.5
-    },
-    {
-      "id": "s3-cone-1-base",
-      "zone": "section3",
-      "kind": "safety-cone",
-      "center": [
-        12.2,
-        0.06,
-        -29
-      ],
-      "size": [
-        0.38,
-        0.12,
-        0.38
-      ],
-      "color": "#252b30",
-      "collision": false
-    },
-    {
-      "id": "s3-cone-1-body",
-      "zone": "section3",
-      "kind": "safety-cone",
-      "center": [
-        12.2,
-        0.38,
-        -29
-      ],
-      "size": [
-        0.28,
-        0.62,
-        0.28
-      ],
-      "color": "#e66a24",
-      "shape": "cone",
-      "roughness": 0.7
-    },
-    {
-      "id": "s3-cone-1-collar",
-      "zone": "section3",
-      "kind": "safety-cone-collar",
-      "center": [
-        12.2,
-        0.4,
-        -29
-      ],
-      "size": [
-        0.24,
         0.08,
-        0.24
+        0.07,
+        0.94
       ],
-      "color": "#f1e8d1",
-      "collision": false,
-      "shape": "cylinder"
+      "color": "#b18a5a",
+      "collision": false
     },
     {
-      "id": "s3-cone-2-base",
+      "id": "s3-staging-pallet-1-slat-1",
       "zone": "section3",
-      "kind": "safety-cone",
+      "kind": "pallet-slat",
       "center": [
-        32.5,
-        0.06,
+        11.84,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-1-slat-2",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        12.16,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-1-slat-3",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        12.48,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-2",
+      "zone": "section3",
+      "kind": "shipping-pallet",
+      "center": [
+        14,
+        0.12,
+        -28.5
+      ],
+      "size": [
+        1.25,
+        0.22,
+        1
+      ],
+      "color": "#826344"
+    },
+    {
+      "id": "s3-staging-pallet-2-slat-0",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        13.52,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-2-slat-1",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        13.84,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-2-slat-2",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        14.16,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-2-slat-3",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        14.48,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-3",
+      "zone": "section3",
+      "kind": "shipping-pallet",
+      "center": [
+        32,
+        0.12,
+        -28.5
+      ],
+      "size": [
+        1.25,
+        0.22,
+        1
+      ],
+      "color": "#826344"
+    },
+    {
+      "id": "s3-staging-pallet-3-slat-0",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        31.52,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-3-slat-1",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        31.84,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-3-slat-2",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        32.16,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-3-slat-3",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        32.48,
+        0.25,
+        -28.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-4",
+      "zone": "section3",
+      "kind": "shipping-pallet",
+      "center": [
+        12,
+        0.12,
+        -10.5
+      ],
+      "size": [
+        1.25,
+        0.22,
+        1
+      ],
+      "color": "#826344"
+    },
+    {
+      "id": "s3-staging-pallet-4-slat-0",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        11.52,
+        0.25,
+        -10.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-4-slat-1",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        11.84,
+        0.25,
+        -10.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-4-slat-2",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        12.16,
+        0.25,
+        -10.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-staging-pallet-4-slat-3",
+      "zone": "section3",
+      "kind": "pallet-slat",
+      "center": [
+        12.48,
+        0.25,
+        -10.5
+      ],
+      "size": [
+        0.08,
+        0.07,
+        0.94
+      ],
+      "color": "#b18a5a",
+      "collision": false
+    },
+    {
+      "id": "s3-roll-cage-1-base",
+      "zone": "section3",
+      "kind": "roll-cage-base",
+      "center": [
+        15,
+        0.12,
         -10.8
       ],
       "size": [
-        0.38,
-        0.12,
-        0.38
+        1.1,
+        0.18,
+        0.9
       ],
-      "color": "#252b30",
-      "collision": false
+      "color": "#46545d"
     },
     {
-      "id": "s3-cone-2-body",
+      "id": "s3-roll-cage-1-post--0.48--0.38",
       "zone": "section3",
-      "kind": "safety-cone",
+      "kind": "roll-cage-post",
       "center": [
-        32.5,
-        0.38,
+        14.52,
+        0.85,
+        -11.180000000000001
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-1-post--0.48-0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        14.52,
+        0.85,
+        -10.42
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-1-post-0.48--0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        15.48,
+        0.85,
+        -11.180000000000001
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-1-post-0.48-0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        15.48,
+        0.85,
+        -10.42
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-1-handle",
+      "zone": "section3",
+      "kind": "roll-cage-handle",
+      "center": [
+        15,
+        1.57,
         -10.8
       ],
       "size": [
-        0.28,
-        0.62,
-        0.28
+        0.95,
+        0.06,
+        0.06
       ],
-      "color": "#e66a24",
-      "shape": "cone",
-      "roughness": 0.7
+      "color": "#a9b2b7",
+      "metalness": 0.6
     },
     {
-      "id": "s3-cone-2-collar",
+      "id": "s3-roll-cage-2-base",
       "zone": "section3",
-      "kind": "safety-cone-collar",
+      "kind": "roll-cage-base",
       "center": [
-        32.5,
-        0.4,
+        20,
+        0.12,
         -10.8
       ],
       "size": [
-        0.24,
-        0.08,
-        0.24
+        1.1,
+        0.18,
+        0.9
       ],
-      "color": "#f1e8d1",
-      "collision": false,
-      "shape": "cylinder"
+      "color": "#46545d"
     },
     {
-      "id": "s3-cone-3-base",
+      "id": "s3-roll-cage-2-post--0.48--0.38",
       "zone": "section3",
-      "kind": "safety-cone",
+      "kind": "roll-cage-post",
       "center": [
-        36,
-        0.06,
-        -25.5
+        19.52,
+        0.85,
+        -11.180000000000001
       ],
       "size": [
-        0.38,
-        0.12,
-        0.38
+        0.045,
+        1.45,
+        0.045
       ],
-      "color": "#252b30",
-      "collision": false
+      "color": "#a9b2b7",
+      "metalness": 0.6
     },
     {
-      "id": "s3-cone-3-body",
+      "id": "s3-roll-cage-2-post--0.48-0.38",
       "zone": "section3",
-      "kind": "safety-cone",
+      "kind": "roll-cage-post",
       "center": [
-        36,
-        0.38,
-        -25.5
+        19.52,
+        0.85,
+        -10.42
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-2-post-0.48--0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        20.48,
+        0.85,
+        -11.180000000000001
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-2-post-0.48-0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        20.48,
+        0.85,
+        -10.42
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-2-handle",
+      "zone": "section3",
+      "kind": "roll-cage-handle",
+      "center": [
+        20,
+        1.57,
+        -10.8
+      ],
+      "size": [
+        0.95,
+        0.06,
+        0.06
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-3-base",
+      "zone": "section3",
+      "kind": "roll-cage-base",
+      "center": [
+        27,
+        0.12,
+        -10.8
+      ],
+      "size": [
+        1.1,
+        0.18,
+        0.9
+      ],
+      "color": "#46545d"
+    },
+    {
+      "id": "s3-roll-cage-3-post--0.48--0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        26.52,
+        0.85,
+        -11.180000000000001
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-3-post--0.48-0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        26.52,
+        0.85,
+        -10.42
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-3-post-0.48--0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        27.48,
+        0.85,
+        -11.180000000000001
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-3-post-0.48-0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        27.48,
+        0.85,
+        -10.42
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-3-handle",
+      "zone": "section3",
+      "kind": "roll-cage-handle",
+      "center": [
+        27,
+        1.57,
+        -10.8
+      ],
+      "size": [
+        0.95,
+        0.06,
+        0.06
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-4-base",
+      "zone": "section3",
+      "kind": "roll-cage-base",
+      "center": [
+        33,
+        0.12,
+        -10.8
+      ],
+      "size": [
+        1.1,
+        0.18,
+        0.9
+      ],
+      "color": "#46545d"
+    },
+    {
+      "id": "s3-roll-cage-4-post--0.48--0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        32.52,
+        0.85,
+        -11.180000000000001
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-4-post--0.48-0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        32.52,
+        0.85,
+        -10.42
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-4-post-0.48--0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        33.48,
+        0.85,
+        -11.180000000000001
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-4-post-0.48-0.38",
+      "zone": "section3",
+      "kind": "roll-cage-post",
+      "center": [
+        33.48,
+        0.85,
+        -10.42
+      ],
+      "size": [
+        0.045,
+        1.45,
+        0.045
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-roll-cage-4-handle",
+      "zone": "section3",
+      "kind": "roll-cage-handle",
+      "center": [
+        33,
+        1.57,
+        -10.8
+      ],
+      "size": [
+        0.95,
+        0.06,
+        0.06
+      ],
+      "color": "#a9b2b7",
+      "metalness": 0.6
+    },
+    {
+      "id": "s3-pack-bench-top",
+      "zone": "section3",
+      "kind": "packing-bench",
+      "center": [
+        13.2,
+        0.95,
+        -10.8
+      ],
+      "size": [
+        3.4,
+        0.16,
+        1.1
+      ],
+      "color": "#8a765b"
+    },
+    {
+      "id": "s3-pack-bench-leg-11.8--11.15",
+      "zone": "section3",
+      "kind": "workbench-leg",
+      "center": [
+        11.8,
+        0.46,
+        -11.15
+      ],
+      "size": [
+        0.09,
+        0.9,
+        0.09
+      ],
+      "color": "#45525b"
+    },
+    {
+      "id": "s3-pack-bench-leg-11.8--10.45",
+      "zone": "section3",
+      "kind": "workbench-leg",
+      "center": [
+        11.8,
+        0.46,
+        -10.45
+      ],
+      "size": [
+        0.09,
+        0.9,
+        0.09
+      ],
+      "color": "#45525b"
+    },
+    {
+      "id": "s3-pack-bench-leg-14.6--11.15",
+      "zone": "section3",
+      "kind": "workbench-leg",
+      "center": [
+        14.6,
+        0.46,
+        -11.15
+      ],
+      "size": [
+        0.09,
+        0.9,
+        0.09
+      ],
+      "color": "#45525b"
+    },
+    {
+      "id": "s3-pack-bench-leg-14.6--10.45",
+      "zone": "section3",
+      "kind": "workbench-leg",
+      "center": [
+        14.6,
+        0.46,
+        -10.45
+      ],
+      "size": [
+        0.09,
+        0.9,
+        0.09
+      ],
+      "color": "#45525b"
+    },
+    {
+      "id": "s3-pack-scale-base",
+      "zone": "section3",
+      "kind": "parcel-scale",
+      "center": [
+        12.2,
+        1.1,
+        -10.8
+      ],
+      "size": [
+        0.55,
+        0.12,
+        0.48
+      ],
+      "color": "#5b6870"
+    },
+    {
+      "id": "s3-pack-scale-display",
+      "zone": "section3",
+      "kind": "scale-display",
+      "center": [
+        12.2,
+        1.35,
+        -10.55
       ],
       "size": [
         0.28,
-        0.62,
-        0.28
-      ],
-      "color": "#e66a24",
-      "shape": "cone",
-      "roughness": 0.7
-    },
-    {
-      "id": "s3-cone-3-collar",
-      "zone": "section3",
-      "kind": "safety-cone-collar",
-      "center": [
-        36,
-        0.4,
-        -25.5
-      ],
-      "size": [
-        0.24,
-        0.08,
-        0.24
-      ],
-      "color": "#f1e8d1",
-      "collision": false,
-      "shape": "cylinder"
-    },
-    {
-      "id": "s3-cone-4-base",
-      "zone": "section3",
-      "kind": "safety-cone",
-      "center": [
-        18,
-        0.06,
-        -27.6
-      ],
-      "size": [
-        0.38,
-        0.12,
-        0.38
-      ],
-      "color": "#252b30",
-      "collision": false
-    },
-    {
-      "id": "s3-cone-4-body",
-      "zone": "section3",
-      "kind": "safety-cone",
-      "center": [
-        18,
-        0.38,
-        -27.6
-      ],
-      "size": [
         0.28,
-        0.62,
-        0.28
+        0.08
       ],
-      "color": "#e66a24",
-      "shape": "cone",
-      "roughness": 0.7
+      "color": "#24343b"
     },
     {
-      "id": "s3-cone-4-collar",
+      "id": "s3-tape-dispenser-base",
       "zone": "section3",
-      "kind": "safety-cone-collar",
+      "kind": "tape-dispenser",
+      "center": [
+        14.2,
+        1.18,
+        -10.8
+      ],
+      "size": [
+        0.42,
+        0.32,
+        0.25
+      ],
+      "color": "#c98b28"
+    },
+    {
+      "id": "s3-packing-carton-a",
+      "zone": "section3",
+      "kind": "packing-carton",
+      "center": [
+        12.7,
+        1.34,
+        -10.8
+      ],
+      "size": [
+        0.48,
+        0.6,
+        0.42
+      ],
+      "color": "#c6a06b"
+    },
+    {
+      "id": "s3-packing-carton-b",
+      "zone": "section3",
+      "kind": "packing-carton",
+      "center": [
+        13.55,
+        1.28,
+        -10.8
+      ],
+      "size": [
+        0.55,
+        0.48,
+        0.5
+      ],
+      "color": "#b98753"
+    },
+    {
+      "id": "s3-bollard-1",
+      "zone": "section3",
+      "kind": "safety-bollard",
+      "center": [
+        10,
+        0.48,
+        -22
+      ],
+      "size": [
+        0.18,
+        0.96,
+        0.18
+      ],
+      "color": "#d5a12a"
+    },
+    {
+      "id": "s3-bollard-band-1",
+      "zone": "section3",
+      "kind": "bollard-band",
+      "center": [
+        10,
+        0.55,
+        -22
+      ],
+      "size": [
+        0.19,
+        0.12,
+        0.19
+      ],
+      "color": "#20282c"
+    },
+    {
+      "id": "s3-bollard-2",
+      "zone": "section3",
+      "kind": "safety-bollard",
+      "center": [
+        10,
+        0.48,
+        -17
+      ],
+      "size": [
+        0.18,
+        0.96,
+        0.18
+      ],
+      "color": "#d5a12a"
+    },
+    {
+      "id": "s3-bollard-band-2",
+      "zone": "section3",
+      "kind": "bollard-band",
+      "center": [
+        10,
+        0.55,
+        -17
+      ],
+      "size": [
+        0.19,
+        0.12,
+        0.19
+      ],
+      "color": "#20282c"
+    },
+    {
+      "id": "s3-bollard-3",
+      "zone": "section3",
+      "kind": "safety-bollard",
+      "center": [
+        34,
+        0.48,
+        -22
+      ],
+      "size": [
+        0.18,
+        0.96,
+        0.18
+      ],
+      "color": "#d5a12a"
+    },
+    {
+      "id": "s3-bollard-band-3",
+      "zone": "section3",
+      "kind": "bollard-band",
+      "center": [
+        34,
+        0.55,
+        -22
+      ],
+      "size": [
+        0.19,
+        0.12,
+        0.19
+      ],
+      "color": "#20282c"
+    },
+    {
+      "id": "s3-bollard-4",
+      "zone": "section3",
+      "kind": "safety-bollard",
+      "center": [
+        34,
+        0.48,
+        -17
+      ],
+      "size": [
+        0.18,
+        0.96,
+        0.18
+      ],
+      "color": "#d5a12a"
+    },
+    {
+      "id": "s3-bollard-band-4",
+      "zone": "section3",
+      "kind": "bollard-band",
+      "center": [
+        34,
+        0.55,
+        -17
+      ],
+      "size": [
+        0.19,
+        0.12,
+        0.19
+      ],
+      "color": "#20282c"
+    },
+    {
+      "id": "s3-bollard-5",
+      "zone": "section3",
+      "kind": "safety-bollard",
+      "center": [
+        16,
+        0.48,
+        -30
+      ],
+      "size": [
+        0.18,
+        0.96,
+        0.18
+      ],
+      "color": "#d5a12a"
+    },
+    {
+      "id": "s3-bollard-band-5",
+      "zone": "section3",
+      "kind": "bollard-band",
+      "center": [
+        16,
+        0.55,
+        -30
+      ],
+      "size": [
+        0.19,
+        0.12,
+        0.19
+      ],
+      "color": "#20282c"
+    },
+    {
+      "id": "s3-bollard-6",
+      "zone": "section3",
+      "kind": "safety-bollard",
+      "center": [
+        29,
+        0.48,
+        -30
+      ],
+      "size": [
+        0.18,
+        0.96,
+        0.18
+      ],
+      "color": "#d5a12a"
+    },
+    {
+      "id": "s3-bollard-band-6",
+      "zone": "section3",
+      "kind": "bollard-band",
+      "center": [
+        29,
+        0.55,
+        -30
+      ],
+      "size": [
+        0.19,
+        0.12,
+        0.19
+      ],
+      "color": "#20282c"
+    },
+    {
+      "id": "s3-floor-lane-south-0",
+      "zone": "section3",
+      "kind": "floor-lane-marking",
+      "center": [
+        12,
+        0.012,
+        -30.1
+      ],
+      "size": [
+        0.95,
+        0.02,
+        0.09
+      ],
+      "color": "#e4b52e",
+      "collision": false
+    },
+    {
+      "id": "s3-floor-lane-north-0",
+      "zone": "section3",
+      "kind": "floor-lane-marking",
+      "center": [
+        12,
+        0.012,
+        -9.3
+      ],
+      "size": [
+        0.95,
+        0.02,
+        0.09
+      ],
+      "color": "#e4b52e",
+      "collision": false
+    },
+    {
+      "id": "s3-floor-lane-south-1",
+      "zone": "section3",
+      "kind": "floor-lane-marking",
+      "center": [
+        15,
+        0.012,
+        -30.1
+      ],
+      "size": [
+        0.95,
+        0.02,
+        0.09
+      ],
+      "color": "#e4b52e",
+      "collision": false
+    },
+    {
+      "id": "s3-floor-lane-north-1",
+      "zone": "section3",
+      "kind": "floor-lane-marking",
+      "center": [
+        15,
+        0.012,
+        -9.3
+      ],
+      "size": [
+        0.95,
+        0.02,
+        0.09
+      ],
+      "color": "#e4b52e",
+      "collision": false
+    },
+    {
+      "id": "s3-floor-lane-south-2",
+      "zone": "section3",
+      "kind": "floor-lane-marking",
       "center": [
         18,
-        0.4,
-        -27.6
+        0.012,
+        -30.1
       ],
       "size": [
-        0.24,
-        0.08,
-        0.24
+        0.95,
+        0.02,
+        0.09
       ],
-      "color": "#f1e8d1",
-      "collision": false,
-      "shape": "cylinder"
-    },
-    {
-      "id": "s3-aisle-mark-1",
-      "zone": "section3",
-      "kind": "floor-marking",
-      "center": [
-        17,
-        0.015,
-        -10.2
-      ],
-      "size": [
-        0.72,
-        0.025,
-        0.08
-      ],
-      "color": "#d5a82e",
+      "color": "#e4b52e",
       "collision": false
     },
     {
-      "id": "s3-aisle-mark-2",
+      "id": "s3-floor-lane-north-2",
       "zone": "section3",
-      "kind": "floor-marking",
+      "kind": "floor-lane-marking",
       "center": [
         18,
-        0.015,
-        -10.2
+        0.012,
+        -9.3
       ],
       "size": [
-        0.72,
-        0.025,
-        0.08
+        0.95,
+        0.02,
+        0.09
       ],
-      "color": "#d5a82e",
+      "color": "#e4b52e",
       "collision": false
     },
     {
-      "id": "s3-aisle-mark-3",
+      "id": "s3-floor-lane-south-3",
       "zone": "section3",
-      "kind": "floor-marking",
+      "kind": "floor-lane-marking",
       "center": [
-        19,
-        0.015,
-        -10.2
+        21,
+        0.012,
+        -30.1
       ],
       "size": [
-        0.72,
-        0.025,
-        0.08
+        0.95,
+        0.02,
+        0.09
       ],
-      "color": "#d5a82e",
+      "color": "#e4b52e",
       "collision": false
     },
     {
-      "id": "s3-aisle-mark-4",
+      "id": "s3-floor-lane-north-3",
       "zone": "section3",
-      "kind": "floor-marking",
+      "kind": "floor-lane-marking",
+      "center": [
+        21,
+        0.012,
+        -9.3
+      ],
+      "size": [
+        0.95,
+        0.02,
+        0.09
+      ],
+      "color": "#e4b52e",
+      "collision": false
+    },
+    {
+      "id": "s3-floor-lane-south-4",
+      "zone": "section3",
+      "kind": "floor-lane-marking",
       "center": [
         24,
-        0.015,
-        -28.6
+        0.012,
+        -30.1
       ],
       "size": [
-        0.72,
-        0.025,
-        0.08
+        0.95,
+        0.02,
+        0.09
       ],
-      "color": "#d5a82e",
+      "color": "#e4b52e",
       "collision": false
     },
     {
-      "id": "s3-aisle-mark-5",
+      "id": "s3-floor-lane-north-4",
       "zone": "section3",
-      "kind": "floor-marking",
+      "kind": "floor-lane-marking",
       "center": [
-        25,
-        0.015,
-        -28.6
+        24,
+        0.012,
+        -9.3
       ],
       "size": [
-        0.72,
-        0.025,
-        0.08
+        0.95,
+        0.02,
+        0.09
       ],
-      "color": "#d5a82e",
+      "color": "#e4b52e",
       "collision": false
     },
     {
-      "id": "s3-aisle-mark-6",
+      "id": "s3-floor-lane-south-5",
       "zone": "section3",
-      "kind": "floor-marking",
+      "kind": "floor-lane-marking",
       "center": [
-        26,
-        0.015,
-        -28.6
+        27,
+        0.012,
+        -30.1
       ],
       "size": [
-        0.72,
-        0.025,
+        0.95,
+        0.02,
+        0.09
+      ],
+      "color": "#e4b52e",
+      "collision": false
+    },
+    {
+      "id": "s3-floor-lane-north-5",
+      "zone": "section3",
+      "kind": "floor-lane-marking",
+      "center": [
+        27,
+        0.012,
+        -9.3
+      ],
+      "size": [
+        0.95,
+        0.02,
+        0.09
+      ],
+      "color": "#e4b52e",
+      "collision": false
+    },
+    {
+      "id": "s3-floor-lane-south-6",
+      "zone": "section3",
+      "kind": "floor-lane-marking",
+      "center": [
+        30,
+        0.012,
+        -30.1
+      ],
+      "size": [
+        0.95,
+        0.02,
+        0.09
+      ],
+      "color": "#e4b52e",
+      "collision": false
+    },
+    {
+      "id": "s3-floor-lane-north-6",
+      "zone": "section3",
+      "kind": "floor-lane-marking",
+      "center": [
+        30,
+        0.012,
+        -9.3
+      ],
+      "size": [
+        0.95,
+        0.02,
+        0.09
+      ],
+      "color": "#e4b52e",
+      "collision": false
+    },
+    {
+      "id": "s3-zone-sign-1-post",
+      "zone": "section3",
+      "kind": "zone-sign-post",
+      "center": [
+        9.8,
+        1.55,
+        -12
+      ],
+      "size": [
+        0.08,
+        3.1,
         0.08
       ],
-      "color": "#d5a82e",
+      "color": "#56616a"
+    },
+    {
+      "id": "s3-zone-sign-1-board",
+      "zone": "section3",
+      "kind": "zone-sign-board",
+      "center": [
+        9.8,
+        2.65,
+        -12
+      ],
+      "size": [
+        0.85,
+        0.5,
+        0.08
+      ],
+      "color": "#2c4c5a"
+    },
+    {
+      "id": "s3-zone-sign-1-face",
+      "zone": "section3",
+      "kind": "zone-sign-face",
+      "center": [
+        9.8,
+        2.65,
+        -12.05
+      ],
+      "size": [
+        0.68,
+        0.31,
+        0.02
+      ],
+      "color": "#42bfc1",
       "collision": false
+    },
+    {
+      "id": "s3-zone-sign-2-post",
+      "zone": "section3",
+      "kind": "zone-sign-post",
+      "center": [
+        35.2,
+        1.55,
+        -12
+      ],
+      "size": [
+        0.08,
+        3.1,
+        0.08
+      ],
+      "color": "#56616a"
+    },
+    {
+      "id": "s3-zone-sign-2-board",
+      "zone": "section3",
+      "kind": "zone-sign-board",
+      "center": [
+        35.2,
+        2.65,
+        -12
+      ],
+      "size": [
+        0.85,
+        0.5,
+        0.08
+      ],
+      "color": "#2c4c5a"
+    },
+    {
+      "id": "s3-zone-sign-2-face",
+      "zone": "section3",
+      "kind": "zone-sign-face",
+      "center": [
+        35.2,
+        2.65,
+        -12.05
+      ],
+      "size": [
+        0.68,
+        0.31,
+        0.02
+      ],
+      "color": "#e0a32e",
+      "collision": false
+    },
+    {
+      "id": "s3-zone-sign-3-post",
+      "zone": "section3",
+      "kind": "zone-sign-post",
+      "center": [
+        9.8,
+        1.55,
+        -27
+      ],
+      "size": [
+        0.08,
+        3.1,
+        0.08
+      ],
+      "color": "#56616a"
+    },
+    {
+      "id": "s3-zone-sign-3-board",
+      "zone": "section3",
+      "kind": "zone-sign-board",
+      "center": [
+        9.8,
+        2.65,
+        -27
+      ],
+      "size": [
+        0.85,
+        0.5,
+        0.08
+      ],
+      "color": "#2c4c5a"
+    },
+    {
+      "id": "s3-zone-sign-3-face",
+      "zone": "section3",
+      "kind": "zone-sign-face",
+      "center": [
+        9.8,
+        2.65,
+        -27.05
+      ],
+      "size": [
+        0.68,
+        0.31,
+        0.02
+      ],
+      "color": "#d7d7cb",
+      "collision": false
+    },
+    {
+      "id": "s3-zone-sign-4-post",
+      "zone": "section3",
+      "kind": "zone-sign-post",
+      "center": [
+        35.2,
+        1.55,
+        -27
+      ],
+      "size": [
+        0.08,
+        3.1,
+        0.08
+      ],
+      "color": "#56616a"
+    },
+    {
+      "id": "s3-zone-sign-4-board",
+      "zone": "section3",
+      "kind": "zone-sign-board",
+      "center": [
+        35.2,
+        2.65,
+        -27
+      ],
+      "size": [
+        0.85,
+        0.5,
+        0.08
+      ],
+      "color": "#2c4c5a"
+    },
+    {
+      "id": "s3-zone-sign-4-face",
+      "zone": "section3",
+      "kind": "zone-sign-face",
+      "center": [
+        35.2,
+        2.65,
+        -27.05
+      ],
+      "size": [
+        0.68,
+        0.31,
+        0.02
+      ],
+      "color": "#cf5a43",
+      "collision": false
+    },
+    {
+      "id": "s3-maintenance-cabinet",
+      "zone": "section3",
+      "kind": "maintenance-cabinet",
+      "center": [
+        35.2,
+        0.9,
+        -15.3
+      ],
+      "size": [
+        0.7,
+        1.8,
+        0.6
+      ],
+      "color": "#59666e"
+    },
+    {
+      "id": "s3-extinguisher",
+      "zone": "section3",
+      "kind": "fire-extinguisher",
+      "center": [
+        35.15,
+        0.72,
+        -14.6
+      ],
+      "size": [
+        0.22,
+        1.1,
+        0.22
+      ],
+      "color": "#bf3e32"
+    },
+    {
+      "id": "s3-extinguisher-handle",
+      "zone": "section3",
+      "kind": "extinguisher-handle",
+      "center": [
+        35.15,
+        1.3,
+        -14.6
+      ],
+      "size": [
+        0.3,
+        0.08,
+        0.08
+      ],
+      "color": "#d8d5c7"
+    },
+    {
+      "id": "s3-electrical-box",
+      "zone": "section3",
+      "kind": "conveyor-control-cabinet",
+      "center": [
+        34.9,
+        1.15,
+        -20.2
+      ],
+      "size": [
+        0.6,
+        1.3,
+        0.55
+      ],
+      "color": "#4b5d65"
+    },
+    {
+      "id": "s3-cable-tray",
+      "zone": "section3",
+      "kind": "overhead-cable-tray",
+      "center": [
+        22,
+        3.25,
+        -20.8
+      ],
+      "size": [
+        15,
+        0.12,
+        0.18
+      ],
+      "color": "#606b72",
+      "collision": false,
+      "metalness": 0.4
+    },
+    {
+      "id": "s3-cable-drop-15",
+      "zone": "section3",
+      "kind": "cable-drop",
+      "center": [
+        15,
+        2.5,
+        -20.8
+      ],
+      "size": [
+        0.06,
+        1.35,
+        0.06
+      ],
+      "color": "#3a444b",
+      "collision": false
+    },
+    {
+      "id": "s3-cable-drop-22",
+      "zone": "section3",
+      "kind": "cable-drop",
+      "center": [
+        22,
+        2.5,
+        -20.8
+      ],
+      "size": [
+        0.06,
+        1.35,
+        0.06
+      ],
+      "color": "#3a444b",
+      "collision": false
+    },
+    {
+      "id": "s3-cable-drop-29",
+      "zone": "section3",
+      "kind": "cable-drop",
+      "center": [
+        29,
+        2.5,
+        -20.8
+      ],
+      "size": [
+        0.06,
+        1.35,
+        0.06
+      ],
+      "color": "#3a444b",
+      "collision": false
+    },
+    {
+      "id": "s3-pallet-jack-forks",
+      "zone": "section3",
+      "kind": "pallet-jack-forks",
+      "center": [
+        33,
+        0.18,
+        -25.5
+      ],
+      "size": [
+        1.25,
+        0.1,
+        0.32
+      ],
+      "color": "#c74d32"
+    },
+    {
+      "id": "s3-pallet-jack-body",
+      "zone": "section3",
+      "kind": "pallet-jack-body",
+      "center": [
+        32.35,
+        0.25,
+        -25.5
+      ],
+      "size": [
+        0.42,
+        0.18,
+        0.42
+      ],
+      "color": "#d65a34"
+    },
+    {
+      "id": "s3-pallet-jack-handle",
+      "zone": "section3",
+      "kind": "pallet-jack-handle",
+      "center": [
+        32.1,
+        0.62,
+        -25.25
+      ],
+      "size": [
+        0.08,
+        0.85,
+        0.08
+      ],
+      "color": "#323b40"
+    },
+    {
+      "id": "s3-pallet-jack-grip",
+      "zone": "section3",
+      "kind": "pallet-jack-grip",
+      "center": [
+        32.1,
+        1.05,
+        -25.25
+      ],
+      "size": [
+        0.3,
+        0.08,
+        0.12
+      ],
+      "color": "#22292d"
     }
   ],
   "lighting": {
