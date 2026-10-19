@@ -271,6 +271,8 @@ export class AtmosphereManager {
       presetKey = 'noon';
     } else if (mapId === 'neighborhood') {
       presetKey = 'golden';
+    } else if (mapId === 'warehouse') {
+      presetKey = 'overcast';
     } else {
       presetKey = 'noon';
     }
@@ -284,7 +286,8 @@ export class AtmosphereManager {
       mapId === 'culdesac' ? 'suburban' :
       mapId === 'dustline' ? 'arid' :
       mapId === 'overpass' ? 'urban' :
-      mapId === 'neighborhood' ? 'suburban' : 'arid';
+      mapId === 'neighborhood' ? 'suburban' :
+      mapId === 'warehouse' ? 'industrial' : 'arid';
 
     // 1. Lighting Rig (Single shadow-casting directional light + ambient hemisphere)
     this.setupLighting(cfg);
@@ -302,24 +305,23 @@ export class AtmosphereManager {
       this.createStarField(group);
     }
 
-    // 5. Distant Panoramic Horizon (Radius 220m - 260m)
-    this.createDistantHorizon(group, resolvedTheme, cfg);
+    // 5. Outdoor scenery is omitted from the warehouse blockout. The roof is intentionally
+    // not part of stage 1, and the view beyond the perimeter remains a neutral sky.
+    if (mapId !== 'warehouse') {
+      this.createDistantHorizon(group, resolvedTheme, cfg);
+      this.createPerimeterFoliage(group, resolvedTheme);
+      this.createBirdFlock(group, resolvedTheme, cfg);
+    }
 
-    // 6. Perimeter Framing Vegetation
-    this.createPerimeterFoliage(group, resolvedTheme);
-
-    // 7. Instanced Birds (Flocking, Perching, and Scattering on Gunshots)
-    this.createBirdFlock(group, resolvedTheme, cfg);
-
-    // 8. Grass: keep the neighborhood's roads and building interiors clear; populate only its park lawn.
+    // 6. Keep warehouse interiors free of environmental grass.
     if (mapId === 'neighborhood') this.createNeighborhoodParkGrass(group);
-    else this.createWindGrass(group, resolvedTheme);
+    else if (mapId !== 'warehouse') this.createWindGrass(group, resolvedTheme);
 
     // 9. Scene Fog
     this.scene.fog = new THREE.Fog(cfg.fogColor, cfg.fogNear, cfg.fogFar);
     this.scene.background = new THREE.Color(cfg.fogColor);
 
-    this.targetAudioVolume = cfg.ambientBirdVolume;
+    this.targetAudioVolume = mapId === 'warehouse' ? 0 : cfg.ambientBirdVolume;
     if (this.audioElement && !this.isMuted) {
       this.audioElement.volume = this.targetAudioVolume;
     }
