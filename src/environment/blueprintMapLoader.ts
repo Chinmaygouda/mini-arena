@@ -652,24 +652,25 @@ export class BlueprintMapLoader {
       // Numbered section markers make the planned four-part build sequence visible.
       // CanvasTexture appears X-mirrored after the ground plane is rotated into XZ,
       // so label positions are assigned on the opposite world-X side.
+      // Keep each badge in the clear end aisle so storage racks never cover its numeral.
       const sectionMarks = [
-        { label: '1', x: 22, z: 22 },
-        { label: '2', x: -22, z: 22 },
-        { label: '3', x: 22, z: -22 },
-        { label: '4', x: -22, z: -22 },
+        { label: '1', x: 22, z: 27.2 },
+        { label: '2', x: -22, z: 27.2 },
+        { label: '3', x: 22, z: -27.2 },
+        { label: '4', x: -22, z: -27.2 },
       ];
       for (const mark of sectionMarks) {
         const px = toPx(mark.x);
         const pz = toPx(mark.z);
         ctx.beginPath();
-        ctx.arc(px, pz, 50, 0, Math.PI * 2);
+        ctx.arc(px, pz, 22, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(26, 71, 94, 0.38)';
         ctx.fill();
         ctx.strokeStyle = 'rgba(64, 188, 239, 0.78)';
         ctx.lineWidth = 3.5;
         ctx.stroke();
         ctx.fillStyle = 'rgba(226, 245, 255, 0.78)';
-        ctx.font = '800 58px Inter, sans-serif';
+        ctx.font = '800 42px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         // The floor UVs invert the glyph vertically in the top-down view; rotate
