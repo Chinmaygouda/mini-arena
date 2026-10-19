@@ -5,7 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright';
 
 const baseUrl = 'http://127.0.0.1:5173';
-const outputDir = 'artifacts/warehouse-section-2-redesign';
+const outputDir = 'artifacts/warehouse-section-3-verification';
 await mkdir(outputDir, { recursive: true });
 
 let server;
@@ -316,6 +316,34 @@ try {
   await page.waitForTimeout(350);
   await page.screenshot({ path: `${outputDir}/04-warehouse-section-2-forklift-detail.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
+  // Capture Section 3's offset storage maze from overhead and an oblique angle.
+  await page.evaluate(() => {
+    const app = window.__fpsApp;
+    app.controls.update = () => {
+      app.camera.position.set(22, 48, -20);
+      app.camera.up.set(0, 0, 1);
+      app.camera.lookAt(22, 0, -20);
+      app.camera.fov = 43;
+      app.camera.updateProjectionMatrix();
+    };
+  });
+  await page.waitForTimeout(350);
+  await page.screenshot({ path: `${outputDir}/06-warehouse-section-3-offset-maze-topdown.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
+
+  await page.evaluate(() => {
+    const app = window.__fpsApp;
+    app.controls.update = () => {
+      app.camera.position.set(25.5, 7.5, -28.5);
+      app.camera.up.set(0, 1, 0);
+      app.camera.lookAt(21.5, 0.8, -20.5);
+      app.camera.fov = 48;
+      app.camera.updateProjectionMatrix();
+    };
+    if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = false;
+  });
+  await page.waitForTimeout(350);
+  await page.screenshot({ path: `${outputDir}/07-warehouse-section-3-offset-maze-oblique.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
+
   // Return to player controls and capture the redesigned Section 2 at eye level.
   await page.evaluate(() => {
     const app = window.__fpsApp;
@@ -326,13 +354,13 @@ try {
     controls.forceReleaseKeys();
     if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = true;
     controls.pitch = 0;
-    controls.setPosition(-27.5, 1.7, 14.5, -Math.PI / 2);
+    controls.setPosition(24.0, 1.7, -27.0, Math.PI);
     controls.update(1 / 60);
     const hud = document.querySelector('#fps-hud');
     if (hud instanceof HTMLElement) hud.style.display = '';
   });
   await page.waitForTimeout(250);
-  await page.screenshot({ path: `${outputDir}/05-warehouse-section-2-first-person.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
+  await page.screenshot({ path: `${outputDir}/08-warehouse-section-3-first-person.png`, fullPage: false, timeout: 60000, animations: 'disabled' });
 
   assert.deepEqual(pageErrors, [], `Browser runtime errors: ${pageErrors.join('; ')}`);
   console.log(JSON.stringify({
@@ -345,6 +373,7 @@ try {
     section2RouteCount: section2RouteResults.length,
     section2RouteResults,
     section2JumpResults,
+    section3PropCount: expectedLayout.boxes.filter((box) => box.zone === 'section3').length,
     browserErrors: pageErrors.length,
     screenshots: [
       `${outputDir}/01-warehouse-layout-topdown.png`,
@@ -352,6 +381,9 @@ try {
       `${outputDir}/03-warehouse-section-2-racks.png`,
       `${outputDir}/04-warehouse-section-2-forklift-detail.png`,
       `${outputDir}/05-warehouse-section-2-first-person.png`,
+      `${outputDir}/06-warehouse-section-3-offset-maze-topdown.png`,
+      `${outputDir}/07-warehouse-section-3-offset-maze-oblique.png`,
+      `${outputDir}/08-warehouse-section-3-first-person.png`,
     ],
   }, null, 2));
 } catch (error) {
