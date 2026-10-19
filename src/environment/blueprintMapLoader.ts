@@ -652,10 +652,12 @@ export class BlueprintMapLoader {
       ctx.font = '700 58px Inter, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('1', toPx(-22), toPx(22));
-      ctx.fillText('2', toPx(22), toPx(22));
-      ctx.fillText('3', toPx(-22), toPx(-22));
-      ctx.fillText('4', toPx(22), toPx(-22));
+      // CanvasTexture appears X-mirrored after the ground plane is rotated into XZ.
+      // Invert label X only so the visible floor labels read 1/2 across the north and 3/4 across the south.
+      ctx.fillText('1', toPx(22), toPx(22));
+      ctx.fillText('2', toPx(-22), toPx(22));
+      ctx.fillText('3', toPx(22), toPx(-22));
+      ctx.fillText('4', toPx(-22), toPx(-22));
     } else {
       // Legacy tiled terrain used by the existing arenas.
       ctx.fillStyle = isArid ? 'rgba(168, 142, 105, 0.45)' : 'rgba(55, 48, 38, 0.45)';
