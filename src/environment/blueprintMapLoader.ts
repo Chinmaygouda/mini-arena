@@ -20,12 +20,17 @@ export interface BlueprintBox {
   color: string;
   /** Render-only parts such as pallet slats and shelf decks can opt out of collision. */
   collision?: boolean;
+  /** Optional per-part physically based material tuning, e.g. coated warehouse steel. */
   roughness?: number;
   metalness?: number;
-  shape?: 'box' | 'cylinder' | 'sphere';
+  /** Primitive shape for low-poly wheels, drums, traffic cones, and spheres. */
+  shape?: 'box' | 'cylinder' | 'cone' | 'sphere';
   emissive?: string;
   emissiveIntensity?: number;
+  /** Euler rotation in radians; collision uses an axis-aligned bounding box. */
   rotation?: [number, number, number];
+  /** False creates a collider-only volume without a visible mesh. */
+  visible?: boolean;
 }
 
 export interface BuildingDoorway {
@@ -208,7 +213,7 @@ export const MAP_INFO: Record<MapId, { name: string; file?: string }> = {
   dustline: { name: 'Dustline Village', file: '/maps/Dustline Village.json' },
   overpass: { name: 'Overpass Arena', file: '/maps/Overpass.json' },
   neighborhood: { name: 'Neighborhood District', file: '/maps/neighborhood.json' },
-  warehouse: { name: 'Warehouse — Section 1 & 2', file: '/maps/warehouse_layout.json' },
+  warehouse: { name: 'Warehouse — Parcel Sortation & Dispatch', file: '/maps/warehouse_layout.json' },
 };
 
 export class BlueprintMapLoader {
@@ -325,8 +330,10 @@ export class BlueprintMapLoader {
       emissive?: string,
       emissiveIntensity?: number
     ) => {
-      const key = `${hex}_${roughness}_${metalness}_${emissive || ''}_${emissiveIntensity ?? 0}`;
-      let m = materialCache.get(key);
+      // Material color alone is not a sufficient cache key: two parts may share
+      // a color while requiring different surface finishes.
+      const cacheKey = `${hex.toLowerCase()}|${roughness.toFixed(3)}|${metalness.toFixed(3)}|${emissive || ''}|${emissiveIntensity ?? 0}`;
+      let m = materialCache.get(cacheKey);
       if (!m) {
         m = new THREE.MeshStandardMaterial({
           color: hex,
@@ -335,7 +342,7 @@ export class BlueprintMapLoader {
           emissive: emissive ? new THREE.Color(emissive) : 0x000000,
           emissiveIntensity: emissive ? (emissiveIntensity ?? 1.5) : 0,
         });
-        materialCache.set(key, m);
+        materialCache.set(cacheKey, m);
       }
       return m;
     };
@@ -371,45 +378,47 @@ export class BlueprintMapLoader {
     // 3. Expand Simple Boxes & Cover Props (if defined in JSON)
     if (data.boxes) {
       data.boxes.forEach((box) => {
-        const hex = box.color || '#718096';
-        const isMetal = box.kind === 'container' || box.kind === 'metal' || box.kind === 'cont' || box.kind === 'vehicle';
-        const roughness = box.roughness !== undefined ? box.roughness : (isMetal ? 0.58 : 0.8);
-        const metalness = box.metalness !== undefined ? box.metalness : (isMetal ? 0.38 : 0.15);
-        const mat = getMaterial(hex, roughness, metalness, box.emissive, box.emissiveIntensity);
-
         const [w, h, d] = box.size;
         const [cx, cy, cz] = box.center;
-
-        let geom: THREE.BufferGeometry;
-        if (box.shape === 'cylinder') {
-          const radiusTop = w / 2;
-          const radiusBottom = (d !== undefined ? d : w) / 2;
-          geom = new THREE.CylinderGeometry(radiusTop, radiusBottom, h, 14);
-        } else if (box.shape === 'sphere') {
-          geom = new THREE.SphereGeometry(w / 2, 10, 8);
-        } else {
-          geom = new THREE.BoxGeometry(w, h, d);
-        }
-
-        const mesh = new THREE.Mesh(geom, mat);
-        mesh.position.set(cx, cy, cz);
-        if (box.rotation) {
-          mesh.rotation.set(box.rotation[0], box.rotation[1], box.rotation[2]);
-        }
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-
-        // If non-colliding (shelf decks, visual accents, wires, markers), DO NOT block bullets!
-        if (box.collision === false) {
-          mesh.userData.ignoreRaycast = true;
-          mesh.userData.collision = false;
-          mesh.layers.set(FX_NON_RAYCAST_LAYER);
-        }
-
-        mapGroup.add(mesh);
-
         const isRoof = box.kind === 'roof';
         const isWalkable = box.kind === 'stairs' || box.kind === 'stair' || box.kind === 'platform';
+
+        // Invisible collider-only volumes remain in the collision list but do not render.
+        // Shape-aware parts share the existing material cache and map lifecycle.
+        if (box.visible !== false) {
+          const hex = box.color || '#718096';
+          const isMetal = box.kind === 'container' || box.kind === 'metal' ||
+            box.kind === 'cont' || box.kind === 'vehicle-part';
+          const defaultRoughness = isMetal ? (mapId === 'warehouse' ? 0.58 : 0.35) : 0.8;
+          const defaultMetalness = isMetal ? (mapId === 'warehouse' ? 0.38 : 0.85) : 0.15;
+          const mat = getMaterial(hex, box.roughness ?? defaultRoughness, box.metalness ?? defaultMetalness, box.emissive, box.emissiveIntensity);
+          let geom: THREE.BufferGeometry;
+          if (box.shape === 'cylinder') {
+            const radius = Math.max(0.01, Math.min(w, d) / 2);
+            geom = new THREE.CylinderGeometry(radius, radius, h, 12);
+          } else if (box.shape === 'cone') {
+            const radius = Math.max(0.01, Math.min(w, d) / 2);
+            geom = new THREE.ConeGeometry(radius, h, 9);
+          } else if (box.shape === 'sphere') {
+            geom = new THREE.SphereGeometry(w / 2, 10, 8);
+          } else {
+            geom = new THREE.BoxGeometry(w, h, d);
+          }
+          const mesh = new THREE.Mesh(geom, mat);
+          mesh.position.set(cx, cy, cz);
+          if (box.rotation) mesh.rotation.set(box.rotation[0], box.rotation[1], box.rotation[2]);
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+
+          // If non-colliding (shelf decks, visual accents, wires, markers), DO NOT block bullets!
+          if (box.collision === false) {
+            mesh.userData.ignoreRaycast = true;
+            mesh.userData.collision = false;
+            mesh.layers.set(FX_NON_RAYCAST_LAYER);
+          }
+
+          mapGroup.add(mesh);
+        }
 
         if (!isRoof && box.collision !== false) {
           colliders.push({
