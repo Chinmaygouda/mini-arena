@@ -189,9 +189,9 @@ test('Warehouse is registered in the loader, map selector and industrial atmosph
   assert.match(atmosphere, /mapId === 'warehouse'\s*\?\s*'industrial'/);
   assert.match(atmosphere, /if \(mapId !== 'warehouse'\)/, 'warehouse suppresses outdoor sky and clouds');
   assert.match(atmosphere, /this.scene.background = new THREE.Color\('#1a222a'\)/, 'warehouse uses a neutral indoor backdrop');
-  assert.match(loader, /label: '1', x: 22, z: 22/, 'zone 1 marker is positioned north-west in the rendered top-down view');
-  assert.match(loader, /label: '2', x: -22, z: 22/, 'zone 2 marker is positioned north-east in the rendered top-down view');
-  assert.match(loader, /ctx\.arc\(px, pz, 50, 0, Math\.PI \* 2\)/, 'each section marker has a visible circular badge');
+  assert.match(loader, /label: '1', x: 22, z: 27.2/, 'zone 1 marker is positioned north-west in the rendered top-down view');
+  assert.match(loader, /label: '2', x: -22, z: 27.2/, 'zone 2 marker is positioned north-east in the rendered top-down view');
+  assert.match(loader, /ctx\.arc\(px, pz, 22, 0, Math\.PI \* 2\)/, 'each section marker has a visible circular badge');
   assert.match(loader, /ctx\.rotate\(Math\.PI\)/, 'quadrant numerals are oriented upright in the top-down render');
 });
 
