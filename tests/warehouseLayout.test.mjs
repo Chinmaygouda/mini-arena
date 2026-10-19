@@ -233,6 +233,25 @@ test('Section 2 is a unique cross-rack loading bay with a static forklift', () =
   assert.ok(section2.some((box) => box.id === 's2-workbench-top'));
 });
 
+test('Forklift and parking bay sit clear of wall returns and rack geometry', () => {
+  const forklift = map.boxes.find((box) => box.id === 's2-forklift-collider');
+  assert.ok(forklift);
+  assert.deepEqual(map.meta.section2Vehicle.bodyCenter, [-40, 0.7, 17.5]);
+  const overlapsXZ = (a, b) =>
+    Math.abs(a.center[0] - b.center[0]) < (a.size[0] + b.size[0]) / 2 &&
+    Math.abs(a.center[2] - b.center[2]) < (a.size[2] + b.size[2]) / 2;
+  const obstructions = map.boxes.filter((box) =>
+    box.id !== forklift.id &&
+    !box.id.startsWith('s2-forklift-') &&
+    (box.kind === 'wall' || (box.zone === 'section2' && !['vehicle-part', 'marking', 'pallet'].includes(box.kind))) &&
+    overlapsXZ(forklift, box)
+  );
+  assert.deepEqual(obstructions.map((box) => box.id), [],
+    'the forklift footprint must not overlap wall returns, rack structures, barrels or crates');
+  assert.ok(forklift.center[0] + forklift.size[0] / 2 < -37.5,
+    'forklift stays inside the outer staging lane, away from rack ends');
+});
+
 test('Renderer supports cylinders, cones, rotations and hidden collider volumes', () => {
   const loader = read('src/environment/blueprintMapLoader.ts');
   assert.ok(loader.includes("box.shape === 'cylinder'"));

@@ -305,10 +305,10 @@ try {
     const camera = app.camera;
     const controls = app.controls;
     controls.update = () => {
-      camera.position.set(-8.6, 7.2, 22.0);
+      camera.position.set(-39.0, 6.2, 22.3);
       camera.up.set(0, 1, 0);
-      camera.lookAt(-10.8, 0.95, 17.5);
-      camera.fov = 52;
+      camera.lookAt(-40.0, 0.95, 17.5);
+      camera.fov = 48;
       camera.updateProjectionMatrix();
     };
     if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = false;
@@ -326,7 +326,7 @@ try {
     controls.forceReleaseKeys();
     if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = true;
     controls.pitch = 0;
-    controls.setPosition(-8.8, 1.7, 20.5, 2.13);
+    controls.setPosition(-34.0, 1.7, 17.5, Math.PI / 2);
     controls.update(1 / 60);
     const hud = document.querySelector('#fps-hud');
     if (hud instanceof HTMLElement) hud.style.display = '';
