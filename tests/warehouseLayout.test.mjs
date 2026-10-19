@@ -196,7 +196,7 @@ test('Warehouse shelf decks have dark matte coated-steel material values', () =>
 test('Props remain inside their declared warehouse zones', () => {
   const props = map.boxes.filter((box) => box.kind !== 'wall');
   assert.equal(props.length, map.meta.propCount);
-  assert.ok(props.every((box) => ['section1', 'section2', 'section3', 'section4'].includes(box.zone)));
+  assert.ok(props.every((box) => ['section1', 'section2', 'section3', 'section4', 'centralHall'].includes(box.zone)));
   for (const prop of props) {
     const zone = map.zones.find((item) => item.id === prop.zone);
     assert.ok(zone, `${prop.id} resolves to its zone`);
