@@ -20,6 +20,9 @@ export interface BlueprintBox {
   color: string;
   /** Render-only parts such as pallet slats and shelf decks can opt out of collision. */
   collision?: boolean;
+  /** Optional per-part physically based material tuning, e.g. coated warehouse steel. */
+  roughness?: number;
+  metalness?: number;
 }
 
 export interface BuildingDoorway {
@@ -313,10 +316,13 @@ export class BlueprintMapLoader {
     const materialCache = new Map<string, THREE.MeshStandardMaterial>();
 
     const getMaterial = (hex: string, roughness = 0.85, metalness = 0.1) => {
-      let m = materialCache.get(hex);
+      // Material color alone is not a sufficient cache key: two parts may share
+      // a color while requiring different surface finishes.
+      const cacheKey = `${hex.toLowerCase()}|${roughness.toFixed(3)}|${metalness.toFixed(3)}`;
+      let m = materialCache.get(cacheKey);
       if (!m) {
         m = new THREE.MeshStandardMaterial({ color: hex, roughness, metalness });
-        materialCache.set(hex, m);
+        materialCache.set(cacheKey, m);
       }
       return m;
     };
@@ -354,7 +360,15 @@ export class BlueprintMapLoader {
       data.boxes.forEach((box) => {
         const hex = box.color || '#718096';
         const isMetal = box.kind === 'container' || box.kind === 'metal' || box.kind === 'cont';
-        const mat = getMaterial(hex, isMetal ? 0.35 : 0.8, isMetal ? 0.85 : 0.15);
+        // Keep legacy arena metal values unchanged; warehouse metal uses a coated,
+        // matte industrial finish unless a part explicitly overrides it.
+        const defaultRoughness = isMetal ? (mapId === 'warehouse' ? 0.58 : 0.35) : 0.8;
+        const defaultMetalness = isMetal ? (mapId === 'warehouse' ? 0.38 : 0.85) : 0.15;
+        const mat = getMaterial(
+          hex,
+          box.roughness ?? defaultRoughness,
+          box.metalness ?? defaultMetalness
+        );
 
         const [w, h, d] = box.size;
         const [cx, cy, cz] = box.center;
