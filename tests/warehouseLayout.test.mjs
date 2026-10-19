@@ -182,13 +182,14 @@ test('Warehouse shelf decks have dark matte coated-steel material values', () =>
   assert.ok(decks.every((deck) => deck.roughness === 0.65));
   assert.ok(decks.every((deck) => deck.metalness === 0.25));
   const loader = read('src/environment/blueprintMapLoader.ts');
-  assert.match(loader, /roughness\?: number/);
-  assert.match(loader, /metalness\?: number/);
-  assert.match(loader, /box\.roughness \\?\\? defaultRoughness/);
-  assert.match(loader, /box\.metalness \\?\\? defaultMetalness/);
-  assert.match(loader, /const cacheKey = `\\$\\{hex\\.toLowerCase\\(\\)\\}\\|\\$\\{roughness\\.toFixed\\(3\\)\\}\\|\\$\\{metalness\\.toFixed\\(3\\)\\}`/);
+  assert.ok(loader.includes('roughness?: number'));
+  assert.ok(loader.includes('metalness?: number'));
+  assert.ok(loader.includes('box.roughness ?? defaultRoughness'));
+  assert.ok(loader.includes('box.metalness ?? defaultMetalness'));
+  assert.ok(loader.includes('const cacheKey = `${hex.toLowerCase()}|${roughness.toFixed(3)}|${metalness.toFixed(3)}`'));
+  assert.ok(loader.includes("mapId === 'warehouse' ? 0.58 : 0.35"));
+  assert.ok(loader.includes("mapId === 'warehouse' ? 0.38 : 0.85"));
 });
-
 test('Only Section 1 has props; Sections 2, 3, 4 and central hall remain empty', () => {
   const props = map.boxes.filter((box) => box.kind !== 'wall');
   assert.ok(props.length > 0);
