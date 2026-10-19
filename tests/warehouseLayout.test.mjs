@@ -358,7 +358,7 @@ test('Section 4 is a distinct IT & logistics network hub with valid geometry and
 test('Central hall includes four solid tactical cover props while preserving a clear center lane', () => {
   const cover = map.boxes.filter((box) => box.id.startsWith('central-cover-'));
   assert.equal(cover.length, 4, 'four tactical cover positions are present');
-  assert.ok(cover.every((box) => box.zone === 'central-hall' && box.kind === 'crate'));
+  assert.ok(cover.every((box) => box.zone === 'centralHall' && box.kind === 'crate'));
   assert.ok(cover.every((box) => box.collision === true && box.category === 'SOLID'));
   assert.ok(cover.every((box) => box.size[1] <= 1.3), 'cover remains low enough to crouch behind');
   assert.ok(cover.every((box) =>
