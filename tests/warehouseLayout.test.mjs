@@ -169,7 +169,7 @@ test('Section 1 contains four storage rack runs, pallet loads and crates', () =>
   for (const [rack, expectedBays] of Object.entries(expectedUpperBays)) {
     const actualBays = section1
       .filter((box) => box.id.startsWith(`s1-rack-${rack}-crate-upper-`))
-      .map((box) => Number(box.id.match(/crate-upper-(\\d+)/)?.[1]))
+      .map((box) => Number(box.id.match(/crate-upper-(\d+)/)?.[1]))
       .sort((a, b) => a - b);
     assert.deepEqual(actualBays, expectedBays, `Rack ${rack} uses its staggered upper crate pattern`);
   }
