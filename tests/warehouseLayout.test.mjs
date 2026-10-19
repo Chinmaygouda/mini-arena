@@ -127,8 +127,10 @@ test('Each quadrant has a real enclosing chamber, stepped entrances and auxiliar
         `Section ${section} includes ${expected}`);
     }
   }
-  assert.equal(map.meta.wallSegmentCount, map.boxes.length);
-  assert.ok(map.boxes.length >= 190, 'revised blueprint contains the detailed Stage 1 walls');
+  const wallCount = map.boxes.filter((box) => box.kind === 'wall').length;
+  assert.equal(map.meta.wallSegmentCount, wallCount, 'wall count excludes Section 1 props');
+  assert.ok(wallCount >= 190, 'revised blueprint preserves the detailed Stage 1 wall shell');
+  assert.ok(map.boxes.length > wallCount, 'Section 1 props are additional to the preserved wall shell');
 });
 
 test('Quadrant doorways and returns connect rooms to the corridor network', () => {
