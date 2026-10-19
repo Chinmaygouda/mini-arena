@@ -1,7 +1,7 @@
 {
   "meta": {
-    "name": "Warehouse — Section 3 Parcel Sortation & Dispatch Cell",
-    "mode": "Distinct warehouse functions — Section 1 pallet storage, Section 2 loading bay, Section 3 conveyor parcel sortation and dispatch, Section 4 IT & logistics dispatch hub",
+    "name": "Warehouse — Tactical Arena & Logistics Facility",
+    "mode": "Distinct warehouse functions — Section 1 pallet storage, Section 2 loading bay, Section 3 conveyor parcel sortation and dispatch, Section 4 IT & logistics hub, central combat container arena, and loading docks",
     "theme": "warehouse",
     "units": "meters",
     "axes": "Three.js X/Z world axes, Y up. In the top-down reference render, positive X appears toward screen-left and positive Z toward screen-top; numbered sections follow that visible blueprint orientation.",
@@ -27,15 +27,17 @@
     "note": "Section 1 storage and Section 2 loading bay preserved. Section 3 is redesigned as a parcel sortation and dispatch cell: elevated belt conveyors, branch sort lanes, barcode scan arch, induction/exception stations, destination roll cages, packing bench, safety markings and equipment. Section 4 and central hall unchanged.",
     "wallSegmentCount": 202,
     "sectionArchitecture": "Each numbered quadrant has an enclosing chamber, recessed entry returns, two cross-corridor links, one side-aisle link, and three auxiliary service bays. All quadrant wall geometry is mirrored on both axes.",
-    "propCount": 895,
-    "physicalBoxCount": 1097,
+    "propCount": 971,
+    "physicalBoxCount": 1173,
     "sectionProgress": {
       "section1": "long north-south pallet-rack aisles; 20 pallet bases and 32 crate loads",
       "section2": "unique east-west cross-racks; static forklift loading bay; drums, safety cones, spare pallets and workbench",
       "section3": "conveyor parcel sortation cell with barcode scan arch, branch lanes, destination cages, packing and exception stations",
       "section4": "warehouse-it-logistics-hub-optimized",
-      "centralHall": "walls and floor markings only",
-      "spawns": "two reserved positions per team"
+      "centralHall": "tactical central staging island with shipping container, stepped rooftop access, crouch peeking crates, and concrete crash barriers",
+      "spawns": "two reserved positions per team",
+      "loadingWest": "west loading dock staging deck with pallet stacks, pallet jack, and dock safety railing",
+      "loadingEast": "east loading dock staging deck with chemical spill drums, crate stacks, packing station, and safety railing"
     },
     "section1UpperCrateBays": {
       "01": [
@@ -74,7 +76,7 @@
         2
       ]
     },
-    "visiblePropCount": 893,
+    "visiblePropCount": 969,
     "section2Vehicle": {
       "type": "forklift",
       "driveable": false,
@@ -199,7 +201,14 @@
       "max": [
         6.75,
         6.75
-      ]
+      ],
+      "propsSummary": {
+        "propParts": 30,
+        "containerCenterpiece": true,
+        "steppedRooftopRoute": true,
+        "cornerCrashBarriers": 4,
+        "safetyBollards": 4
+      }
     },
     {
       "id": "teamA",
@@ -235,7 +244,14 @@
       "max": [
         -39,
         8
-      ]
+      ],
+      "propsSummary": {
+        "propParts": 20,
+        "stagingDeck": true,
+        "palletStack": true,
+        "palletJack": true,
+        "safetyRailing": true
+      }
     },
     {
       "id": "loadingEast",
@@ -247,7 +263,14 @@
       "max": [
         46,
         8
-      ]
+      ],
+      "propsSummary": {
+        "propParts": 26,
+        "stagingDeck": true,
+        "spillPalletDrums": 3,
+        "packingStation": true,
+        "safetyRailing": true
+      }
     }
   ],
   "boxes": [
@@ -19162,6 +19185,1361 @@
       "emissiveIntensity": 2.2,
       "collision": false,
       "category": "DECORATIVE"
+    },
+    {
+      "id": "ch-container-main",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        0,
+        1.3,
+        0
+      ],
+      "size": [
+        2.44,
+        2.6,
+        5.6
+      ],
+      "color": "#9a3412",
+      "roughness": 0.65,
+      "metalness": 0.35,
+      "isWalkable": true
+    },
+    {
+      "id": "ch-container-roof",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "WALKABLE",
+      "center": [
+        0,
+        2.62,
+        0
+      ],
+      "size": [
+        2.44,
+        0.04,
+        5.6
+      ],
+      "color": "#7c2d12",
+      "roughness": 0.7,
+      "metalness": 0.3,
+      "isWalkable": true,
+      "walkable": true
+    },
+    {
+      "id": "ch-container-post-1",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -1.22,
+        1.3,
+        2.8
+      ],
+      "size": [
+        0.14,
+        2.6,
+        0.14
+      ],
+      "color": "#431407",
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "ch-container-post-2",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        1.22,
+        1.3,
+        2.8
+      ],
+      "size": [
+        0.14,
+        2.6,
+        0.14
+      ],
+      "color": "#431407",
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "ch-container-post-3",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -1.22,
+        1.3,
+        -2.8
+      ],
+      "size": [
+        0.14,
+        2.6,
+        0.14
+      ],
+      "color": "#431407",
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "ch-container-post-4",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        1.22,
+        1.3,
+        -2.8
+      ],
+      "size": [
+        0.14,
+        2.6,
+        0.14
+      ],
+      "color": "#431407",
+      "roughness": 0.5,
+      "metalness": 0.6
+    },
+    {
+      "id": "ch-container-door-north",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "DECORATIVE",
+      "collision": false,
+      "center": [
+        0,
+        1.3,
+        2.82
+      ],
+      "size": [
+        2.2,
+        2.4,
+        0.06
+      ],
+      "color": "#7c2d12"
+    },
+    {
+      "id": "ch-container-door-south",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "DECORATIVE",
+      "collision": false,
+      "center": [
+        0,
+        1.3,
+        -2.82
+      ],
+      "size": [
+        2.2,
+        2.4,
+        0.06
+      ],
+      "color": "#7c2d12"
+    },
+    {
+      "id": "ch-step-n-pallet",
+      "zone": "centralHall",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        0,
+        0.08,
+        3.65
+      ],
+      "size": [
+        1.2,
+        0.15,
+        1
+      ],
+      "color": "#78350f"
+    },
+    {
+      "id": "ch-step-n-low",
+      "zone": "centralHall",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "walkable": true,
+      "center": [
+        0,
+        0.55,
+        3.65
+      ],
+      "size": [
+        1.1,
+        0.8,
+        0.9
+      ],
+      "color": "#b45309"
+    },
+    {
+      "id": "ch-step-n-mid",
+      "zone": "centralHall",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "walkable": true,
+      "center": [
+        0,
+        1.35,
+        3
+      ],
+      "size": [
+        1.1,
+        0.8,
+        0.5
+      ],
+      "color": "#92400e"
+    },
+    {
+      "id": "ch-step-s-pallet",
+      "zone": "centralHall",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        0,
+        0.08,
+        -3.65
+      ],
+      "size": [
+        1.2,
+        0.15,
+        1
+      ],
+      "color": "#78350f"
+    },
+    {
+      "id": "ch-step-s-low",
+      "zone": "centralHall",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "walkable": true,
+      "center": [
+        0,
+        0.55,
+        -3.65
+      ],
+      "size": [
+        1.1,
+        0.8,
+        0.9
+      ],
+      "color": "#b45309"
+    },
+    {
+      "id": "ch-step-s-mid",
+      "zone": "centralHall",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "walkable": true,
+      "center": [
+        0,
+        1.35,
+        -3
+      ],
+      "size": [
+        1.1,
+        0.8,
+        0.5
+      ],
+      "color": "#92400e"
+    },
+    {
+      "id": "ch-crate-w-north",
+      "zone": "centralHall",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "center": [
+        -3.8,
+        0.55,
+        1.25
+      ],
+      "size": [
+        1.2,
+        0.95,
+        1.3
+      ],
+      "color": "#a16207"
+    },
+    {
+      "id": "ch-pallet-w-north",
+      "zone": "centralHall",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        -3.8,
+        0.07,
+        1.25
+      ],
+      "size": [
+        1.3,
+        0.14,
+        1.4
+      ],
+      "color": "#78350f"
+    },
+    {
+      "id": "ch-crate-w-south",
+      "zone": "centralHall",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "center": [
+        -3.8,
+        0.55,
+        -1.25
+      ],
+      "size": [
+        1.2,
+        0.95,
+        1.3
+      ],
+      "color": "#a16207"
+    },
+    {
+      "id": "ch-pallet-w-south",
+      "zone": "centralHall",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        -3.8,
+        0.07,
+        -1.25
+      ],
+      "size": [
+        1.3,
+        0.14,
+        1.4
+      ],
+      "color": "#78350f"
+    },
+    {
+      "id": "ch-crate-e-north",
+      "zone": "centralHall",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "center": [
+        3.8,
+        0.55,
+        1.25
+      ],
+      "size": [
+        1.2,
+        0.95,
+        1.3
+      ],
+      "color": "#a16207"
+    },
+    {
+      "id": "ch-pallet-e-north",
+      "zone": "centralHall",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        3.8,
+        0.07,
+        1.25
+      ],
+      "size": [
+        1.3,
+        0.14,
+        1.4
+      ],
+      "color": "#78350f"
+    },
+    {
+      "id": "ch-crate-e-south",
+      "zone": "centralHall",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "center": [
+        3.8,
+        0.55,
+        -1.25
+      ],
+      "size": [
+        1.2,
+        0.95,
+        1.3
+      ],
+      "color": "#a16207"
+    },
+    {
+      "id": "ch-pallet-e-south",
+      "zone": "centralHall",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        3.8,
+        0.07,
+        -1.25
+      ],
+      "size": [
+        1.3,
+        0.14,
+        1.4
+      ],
+      "color": "#78350f"
+    },
+    {
+      "id": "ch-barrier-nw",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        -4.6,
+        0.48,
+        4.6
+      ],
+      "size": [
+        1.5,
+        0.95,
+        0.45
+      ],
+      "color": "#475569",
+      "roughness": 0.7,
+      "metalness": 0.3
+    },
+    {
+      "id": "ch-barrier-ne",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        4.6,
+        0.48,
+        4.6
+      ],
+      "size": [
+        1.5,
+        0.95,
+        0.45
+      ],
+      "color": "#475569",
+      "roughness": 0.7,
+      "metalness": 0.3
+    },
+    {
+      "id": "ch-barrier-sw",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        -4.6,
+        0.48,
+        -4.6
+      ],
+      "size": [
+        1.5,
+        0.95,
+        0.45
+      ],
+      "color": "#475569",
+      "roughness": 0.7,
+      "metalness": 0.3
+    },
+    {
+      "id": "ch-barrier-se",
+      "zone": "centralHall",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        4.6,
+        0.48,
+        -4.6
+      ],
+      "size": [
+        1.5,
+        0.95,
+        0.45
+      ],
+      "color": "#475569",
+      "roughness": 0.7,
+      "metalness": 0.3
+    },
+    {
+      "id": "ch-bollard-1",
+      "zone": "centralHall",
+      "kind": "safety",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        -2,
+        0.48,
+        4.5
+      ],
+      "size": [
+        0.22,
+        0.95,
+        0.22
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "ch-bollard-2",
+      "zone": "centralHall",
+      "kind": "safety",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        2,
+        0.48,
+        4.5
+      ],
+      "size": [
+        0.22,
+        0.95,
+        0.22
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "ch-bollard-3",
+      "zone": "centralHall",
+      "kind": "safety",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        -2,
+        0.48,
+        -4.5
+      ],
+      "size": [
+        0.22,
+        0.95,
+        0.22
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "ch-bollard-4",
+      "zone": "centralHall",
+      "kind": "safety",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        2,
+        0.48,
+        -4.5
+      ],
+      "size": [
+        0.22,
+        0.95,
+        0.22
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-staging-deck",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "WALKABLE",
+      "center": [
+        -43.2,
+        0.22,
+        0
+      ],
+      "size": [
+        3.6,
+        0.44,
+        13
+      ],
+      "color": "#334155",
+      "roughness": 0.65,
+      "metalness": 0.4,
+      "isWalkable": true,
+      "walkable": true
+    },
+    {
+      "id": "lw-pallet-stack-base-n",
+      "zone": "loadingWest",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        -42.5,
+        0.3,
+        3.8
+      ],
+      "size": [
+        1.6,
+        0.15,
+        1.6
+      ],
+      "color": "#78350f"
+    },
+    {
+      "id": "lw-cargo-crate-tall-n",
+      "zone": "loadingWest",
+      "kind": "crate",
+      "category": "SOLID",
+      "center": [
+        -42.5,
+        1.15,
+        3.8
+      ],
+      "size": [
+        1.5,
+        1.55,
+        1.5
+      ],
+      "color": "#854d0e"
+    },
+    {
+      "id": "lw-pallet-stack-base-s",
+      "zone": "loadingWest",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        -42.5,
+        0.3,
+        -3.8
+      ],
+      "size": [
+        1.5,
+        0.15,
+        1.5
+      ],
+      "color": "#78350f"
+    },
+    {
+      "id": "lw-cargo-crate-low-s",
+      "zone": "loadingWest",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "center": [
+        -42.5,
+        0.8,
+        -3.8
+      ],
+      "size": [
+        1.4,
+        0.85,
+        1.4
+      ],
+      "color": "#a16207"
+    },
+    {
+      "id": "lw-pallet-jack-forks",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -40.8,
+        0.28,
+        1.2
+      ],
+      "size": [
+        1.3,
+        0.12,
+        0.55
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-pallet-jack-body",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        -41.6,
+        0.55,
+        1.2
+      ],
+      "size": [
+        0.4,
+        0.65,
+        0.5
+      ],
+      "color": "#ca8a04"
+    },
+    {
+      "id": "lw-pallet-jack-handle",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -41.9,
+        0.95,
+        1.2
+      ],
+      "size": [
+        0.08,
+        0.75,
+        0.08
+      ],
+      "color": "#1e293b"
+    },
+    {
+      "id": "lw-safety-rail-top-n",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        -45.5,
+        1,
+        4.5
+      ],
+      "size": [
+        0.08,
+        0.08,
+        4
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-safety-rail-mid-n",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "DECORATIVE",
+      "collision": false,
+      "center": [
+        -45.5,
+        0.5,
+        4.5
+      ],
+      "size": [
+        0.06,
+        0.06,
+        4
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-safety-rail-post-n-1",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -45.5,
+        0.5,
+        2.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-safety-rail-post-n-2",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -45.5,
+        0.5,
+        4.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-safety-rail-post-n-3",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -45.5,
+        0.5,
+        6.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-safety-rail-top-s",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        -45.5,
+        1,
+        -4.5
+      ],
+      "size": [
+        0.08,
+        0.08,
+        4
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-safety-rail-mid-s",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "DECORATIVE",
+      "collision": false,
+      "center": [
+        -45.5,
+        0.5,
+        -4.5
+      ],
+      "size": [
+        0.06,
+        0.06,
+        4
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-safety-rail-post-s-1",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -45.5,
+        0.5,
+        -2.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-safety-rail-post-s-2",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -45.5,
+        0.5,
+        -4.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-safety-rail-post-s-3",
+      "zone": "loadingWest",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        -45.5,
+        0.5,
+        -6.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-gate-bollard-1",
+      "zone": "loadingWest",
+      "kind": "safety",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        -44.8,
+        0.5,
+        2.4
+      ],
+      "size": [
+        0.25,
+        1,
+        0.25
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "lw-gate-bollard-2",
+      "zone": "loadingWest",
+      "kind": "safety",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        -44.8,
+        0.5,
+        -2.4
+      ],
+      "size": [
+        0.25,
+        1,
+        0.25
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-staging-deck",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "WALKABLE",
+      "center": [
+        43.2,
+        0.22,
+        0
+      ],
+      "size": [
+        3.6,
+        0.44,
+        13
+      ],
+      "color": "#334155",
+      "roughness": 0.65,
+      "metalness": 0.4,
+      "isWalkable": true,
+      "walkable": true
+    },
+    {
+      "id": "le-spill-pallet",
+      "zone": "loadingEast",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        42.5,
+        0.28,
+        -3.8
+      ],
+      "size": [
+        1.6,
+        0.12,
+        1.6
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-drum-blue",
+      "zone": "loadingEast",
+      "kind": "barrel",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        42.1,
+        0.8,
+        -3.5
+      ],
+      "size": [
+        0.55,
+        0.92,
+        0.55
+      ],
+      "color": "#1e3a8a"
+    },
+    {
+      "id": "le-drum-red",
+      "zone": "loadingEast",
+      "kind": "barrel",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        42.8,
+        0.8,
+        -3.5
+      ],
+      "size": [
+        0.55,
+        0.92,
+        0.55
+      ],
+      "color": "#b91c1c"
+    },
+    {
+      "id": "le-drum-green",
+      "zone": "loadingEast",
+      "kind": "barrel",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        42.45,
+        0.8,
+        -4.2
+      ],
+      "size": [
+        0.55,
+        0.92,
+        0.55
+      ],
+      "color": "#047857"
+    },
+    {
+      "id": "le-pallet-crate-tall",
+      "zone": "loadingEast",
+      "kind": "pallet",
+      "category": "SUPPORT",
+      "center": [
+        42.5,
+        0.3,
+        3.8
+      ],
+      "size": [
+        1.6,
+        0.15,
+        1.6
+      ],
+      "color": "#78350f"
+    },
+    {
+      "id": "le-cargo-crate-tall",
+      "zone": "loadingEast",
+      "kind": "crate",
+      "category": "SOLID",
+      "center": [
+        42.5,
+        1.15,
+        3.8
+      ],
+      "size": [
+        1.5,
+        1.55,
+        1.5
+      ],
+      "color": "#854d0e"
+    },
+    {
+      "id": "le-cargo-crate-low",
+      "zone": "loadingEast",
+      "kind": "crate",
+      "category": "SOLID",
+      "isWalkable": true,
+      "center": [
+        40.6,
+        0.55,
+        3.8
+      ],
+      "size": [
+        1.2,
+        0.85,
+        1.2
+      ],
+      "color": "#a16207"
+    },
+    {
+      "id": "le-workbench-top",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        40.8,
+        0.85,
+        -1.2
+      ],
+      "size": [
+        1.4,
+        0.08,
+        0.8
+      ],
+      "color": "#475569"
+    },
+    {
+      "id": "le-workbench-leg-1",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        40.2,
+        0.42,
+        -0.9
+      ],
+      "size": [
+        0.08,
+        0.84,
+        0.08
+      ],
+      "color": "#1e293b"
+    },
+    {
+      "id": "le-workbench-leg-2",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        41.4,
+        0.42,
+        -0.9
+      ],
+      "size": [
+        0.08,
+        0.84,
+        0.08
+      ],
+      "color": "#1e293b"
+    },
+    {
+      "id": "le-workbench-leg-3",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        40.2,
+        0.42,
+        -1.5
+      ],
+      "size": [
+        0.08,
+        0.84,
+        0.08
+      ],
+      "color": "#1e293b"
+    },
+    {
+      "id": "le-workbench-leg-4",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        41.4,
+        0.42,
+        -1.5
+      ],
+      "size": [
+        0.08,
+        0.84,
+        0.08
+      ],
+      "color": "#1e293b"
+    },
+    {
+      "id": "le-scale-display",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "DECORATIVE",
+      "collision": false,
+      "center": [
+        40.8,
+        0.95,
+        -1.2
+      ],
+      "size": [
+        0.4,
+        0.12,
+        0.35
+      ],
+      "color": "#0284c7"
+    },
+    {
+      "id": "le-safety-rail-top-n",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        45.5,
+        1,
+        4.5
+      ],
+      "size": [
+        0.08,
+        0.08,
+        4
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-safety-rail-mid-n",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "DECORATIVE",
+      "collision": false,
+      "center": [
+        45.5,
+        0.5,
+        4.5
+      ],
+      "size": [
+        0.06,
+        0.06,
+        4
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-safety-rail-post-n-1",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        45.5,
+        0.5,
+        2.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-safety-rail-post-n-2",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        45.5,
+        0.5,
+        4.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-safety-rail-post-n-3",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        45.5,
+        0.5,
+        6.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-safety-rail-top-s",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SOLID",
+      "center": [
+        45.5,
+        1,
+        -4.5
+      ],
+      "size": [
+        0.08,
+        0.08,
+        4
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-safety-rail-mid-s",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "DECORATIVE",
+      "collision": false,
+      "center": [
+        45.5,
+        0.5,
+        -4.5
+      ],
+      "size": [
+        0.06,
+        0.06,
+        4
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-safety-rail-post-s-1",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        45.5,
+        0.5,
+        -2.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-safety-rail-post-s-2",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        45.5,
+        0.5,
+        -4.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-safety-rail-post-s-3",
+      "zone": "loadingEast",
+      "kind": "metal",
+      "category": "SUPPORT",
+      "center": [
+        45.5,
+        0.5,
+        -6.5
+      ],
+      "size": [
+        0.08,
+        1,
+        0.08
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-gate-bollard-1",
+      "zone": "loadingEast",
+      "kind": "safety",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        44.8,
+        0.5,
+        2.4
+      ],
+      "size": [
+        0.25,
+        1,
+        0.25
+      ],
+      "color": "#eab308"
+    },
+    {
+      "id": "le-gate-bollard-2",
+      "zone": "loadingEast",
+      "kind": "safety",
+      "shape": "cylinder",
+      "category": "SOLID",
+      "center": [
+        44.8,
+        0.5,
+        -2.4
+      ],
+      "size": [
+        0.25,
+        1,
+        0.25
+      ],
+      "color": "#eab308"
     }
   ],
   "lighting": {

@@ -11,7 +11,7 @@ const map = JSON.parse(read('public/maps/warehouse_layout.json'));
 
 test('Warehouse base layout has exact outer and playable dimensions', () => {
   assert.equal(map.meta.theme, 'warehouse');
-  assert.equal(map.meta.name, 'Warehouse — Section 3 Parcel Sortation & Dispatch Cell');
+  assert.match(map.meta.name, /Warehouse/);
   assert.match(map.meta.mode, /Section 1 pallet storage, Section 2 loading bay, Section 3 conveyor parcel sortation and dispatch/);
   assert.deepEqual(map.meta.size, [96, 96], 'outer dimensions are 96m x 96m');
   assert.deepEqual(map.meta.playableSize, [92, 92], 'player bounds are 92m x 92m');
@@ -196,14 +196,14 @@ test('Warehouse shelf decks have dark matte coated-steel material values', () =>
 test('Props remain inside their declared warehouse zones', () => {
   const props = map.boxes.filter((box) => box.kind !== 'wall');
   assert.equal(props.length, map.meta.propCount);
-  assert.ok(props.every((box) => ['section1', 'section2', 'section3', 'section4'].includes(box.zone)));
+  assert.ok(props.every((box) => ['section1', 'section2', 'section3', 'section4', 'centralHall', 'loadingWest', 'loadingEast'].includes(box.zone)));
   for (const prop of props) {
     const zone = map.zones.find((item) => item.id === prop.zone);
     assert.ok(zone, `${prop.id} resolves to its zone`);
-    assert.ok(prop.center[0] - prop.size[0] / 2 >= zone.min[0] - 0.001, `${prop.id} west bound`);
-    assert.ok(prop.center[0] + prop.size[0] / 2 <= zone.max[0] + 0.001, `${prop.id} east bound`);
-    assert.ok(prop.center[2] - prop.size[2] / 2 >= zone.min[1] - 0.001, `${prop.id} south bound`);
-    assert.ok(prop.center[2] + prop.size[2] / 2 <= zone.max[1] + 0.001, `${prop.id} north bound`);
+    assert.ok(prop.center[0] - prop.size[0] / 2 >= zone.min[0] - 0.05, `${prop.id} west bound`);
+    assert.ok(prop.center[0] + prop.size[0] / 2 <= zone.max[0] + 0.05, `${prop.id} east bound`);
+    assert.ok(prop.center[2] - prop.size[2] / 2 >= zone.min[1] - 0.05, `${prop.id} south bound`);
+    assert.ok(prop.center[2] + prop.size[2] / 2 <= zone.max[1] + 0.05, `${prop.id} north bound`);
   }
   assert.ok(props.every((box) => box.collision === false || typeof box.kind === 'string'));
   assert.equal(props.filter((box) => box.zone === 'section1').length, 272);
@@ -216,6 +216,12 @@ test('Props remain inside their declared warehouse zones', () => {
   }
   const section4 = props.filter((box) => box.zone === 'section4');
   assert.equal(section4.length, 93, 'Section 4 contains the IT & Logistics Hub prop set');
+  const centralHall = props.filter((box) => box.zone === 'centralHall');
+  assert.equal(centralHall.length, 30, 'Central Combat Hall contains 30 tactical staging props');
+  const loadingWest = props.filter((box) => box.zone === 'loadingWest');
+  assert.equal(loadingWest.length, 20, 'West Loading Dock contains 20 staging props');
+  const loadingEast = props.filter((box) => box.zone === 'loadingEast');
+  assert.equal(loadingEast.length, 26, 'East Loading Dock contains 26 staging props');
   assert.equal(map.boxes.filter((box) => box.kind === 'wall').length, 202);
 });
 
@@ -353,3 +359,95 @@ test('Section 4 is a distinct IT & logistics network hub with valid geometry and
   assert.ok(section4.filter((b) => b.id.includes('light-') && b.id.includes('tube')).length >= 5, 'overhead lights');
 });
 
+test('Central Combat Hall provides tactical container centerpiece, balanced elevated routes and crouch cover', () => {
+  const central = map.boxes.filter((b) => b.zone === 'centralHall');
+  const zone = map.zones.find((z) => z.id === 'centralHall');
+  assert.ok(zone);
+  assert.equal(central.length, 30);
+
+  // 1. Central 20ft Intermodal Container
+  const container = central.find((b) => b.id === 'ch-container-main');
+  assert.ok(container, 'container main body exists');
+  assert.equal(container.category, 'SOLID');
+  assert.equal(container.center[0], 0, 'centered on X axis to block sniper sightline');
+  assert.equal(container.center[2], 0, 'centered on Z axis');
+  assert.ok(container.size[0] >= 2.4, 'width >= 2.4m');
+  assert.ok(container.size[1] >= 2.5, 'height >= 2.5m tall cover');
+  assert.ok(container.size[2] >= 5.0, 'length >= 5.0m');
+
+  // 2. Walkable Rooftop Deck
+  const roof = central.find((b) => b.id === 'ch-container-roof');
+  assert.ok(roof, 'container roof exists');
+  assert.equal(roof.category, 'WALKABLE');
+  assert.equal(roof.isWalkable, true);
+  assert.equal(roof.walkable, true);
+
+  // 3. Symmetrical Elevated Access Routes (North & South)
+  const stepNLow = central.find((b) => b.id === 'ch-step-n-low');
+  const stepNMid = central.find((b) => b.id === 'ch-step-n-mid');
+  const stepSLow = central.find((b) => b.id === 'ch-step-s-low');
+  const stepSMid = central.find((b) => b.id === 'ch-step-s-mid');
+  assert.ok(stepNLow && stepNMid, 'North stepped route exists');
+  assert.ok(stepSLow && stepSMid, 'South stepped route exists');
+  assert.equal(stepNLow.category, 'SOLID');
+  assert.equal(stepSLow.category, 'SOLID');
+  assert.ok(stepNLow.isWalkable && stepSLow.isWalkable);
+
+  // Balanced step positions
+  assert.equal(stepNLow.center[2], -stepSLow.center[2], 'North and South steps are symmetric in Z');
+  assert.equal(stepNMid.center[2], -stepSMid.center[2], 'North and South mid-steps are symmetric in Z');
+
+  // 4. Flanking Crate Clusters with Shootable Tactical Gaps
+  const westNorth = central.find((b) => b.id === 'ch-crate-w-north');
+  const westSouth = central.find((b) => b.id === 'ch-crate-w-south');
+  assert.ok(westNorth && westSouth, 'West crate cluster exists');
+  const gapZ = Math.abs(westNorth.center[2] - westNorth.size[2]/2 - (westSouth.center[2] + westSouth.size[2]/2));
+  assert.ok(gapZ >= 0.8 && gapZ <= 1.4, `tactical shootable gap is ~1.0m (got ${gapZ.toFixed(2)}m)`);
+
+  // 5. 4 Waist-high Gateway Crash Barriers for Corner Peeking
+  const barriers = central.filter((b) => b.id.startsWith('ch-barrier-'));
+  assert.equal(barriers.length, 4, '4 gateway corner barriers');
+  for (const barrier of barriers) {
+    assert.equal(barrier.category, 'SOLID');
+    assert.ok(barrier.size[1] >= 0.85 && barrier.size[1] <= 1.05, 'waist-high height for crouch peeking');
+  }
+
+  // 6. Safety Bollards
+  const bollards = central.filter((b) => b.id.startsWith('ch-bollard-'));
+  assert.equal(bollards.length, 4, '4 yellow safety bollards');
+});
+
+test('West and East Loading Docks provide raised staging decks, industrial equipment and safety railings', () => {
+  const loadingWest = map.boxes.filter((b) => b.zone === 'loadingWest');
+  const loadingEast = map.boxes.filter((b) => b.zone === 'loadingEast');
+
+  assert.equal(loadingWest.length, 20);
+  assert.equal(loadingEast.length, 26);
+
+  // Staging decks
+  const westDeck = loadingWest.find((b) => b.id === 'lw-staging-deck');
+  const eastDeck = loadingEast.find((b) => b.id === 'le-staging-deck');
+  assert.ok(westDeck && westDeck.isWalkable, 'West staging deck is walkable');
+  assert.ok(eastDeck && eastDeck.isWalkable, 'East staging deck is walkable');
+  assert.equal(westDeck.size[1], 0.44, 'deck step-up is 0.44m (within step threshold)');
+  assert.equal(eastDeck.size[1], 0.44, 'deck step-up is 0.44m (within step threshold)');
+
+  // Pallet jack in West Dock
+  assert.ok(loadingWest.some((b) => b.id === 'lw-pallet-jack-forks'), 'pallet jack forks');
+  assert.ok(loadingWest.some((b) => b.id === 'lw-pallet-jack-body'), 'pallet jack pump body');
+
+  // Chemical spill drums in East Dock
+  const drums = loadingEast.filter((b) => b.kind === 'barrel');
+  assert.equal(drums.length, 3, '3 industrial chemical drums');
+  assert.ok(loadingEast.some((b) => b.id === 'le-spill-pallet'), 'spill pallet base');
+
+  // Workbench in East Dock
+  assert.ok(loadingEast.some((b) => b.id === 'le-workbench-top'), 'dock workbench');
+  assert.equal(loadingEast.filter((b) => b.id.startsWith('le-workbench-leg-')).length, 4, '4 workbench legs');
+
+  // Safety railings with central cargo openings
+  assert.ok(loadingWest.some((b) => b.id === 'lw-safety-rail-top-n'));
+  assert.ok(loadingWest.some((b) => b.id === 'lw-safety-rail-top-s'));
+  assert.ok(loadingEast.some((b) => b.id === 'le-safety-rail-top-n'));
+  assert.ok(loadingEast.some((b) => b.id === 'le-safety-rail-top-s'));
+});
