@@ -383,8 +383,6 @@ class FPSApp {
         this.weaponManager.switchWeapon('sniper');
       } else if (e.code === 'KeyM') {
         this.hud.toggleMapModal();
-      } else if (e.code === 'KeyQ') {
-        this.weaponManager.toggleADS();
       } else if (e.code === 'KeyV') {
         this.weaponManager.triggerInspect();
       } else if (e.code === 'KeyT') {

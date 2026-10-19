@@ -476,10 +476,11 @@ export class FPSHUD {
       <div style="font-weight: 800; color: #00ff88; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">
         OPERATIVE COMBAT CONTROLS
       </div>
-      <div><span style="color:#00ff88;font-weight:bold;">LMB</span> — Fire Weapon | <span style="color:#00ff88;font-weight:bold;">RMB / Q</span> — ADS</div>
+      <div><span style="color:#00ff88;font-weight:bold;">LMB</span> — Fire Weapon | <span style="color:#00ff88;font-weight:bold;">RMB</span> — Aim Down Sights (ADS)</div>
       <div><span style="color:#00ff88;font-weight:bold;">1-5</span> — Switch (AK / Pistol / SMG / Shotgun / Sniper)</div>
       <div><span style="color:#00ff88;font-weight:bold;">M</span> — Map Select | <span style="color:#00ff88;font-weight:bold;">R</span> — Reload | <span style="color:#00ff88;font-weight:bold;">V</span> — Inspect</div>
-      <div><span style="color:#00ff88;font-weight:bold;">WASD</span> — Move | <span style="color:#00ff88;font-weight:bold;">Shift</span> — Sprint | <span style="color:#00ff88;font-weight:bold;">Space</span> — Jump</div>
+      <div><span style="color:#00ff88;font-weight:bold;">Q / E</span> — Peek Left / Right</div>
+      <div><span style="color:#00ff88;font-weight:bold;">WASD</span> — Move | <span style="color:#00ff88;font-weight:bold;">Shift</span> — Sprint | <span style="color:#00ff88;font-weight:bold;">Space</span> — Jump | <span style="color:#00ff88;font-weight:bold;">C</span> — Crouch</div>
     `;
     this.container.appendChild(this.controlsCard);
 

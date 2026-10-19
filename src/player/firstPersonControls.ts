@@ -12,6 +12,8 @@ export interface PlayerInputState {
   sprint: boolean;
   jump: boolean;
   crouch: boolean;
+  leanLeft: boolean;
+  leanRight: boolean;
 }
 
 export interface MapBounds {
@@ -45,7 +47,11 @@ export const GROUND_MARGIN        = 0.04;  // feetY tolerance for ground detecti
 export const PLAYER_WALK_SPEED    = 4.8;
 export const PLAYER_SPRINT_SPEED  = 8.5;
 export const PLAYER_CROUCH_SPEED  = 2.4;
-export const CROUCH_LERP_SPEED    = 14.0;  // smooth ergonomic crouch transition (~0.18s)
+export const CROUCH_LERP_SPEED    = 14.0;
+export const LEAN_MAX_DISTANCE    = 0.42;
+export const LEAN_MAX_ROLL        = 0.12;
+export const LEAN_LERP_SPEED      = 14.0;
+export const LEAN_CAMERA_RADIUS   = 0.20;  // smooth ergonomic crouch transition (~0.18s)
 
 export class FirstPersonControls {
   public camera: THREE.PerspectiveCamera;
@@ -82,6 +88,8 @@ export class FirstPersonControls {
   private eyeHeight: number = PLAYER_EYE_H;
   private currentCameraEyeY: number = PLAYER_EYE_H;
   private cameraBobOffset: number = 0;
+  private currentLean: number = 0;
+  private currentLeanOffset: number = 0;
 
   private input: PlayerInputState = {
     forward: false,
@@ -91,6 +99,8 @@ export class FirstPersonControls {
     sprint: false,
     jump: false,
     crouch: false,
+    leanLeft: false,
+    leanRight: false,
   };
 
   private sensitivity: number = 0.002;
@@ -143,6 +153,8 @@ export class FirstPersonControls {
     this.input.sprint = false;
     this.input.jump = false;
     this.input.crouch = false;
+    this.input.leanLeft = false;
+    this.input.leanRight = false;
     this.isCrouchToggled = false;
     this.velocity.x = 0;
     this.velocity.z = 0;
@@ -176,6 +188,8 @@ export class FirstPersonControls {
         case 'KeyS': this.input.backward = true; break;
         case 'KeyA': this.input.left = true; break;
         case 'KeyD': this.input.right = true; break;
+        case 'KeyQ': this.input.leanLeft = true; break;
+        case 'KeyE': this.input.leanRight = true; break;
         case 'ShiftLeft':
         case 'ShiftRight': this.input.sprint = true; break;
         case 'Space': this.input.jump = true; break;
@@ -192,6 +206,8 @@ export class FirstPersonControls {
         case 'KeyS': this.input.backward = false; break;
         case 'KeyA': this.input.left = false; break;
         case 'KeyD': this.input.right = false; break;
+        case 'KeyQ': this.input.leanLeft = false; break;
+        case 'KeyE': this.input.leanRight = false; break;
         case 'ShiftLeft':
         case 'ShiftRight': this.input.sprint = false; break;
         case 'Space': this.input.jump = false; break;
@@ -348,6 +364,49 @@ export class FirstPersonControls {
       }
     }
     return false;
+  }
+
+  /** Current signed lean input: -1 left, +1 right, 0 neutral. */
+  public getLeanAmount(): number { return this.currentLean; }
+  public getLeanOffset(): number { return this.currentLeanOffset; }
+  public isLeaning(): boolean { return Math.abs(this.currentLean) > 0.02; }
+
+  /**
+   * Clamp lateral camera lean against solid geometry. Samples the head at three
+   * heights and three forward/back depths, sweeping from the neutral eye point
+   * toward the requested offset. Walkable/decorative colliders do not block lean.
+   */
+  public getLeanClearance(targetOffset: number): number {
+    if (Math.abs(targetOffset) < 0.0001) return 0;
+    const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw).normalize();
+    const heights = [0, -0.10, 0.15];
+    const depths = [-0.12, 0, 0.12];
+    const steps = 8;
+    let allowed = Math.abs(targetOffset);
+    const sign = Math.sign(targetOffset);
+    for (let step = 1; step <= steps; step++) {
+      const distance = Math.abs(targetOffset) * step / steps;
+      let blocked = false;
+      for (const h of heights) {
+        for (const depth of depths) {
+          const px = this.position.x + right.x * sign * distance - Math.sin(this.yaw) * depth;
+          const pz = this.position.z + right.z * sign * distance - Math.cos(this.yaw) * depth;
+          const py = this.currentCameraEyeY + h;
+          for (const box of this.colliders) {
+            if (box.category === 'DECORATIVE' || box.category === 'WALKABLE' || box.category === 'SUPPORT') continue;
+            if (py < box.minY - LEAN_CAMERA_RADIUS || py > box.maxY + LEAN_CAMERA_RADIUS) continue;
+            if (px >= box.minX - LEAN_CAMERA_RADIUS && px <= box.maxX + LEAN_CAMERA_RADIUS &&
+                pz >= box.minZ - LEAN_CAMERA_RADIUS && pz <= box.maxZ + LEAN_CAMERA_RADIUS) {
+              blocked = true; break;
+            }
+          }
+          if (blocked) break;
+        }
+        if (blocked) break;
+      }
+      if (blocked) { allowed = Math.max(0, distance - LEAN_CAMERA_RADIUS); break; }
+    }
+    return sign * allowed;
   }
 
   public getEyeHeight(): number {
@@ -634,11 +693,24 @@ export class FirstPersonControls {
       this.cameraBobOffset = THREE.MathUtils.lerp(this.cameraBobOffset, 0, Math.min(1, delta * 18));
     }
 
+    const leanInput = this.input.leanLeft === this.input.leanRight
+      ? 0 : (this.input.leanLeft ? -1 : 1);
+    this.currentLean = THREE.MathUtils.lerp(this.currentLean, leanInput, Math.min(1, delta * LEAN_LERP_SPEED));
+    const requestedOffset = this.currentLean * LEAN_MAX_DISTANCE;
+    const clearanceOffset = this.getLeanClearance(requestedOffset);
+    this.currentLeanOffset = THREE.MathUtils.lerp(this.currentLeanOffset, clearanceOffset, Math.min(1, delta * LEAN_LERP_SPEED));
+
+    const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw).normalize();
     this.camera.position.set(
-      this.position.x,
+      this.position.x + right.x * this.currentLeanOffset,
       this.currentCameraEyeY + this.cameraBobOffset,
-      this.position.z
+      this.position.z + right.z * this.currentLeanOffset
     );
+    // Apply roll after yaw/pitch so the viewmodel (which follows camera quaternion)
+    // remains aligned with the peeking camera.
+    const leanEuler = new THREE.Euler().setFromQuaternion(this.camera.quaternion, 'YXZ');
+    leanEuler.z = -this.currentLean * LEAN_MAX_ROLL;
+    this.camera.quaternion.setFromEuler(leanEuler);
 
     // Decay mouse delta
     this.mouseDelta.x = THREE.MathUtils.lerp(this.mouseDelta.x, 0, delta * 16);
