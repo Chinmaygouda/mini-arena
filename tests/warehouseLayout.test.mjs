@@ -23,13 +23,15 @@ test('Warehouse base layout has exact outer and playable dimensions', () => {
   assert.deepEqual(map.meta.centralHallClearSize, [13.5, 13.5]);
 });
 
-test('Sections 1 and 2 are detailed while preserving all original walls', () => {
+test('Sections 1 and 2 are detailed while using a simplified open wall layout', () => {
   assert.equal(map.meta.layoutStage, 'section-1-pallet-storage-section-2-loading-bay-section-3-parcel-sortation-dispatch');
   assert.ok(map.boxes.length > 202, 'rack assemblies add physical parts to the original shell');
   assert.equal(new Set(map.boxes.map((box) => box.id)).size, map.boxes.length, 'all object IDs are unique');
   const walls = map.boxes.filter((box) => box.kind === 'wall');
   const props = map.boxes.filter((box) => box.kind !== 'wall');
-  assert.equal(walls.length, 202, 'all original wall segments are preserved');
+  assert.equal(walls.length, map.meta.wallSegmentCount, 'wall count is derived from retained geometry');
+  assert.ok(walls.length < 202, 'redundant doorway and service-bay walls have been removed');
+  assert.ok(walls.every((wall) => !wall.id.includes('entry-return') && !wall.id.includes('service-bay-divider') && !wall.id.includes('service-bay-partition')), 'no redundant return or service-bay partition walls remain');
   assert.equal(map.meta.wallSegmentCount, walls.length);
   assert.equal(map.meta.propCount, props.length);
   assert.equal(map.meta.physicalBoxCount, map.boxes.length);
@@ -114,19 +116,16 @@ test('Warehouse lighting is a symmetric 4-by-4 grid of 16 point lights', () => {
   assert.ok(lights.every((light) => light.y === 5.35 && light.intensity > 0 && light.range >= 20));
 });
 
-test('Each quadrant has a real enclosing chamber, stepped entrances and auxiliary service bays', () => {
+test('Each quadrant retains structural chamber walls while redundant partitions are removed', () => {
   const sections = [1, 2, 3, 4];
   for (const section of sections) {
     const walls = map.boxes.filter((wall) => wall.id.startsWith(`section-${section}-`));
-    assert.ok(walls.length >= 30, `Section ${section} should contain an enclosing chamber and service-bay wall network`);
+    assert.ok(walls.length >= 20, `Section ${section} should retain its main chamber structure`);
     for (const expected of [
       'inner-chamber-edge',
       'outer-chamber-edge',
       'chamber-south-edge',
       'chamber-north-edge',
-      'service-bay-divider',
-      'service-bay-partition-west',
-      'service-bay-partition-east',
     ]) {
       assert.ok(walls.some((wall) => wall.id.includes(expected)),
         `Section ${section} includes ${expected}`);
@@ -134,21 +133,15 @@ test('Each quadrant has a real enclosing chamber, stepped entrances and auxiliar
   }
   const wallCount = map.boxes.filter((box) => box.kind === 'wall').length;
   assert.equal(map.meta.wallSegmentCount, wallCount, 'wall count excludes Section 1 props');
-  assert.ok(wallCount >= 190, 'revised blueprint preserves the detailed Stage 1 wall shell');
+  assert.ok(wallCount < 202, 'revised blueprint opens redundant wall routes');
   assert.ok(map.boxes.length > wallCount, 'Section 1 props are additional to the preserved wall shell');
 });
 
-test('Quadrant doorways and returns connect rooms to the corridor network', () => {
+test('Quadrant doorway returns are removed to create wider tactical routes', () => {
   for (const section of [1, 2, 3, 4]) {
     const walls = map.boxes.filter((wall) => wall.id.startsWith(`section-${section}-`));
-    assert.ok(walls.some((wall) => wall.id.includes('inner-entry-return')),
-      `Section ${section} has recessed inner doorway returns`);
-    assert.ok(walls.some((wall) => wall.id.includes('south-entry-return')),
-      `Section ${section} opens toward the lower cross-corridor`);
-    assert.ok(walls.some((wall) => wall.id.includes('north-entry-return')),
-      `Section ${section} opens toward the outer cross-corridor`);
-    assert.ok(walls.some((wall) => wall.id.includes('outer-entry-return')),
-      `Section ${section} has access to its side service aisle`);
+    assert.ok(walls.every((wall) => !wall.id.includes('entry-return')),
+      `Section ${section} has no recessed doorway return teeth`);
   }
 });
 
@@ -222,7 +215,7 @@ test('Props remain inside their declared warehouse zones', () => {
   assert.equal(loadingWest.length, 20, 'West Loading Dock contains 20 staging props');
   const loadingEast = props.filter((box) => box.zone === 'loadingEast');
   assert.equal(loadingEast.length, 26, 'East Loading Dock contains 26 staging props');
-  assert.equal(map.boxes.filter((box) => box.kind === 'wall').length, 202);
+  assert.equal(map.boxes.filter((box) => box.kind === 'wall').length, map.meta.wallSegmentCount);
 });
 
 test('Section 2 is a unique cross-rack loading bay with a static forklift', () => {
