@@ -101,6 +101,42 @@ test('Warehouse lighting is a symmetric 4-by-4 grid of 16 point lights', () => {
   assert.ok(lights.every((light) => light.y === 5.35 && light.intensity > 0 && light.range >= 20));
 });
 
+test('Each quadrant has a real enclosing chamber, stepped entrances and auxiliary service bays', () => {
+  const sections = [1, 2, 3, 4];
+  for (const section of sections) {
+    const walls = map.boxes.filter((wall) => wall.id.startsWith(`section-${section}-`));
+    assert.ok(walls.length >= 30, `Section ${section} should contain an enclosing chamber and service-bay wall network`);
+    for (const expected of [
+      'inner-chamber-edge',
+      'outer-chamber-edge',
+      'chamber-south-edge',
+      'chamber-north-edge',
+      'service-bay-divider',
+      'service-bay-partition-west',
+      'service-bay-partition-east',
+    ]) {
+      assert.ok(walls.some((wall) => wall.id.includes(expected)),
+        `Section ${section} includes ${expected}`);
+    }
+  }
+  assert.equal(map.meta.wallSegmentCount, map.boxes.length);
+  assert.ok(map.boxes.length >= 190, 'revised blueprint contains the detailed Stage 1 walls');
+});
+
+test('Quadrant doorways and returns connect rooms to the corridor network', () => {
+  for (const section of [1, 2, 3, 4]) {
+    const walls = map.boxes.filter((wall) => wall.id.startsWith(`section-${section}-`));
+    assert.ok(walls.some((wall) => wall.id.includes('inner-entry-return')),
+      `Section ${section} has recessed inner doorway returns`);
+    assert.ok(walls.some((wall) => wall.id.includes('south-entry-return')),
+      `Section ${section} opens toward the lower cross-corridor`);
+    assert.ok(walls.some((wall) => wall.id.includes('north-entry-return')),
+      `Section ${section} opens toward the outer cross-corridor`);
+    assert.ok(walls.some((wall) => wall.id.includes('outer-entry-return')),
+      `Section ${section} has access to its side service aisle`);
+  }
+});
+
 test('Warehouse is registered in the loader, map selector and industrial atmosphere', () => {
   const loader = read('src/environment/blueprintMapLoader.ts');
   const hud = read('src/ui/fpsHUD.ts');
