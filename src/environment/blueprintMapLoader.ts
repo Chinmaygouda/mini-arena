@@ -6,8 +6,8 @@
 
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { TargetManager, FX_NON_RAYCAST_LAYER } from './targets';
-import type { BoxCollider, MapBounds } from '../player/firstPersonControls';
+import { TargetManager, FX_NON_RAYCAST_LAYER } from './targets.ts';
+import type { BoxCollider, MapBounds, CollisionCategory } from '../player/firstPersonControls.ts';
 
 export type MapId = 'range' | 'foundry' | 'culdesac' | 'dustline' | 'overpass' | 'neighborhood' | 'warehouse';
 
@@ -20,6 +20,11 @@ export interface BlueprintBox {
   color: string;
   /** Render-only parts such as pallet slats and shelf decks can opt out of collision. */
   collision?: boolean;
+  /** Explicit gameplay classification: SOLID, SUPPORT, DECORATIVE, WALKABLE */
+  category?: CollisionCategory;
+  /** Explicit walkable flag */
+  walkable?: boolean;
+  isWalkable?: boolean;
   /** Optional per-part physically based material tuning, e.g. coated warehouse steel. */
   roughness?: number;
   metalness?: number;
@@ -376,63 +381,7 @@ export class BlueprintMapLoader {
     }
 
     // 3. Expand Simple Boxes & Cover Props (if defined in JSON)
-    if (data.boxes) {
-      data.boxes.forEach((box) => {
-        const [w, h, d] = box.size;
-        const [cx, cy, cz] = box.center;
-        const isRoof = box.kind === 'roof';
-        const isWalkable = box.kind === 'stairs' || box.kind === 'stair' || box.kind === 'platform';
-
-        // Invisible collider-only volumes remain in the collision list but do not render.
-        // Shape-aware parts share the existing material cache and map lifecycle.
-        if (box.visible !== false) {
-          const hex = box.color || '#718096';
-          const isMetal = box.kind === 'container' || box.kind === 'metal' ||
-            box.kind === 'cont' || box.kind === 'vehicle-part';
-          const defaultRoughness = isMetal ? (mapId === 'warehouse' ? 0.58 : 0.35) : 0.8;
-          const defaultMetalness = isMetal ? (mapId === 'warehouse' ? 0.38 : 0.85) : 0.15;
-          const mat = getMaterial(hex, box.roughness ?? defaultRoughness, box.metalness ?? defaultMetalness, box.emissive, box.emissiveIntensity);
-          let geom: THREE.BufferGeometry;
-          if (box.shape === 'cylinder') {
-            const radius = Math.max(0.01, Math.min(w, d) / 2);
-            geom = new THREE.CylinderGeometry(radius, radius, h, 12);
-          } else if (box.shape === 'cone') {
-            const radius = Math.max(0.01, Math.min(w, d) / 2);
-            geom = new THREE.ConeGeometry(radius, h, 9);
-          } else if (box.shape === 'sphere') {
-            geom = new THREE.SphereGeometry(w / 2, 10, 8);
-          } else {
-            geom = new THREE.BoxGeometry(w, h, d);
-          }
-          const mesh = new THREE.Mesh(geom, mat);
-          mesh.position.set(cx, cy, cz);
-          if (box.rotation) mesh.rotation.set(box.rotation[0], box.rotation[1], box.rotation[2]);
-          mesh.castShadow = true;
-          mesh.receiveShadow = true;
-
-          // If non-colliding (shelf decks, visual accents, wires, markers), DO NOT block bullets!
-          if (box.collision === false) {
-            mesh.userData.ignoreRaycast = true;
-            mesh.userData.collision = false;
-            mesh.layers.set(FX_NON_RAYCAST_LAYER);
-          }
-
-          mapGroup.add(mesh);
-        }
-
-        if (!isRoof && box.collision !== false) {
-          colliders.push({
-            minX: cx - w / 2,
-            maxX: cx + w / 2,
-            minY: cy - h / 2,
-            maxY: cy + h / 2,
-            minZ: cz - d / 2,
-            maxZ: cz + d / 2,
-            isWalkable,
-          });
-        }
-      });
-    }
+    this.expandBoxes(data, colliders, mapGroup, getMaterial, mapId);
 
     // 3.5. Warehouse base-stage industrial point lights. Fixture meshes are
     // emissive and non-colliding; actual point lights are grouped so map changes cleanly remove them.
@@ -572,8 +521,87 @@ export class BlueprintMapLoader {
   }
 
   /**
-   * Generates a 1024x1024 high-detail procedural terrain canvas texture.
+   * Expands blueprint box definitions into 3D meshes and collision volumes,
+   * applying explicit classification (SOLID, SUPPORT, DECORATIVE, WALKABLE).
    */
+  public expandBoxes(
+    data: { boxes?: BlueprintBox[] },
+    colliders: BoxCollider[],
+    mapGroup: THREE.Group,
+    getMaterial: (hex: string, roughness?: number, metalness?: number, emissive?: string, emissiveIntensity?: number) => THREE.Material,
+    mapId?: string
+  ) {
+    if (!data.boxes) return;
+    data.boxes.forEach((box) => {
+      const [w, h, d] = box.size;
+      const [cx, cy, cz] = box.center;
+      const isRoof = box.kind === 'roof';
+      const isDecorative = box.category === 'DECORATIVE' || box.collision === false;
+      const isWalkable = box.walkable === true || box.isWalkable === true ||
+        box.category === 'WALKABLE' ||
+        box.kind === 'stairs' || box.kind === 'stair' || box.kind === 'platform' ||
+        box.kind === 'conveyor-belt' || box.kind === 'sorter-branch-belt' ||
+        box.kind === 'conveyor-frame' || box.kind === 'sorter-branch-frame' ||
+        box.kind === 'shipping-pallet' || box.kind === 'induction-table' ||
+        box.kind === 'exception-sort-table';
+
+      const category: CollisionCategory = box.category ||
+        (isDecorative ? 'DECORATIVE' :
+         (isWalkable ? 'WALKABLE' :
+          (box.kind?.includes('support') || box.kind?.includes('leg') || box.kind?.includes('post') ? 'SUPPORT' : 'SOLID')));
+
+      // Invisible collider-only volumes remain in the collision list but do not render.
+      // Shape-aware parts share the existing material cache and map lifecycle.
+      if (box.visible !== false) {
+        const hex = box.color || '#718096';
+        const isMetal = box.kind === 'container' || box.kind === 'metal' ||
+          box.kind === 'cont' || box.kind === 'vehicle-part';
+        const defaultRoughness = isMetal ? (mapId === 'warehouse' ? 0.58 : 0.35) : 0.8;
+        const defaultMetalness = isMetal ? (mapId === 'warehouse' ? 0.38 : 0.85) : 0.15;
+        const mat = getMaterial(hex, box.roughness ?? defaultRoughness, box.metalness ?? defaultMetalness, box.emissive, box.emissiveIntensity);
+        let geom: THREE.BufferGeometry;
+        if (box.shape === 'cylinder') {
+          const radius = Math.max(0.01, Math.min(w, d) / 2);
+          geom = new THREE.CylinderGeometry(radius, radius, h, 12);
+        } else if (box.shape === 'cone') {
+          const radius = Math.max(0.01, Math.min(w, d) / 2);
+          geom = new THREE.ConeGeometry(radius, h, 9);
+        } else if (box.shape === 'sphere') {
+          geom = new THREE.SphereGeometry(w / 2, 10, 8);
+        } else {
+          geom = new THREE.BoxGeometry(w, h, d);
+        }
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.position.set(cx, cy, cz);
+        if (box.rotation) mesh.rotation.set(box.rotation[0], box.rotation[1], box.rotation[2]);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        // If non-colliding (shelf decks, visual accents, wires, markers, decorative rails), DO NOT block bullets!
+        if (box.collision === false || isDecorative) {
+          mesh.userData.ignoreRaycast = true;
+          mesh.userData.collision = false;
+          mesh.layers.set(FX_NON_RAYCAST_LAYER);
+        }
+
+        mapGroup.add(mesh);
+      }
+
+      if (!isRoof && box.collision !== false && !isDecorative) {
+        colliders.push({
+          minX: cx - w / 2,
+          maxX: cx + w / 2,
+          minY: cy - h / 2,
+          maxY: cy + h / 2,
+          minZ: cz - d / 2,
+          maxZ: cz + d / 2,
+          isWalkable,
+          category,
+        });
+      }
+    });
+  }
+
   private generateProceduralGroundTexture(theme: string, groundSpan: number): THREE.CanvasTexture {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;

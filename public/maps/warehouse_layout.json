@@ -13949,7 +13949,8 @@
         0.28,
         1.5
       ],
-      "color": "#39434a"
+      "color": "#39434a",
+      "category": "SOLID"
     },
     {
       "id": "s3-main-conveyor-belt",
@@ -13966,7 +13967,9 @@
         1.12
       ],
       "color": "#171d21",
-      "roughness": 0.9
+      "roughness": 0.9,
+      "category": "WALKABLE",
+      "walkable": true
     },
     {
       "id": "s3-main-support-13-a",
@@ -13982,7 +13985,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-support-13-b",
@@ -13998,7 +14002,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-rail-13",
@@ -14032,7 +14037,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-support-16-b",
@@ -14048,7 +14054,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-rail-16",
@@ -14082,7 +14089,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-support-19-b",
@@ -14098,7 +14106,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-rail-19",
@@ -14132,7 +14141,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-support-22-b",
@@ -14148,7 +14158,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-rail-22",
@@ -14182,7 +14193,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-support-25-b",
@@ -14198,7 +14210,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-rail-25",
@@ -14232,7 +14245,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-support-28-b",
@@ -14248,7 +14262,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-rail-28",
@@ -14282,7 +14297,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-support-31-b",
@@ -14298,7 +14314,8 @@
         0.8,
         0.12
       ],
-      "color": "#6b747b"
+      "color": "#6b747b",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-main-rail-31",
@@ -14332,7 +14349,9 @@
         0.22,
         0.09
       ],
-      "color": "#e0a52e"
+      "color": "#e0a52e",
+      "category": "DECORATIVE",
+      "collision": false
     },
     {
       "id": "s3-main-side-rail--18.82",
@@ -14348,7 +14367,9 @@
         0.22,
         0.09
       ],
-      "color": "#e0a52e"
+      "color": "#e0a52e",
+      "category": "DECORATIVE",
+      "collision": false
     },
     {
       "id": "s3-branch-17-frame",
@@ -14364,7 +14385,8 @@
         0.28,
         8
       ],
-      "color": "#46525b"
+      "color": "#46525b",
+      "category": "SOLID"
     },
     {
       "id": "s3-branch-17-belt",
@@ -14380,7 +14402,9 @@
         0.12,
         7.8
       ],
-      "color": "#20282d"
+      "color": "#20282d",
+      "category": "WALKABLE",
+      "walkable": true
     },
     {
       "id": "s3-branch-17-leg--21-a",
@@ -14396,7 +14420,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-17-leg--21-b",
@@ -14412,7 +14437,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-17-leg--24-a",
@@ -14428,7 +14454,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-17-leg--24-b",
@@ -14444,7 +14471,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-17-leg--27-a",
@@ -14460,7 +14488,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-17-leg--27-b",
@@ -14476,7 +14505,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-17-rail-a",
@@ -14492,7 +14522,9 @@
         0.2,
         7.8
       ],
-      "color": "#d99c26"
+      "color": "#d99c26",
+      "category": "DECORATIVE",
+      "collision": false
     },
     {
       "id": "s3-branch-17-rail-b",
@@ -14508,7 +14540,9 @@
         0.2,
         7.8
       ],
-      "color": "#d99c26"
+      "color": "#d99c26",
+      "category": "DECORATIVE",
+      "collision": false
     },
     {
       "id": "s3-destination-17-base",
@@ -14625,7 +14659,8 @@
         0.28,
         8
       ],
-      "color": "#46525b"
+      "color": "#46525b",
+      "category": "SOLID"
     },
     {
       "id": "s3-branch-23-belt",
@@ -14641,7 +14676,9 @@
         0.12,
         7.8
       ],
-      "color": "#20282d"
+      "color": "#20282d",
+      "category": "WALKABLE",
+      "walkable": true
     },
     {
       "id": "s3-branch-23-leg--12-a",
@@ -14657,7 +14694,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-23-leg--12-b",
@@ -14673,7 +14711,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-23-leg--15-a",
@@ -14689,7 +14728,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-23-leg--15-b",
@@ -14705,7 +14745,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-23-leg--18-a",
@@ -14721,7 +14762,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-23-leg--18-b",
@@ -14737,7 +14779,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-23-rail-a",
@@ -14753,7 +14796,9 @@
         0.2,
         7.8
       ],
-      "color": "#d99c26"
+      "color": "#d99c26",
+      "category": "DECORATIVE",
+      "collision": false
     },
     {
       "id": "s3-branch-23-rail-b",
@@ -14769,7 +14814,9 @@
         0.2,
         7.8
       ],
-      "color": "#d99c26"
+      "color": "#d99c26",
+      "category": "DECORATIVE",
+      "collision": false
     },
     {
       "id": "s3-destination-23-base",
@@ -14886,7 +14933,8 @@
         0.28,
         8
       ],
-      "color": "#46525b"
+      "color": "#46525b",
+      "category": "SOLID"
     },
     {
       "id": "s3-branch-29-belt",
@@ -14902,7 +14950,9 @@
         0.12,
         7.8
       ],
-      "color": "#20282d"
+      "color": "#20282d",
+      "category": "WALKABLE",
+      "walkable": true
     },
     {
       "id": "s3-branch-29-leg--21-a",
@@ -14918,7 +14968,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-29-leg--21-b",
@@ -14934,7 +14985,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-29-leg--24-a",
@@ -14950,7 +15002,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-29-leg--24-b",
@@ -14966,7 +15019,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-29-leg--27-a",
@@ -14982,7 +15036,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-29-leg--27-b",
@@ -14998,7 +15053,8 @@
         0.8,
         0.1
       ],
-      "color": "#69747a"
+      "color": "#69747a",
+      "category": "SUPPORT"
     },
     {
       "id": "s3-branch-29-rail-a",
@@ -15014,7 +15070,9 @@
         0.2,
         7.8
       ],
-      "color": "#d99c26"
+      "color": "#d99c26",
+      "category": "DECORATIVE",
+      "collision": false
     },
     {
       "id": "s3-branch-29-rail-b",
@@ -15030,7 +15088,9 @@
         0.2,
         7.8
       ],
-      "color": "#d99c26"
+      "color": "#d99c26",
+      "category": "DECORATIVE",
+      "collision": false
     },
     {
       "id": "s3-destination-29-base",
@@ -15138,9 +15198,9 @@
       "zone": "section3",
       "kind": "scanner-post",
       "center": [
-        24.5,
+        25,
         1.75,
-        -19.5
+        -20.12
       ],
       "size": [
         0.12,
@@ -15148,16 +15208,17 @@
         0.12
       ],
       "color": "#273943",
-      "metalness": 0.55
+      "metalness": 0.55,
+      "category": "SUPPORT"
     },
     {
       "id": "s3-scanner-post-25.5",
       "zone": "section3",
       "kind": "scanner-post",
       "center": [
-        25.5,
+        25,
         1.75,
-        -19.5
+        -18.88
       ],
       "size": [
         0.12,
@@ -15165,7 +15226,8 @@
         0.12
       ],
       "color": "#273943",
-      "metalness": 0.55
+      "metalness": 0.55,
+      "category": "SUPPORT"
     },
     {
       "id": "s3-scanner-top",
@@ -15182,7 +15244,8 @@
         1.35
       ],
       "color": "#344c5a",
-      "metalness": 0.4
+      "metalness": 0.4,
+      "category": "SOLID"
     },
     {
       "id": "s3-scanner-light",
@@ -15200,7 +15263,8 @@
       ],
       "color": "#35c9d0",
       "collision": false,
-      "emissive": "#16858b"
+      "emissive": "#16858b",
+      "category": "DECORATIVE"
     },
     {
       "id": "s3-parcel-1",

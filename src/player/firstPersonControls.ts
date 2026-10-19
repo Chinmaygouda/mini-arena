@@ -21,6 +21,8 @@ export interface MapBounds {
   maxZ: number;
 }
 
+export type CollisionCategory = 'SOLID' | 'SUPPORT' | 'DECORATIVE' | 'WALKABLE';
+
 export interface BoxCollider {
   minX: number;
   maxX: number;
@@ -29,6 +31,7 @@ export interface BoxCollider {
   minZ: number;
   maxZ: number;
   isWalkable?: boolean;
+  category?: CollisionCategory;
 }
 
 // ── Player & Locomotion constants ──────────────────────────────────────────
@@ -210,12 +213,13 @@ export class FirstPersonControls {
    *  walkable beneath currentFeetY (not a wall/ceiling above step-up limit).
    *  Prefers center of player footprint to prevent getting hung up on trailing steps. */
   private getSurfaceY(px: number, pz: number, currentFeetY: number): number {
-    const maxAllowedY = this.isGrounded ? currentFeetY + STEP_UP_MAX : currentFeetY + GROUND_MARGIN;
+    const maxAllowedY = currentFeetY + STEP_UP_MAX;
     let centerSurface = -Infinity;
     let best = -Infinity;
     const r = PLAYER_RADIUS;
 
     for (const c of this.colliders) {
+      if (c.category === 'DECORATIVE' || c.isWalkable === false) continue;
       if (c.maxY > maxAllowedY) continue; // Surface is above step-up threshold (wall/ceiling)
 
       if (px >= c.minX && px <= c.maxX && pz >= c.minZ && pz <= c.maxZ) {
@@ -237,15 +241,16 @@ export class FirstPersonControls {
   }
 
   /** Returns true if the box [minX..maxX, minZ..maxZ] (at height band feetY..headY)
-   *  overlaps any solid collider at the given position, accounting for step-up. */
+   *  overlaps any solid collider at the given position, accounting for step-up and airborne clearance. */
   private isBlockedX(nextX: number, curZ: number, feetY: number, headY: number): boolean {
     const r = PLAYER_RADIUS;
     if (nextX - r < this.bounds.minX || nextX + r > this.bounds.maxX) return true;
     for (const c of this.colliders) {
+      if (c.category === 'DECORATIVE') continue;
       // Skip if vertically clear (above head or below step-up threshold)
       if (c.minY > headY) continue;
       if (c.maxY <= feetY + GROUND_MARGIN) continue;      // below feet entirely
-      if (this.isGrounded && c.maxY <= feetY + STEP_UP_MAX) continue; // step-up ONLY while grounded
+      if (c.maxY <= feetY + STEP_UP_MAX) continue;        // step-up / clearable obstacle top
       if (
         nextX + r > c.minX && nextX - r < c.maxX &&
         curZ   + r > c.minZ && curZ   - r < c.maxZ
@@ -258,15 +263,48 @@ export class FirstPersonControls {
     const r = PLAYER_RADIUS;
     if (nextZ - r < this.bounds.minZ || nextZ + r > this.bounds.maxZ) return true;
     for (const c of this.colliders) {
+      if (c.category === 'DECORATIVE') continue;
       if (c.minY > headY) continue;
       if (c.maxY <= feetY + GROUND_MARGIN) continue;
-      if (this.isGrounded && c.maxY <= feetY + STEP_UP_MAX) continue;
+      if (c.maxY <= feetY + STEP_UP_MAX) continue;
       if (
         curX  + r > c.minX && curX  - r < c.maxX &&
         nextZ + r > c.minZ && nextZ - r < c.maxZ
       ) return true;
     }
     return false;
+  }
+
+  /** Returns true if all colliders obstructing nextX can be cleared at the jump apex */
+  private canJumpClearX(nextX: number, curZ: number, headY: number, jumpApexFeetY: number): boolean {
+    const r = PLAYER_RADIUS;
+    if (nextX - r < this.bounds.minX || nextX + r > this.bounds.maxX) return false;
+    for (const c of this.colliders) {
+      if (c.category === 'DECORATIVE') continue;
+      if (c.minY > headY) continue;
+      if (c.maxY <= jumpApexFeetY + STEP_UP_MAX) continue;
+      if (
+        nextX + r > c.minX && nextX - r < c.maxX &&
+        curZ   + r > c.minZ && curZ   - r < c.maxZ
+      ) return false;
+    }
+    return true;
+  }
+
+  /** Returns true if all colliders obstructing nextZ can be cleared at the jump apex */
+  private canJumpClearZ(curX: number, nextZ: number, headY: number, jumpApexFeetY: number): boolean {
+    const r = PLAYER_RADIUS;
+    if (nextZ - r < this.bounds.minZ || nextZ + r > this.bounds.maxZ) return false;
+    for (const c of this.colliders) {
+      if (c.category === 'DECORATIVE') continue;
+      if (c.minY > headY) continue;
+      if (c.maxY <= jumpApexFeetY + STEP_UP_MAX) continue;
+      if (
+        curX  + r > c.minX && curX  - r < c.maxX &&
+        nextZ + r > c.minZ && nextZ - r < c.maxZ
+      ) return false;
+    }
+    return true;
   }
 
   public getCollidingHits(): BoxCollider[] {
@@ -388,13 +426,14 @@ export class FirstPersonControls {
     this.velocity.z = THREE.MathUtils.lerp(this.velocity.z, targetVelZ, delta * 15);
 
     // 3. Jump & Gravity
+    const JUMP_IMPULSE = 6.0;
     if (this.input.jump && this.isGrounded) {
       if (this.isCrouching) {
         if (!this.isOverheadBlocked) {
           // If clearance exists, jumping uncrouches
           this.isCrouchToggled = false;
           this.input.crouch = false;
-          this.velocity.y  = 5.2;
+          this.velocity.y  = JUMP_IMPULSE;
           this.isGrounded  = false;
           this.input.jump  = false;
         } else {
@@ -402,7 +441,7 @@ export class FirstPersonControls {
           this.input.jump = false;
         }
       } else {
-        this.velocity.y  = 5.2;
+        this.velocity.y  = JUMP_IMPULSE;
         this.isGrounded  = false;
         this.input.jump  = false; // consume to avoid multi-jump on held Space
       }
@@ -421,7 +460,13 @@ export class FirstPersonControls {
     if (!this.isBlockedX(nextX, this.position.z, feetY, headY)) {
       this.position.x = nextX;
     } else {
-      this.velocity.x = 0;
+      // If airborne and ascending over an obstacle whose top is below the jump apex,
+      // preserve horizontal momentum so the jump carries forward once clearance is reached.
+      const jumpApex = feetY + (this.velocity.y > 0 ? (this.velocity.y * this.velocity.y) / 32.0 : 0);
+      const willClear = !this.isGrounded && this.velocity.y > 0 && this.canJumpClearX(nextX, this.position.z, headY, jumpApex);
+      if (!willClear) {
+        this.velocity.x = 0;
+      }
     }
 
     // ── Z axis ──────────────────────────────────────────────────────────
@@ -429,7 +474,11 @@ export class FirstPersonControls {
     if (!this.isBlockedZ(this.position.x, nextZ, feetY, headY)) {
       this.position.z = nextZ;
     } else {
-      this.velocity.z = 0;
+      const jumpApex = feetY + (this.velocity.y > 0 ? (this.velocity.y * this.velocity.y) / 32.0 : 0);
+      const willClear = !this.isGrounded && this.velocity.y > 0 && this.canJumpClearZ(this.position.x, nextZ, headY, jumpApex);
+      if (!willClear) {
+        this.velocity.z = 0;
+      }
     }
 
     // ── Y axis: apply gravity then snap to ground surface ───────────────
