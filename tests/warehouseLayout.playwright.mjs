@@ -5,7 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright';
 
 const baseUrl = 'http://127.0.0.1:5173';
-const outputDir = 'artifacts/warehouse-layout';
+const outputDir = 'artifacts/warehouse-section-1';
 await mkdir(outputDir, { recursive: true });
 
 let server;
@@ -51,13 +51,15 @@ try {
   const layoutResponse = await page.request.get(`${baseUrl}/maps/warehouse_layout.json`);
   assert.ok(layoutResponse.ok(), 'warehouse layout JSON should be reachable');
   const expectedLayout = await layoutResponse.json();
-  const expectedWallCount = expectedLayout.boxes.length;
-  await page.waitForFunction((expectedWallCount) => {
+  const expectedColliderCount = expectedLayout.boxes.filter((box) =>
+    box.kind !== 'roof' && box.collision !== false
+  ).length;
+  await page.waitForFunction((expectedColliderCount) => {
     const app = window.__fpsApp;
     return app?.mapLoader?.currentMapId === 'warehouse' &&
       Array.isArray(app?.controls?.colliders) &&
-      app.controls.colliders.length === expectedWallCount;
-  }, expectedWallCount, { timeout: 20000 });
+      app.controls.colliders.length === expectedColliderCount;
+  }, expectedColliderCount, { timeout: 20000 });
 
   const runtime = await page.evaluate(() => {
     const app = window.__fpsApp;
@@ -74,7 +76,7 @@ try {
     };
   });
   assert.equal(runtime.mapId, 'warehouse');
-  assert.equal(runtime.colliderCount, expectedWallCount, 'each wall in the revised blueprint should become one collider');
+  assert.equal(runtime.colliderCount, expectedColliderCount, 'only collision-enabled map geometry should create colliders');
   assert.equal(runtime.loadedBuildingCount, 0, 'stage one should contain no building models');
   assert.equal(runtime.fixtureCount, 16, 'the 4x4 lighting grid should render 16 fixtures');
   assert.equal(runtime.bounds.minX, -46);
@@ -105,20 +107,40 @@ try {
   await page.waitForTimeout(800);
   await page.screenshot({ path: `${outputDir}/01-warehouse-layout-topdown.png`, fullPage: true });
 
-  // Return to the real player camera for a first-person sanity screenshot.
+  // Zoom into Section 1 so its four rack runs, pallet bases and crate loads can be inspected.
+  await page.evaluate(() => {
+    const app = window.__fpsApp;
+    const camera = app.camera;
+    const controls = app.controls;
+    controls.__warehouseSectionUpdate = controls.update;
+    controls.update = () => {
+      camera.position.set(-22, 48, 20);
+      camera.up.set(0, 0, 1);
+      camera.lookAt(-22, 0, 20);
+      camera.fov = 43;
+      camera.updateProjectionMatrix();
+    };
+  });
+  await page.waitForTimeout(350);
+  await page.screenshot({ path: `${outputDir}/02-warehouse-section-1-racks.png`, fullPage: true });
+
+  // Return to the real player camera and capture rack visibility from the spawn lane.
   await page.evaluate(() => {
     const app = window.__fpsApp;
     const controls = app.controls;
     controls.update = controls.__warehouseOriginalUpdate;
     delete controls.__warehouseOriginalUpdate;
+    delete controls.__warehouseSectionUpdate;
     controls.forceReleaseKeys();
     if (app.weaponManager?.rootGroup) app.weaponManager.rootGroup.visible = true;
     controls.pitch = 0;
-    controls.setPosition(0, 1.7, -39.5, Math.PI);
+    controls.setPosition(-22, 1.7, 11.5, Math.PI / 2);
     controls.update(1 / 60);
+    const hud = document.querySelector('#fps-hud');
+    if (hud instanceof HTMLElement) hud.style.display = '';
   });
   await page.waitForTimeout(250);
-  await page.screenshot({ path: `${outputDir}/02-warehouse-team-b-spawn.png`, fullPage: true });
+  await page.screenshot({ path: `${outputDir}/03-warehouse-section-1-first-person.png`, fullPage: true });
 
   assert.deepEqual(pageErrors, [], `Browser runtime errors: ${pageErrors.join('; ')}`);
   console.log(JSON.stringify({
@@ -128,7 +150,8 @@ try {
     browserErrors: pageErrors.length,
     screenshots: [
       `${outputDir}/01-warehouse-layout-topdown.png`,
-      `${outputDir}/02-warehouse-team-b-spawn.png`,
+      `${outputDir}/02-warehouse-section-1-racks.png`,
+      `${outputDir}/03-warehouse-section-1-first-person.png`,
     ],
   }, null, 2));
 } catch (error) {
