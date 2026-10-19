@@ -196,7 +196,7 @@ test('Warehouse shelf decks have dark matte coated-steel material values', () =>
 test('Props remain inside their declared warehouse zones', () => {
   const props = map.boxes.filter((box) => box.kind !== 'wall');
   assert.equal(props.length, map.meta.propCount);
-  assert.ok(props.every((box) => ['section1', 'section2', 'section3', 'section4'].includes(box.zone)));
+  assert.ok(props.every((box) => ['section1', 'section2', 'section3', 'section4', 'centralHall'].includes(box.zone)));
   for (const prop of props) {
     const zone = map.zones.find((item) => item.id === prop.zone);
     assert.ok(zone, `${prop.id} resolves to its zone`);
@@ -353,3 +353,21 @@ test('Section 4 is a distinct IT & logistics network hub with valid geometry and
   assert.ok(section4.filter((b) => b.id.includes('light-') && b.id.includes('tube')).length >= 5, 'overhead lights');
 });
 
+
+
+test('Central hall includes four solid tactical cover props while preserving a clear center lane', () => {
+  const cover = map.boxes.filter((box) => box.id.startsWith('central-cover-'));
+  assert.equal(cover.length, 4, 'four tactical cover positions are present');
+  assert.ok(cover.every((box) => box.zone === 'centralHall' && box.kind === 'crate'));
+  assert.ok(cover.every((box) => box.collision === true && box.category === 'SOLID'));
+  assert.ok(cover.every((box) => box.size[1] <= 1.3), 'cover remains low enough to crouch behind');
+  assert.ok(cover.every((box) =>
+    Math.abs(box.center[0]) < 4.2 && Math.abs(box.center[2]) < 4.2),
+  'cover remains within the central hall');
+  const centerOpen = !cover.some((box) =>
+    Math.abs(box.center[0]) - box.size[0] / 2 < 1.0 &&
+    Math.abs(box.center[2]) - box.size[2] / 2 < 1.0);
+  assert.ok(centerOpen, 'central crossing remains open');
+  assert.equal(map.meta.propCount, map.boxes.filter((box) => box.kind !== 'wall').length);
+  assert.equal(map.meta.physicalBoxCount, map.boxes.length);
+});
