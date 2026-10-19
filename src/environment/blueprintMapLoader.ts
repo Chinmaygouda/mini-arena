@@ -211,7 +211,7 @@ export const MAP_INFO: Record<MapId, { name: string; file?: string }> = {
   dustline: { name: 'Dustline Village', file: '/maps/Dustline Village.json' },
   overpass: { name: 'Overpass Arena', file: '/maps/Overpass.json' },
   neighborhood: { name: 'Neighborhood District', file: '/maps/neighborhood.json' },
-  warehouse: { name: 'Warehouse — Section 2 Loading Bay', file: '/maps/warehouse_layout.json' },
+  warehouse: { name: 'Warehouse — Parcel Sortation & Dispatch', file: '/maps/warehouse_layout.json' },
 };
 
 export class BlueprintMapLoader {
